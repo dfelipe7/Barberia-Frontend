@@ -77,6 +77,11 @@ export interface CambiarEstado {
   estado: 'ACTIVO' | 'INACTIVO';
 }
 
+export interface ConfigurarBarbero {
+  telefono: string;
+  porcentajeComision: number;
+}
+
 export const usuariosService = {
   async obtenerUsuario(id: number) {
     const response = await api.get<Usuario>(
@@ -159,12 +164,47 @@ async obtenerBarberosGestion() {
     return response.data;
   },
 
+  async cambiarEstadoBarbero(
+    id: number,
+    datos: CambiarEstado,
+  ) {
+    const response = await api.patch(
+      `/usuarios/barberos/${id}/estado`,
+      datos,
+    );
+
+    return response.data;
+  },
+
   async actualizarComision(
     id: number,
     datos: ActualizarComision,
   ) {
     const response = await api.patch(
       `/usuarios/${id}/comision`,
+      datos,
+    );
+
+    return response.data;
+  },
+
+  async configurarBarbero(
+    id: number,
+    datos: ConfigurarBarbero,
+  ) {
+    const response = await api.post(
+      `/usuarios/${id}/barbero`,
+      datos,
+    );
+
+    return response.data;
+  },
+
+  async configurarMeComoBarbero(
+    datos: ConfigurarBarbero,
+  ) {
+    const response = await api.post(
+      '/usuarios/me/barbero',
       datos,
     );
 

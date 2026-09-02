@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import keycloak from './keycloak';
 import { AuthContextProvider } from './AuthContext';
@@ -10,19 +10,19 @@ interface AuthProviderProps {
 export default function AuthProvider({
     children,
 }: AuthProviderProps) {
-    const [authenticated, setAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
+    const isRun = useRef(false);
 
     useEffect(() => {
+        if (isRun.current) return;
+        isRun.current = true;
         const iniciarKeycloak = async () => {
             try {
-                const autenticado = await keycloak.init({
-                    onLoad: 'login-required',
+                await keycloak.init({
+                    onLoad: 'check-sso',
                     pkceMethod: 'S256',
                     checkLoginIframe: false,
                 });
-
-                setAuthenticated(autenticado);
             } catch (error) {
                 console.error('Error iniciando Keycloak:', error);
             } finally {
@@ -34,11 +34,13 @@ export default function AuthProvider({
     }, []);
 
     if (loading) {
-        return <div>Cargando...</div>;
-    }
-
-    if (!authenticated) {
-        return <div>No autenticado</div>;
+        return (
+            <div className="d-flex justify-content-center align-items-center vh-100">
+                <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Cargando...</span>
+                </div>
+            </div>
+        );
     }
 
     return (

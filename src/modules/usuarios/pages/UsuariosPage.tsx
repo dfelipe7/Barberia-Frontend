@@ -89,6 +89,78 @@ export default function UsuariosPage() {
         setErrorComision,
     ] = useState('');
 
+    const [
+        modalConfigurarBarberoAbierto,
+        setModalConfigurarBarberoAbierto,
+    ] = useState(false);
+
+    const [
+        adminAConfigurar,
+        setAdminAConfigurar,
+    ] = useState<AdministradorGestion | null>(null);
+
+    const [telefonoBarbero, setTelefonoBarbero] = useState('');
+    const [comisionBarbero, setComisionBarbero] = useState(50);
+    const [configurandoBarbero, setConfigurandoBarbero] = useState(false);
+    const [errorConfigurarBarbero, setErrorConfigurarBarbero] = useState('');
+
+    const [usuarioDetalles, setUsuarioDetalles] = useState<AdministradorGestion | BarberoGestion | null>(null);
+
+    /*
+     * ==========================================================
+     * CONFIGURAR BARBERO
+     * ==========================================================
+     */
+
+    const abrirModalConfigurarBarbero = (admin: AdministradorGestion | null) => {
+        setAdminAConfigurar(admin);
+        setTelefonoBarbero('');
+        setComisionBarbero(50);
+        setErrorConfigurarBarbero('');
+        setModalConfigurarBarberoAbierto(true);
+    };
+
+    const cerrarModalConfigurarBarbero = () => {
+        if (configurandoBarbero) return;
+        setModalConfigurarBarberoAbierto(false);
+        setAdminAConfigurar(null);
+    };
+
+    const guardarConfiguracionBarbero = async () => {
+        if (!telefonoBarbero.trim()) {
+            setErrorConfigurarBarbero('El teléfono es obligatorio');
+            return;
+        }
+
+        try {
+            setConfigurandoBarbero(true);
+            setErrorConfigurarBarbero('');
+
+            const datos = {
+                telefono: telefonoBarbero,
+                porcentajeComision: comisionBarbero
+            };
+
+            if (adminAConfigurar) {
+                await usuariosService.configurarBarbero(adminAConfigurar.id, datos);
+                window.alert('Perfil de barbero asignado correctamente.');
+            } else {
+                await usuariosService.configurarMeComoBarbero(datos);
+                window.alert('¡Te has convertido en barbero exitosamente! Por favor inicia sesión nuevamente si es necesario.');
+                window.location.reload();
+                return;
+            }
+
+            cerrarModalConfigurarBarbero();
+        } catch (error: any) {
+            setErrorConfigurarBarbero(
+                error?.response?.data?.message || 'Error al asignar el perfil de barbero'
+            );
+        } finally {
+            setConfigurandoBarbero(false);
+        }
+    };
+
     /*
      * ==========================================================
      * CARGAR ADMINISTRADORES
@@ -207,7 +279,7 @@ export default function UsuariosPage() {
             setCambiandoEstado(barbero.id);
             setErrorEstado('');
 
-            await usuariosService.cambiarEstado(
+            await usuariosService.cambiarEstadoBarbero(
                 barbero.id,
                 {
                     estado: nuevoEstado,
@@ -526,12 +598,23 @@ export default function UsuariosPage() {
                                 </p>
                             </div>
 
-                            <Link
-                                to="/administradores/nuevo"
-                                className="btn btn-primary"
-                            >
-                                + Nuevo administrador
-                            </Link>
+                            <div className="d-flex gap-2">
+                                {!roles.includes('BARBERO') && (
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-primary"
+                                        onClick={() => abrirModalConfigurarBarbero(null)}
+                                    >
+                                        Quiero ser barbero
+                                    </button>
+                                )}
+                                <Link
+                                    to="/administradores/nuevo"
+                                    className="btn btn-primary"
+                                >
+                                    + Nuevo administrador
+                                </Link>
+                            </div>
                         </div>
 
                         {cargandoAdministradores && (
@@ -624,12 +707,28 @@ export default function UsuariosPage() {
 
                                                             <td>
                                                                 <div className="d-flex gap-2">
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-sm btn-outline-secondary"
+                                                                        onClick={() => setUsuarioDetalles(administrador)}
+                                                                    >
+                                                                        Ver
+                                                                    </button>
+
                                                                     <Link
                                                                         to={`/usuarios/${administrador.id}/editar`}
                                                                         className="btn btn-sm btn-outline-primary"
                                                                     >
                                                                         Editar
                                                                     </Link>
+
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-sm btn-outline-info"
+                                                                        onClick={() => abrirModalConfigurarBarbero(administrador)}
+                                                                    >
+                                                                        Hacer barbero
+                                                                    </button>
 
                                                                     <button
                                                                         type="button"
@@ -803,6 +902,14 @@ export default function UsuariosPage() {
 
                                                             <td>
                                                                 <div className="d-flex gap-2">
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-sm btn-outline-secondary"
+                                                                        onClick={() => setUsuarioDetalles(barbero)}
+                                                                    >
+                                                                        Ver
+                                                                    </button>
+
                                                                     <Link
                                                                         to={`/usuarios/${barbero.id}/editar`}
                                                                         className="btn btn-sm btn-outline-primary"
@@ -1001,6 +1108,172 @@ export default function UsuariosPage() {
 
             {/* Fondo del modal */}
             {barberoSeleccionado && (
+                <div className="modal-backdrop fade show" />
+            )}
+
+            {/* ================================================== */}
+            {/* MODAL PARA CONFIGURAR BARBERO */}
+            {/* ================================================== */}
+
+            {modalConfigurarBarberoAbierto && (
+                <div
+                    className="modal fade show"
+                    style={{
+                        display: 'block',
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    }}
+                    tabIndex={-1}
+                    role="dialog"
+                    aria-modal="true"
+                >
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">
+                                    {adminAConfigurar
+                                        ? `Hacer barbero a ${adminAConfigurar.nombre}`
+                                        : 'Convertirme en barbero'}
+                                </h5>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    onClick={cerrarModalConfigurarBarbero}
+                                    disabled={configurandoBarbero}
+                                />
+                            </div>
+                            <div className="modal-body">
+                                {errorConfigurarBarbero && (
+                                    <div className="alert alert-danger">{errorConfigurarBarbero}</div>
+                                )}
+                                <div className="mb-3">
+                                    <label className="form-label">Teléfono</label>
+                                    <input
+                                        type="tel"
+                                        className="form-control"
+                                        value={telefonoBarbero}
+                                        onChange={(e) => setTelefonoBarbero(e.target.value)}
+                                        disabled={configurandoBarbero}
+                                        placeholder="Ej. +573001234567"
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Comisión Inicial ({comisionBarbero}%)</label>
+                                    <input
+                                        type="range"
+                                        className="form-range"
+                                        min="0"
+                                        max="100"
+                                        step="1"
+                                        value={comisionBarbero}
+                                        onChange={(e) => setComisionBarbero(Number(e.target.value))}
+                                        disabled={configurandoBarbero}
+                                    />
+                                    <div className="d-flex justify-content-between text-muted small">
+                                        <span>0%</span>
+                                        <span>50%</span>
+                                        <span>100%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={cerrarModalConfigurarBarbero}
+                                    disabled={configurandoBarbero}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                    onClick={guardarConfiguracionBarbero}
+                                    disabled={configurandoBarbero}
+                                >
+                                    {configurandoBarbero ? 'Guardando...' : 'Confirmar'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Fondo del modal configurar barbero */}
+            {modalConfigurarBarberoAbierto && (
+                <div className="modal-backdrop fade show" />
+            )}
+
+            {/* ================================================== */}
+            {/* MODAL VER DETALLES */}
+            {/* ================================================== */}
+
+            {usuarioDetalles && (
+                <div
+                    className="modal fade show"
+                    style={{
+                        display: 'block',
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    }}
+                    tabIndex={-1}
+                    role="dialog"
+                    aria-modal="true"
+                >
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Ficha de Usuario</h5>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    onClick={() => setUsuarioDetalles(null)}
+                                />
+                            </div>
+                            <div className="modal-body text-start">
+                                <div className="text-center mb-4">
+                                    <div className="bg-light rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style={{ width: '80px', height: '80px' }}>
+                                        <span className="fs-1 text-primary">
+                                            {usuarioDetalles.nombre.charAt(0)}{usuarioDetalles.apellido.charAt(0)}
+                                        </span>
+                                    </div>
+                                    <h4>{usuarioDetalles.nombre} {usuarioDetalles.apellido}</h4>
+                                    <span className={`badge ${usuarioDetalles.estado === 'ACTIVO' ? 'text-bg-success' : 'text-bg-secondary'}`}>
+                                        {usuarioDetalles.estado}
+                                    </span>
+                                </div>
+                                <hr />
+                                <div className="mb-2">
+                                    <strong>Correo Electrónico:</strong> <br/> {usuarioDetalles.email}
+                                </div>
+                                {'telefono' in usuarioDetalles && (
+                                    <div className="mb-2">
+                                        <strong>Teléfono:</strong> <br/> {usuarioDetalles.telefono}
+                                    </div>
+                                )}
+                                {'porcentajeComision' in usuarioDetalles && (
+                                    <div className="mb-2">
+                                        <strong>Comisión de Barbero:</strong> <br/> {usuarioDetalles.porcentajeComision}%
+                                    </div>
+                                )}
+                                <div className="mb-2">
+                                    <strong>Tipo de Perfil:</strong> <br/> 
+                                    {'porcentajeComision' in usuarioDetalles ? 'Barbero' : 'Administrador'}
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={() => setUsuarioDetalles(null)}
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {usuarioDetalles && (
                 <div className="modal-backdrop fade show" />
             )}
         </div>

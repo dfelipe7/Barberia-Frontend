@@ -5,6 +5,8 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 
 import Dashboard from './pages/Dashboard/Dashboard';
 import NotFound from './pages/NotFound/NotFound';
+import SinAcceso from './pages/SinAcceso/SinAcceso';
+import HomePage from './pages/Home/HomePage';
 
 import UsuariosPage from './modules/usuarios/pages/UsuariosPage';
 import BarberosPage from './modules/usuarios/pages/BarberosPage';
@@ -19,9 +21,21 @@ function App() {
 
         {/* Dashboard */}
         <Route
-          path="/"
-          element={<Dashboard />}
-        />
+          element={
+            <ProtectedRoute
+              rolesPermitidos={[
+                'SUPERADMIN',
+                'ADMINISTRADOR',
+                'BARBERO',
+              ]}
+            />
+          }
+        >
+          <Route
+            path="/dashboard"
+            element={<Dashboard />}
+          />
+        </Route>
 
         {/* Gestión de usuarios */}
         <Route
@@ -47,9 +61,21 @@ function App() {
 
         {/* Catálogo de barberos */}
         <Route
-          path="/barberos"
-          element={<BarberosPage />}
-        />
+          element={
+            <ProtectedRoute
+              rolesPermitidos={[
+                'SUPERADMIN',
+                'ADMINISTRADOR',
+                'BARBERO',
+              ]}
+            />
+          }
+        >
+          <Route
+            path="/barberos"
+            element={<BarberosPage />}
+          />
+        </Route>
 
         {/* Crear barbero */}
         <Route
@@ -91,6 +117,12 @@ function App() {
         />
 
       </Route>
+
+      {/* Página principal pública */}
+      <Route path="/" element={<HomePage />} />
+
+      {/* Sin acceso - fuera del layout para usuarios sin roles */}
+      <Route path="/sin-acceso" element={<SinAcceso />} />
     </Routes>
   );
 }

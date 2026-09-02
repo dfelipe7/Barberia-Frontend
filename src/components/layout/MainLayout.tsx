@@ -1,20 +1,23 @@
 import { Outlet } from 'react-router-dom';
 
-import Navbar from './Navbar';
+import Header from './Header';
 import Sidebar from './Sidebar';
+import Footer from './Footer';
 
 export default function MainLayout() {
     return (
-        <div>
-            <Navbar />
+        <div className="d-flex flex-column min-vh-100">
+            <Header />
 
-            <div className="d-flex">
+            <div className="d-flex flex-grow-1">
                 <Sidebar />
 
-                <main className="flex-grow-1 p-4">
+                <main className="flex-grow-1 p-4 bg-light">
                     <Outlet />
                 </main>
             </div>
+
+            <Footer />
         </div>
     );
 }
