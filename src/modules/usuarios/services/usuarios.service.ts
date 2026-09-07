@@ -83,131 +83,118 @@ export interface ConfigurarBarbero {
 }
 
 export const usuariosService = {
+  /**
+   * Obtiene el perfil completo del usuario autenticado actual usando el token de Keycloak.
+   * Se usa comúnmente al inicializar la aplicación.
+   */
+  async obtenerMiPerfil() {
+    const response = await api.get<Usuario>('/usuarios/me');
+    return response.data;
+  },
+
+  /**
+   * Obtiene los datos básicos de cualquier usuario por su ID.
+   * Útil para vistas de detalle o formularios de edición.
+   */
   async obtenerUsuario(id: number) {
-    const response = await api.get<Usuario>(
-      `/usuarios/${id}`,
-    );
-
+    const response = await api.get<Usuario>(`/usuarios/${id}`);
     return response.data;
   },
 
+  /**
+   * Obtiene el catálogo público de barberos activos.
+   * No incluye datos sensibles (como comisiones o correos).
+   * Diseñado para la vista de reservas de clientes.
+   */
   async obtenerBarberos() {
-    const response = await api.get<BarberoCatalogo[]>(
-      '/usuarios/barberos',
-    );
-
+    const response = await api.get<BarberoCatalogo[]>('/usuarios/barberos');
     return response.data;
   },
 
-
-async obtenerAdministradores() {
-  const response =
-    await api.get<AdministradorGestion[]>(
-      '/usuarios/administradores',
-    );
-
-  return response.data;
-},
-
-async obtenerBarberosGestion() {
-  const response =
-    await api.get<BarberoGestion[]>(
-      '/usuarios/barberos/gestion',
-    );
-
-  return response.data;
-},
-
-
-
-  async crearAdministrador(
-    datos: CrearAdministrador,
-  ) {
-    const response = await api.post(
-      '/usuarios/administradores',
-      datos,
-    );
-
+  /**
+   * Obtiene la lista completa de administradores.
+   * Exclusivo para el uso del SUPERADMIN.
+   */
+  async obtenerAdministradores() {
+    const response = await api.get<AdministradorGestion[]>('/usuarios/administradores');
     return response.data;
   },
 
+  /**
+   * Obtiene la lista de barberos con datos sensibles (comisión, email, estado).
+   * Exclusivo para la tabla de gestión de los administradores y superadmin.
+   */
+  async obtenerBarberosGestion() {
+    const response = await api.get<BarberoGestion[]>('/usuarios/barberos/gestion');
+    return response.data;
+  },
+
+  /**
+   * Registra a un nuevo administrador en Keycloak y en la base de datos.
+   */
+  async crearAdministrador(datos: CrearAdministrador) {
+    const response = await api.post('/usuarios/administradores', datos);
+    return response.data;
+  },
+
+  /**
+   * Registra a un nuevo empleado como barbero directamente.
+   * Crea su cuenta en Keycloak y le asigna el rol de BARBERO.
+   */
   async crearBarbero(datos: CrearBarbero) {
-    const response = await api.post(
-      '/usuarios/barberos',
-      datos,
-    );
-
+    const response = await api.post('/usuarios/barberos', datos);
     return response.data;
   },
 
-  async actualizarUsuario(
-    id: number,
-    datos: ActualizarUsuario,
-  ) {
-    const response = await api.patch<Usuario>(
-      `/usuarios/${id}`,
-      datos,
-    );
-
+  /**
+   * Actualiza los datos personales básicos (nombre, apellido, email) de un usuario.
+   */
+  async actualizarUsuario(id: number, datos: ActualizarUsuario) {
+    const response = await api.patch<Usuario>(`/usuarios/${id}`, datos);
     return response.data;
   },
 
-  async cambiarEstado(
-    id: number,
-    datos: CambiarEstado,
-  ) {
-    const response = await api.patch(
-      `/usuarios/${id}/estado`,
-      datos,
-    );
-
+  /**
+   * Activa o desactiva la CUENTA GLOBAL de un usuario.
+   * Si se desactiva, el usuario no podrá iniciar sesión en absoluto.
+   */
+  async cambiarEstado(id: number, datos: CambiarEstado) {
+    const response = await api.patch(`/usuarios/${id}/estado`, datos);
     return response.data;
   },
 
-  async cambiarEstadoBarbero(
-    id: number,
-    datos: CambiarEstado,
-  ) {
-    const response = await api.patch(
-      `/usuarios/barberos/${id}/estado`,
-      datos,
-    );
-
+  /**
+   * Activa o desactiva exclusivamente el PERFIL DE BARBERO.
+   * Si se desactiva, deja de aparecer en el catálogo, pero aún puede iniciar sesión.
+   */
+  async cambiarEstadoBarbero(id: number, datos: CambiarEstado) {
+    const response = await api.patch(`/usuarios/barberos/${id}/estado`, datos);
     return response.data;
   },
 
-  async actualizarComision(
-    id: number,
-    datos: ActualizarComision,
-  ) {
-    const response = await api.patch(
-      `/usuarios/${id}/comision`,
-      datos,
-    );
-
+  /**
+   * Modifica el porcentaje de comisión que recibe un barbero por sus servicios.
+   */
+  async actualizarComision(id: number, datos: ActualizarComision) {
+    const response = await api.patch(`/usuarios/${id}/comision`, datos);
     return response.data;
   },
 
-  async configurarBarbero(
-    id: number,
-    datos: ConfigurarBarbero,
-  ) {
-    const response = await api.post(
-      `/usuarios/${id}/barbero`,
-      datos,
-    );
-
+  /**
+   * Convierte a un usuario existente (ej. un administrador) en barbero.
+   * Operación realizada por un SUPERADMIN.
+   */
+  async configurarBarbero(id: number, datos: ConfigurarBarbero) {
+    const response = await api.post(`/usuarios/${id}/barbero`, datos);
     return response.data;
   },
 
-  async configurarMeComoBarbero(
-    datos: ConfigurarBarbero,
-  ) {
-    const response = await api.post(
-      '/usuarios/me/barbero',
-      datos,
-    );
-
+  /**
+   * Permite que el usuario autenticado (ej. un administrador) se auto-asigne
+   * el perfil de barbero con su respectiva comisión y teléfono.
+   */
+  async configurarMeComoBarbero(datos: ConfigurarBarbero) {
+    const response = await api.post('/usuarios/me/barbero', datos);
     return response.data;
   },
 };
