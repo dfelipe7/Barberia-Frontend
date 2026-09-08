@@ -33,6 +33,8 @@ export interface AdministradorGestion {
   apellido: string;
   email: string;
   estado: 'ACTIVO' | 'INACTIVO';
+  esBarbero: boolean;
+  estadoBarbero?: 'ACTIVO' | 'INACTIVO';
 }
 
 export interface BarberoGestion {
@@ -67,6 +69,8 @@ export interface ActualizarUsuario {
   nombre?: string;
   apellido?: string;
   email?: string;
+  telefono?: string;
+  porcentajeComision?: number;
 }
 
 export interface ActualizarComision {

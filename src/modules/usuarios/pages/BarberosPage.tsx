@@ -18,7 +18,15 @@ import {
 interface EstadoNavegacion {
     mensaje?: string;
 }
-
+/**
+ * PÁGINA DEL CATÁLOGO DE BARBEROS
+ * 
+ * ¿Qué hace esta pantalla?
+ * - Muestra la lista pública (o semipública) de barberos disponibles en el sistema.
+ * - Su diseño está pensado como una "vitrina" en lugar de una tabla administrativa pesada.
+ * - Si el usuario que está viendo la página es SUPERADMIN o ADMINISTRADOR, se le muestra
+ *   un botón extra para "Crear Nuevo Barbero".
+ */
 export default function BarberosPage() {
     const { roles } = useAuth();
 

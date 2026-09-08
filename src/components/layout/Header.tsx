@@ -20,8 +20,7 @@ export default function Header() {
 
     const [mostrarModalPerfil, setMostrarModalPerfil] = useState(false);
 
-    const rolApp = roles.find((r) => ROLES_APP.includes(r));
-    const colorRol = rolApp ? COLORES_ROL[rolApp] : 'secondary';
+    const rolesApp = roles.filter((r) => ROLES_APP.includes(r));
 
     const cerrarSesion = () => {
         keycloak.logout({
@@ -43,11 +42,11 @@ export default function Header() {
                                 {nombre} {apellido}
                             </span>
 
-                            {rolApp && (
-                                <span className={`badge bg-${colorRol}`}>
-                                    {rolApp}
+                            {rolesApp.map((rol) => (
+                                <span key={rol} className={`badge bg-${COLORES_ROL[rol] || 'secondary'}`}>
+                                    {rol}
                                 </span>
-                            )}
+                            ))}
                         </div>
 
                         <button
@@ -83,7 +82,7 @@ export default function Header() {
                                     <strong>Correo electrónico:</strong> {usuarioDb.email}
                                 </div>
                                 <div className="mb-3">
-                                    <strong>Rol principal:</strong> <span className={`badge bg-${colorRol}`}>{usuarioDb.rol}</span>
+                                    <strong>Rol principal:</strong> <span className={`badge bg-${COLORES_ROL[usuarioDb.rol] || 'secondary'}`}>{usuarioDb.rol}</span>
                                 </div>
                                 <div className="mb-3">
                                     <strong>Estado de cuenta:</strong>{' '}

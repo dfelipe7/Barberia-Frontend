@@ -18,9 +18,14 @@ export default function AuthProvider({
         isRun.current = true;
         const iniciarKeycloak = async () => {
             try {
+                // INICIALIZACIÓN DE KEYCLOAK
+                // 'check-sso' es una opción mágica que le dice a Keycloak:
+                // "Por favor, mira silenciosamente si el usuario ya tiene sesión en el navegador. 
+                // Si la tiene, inícialo sin pedir contraseña. Si no, déjalo como invitado".
+                // Esto evita que la página de login brinque de la nada.
                 await keycloak.init({
                     onLoad: 'check-sso',
-                    pkceMethod: 'S256',
+                    pkceMethod: 'S256', // Medida de seguridad recomendada para Single Page Apps (React)
                     checkLoginIframe: false,
                 });
             } catch (error) {

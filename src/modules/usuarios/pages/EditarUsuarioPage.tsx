@@ -4,8 +4,15 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { usuariosService } from '../services/usuarios.service';
 
 import Loading from '../../../components/common/Loading';
-import ErrorMessage from '../../../components/common/ErrorMessage';
-
+import ErrorMessage from '../../../components/common/ErrorMessage';/**
+ * PÁGINA PARA EDITAR USUARIO
+ * 
+ * ¿Qué hace esta pantalla?
+ * - Se activa cuando haces clic en "Editar" sobre cualquier usuario en la tabla.
+ * - Lee el 'id' de la URL (usando useParams) para saber a quién editar.
+ * - Primero hace una petición para traer los datos actuales (nombre, apellido, email).
+ * - Al guardar, envía la actualización al Backend (que a su vez actualiza Keycloak y MySQL).
+ */
 function EditarUsuarioPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -13,6 +20,10 @@ function EditarUsuarioPage() {
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
     const [email, setEmail] = useState('');
+
+    const [esBarbero, setEsBarbero] = useState(false);
+    const [telefono, setTelefono] = useState('');
+    const [comision, setComision] = useState(50);
 
     const [cargando, setCargando] = useState(true);
     const [guardando, setGuardando] = useState(false);
@@ -37,6 +48,14 @@ function EditarUsuarioPage() {
                 setNombre(usuario.nombre);
                 setApellido(usuario.apellido);
                 setEmail(usuario.email);
+
+                if (usuario.barbero) {
+                    setEsBarbero(true);
+                    setTelefono(usuario.barbero.telefono || '');
+                    setComision(usuario.barbero.porcentajeComision || 50);
+                } else {
+                    setEsBarbero(false);
+                }
             } catch (err: any) {
                 console.error(err);
 
@@ -90,6 +109,17 @@ function EditarUsuarioPage() {
             return;
         }
 
+        if (esBarbero) {
+            if (!telefono.trim()) {
+                setErrorFormulario('El teléfono es obligatorio para los barberos.');
+                return;
+            }
+            if (comision < 0 || comision > 100) {
+                setErrorFormulario('La comisión debe estar entre 0 y 100.');
+                return;
+            }
+        }
+
         if (!id) {
             setErrorFormulario(
                 'No se encontró el usuario.',
@@ -106,6 +136,10 @@ function EditarUsuarioPage() {
                     nombre: nombre.trim(),
                     apellido: apellido.trim(),
                     email: email.trim(),
+                    ...(esBarbero && {
+                        telefono: telefono.trim(),
+                        porcentajeComision: comision,
+                    }),
                 },
             );
 
@@ -228,6 +262,44 @@ function EditarUsuarioPage() {
                                     disabled={guardando}
                                 />
                             </div>
+
+                            {esBarbero && (
+                                <>
+                                    <div className="col-md-6 mb-3">
+                                        <label className="form-label">
+                                            Teléfono (Barbero)
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={telefono}
+                                            onChange={(e) =>
+                                                setTelefono(e.target.value)
+                                            }
+                                            disabled={guardando}
+                                        />
+                                    </div>
+
+                                    <div className="col-md-6 mb-3">
+                                        <label className="form-label">
+                                            Porcentaje de comisión (%)
+                                        </label>
+
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            value={comision}
+                                            onChange={(e) =>
+                                                setComision(Number(e.target.value))
+                                            }
+                                            min="0"
+                                            max="100"
+                                            disabled={guardando}
+                                        />
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         <div className="d-flex justify-content-end gap-2">

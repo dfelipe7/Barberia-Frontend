@@ -12,6 +12,16 @@ import {
     type BarberoGestion,
 } from '../services/usuarios.service';
 
+/**
+ * PÁGINA PRINCIPAL DE GESTIÓN DE USUARIOS
+ * 
+ * ¿Qué hace esta pantalla?
+ * - Es el "Panel de Control" central donde los Administradores y Superadmins
+ *   pueden ver a todo el personal del sistema.
+ * - Está dividida en dos pestañas: "Administradores" y "Barberos".
+ * - Desde aquí se lanzan acciones críticas como: Crear, Editar, Cambiar Estado (Activo/Inactivo),
+ *   y la más compleja: "Convertir un Administrador en Barbero".
+ */
 type Pestaña = 'administradores' | 'barberos';
 
 export default function UsuariosPage() {
@@ -722,13 +732,20 @@ export default function UsuariosPage() {
                                                                         Editar
                                                                     </Link>
 
-                                                                    <button
-                                                                        type="button"
-                                                                        className="btn btn-sm btn-outline-info"
-                                                                        onClick={() => abrirModalConfigurarBarbero(administrador)}
-                                                                    >
-                                                                        Hacer barbero
-                                                                    </button>
+                                                                    {!administrador.esBarbero && (
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-sm btn-outline-info"
+                                                                            onClick={() => abrirModalConfigurarBarbero(administrador)}
+                                                                        >
+                                                                            Hacer barbero
+                                                                        </button>
+                                                                    )}
+                                                                    {administrador.esBarbero && (
+                                                                        <span className={`badge ${administrador.estadoBarbero === 'ACTIVO' ? 'bg-info' : 'bg-secondary'} mt-1`}>
+                                                                            {administrador.estadoBarbero === 'ACTIVO' ? 'También es Barbero' : 'Barbero (Inactivo)'}
+                                                                        </span>
+                                                                    )}
 
                                                                     <button
                                                                         type="button"

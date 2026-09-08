@@ -14,7 +14,15 @@ interface FormularioAdministrador {
     email: string;
     password: string;
 }
-
+/**
+ * PÁGINA PARA CREAR ADMINISTRADOR
+ * 
+ * ¿Qué hace esta pantalla?
+ * - Presenta un formulario para registrar a un nuevo usuario con rol de ADMINISTRADOR.
+ * - Este nuevo usuario se guardará automáticamente en Keycloak (para la seguridad)
+ *   y en nuestra base de datos local de forma sincronizada.
+ * - Valida campos como el correo y la longitud de la contraseña antes de enviar.
+ */
 export default function CrearAdministradorPage() {
     const navigate = useNavigate();
 

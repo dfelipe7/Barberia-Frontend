@@ -13,7 +13,15 @@ interface FormularioBarbero {
     password: string;
     porcentajeComision: string;
 }
-
+/**
+ * PÁGINA PARA CREAR BARBERO
+ * 
+ * ¿Qué hace esta pantalla?
+ * - Es casi idéntica a la de crear administrador, pero pide dos campos extra:
+ *   'Teléfono' y 'Porcentaje de Comisión'.
+ * - Estos datos viajan al backend, se registra la identidad en Keycloak y
+ *   los datos extra (teléfono, comisión) se guardan en la tabla Barberos de MySQL.
+ */
 export default function CrearBarberoPage() {
     const navigate = useNavigate();
 
