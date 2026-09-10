@@ -10,6 +10,7 @@ export interface Usuario {
   administrador?: {
     id: number;
     usuarioId: number;
+    estado: 'ACTIVO' | 'INACTIVO';
   } | null;
   barbero?: {
     id: number;
@@ -33,6 +34,7 @@ export interface AdministradorGestion {
   apellido: string;
   email: string;
   estado: 'ACTIVO' | 'INACTIVO';
+  estadoAdmin?: 'ACTIVO' | 'INACTIVO';
   esBarbero: boolean;
   estadoBarbero?: 'ACTIVO' | 'INACTIVO';
 }
@@ -45,6 +47,9 @@ export interface BarberoGestion {
   telefono: string;
   porcentajeComision: number;
   estado: 'ACTIVO' | 'INACTIVO';
+  estadoAdmin?: 'ACTIVO' | 'INACTIVO';
+  estadoGlobal: 'ACTIVO' | 'INACTIVO';
+  esAdministrador: boolean;
 }
 
 
@@ -71,6 +76,8 @@ export interface ActualizarUsuario {
   email?: string;
   telefono?: string;
   porcentajeComision?: number;
+  esAdministrador?: boolean;
+  esBarbero?: boolean;
 }
 
 export interface ActualizarComision {
@@ -199,6 +206,22 @@ export const usuariosService = {
    */
   async configurarMeComoBarbero(datos: ConfigurarBarbero) {
     const response = await api.post('/usuarios/me/barbero', datos);
+    return response.data;
+  },
+
+  /**
+   * Cambia el estado del rol de Administrador de un usuario.
+   */
+  async cambiarEstadoAdministrador(id: number, datos: { estado: 'ACTIVO' | 'INACTIVO' }) {
+    const response = await api.patch(`/usuarios/administradores/${id}/estado`, datos);
+    return response.data;
+  },
+
+  /**
+   * Cambia la contraseña del usuario actualmente logueado.
+   */
+  async cambiarContrasena(datos: { contrasenaActual: string; nuevaContrasena: string }) {
+    const response = await api.patch('/auth/cambiar-contrasena', datos);
     return response.data;
   },
 };

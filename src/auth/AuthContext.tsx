@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import keycloak from './keycloak';
 import { usuariosService, type Usuario } from '../modules/usuarios/services/usuarios.service';
 
@@ -18,6 +18,7 @@ interface AuthContextType {
     email?: string; // Extraído del token
     roles: string[]; // Qué poderes tiene este usuario (SUPERADMIN, BARBERO, etc.)
     usuarioDb: Usuario | null; // El registro completo de este usuario que vive en nuestra Base de Datos (MySQL)
+    refrescarPerfil: () => Promise<void>; // Recarga los datos del perfil desde la BD
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(
@@ -45,17 +46,27 @@ export function AuthContextProvider({
     // Aquí guardaremos la información de este usuario sacada de nuestra propia base de datos (Ej: su estado de comisión)
     const [usuarioDb, setUsuarioDb] = useState<Usuario | null>(null);
 
+    // Función para recargar el perfil desde la BD. Se puede llamar desde cualquier página.
+    const refrescarPerfil = useCallback(async () => {
+        if (keycloak.authenticated) {
+            try {
+                const perfil = await usuariosService.obtenerMiPerfil();
+                setUsuarioDb(perfil);
+            } catch (error) {
+                console.error('Error obteniendo perfil de BD:', error);
+            }
+        }
+    }, []);
+
     // Cuando este contexto carga por primera vez...
     useEffect(() => {
         // Si el usuario ya está autenticado en Keycloak...
         if (keycloak.authenticated) {
             // Hacemos una petición silenciosa a nuestro backend (NestJS) para decirle:
             // "Oye, soy este usuario, dame mi información guardada en MySQL"
-            usuariosService.obtenerMiPerfil()
-                .then(perfil => setUsuarioDb(perfil))
-                .catch(error => console.error("Error obteniendo perfil de BD:", error));
+            refrescarPerfil();
         }
-    }, []);
+    }, [refrescarPerfil]);
 
     return (
         <AuthContext.Provider
@@ -67,6 +78,7 @@ export function AuthContextProvider({
                 email,
                 roles,
                 usuarioDb,
+                refrescarPerfil,
             }}
         >
             {children}

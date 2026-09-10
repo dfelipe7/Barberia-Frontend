@@ -13,6 +13,7 @@ import BarberosPage from './modules/usuarios/pages/BarberosPage';
 import CrearBarberoPage from './modules/usuarios/pages/CrearBarberoPage';
 import CrearAdministradorPage from './modules/usuarios/pages/CrearAdministradorPage';
 import EditarUsuarioPage from './modules/usuarios/pages/EditarUsuarioPage';
+import MiPerfilPage from './modules/usuarios/pages/MiPerfilPage';
 
 function App() {
   return (
@@ -34,6 +35,10 @@ function App() {
           <Route
             path="/dashboard"
             element={<Dashboard />}
+          />
+          <Route
+            path="/mi-perfil"
+            element={<MiPerfilPage />}
           />
         </Route>
 

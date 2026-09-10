@@ -56,6 +56,13 @@ export default function Sidebar() {
                                 Usuarios
                             </NavLink>
                         )}
+                        
+                    <NavLink
+                        to="/mi-perfil"
+                        className={enlaceClase}
+                    >
+                        Mi Perfil
+                    </NavLink>
 
                     {(esSuperAdmin ||
                         esAdministrador) && (

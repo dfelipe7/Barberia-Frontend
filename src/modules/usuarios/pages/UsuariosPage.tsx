@@ -25,7 +25,7 @@ import {
 type Pestaña = 'administradores' | 'barberos';
 
 export default function UsuariosPage() {
-    const { roles } = useAuth();
+    const { roles, usuarioDb } = useAuth();
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -121,14 +121,6 @@ export default function UsuariosPage() {
      * CONFIGURAR BARBERO
      * ==========================================================
      */
-
-    const abrirModalConfigurarBarbero = (admin: AdministradorGestion | null) => {
-        setAdminAConfigurar(admin);
-        setTelefonoBarbero('');
-        setComisionBarbero(50);
-        setErrorConfigurarBarbero('');
-        setModalConfigurarBarberoAbierto(true);
-    };
 
     const cerrarModalConfigurarBarbero = () => {
         if (configurandoBarbero) return;
@@ -264,21 +256,21 @@ export default function UsuariosPage() {
      * ==========================================================
      */
 
-    const cambiarEstadoBarbero = async (
+    const cambiarEstadoGlobalBarbero = async (
         barbero: BarberoGestion,
     ) => {
         const nuevoEstado =
-            barbero.estado === 'ACTIVO'
+            barbero.estadoGlobal === 'ACTIVO'
                 ? 'INACTIVO'
                 : 'ACTIVO';
 
         const accion =
             nuevoEstado === 'ACTIVO'
-                ? 'activar'
-                : 'desactivar';
+                ? 'desbloquear'
+                : 'bloquear';
 
         const confirmar = window.confirm(
-            `¿Está seguro de que desea ${accion} al barbero ${barbero.nombre} ${barbero.apellido}?`,
+            `¿Está seguro de que desea ${accion} la cuenta de ${barbero.nombre} ${barbero.apellido}?`,
         );
 
         if (!confirmar) {
@@ -289,7 +281,7 @@ export default function UsuariosPage() {
             setCambiandoEstado(barbero.id);
             setErrorEstado('');
 
-            await usuariosService.cambiarEstadoBarbero(
+            await usuariosService.cambiarEstado(
                 barbero.id,
                 {
                     estado: nuevoEstado,
@@ -303,7 +295,7 @@ export default function UsuariosPage() {
                             item.id === barbero.id
                                 ? {
                                     ...item,
-                                    estado: nuevoEstado,
+                                    estadoGlobal: nuevoEstado,
                                 }
                                 : item,
                     ),
@@ -613,7 +605,7 @@ export default function UsuariosPage() {
                                     <button
                                         type="button"
                                         className="btn btn-outline-primary"
-                                        onClick={() => abrirModalConfigurarBarbero(null)}
+                                        onClick={() => setModalConfigurarBarberoAbierto(true)}
                                     >
                                         Quiero ser barbero
                                     </button>
@@ -667,7 +659,11 @@ export default function UsuariosPage() {
                                                     </th>
 
                                                     <th>
-                                                        Estado
+                                                        Estado Global
+                                                    </th>
+
+                                                    <th>
+                                                        Rol Admin
                                                     </th>
 
                                                     <th>
@@ -706,12 +702,22 @@ export default function UsuariosPage() {
                                                                     className={`badge ${administrador.estado ===
                                                                             'ACTIVO'
                                                                             ? 'text-bg-success'
+                                                                            : 'text-bg-danger'
+                                                                        }`}
+                                                                >
+                                                                    {administrador.estado === 'ACTIVO' ? 'Habilitada' : 'Bloqueada'}
+                                                                </span>
+                                                            </td>
+
+                                                            <td>
+                                                                <span
+                                                                    className={`badge ${administrador.estadoAdmin ===
+                                                                            'ACTIVO'
+                                                                            ? 'text-bg-primary'
                                                                             : 'text-bg-secondary'
                                                                         }`}
                                                                 >
-                                                                    {
-                                                                        administrador.estado
-                                                                    }
+                                                                    {administrador.estadoAdmin === 'ACTIVO' ? 'Activo' : 'Inactivo'}
                                                                 </span>
                                                             </td>
 
@@ -732,46 +738,39 @@ export default function UsuariosPage() {
                                                                         Editar
                                                                     </Link>
 
-                                                                    {!administrador.esBarbero && (
-                                                                        <button
-                                                                            type="button"
-                                                                            className="btn btn-sm btn-outline-info"
-                                                                            onClick={() => abrirModalConfigurarBarbero(administrador)}
-                                                                        >
-                                                                            Hacer barbero
-                                                                        </button>
-                                                                    )}
                                                                     {administrador.esBarbero && (
                                                                         <span className={`badge ${administrador.estadoBarbero === 'ACTIVO' ? 'bg-info' : 'bg-secondary'} mt-1`}>
                                                                             {administrador.estadoBarbero === 'ACTIVO' ? 'También es Barbero' : 'Barbero (Inactivo)'}
                                                                         </span>
                                                                     )}
 
-                                                                    <button
-                                                                        type="button"
-                                                                        className={`btn btn-sm ${administrador.estado ===
-                                                                                'ACTIVO'
-                                                                                ? 'btn-outline-danger'
-                                                                                : 'btn-outline-success'
-                                                                            }`}
-                                                                        disabled={
-                                                                            cambiandoEstado ===
-                                                                            administrador.id
-                                                                        }
-                                                                        onClick={() =>
-                                                                            cambiarEstadoAdministrador(
-                                                                                administrador,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        {cambiandoEstado ===
-                                                                            administrador.id
-                                                                            ? 'Procesando...'
-                                                                            : administrador.estado ===
-                                                                                'ACTIVO'
-                                                                                ? 'Desactivar'
-                                                                                : 'Activar'}
-                                                                    </button>
+                                                                    {usuarioDb?.id !== administrador.id && (
+                                                                        <button
+                                                                            type="button"
+                                                                            className={`btn btn-sm ${administrador.estado ===
+                                                                                    'ACTIVO'
+                                                                                    ? 'btn-outline-danger'
+                                                                                    : 'btn-outline-success'
+                                                                                }`}
+                                                                            disabled={
+                                                                                cambiandoEstado ===
+                                                                                administrador.id
+                                                                            }
+                                                                            onClick={() =>
+                                                                                cambiarEstadoAdministrador(
+                                                                                    administrador,
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            {cambiandoEstado ===
+                                                                                administrador.id
+                                                                                ? 'Procesando...'
+                                                                                : administrador.estado ===
+                                                                                    'ACTIVO'
+                                                                                    ? 'Bloquear Cuenta'
+                                                                                    : 'Desbloquear'}
+                                                                        </button>
+                                                                    )}
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -854,7 +853,11 @@ export default function UsuariosPage() {
                                                     </th>
 
                                                     <th>
-                                                        Estado
+                                                        Estado Global
+                                                    </th>
+
+                                                    <th>
+                                                        Rol Barbero
                                                     </th>
 
                                                     <th>
@@ -905,15 +908,25 @@ export default function UsuariosPage() {
 
                                                             <td>
                                                                 <span
-                                                                    className={`badge ${barbero.estado ===
+                                                                    className={`badge ${barbero.estadoGlobal ===
                                                                             'ACTIVO'
                                                                             ? 'text-bg-success'
+                                                                            : 'text-bg-danger'
+                                                                        }`}
+                                                                >
+                                                                    {barbero.estadoGlobal === 'ACTIVO' ? 'Habilitada' : 'Bloqueada'}
+                                                                </span>
+                                                            </td>
+
+                                                            <td>
+                                                                <span
+                                                                    className={`badge ${barbero.estado ===
+                                                                            'ACTIVO'
+                                                                            ? 'text-bg-primary'
                                                                             : 'text-bg-secondary'
                                                                         }`}
                                                                 >
-                                                                    {
-                                                                        barbero.estado
-                                                                    }
+                                                                    {barbero.estado === 'ACTIVO' ? 'Activo' : 'Inactivo'}
                                                                 </span>
                                                             </td>
 
@@ -927,50 +940,63 @@ export default function UsuariosPage() {
                                                                         Ver
                                                                     </button>
 
-                                                                    <Link
-                                                                        to={`/usuarios/${barbero.id}/editar`}
-                                                                        className="btn btn-sm btn-outline-primary"
-                                                                    >
-                                                                        Editar
-                                                                    </Link>
+                                                                    {/* Solo Superadmin o barberos puros pueden ser editados por un admin */}
+                                                                    {(esSuperAdmin || usuarioDb?.id === barbero.id || !barbero.esAdministrador) && (
+                                                                        <Link
+                                                                            to={`/usuarios/${barbero.id}/editar`}
+                                                                            className="btn btn-sm btn-outline-primary"
+                                                                        >
+                                                                            Editar
+                                                                        </Link>
+                                                                    )}
 
-                                                                    <button
-                                                                        type="button"
-                                                                        className="btn btn-sm btn-outline-dark"
-                                                                        onClick={() =>
-                                                                            abrirModalComision(
-                                                                                barbero,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        Comisión
-                                                                    </button>
+                                                                    {(esSuperAdmin || !barbero.esAdministrador) && (
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-sm btn-outline-dark"
+                                                                            onClick={() =>
+                                                                                abrirModalComision(
+                                                                                    barbero,
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            Comisión
+                                                                        </button>
+                                                                    )}
 
-                                                                    <button
-                                                                        type="button"
-                                                                        className={`btn btn-sm ${barbero.estado ===
-                                                                                'ACTIVO'
-                                                                                ? 'btn-outline-danger'
-                                                                                : 'btn-outline-success'
-                                                                            }`}
-                                                                        disabled={
-                                                                            cambiandoEstado ===
-                                                                            barbero.id
-                                                                        }
-                                                                        onClick={() =>
-                                                                            cambiarEstadoBarbero(
-                                                                                barbero,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        {cambiandoEstado ===
-                                                                            barbero.id
-                                                                            ? 'Procesando...'
-                                                                            : barbero.estado ===
-                                                                                'ACTIVO'
-                                                                                ? 'Desactivar'
-                                                                                : 'Activar'}
-                                                                    </button>
+                                                                    {barbero.esAdministrador && (
+                                                                        <span className={`badge ${barbero.estadoAdmin === 'ACTIVO' ? 'bg-info' : 'bg-secondary'} mt-1`}>
+                                                                            {barbero.estadoAdmin === 'ACTIVO' ? 'También es Admin' : 'Admin (Inactivo)'}
+                                                                        </span>
+                                                                    )}
+
+                                                                    {(esSuperAdmin || !barbero.esAdministrador) && usuarioDb?.id !== barbero.id && (
+                                                                        <button
+                                                                            type="button"
+                                                                            className={`btn btn-sm ${barbero.estadoGlobal ===
+                                                                                    'ACTIVO'
+                                                                                    ? 'btn-outline-danger'
+                                                                                    : 'btn-outline-success'
+                                                                                }`}
+                                                                            disabled={
+                                                                                cambiandoEstado ===
+                                                                                barbero.id
+                                                                            }
+                                                                            onClick={() =>
+                                                                                cambiarEstadoGlobalBarbero(
+                                                                                    barbero,
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            {cambiandoEstado ===
+                                                                                barbero.id
+                                                                                ? 'Procesando...'
+                                                                                : barbero.estadoGlobal ===
+                                                                                    'ACTIVO'
+                                                                                    ? 'Bloquear Cuenta'
+                                                                                    : 'Desbloquear'}
+                                                                        </button>
+                                                                    )}
                                                                 </div>
                                                             </td>
                                                         </tr>
