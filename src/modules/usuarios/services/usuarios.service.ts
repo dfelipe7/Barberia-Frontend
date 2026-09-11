@@ -17,6 +17,7 @@ export interface Usuario {
     usuarioId: number;
     telefono: string;
     porcentajeComision: number;
+    fotoUrl?: string | null;
     estado: 'ACTIVO' | 'INACTIVO';
   } | null;
 }
@@ -26,6 +27,7 @@ export interface BarberoCatalogo {
   nombre: string;
   apellido: string;
   telefono: string;
+  fotoUrl?: string | null;
 }
 
 export interface AdministradorGestion {
@@ -50,6 +52,7 @@ export interface BarberoGestion {
   estadoAdmin?: 'ACTIVO' | 'INACTIVO';
   estadoGlobal: 'ACTIVO' | 'INACTIVO';
   esAdministrador: boolean;
+  fotoUrl?: string | null;
 }
 
 
@@ -78,6 +81,7 @@ export interface ActualizarUsuario {
   porcentajeComision?: number;
   esAdministrador?: boolean;
   esBarbero?: boolean;
+  fotoUrl?: string;
 }
 
 export interface ActualizarComision {
@@ -187,7 +191,7 @@ export const usuariosService = {
    * Modifica el porcentaje de comisión que recibe un barbero por sus servicios.
    */
   async actualizarComision(id: number, datos: ActualizarComision) {
-    const response = await api.patch(`/usuarios/${id}/comision`, datos);
+    const response = await api.patch(`/usuarios/barberos/${id}/comision`, datos);
     return response.data;
   },
 
@@ -222,6 +226,34 @@ export const usuariosService = {
    */
   async cambiarContrasena(datos: { contrasenaActual: string; nuevaContrasena: string }) {
     const response = await api.patch('/auth/cambiar-contrasena', datos);
+    return response.data;
+  },
+
+  /**
+   * Sube la foto de perfil del barbero autenticado.
+   */
+  async subirFotoBarbero(archivo: File) {
+    const formData = new FormData();
+    formData.append('foto', archivo);
+    const response = await api.post<{ mensaje: string; fotoUrl: string }>(
+      '/usuarios/barberos/foto',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    return response.data;
+  },
+
+  /**
+   * Elimina la foto de perfil del barbero autenticado.
+   */
+  async eliminarFotoBarbero() {
+    const response = await api.delete<{ mensaje: string; fotoUrl: null }>(
+      '/usuarios/barberos/foto',
+    );
     return response.data;
   },
 };

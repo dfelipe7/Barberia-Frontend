@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../auth/AuthContext';
 import { usuariosService } from '../services/usuarios.service';
@@ -7,6 +7,13 @@ const COLORES_ROL: Record<string, string> = {
     SUPERADMIN: 'danger',
     ADMINISTRADOR: 'warning',
     BARBERO: 'info',
+};
+
+const obtenerUrlFoto = (url?: string | null) => {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    return `${baseUrl}${url}`;
 };
 
 export default function MiPerfilPage() {
@@ -29,6 +36,13 @@ export default function MiPerfilPage() {
     const [guardandoClave, setGuardandoClave] = useState(false);
     const [errorClave, setErrorClave] = useState('');
     const [exitoClave, setExitoClave] = useState('');
+
+    // ── Estado de la foto de perfil (Barbero) ──────────────────────────────────
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [subiendoFoto, setSubiendoFoto] = useState(false);
+    const [eliminandoFoto, setEliminandoFoto] = useState(false);
+    const [errorFoto, setErrorFoto] = useState('');
+    const [exitoFoto, setExitoFoto] = useState('');
 
     // Recargar datos frescos al entrar a la página
     useEffect(() => {
@@ -105,6 +119,53 @@ export default function MiPerfilPage() {
             }
         } finally {
             setGuardandoClave(false);
+        }
+    };
+
+    const handleSeleccionarFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setErrorFoto('');
+        setExitoFoto('');
+
+        if (file.size > 5 * 1024 * 1024) {
+            setErrorFoto('La imagen supera el límite permitido de 5 MB.');
+            return;
+        }
+
+        if (!['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(file.type)) {
+            setErrorFoto('Formato no válido. Solo se admiten imágenes JPG, PNG o WEBP.');
+            return;
+        }
+
+        try {
+            setSubiendoFoto(true);
+            await usuariosService.subirFotoBarbero(file);
+            await refrescarPerfil();
+            setExitoFoto('¡Foto de perfil actualizada correctamente!');
+        } catch (err: any) {
+            setErrorFoto(err?.response?.data?.message || 'Error al subir la imagen.');
+        } finally {
+            setSubiendoFoto(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+    };
+
+    const handleEliminarFoto = async () => {
+        if (!window.confirm('¿Seguro que deseas eliminar tu foto de perfil del catálogo?')) return;
+
+        setErrorFoto('');
+        setExitoFoto('');
+        try {
+            setEliminandoFoto(true);
+            await usuariosService.eliminarFotoBarbero();
+            await refrescarPerfil();
+            setExitoFoto('Foto de perfil eliminada correctamente.');
+        } catch (err: any) {
+            setErrorFoto(err?.response?.data?.message || 'Error al eliminar la foto.');
+        } finally {
+            setEliminandoFoto(false);
         }
     };
 
@@ -290,8 +351,85 @@ export default function MiPerfilPage() {
                     )}
                 </div>
 
-                {/* ── Columna derecha: Seguridad ────────────────────── */}
+                {/* ── Columna derecha: Foto Profesional y Seguridad ─ */}
                 <div className="col-md-5">
+                    {/* Tarjeta: Foto de Perfil Profesional (Solo para quienes tienen rol Barbero) */}
+                    {usuarioDb.barbero && (
+                        <div className="card shadow-sm mb-4">
+                            <div className="card-header bg-white py-3">
+                                <h5 className="card-title mb-0">Foto Profesional (Catálogo)</h5>
+                            </div>
+                            <div className="card-body text-center">
+                                {errorFoto && <div className="alert alert-danger py-2 small">{errorFoto}</div>}
+                                {exitoFoto && <div className="alert alert-success py-2 small">{exitoFoto}</div>}
+
+                                <div className="d-inline-block position-relative mb-3">
+                                    {usuarioDb.barbero.fotoUrl ? (
+                                        <img
+                                            src={obtenerUrlFoto(usuarioDb.barbero.fotoUrl)!}
+                                            alt="Foto de Barbero"
+                                            className="rounded-circle shadow-sm border border-3 border-primary"
+                                            style={{ width: '130px', height: '130px', objectFit: 'cover' }}
+                                        />
+                                    ) : (
+                                        <div
+                                            className="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto shadow-sm border border-2 border-secondary border-dashed"
+                                            style={{ width: '130px', height: '130px' }}
+                                        >
+                                            <span className="text-muted fw-bold" style={{ fontSize: '2.5rem' }}>
+                                                {usuarioDb.nombre.charAt(0)}{usuarioDb.apellido.charAt(0)}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <p className="text-muted small mb-3">
+                                    Esta es la imagen visible para los clientes cuando vayan a reservar un servicio en el catálogo.
+                                </p>
+
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    accept="image/png, image/jpeg, image/webp"
+                                    onChange={handleSeleccionarFoto}
+                                    style={{ display: 'none' }}
+                                />
+
+                                <div className="d-flex justify-content-center gap-2">
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-primary btn-sm"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={subiendoFoto || eliminandoFoto}
+                                    >
+                                        {subiendoFoto ? (
+                                            <>
+                                                <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                                Subiendo...
+                                            </>
+                                        ) : (
+                                            usuarioDb.barbero.fotoUrl ? 'Cambiar Foto' : 'Subir Foto'
+                                        )}
+                                    </button>
+
+                                    {usuarioDb.barbero.fotoUrl && (
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline-danger btn-sm"
+                                            onClick={handleEliminarFoto}
+                                            disabled={subiendoFoto || eliminandoFoto}
+                                        >
+                                            {eliminandoFoto ? 'Eliminando...' : 'Eliminar'}
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="text-muted mt-2" style={{ fontSize: '0.75rem' }}>
+                                    Formatos: JPG, PNG o WEBP. Máx. 5 MB.
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="card shadow-sm mb-4">
                         <div className="card-header bg-white py-3">
                             <h5 className="card-title mb-0">Cambiar Contraseña</h5>

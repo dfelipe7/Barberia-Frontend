@@ -18,6 +18,14 @@ import {
 interface EstadoNavegacion {
     mensaje?: string;
 }
+
+const obtenerUrlFoto = (url?: string | null) => {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    return `${baseUrl}${url}`;
+};
+
 /**
  * PÁGINA DEL CATÁLOGO DE BARBEROS
  * 
@@ -124,19 +132,54 @@ export default function BarberosPage() {
                             className="col-md-6 col-xl-4"
                             key={barbero.id}
                         >
-                            <div className="card shadow-sm h-100">
-                                <div className="card-body">
-                                    <h5 className="card-title">
-                                        {barbero.nombre}{' '}
-                                        {barbero.apellido}
-                                    </h5>
+                            <div className="card shadow-sm h-100 overflow-hidden border-0">
+                                <div
+                                    className="position-relative"
+                                    style={{ height: '220px', backgroundColor: '#1e293b' }}
+                                >
+                                    {barbero.fotoUrl ? (
+                                        <img
+                                            src={obtenerUrlFoto(barbero.fotoUrl)!}
+                                            alt={`${barbero.nombre} ${barbero.apellido}`}
+                                            className="w-100 h-100"
+                                            style={{ objectFit: 'cover' }}
+                                        />
+                                    ) : (
+                                        <div className="w-100 h-100 d-flex flex-column align-items-center justify-content-center text-white bg-dark">
+                                            <span className="display-4 fw-bold text-secondary mb-1">
+                                                {barbero.nombre.charAt(0)}{barbero.apellido.charAt(0)}
+                                            </span>
+                                            <span className="badge bg-secondary">Sin foto</span>
+                                        </div>
+                                    )}
+                                    <span className="badge bg-success position-absolute top-0 end-0 m-3 px-2 py-1 shadow-sm">
+                                        Disponible
+                                    </span>
+                                </div>
 
-                                    <p className="card-text mb-0">
-                                        <strong>
-                                            Teléfono:
-                                        </strong>{' '}
-                                        {barbero.telefono}
-                                    </p>
+                                <div className="card-body d-flex flex-column justify-content-between p-4">
+                                    <div>
+                                        <h5 className="card-title fw-bold mb-1">
+                                            {barbero.nombre} {barbero.apellido}
+                                        </h5>
+                                        <p className="text-muted small mb-3">
+                                            Barbero Profesional
+                                        </p>
+                                        <div className="d-flex align-items-center text-secondary small">
+                                            <span><strong>Teléfono:</strong> {barbero.telefono}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-3 pt-3 border-top d-flex justify-content-between align-items-center">
+                                        <span className="text-muted small">Listo para agendar</span>
+                                        <button
+                                            className="btn btn-sm btn-outline-primary"
+                                            disabled
+                                            title="Próximamente disponible en el módulo de Citas"
+                                        >
+                                            Reservar Cita
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -99,69 +99,7 @@ export default function UsuariosPage() {
         setErrorComision,
     ] = useState('');
 
-    const [
-        modalConfigurarBarberoAbierto,
-        setModalConfigurarBarberoAbierto,
-    ] = useState(false);
-
-    const [
-        adminAConfigurar,
-        setAdminAConfigurar,
-    ] = useState<AdministradorGestion | null>(null);
-
-    const [telefonoBarbero, setTelefonoBarbero] = useState('');
-    const [comisionBarbero, setComisionBarbero] = useState(50);
-    const [configurandoBarbero, setConfigurandoBarbero] = useState(false);
-    const [errorConfigurarBarbero, setErrorConfigurarBarbero] = useState('');
-
     const [usuarioDetalles, setUsuarioDetalles] = useState<AdministradorGestion | BarberoGestion | null>(null);
-
-    /*
-     * ==========================================================
-     * CONFIGURAR BARBERO
-     * ==========================================================
-     */
-
-    const cerrarModalConfigurarBarbero = () => {
-        if (configurandoBarbero) return;
-        setModalConfigurarBarberoAbierto(false);
-        setAdminAConfigurar(null);
-    };
-
-    const guardarConfiguracionBarbero = async () => {
-        if (!telefonoBarbero.trim()) {
-            setErrorConfigurarBarbero('El teléfono es obligatorio');
-            return;
-        }
-
-        try {
-            setConfigurandoBarbero(true);
-            setErrorConfigurarBarbero('');
-
-            const datos = {
-                telefono: telefonoBarbero,
-                porcentajeComision: comisionBarbero
-            };
-
-            if (adminAConfigurar) {
-                await usuariosService.configurarBarbero(adminAConfigurar.id, datos);
-                window.alert('Perfil de barbero asignado correctamente.');
-            } else {
-                await usuariosService.configurarMeComoBarbero(datos);
-                window.alert('¡Te has convertido en barbero exitosamente! Por favor inicia sesión nuevamente si es necesario.');
-                window.location.reload();
-                return;
-            }
-
-            cerrarModalConfigurarBarbero();
-        } catch (error: any) {
-            setErrorConfigurarBarbero(
-                error?.response?.data?.message || 'Error al asignar el perfil de barbero'
-            );
-        } finally {
-            setConfigurandoBarbero(false);
-        }
-    };
 
     /*
      * ==========================================================
@@ -600,16 +538,7 @@ export default function UsuariosPage() {
                                 </p>
                             </div>
 
-                            <div className="d-flex gap-2">
-                                {!roles.includes('BARBERO') && (
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline-primary"
-                                        onClick={() => setModalConfigurarBarberoAbierto(true)}
-                                    >
-                                        Quiero ser barbero
-                                    </button>
-                                )}
+                            <div>
                                 <Link
                                     to="/administradores/nuevo"
                                     className="btn btn-primary"
@@ -1154,97 +1083,7 @@ export default function UsuariosPage() {
                 <div className="modal-backdrop fade show" />
             )}
 
-            {/* ================================================== */}
-            {/* MODAL PARA CONFIGURAR BARBERO */}
-            {/* ================================================== */}
 
-            {modalConfigurarBarberoAbierto && (
-                <div
-                    className="modal fade show"
-                    style={{
-                        display: 'block',
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    }}
-                    tabIndex={-1}
-                    role="dialog"
-                    aria-modal="true"
-                >
-                    <div className="modal-dialog modal-dialog-centered" role="document">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title">
-                                    {adminAConfigurar
-                                        ? `Hacer barbero a ${adminAConfigurar.nombre}`
-                                        : 'Convertirme en barbero'}
-                                </h5>
-                                <button
-                                    type="button"
-                                    className="btn-close"
-                                    onClick={cerrarModalConfigurarBarbero}
-                                    disabled={configurandoBarbero}
-                                />
-                            </div>
-                            <div className="modal-body">
-                                {errorConfigurarBarbero && (
-                                    <div className="alert alert-danger">{errorConfigurarBarbero}</div>
-                                )}
-                                <div className="mb-3">
-                                    <label className="form-label">Teléfono</label>
-                                    <input
-                                        type="tel"
-                                        className="form-control"
-                                        value={telefonoBarbero}
-                                        onChange={(e) => setTelefonoBarbero(e.target.value)}
-                                        disabled={configurandoBarbero}
-                                        placeholder="Ej. +573001234567"
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Comisión Inicial ({comisionBarbero}%)</label>
-                                    <input
-                                        type="range"
-                                        className="form-range"
-                                        min="0"
-                                        max="100"
-                                        step="1"
-                                        value={comisionBarbero}
-                                        onChange={(e) => setComisionBarbero(Number(e.target.value))}
-                                        disabled={configurandoBarbero}
-                                    />
-                                    <div className="d-flex justify-content-between text-muted small">
-                                        <span>0%</span>
-                                        <span>50%</span>
-                                        <span>100%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={cerrarModalConfigurarBarbero}
-                                    disabled={configurandoBarbero}
-                                >
-                                    Cancelar
-                                </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-primary"
-                                    onClick={guardarConfiguracionBarbero}
-                                    disabled={configurandoBarbero}
-                                >
-                                    {configurandoBarbero ? 'Guardando...' : 'Confirmar'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Fondo del modal configurar barbero */}
-            {modalConfigurarBarberoAbierto && (
-                <div className="modal-backdrop fade show" />
-            )}
 
             {/* ================================================== */}
             {/* MODAL VER DETALLES */}

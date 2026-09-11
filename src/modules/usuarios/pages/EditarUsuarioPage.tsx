@@ -335,13 +335,15 @@ function EditarUsuarioPage() {
                                                                 id="esAdministradorCheck"
                                                                 checked={esAdministrador}
                                                                 onChange={(e) => setEsAdministrador(e.target.checked)}
-                                                                disabled={guardando || (usuarioDb?.id === Number(id) && esAdministradorOriginal)}
+                                                                disabled={guardando || !esSuperadmin || (usuarioDb?.id === Number(id) && esAdministradorOriginal)}
                                                             />
                                                             <label className="form-check-label ms-2 fw-semibold" htmlFor="esAdministradorCheck">
                                                                 Administrador
                                                             </label>
                                                             <div className="small text-muted fs-6 ms-2 mt-1">
-                                                                {usuarioDb?.id === Number(id) && esAdministradorOriginal
+                                                                {!esSuperadmin
+                                                                    ? 'Solo el Superadministrador puede otorgar o revocar este rol.'
+                                                                    : usuarioDb?.id === Number(id) && esAdministradorOriginal
                                                                     ? 'No puedes remover tu propio rol de Administrador.'
                                                                     : 'Otorga acceso total al panel de control y gestión.'}
                                                             </div>

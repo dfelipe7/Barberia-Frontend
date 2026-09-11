@@ -15,9 +15,16 @@ export default function Header() {
         nombre,
         apellido,
         roles,
+        usuarioDb,
     } = useAuth();
 
     const rolesApp = roles.filter((r) => ROLES_APP.includes(r));
+
+    const fotoUrl = usuarioDb?.barbero?.fotoUrl
+        ? (usuarioDb.barbero.fotoUrl.startsWith('http')
+            ? usuarioDb.barbero.fotoUrl
+            : `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${usuarioDb.barbero.fotoUrl}`)
+        : null;
 
     const cerrarSesion = () => {
         keycloak.logout({
@@ -35,6 +42,14 @@ export default function Header() {
 
                     <div className="d-flex align-items-center gap-3">
                         <div className="d-flex align-items-center gap-2">
+                            {fotoUrl && (
+                                <img
+                                    src={fotoUrl}
+                                    alt="Foto"
+                                    className="rounded-circle border border-1 border-white me-1"
+                                    style={{ width: '32px', height: '32px', objectFit: 'cover' }}
+                                />
+                            )}
                             <span className="text-white">
                                 {nombre} {apellido}
                             </span>
