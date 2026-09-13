@@ -1,0 +1,37 @@
+import axios from 'axios';
+import keycloak from '../../../auth/keycloak';
+
+/**
+ * Instancia global de Axios configurada para comunicarse con el Backend.
+ * Se alimenta de la URL base definida en el archivo .env (VITE_API_URL).
+ *
+ * PATRÓN PROXY (Interceptor de Peticiones):
+ * Intercepta de forma transparente cada request saliente para verificar
+ * la expiración del token JWT de Keycloak, refrescarlo si restan menos de 30s,
+ * e inyectar el Bearer token en los headers sin acoplar a los consumidores.
+ */
+export const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+});
+
+apiClient.interceptors.request.use(
+  async (config) => {
+    if (keycloak.authenticated) {
+      try {
+        await keycloak.updateToken(30);
+        config.headers.Authorization = `Bearer ${keycloak.token}`;
+      } catch (error) {
+        console.error(
+          'No se pudo actualizar el token de Keycloak (la sesión probablemente expiró):',
+          error,
+        );
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
+export default apiClient;

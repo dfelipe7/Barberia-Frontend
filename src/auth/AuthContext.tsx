@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import keycloak from './keycloak';
-import { usuariosService, type Usuario } from '../modules/usuarios/services/usuarios.service';
+import { usuariosService } from '../features/usuarios/api/usuarios.service';
+import { usuariosMapper } from '../features/usuarios/api/usuarios.mapper';
+import type { Usuario } from '../features/usuarios/types/usuarios.types';
 
 /**
  * AUTH CONTEXT (El Estado Global de Autenticación)
@@ -50,8 +52,8 @@ export function AuthContextProvider({
     const refrescarPerfil = useCallback(async () => {
         if (keycloak.authenticated) {
             try {
-                const perfil = await usuariosService.obtenerMiPerfil();
-                setUsuarioDb(perfil);
+                const perfilDTO = await usuariosService.obtenerMiPerfil();
+                setUsuarioDb(usuariosMapper.toDomain(perfilDTO));
             } catch (error) {
                 console.error('Error obteniendo perfil de BD:', error);
             }
