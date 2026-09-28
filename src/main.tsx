@@ -7,6 +7,7 @@ import AuthProvider from './auth/AuthProvider';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
+import './shared/styles/theme.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

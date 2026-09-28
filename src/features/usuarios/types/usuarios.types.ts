@@ -12,6 +12,7 @@ export interface BarberoPerfil {
   telefono: string;
   porcentajeComision: number;
   estado: EstadoEntidad;
+  fotoUrl?: string | null;
 }
 
 /**

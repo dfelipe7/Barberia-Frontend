@@ -1,56 +1,11 @@
 import React from 'react';
 import CrudPage from '../../../shared/components/CrudPage';
-import Table, { type Column } from '../../../shared/ui/Table';
+import CatalogCard from '../../../shared/ui/Catalogcard';
 import { useServicios } from '../api/servicios.facade';
 import type { Servicio } from '../types/servicios.types';
 
 export const ServiciosPage: React.FC = () => {
   const { data: servicios = [], isLoading, error, refetch } = useServicios();
-
-  const columns: Column<Servicio>[] = [
-    {
-      key: 'nombre',
-      header: 'Servicio',
-      render: (s) => (
-        <div>
-          <span className="fw-semibold d-block">{s.nombre}</span>
-          <span className="text-muted small">{s.descripcion}</span>
-        </div>
-      ),
-    },
-    {
-      key: 'categoria',
-      header: 'Categoría',
-      render: (s) => (
-        <span className="badge bg-light text-dark border">
-          {s.categoria || 'General'}
-        </span>
-      ),
-    },
-    {
-      key: 'duracion',
-      header: 'Duración',
-      render: (s) => <span>{s.duracionMinutos} min</span>,
-    },
-    {
-      key: 'precio',
-      header: 'Precio',
-      render: (s) => (
-        <span className="fw-bold text-success">
-          ${s.precio.toLocaleString()}
-        </span>
-      ),
-    },
-    {
-      key: 'activo',
-      header: 'Estado',
-      render: (s) => (
-        <span className={`badge ${s.activo ? 'bg-success' : 'bg-secondary'}`}>
-          {s.activo ? 'Activo' : 'Inactivo'}
-        </span>
-      ),
-    },
-  ];
 
   return (
     <CrudPage<Servicio>
@@ -62,6 +17,7 @@ export const ServiciosPage: React.FC = () => {
       error={error?.message}
       onRetry={refetch}
       modalTitle="Registrar Nuevo Servicio"
+      editModalTitle="Editar Servicio"
       renderModalForm={({ onClose }) => (
         <div className="text-center py-4">
           <p className="text-muted">
@@ -73,12 +29,40 @@ export const ServiciosPage: React.FC = () => {
         </div>
       )}
     >
-      <Table
-        columns={columns}
-        data={servicios}
-        keyExtractor={(s) => s.id}
-        emptyMessage="No hay servicios registrados."
-      />
+      {({ onEdit }) => (
+        <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+          {servicios.length === 0 && (
+            <p className="text-muted">No hay servicios registrados.</p>
+          )}
+          {servicios.map((s) => (
+            <div className="col" key={s.id}>
+              <CatalogCard
+                imageUrl={s.imagenUrl}
+                title={s.nombre}
+                subtitle={`${s.duracionMinutos} min · ${s.categoria || 'General'}`}
+                isActive={s.activo}
+                badges={[
+                  { label: s.activo ? 'Activo' : 'Inactivo', tone: 'dark' },
+                  { label: s.categoria || 'General' },
+                ]}
+                priceLabel={`$${s.precio.toLocaleString()}`}
+                actions={
+                  <button
+                    className="btn btn-sm btn-light w-100"
+                    style={{ borderRadius: '2px' }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(s);
+                    }}
+                  >
+                    Editar
+                  </button>
+                }
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </CrudPage>
   );
 };

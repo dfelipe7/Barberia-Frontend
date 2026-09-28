@@ -29,8 +29,7 @@ export default function Sidebar() {
 
                 <nav className="nav flex-column gap-1">
                     <NavLink
-                        to="/"
-                        end
+                        to="/dashboard"
                         className={enlaceClase}
                     >
                         Dashboard

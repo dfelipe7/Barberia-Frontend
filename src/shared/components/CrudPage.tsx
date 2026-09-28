@@ -18,7 +18,7 @@ export interface CrudPageProps<T> {
   // T se usa aquí: el form recibe el registro cuando se está editando (undefined = modo creación)
   renderModalForm?: (props: { onClose: () => void; record?: T }) => React.ReactNode;
   // Contenido de la vista
-  children: React.ReactNode;
+  children: React.ReactNode | ((ctx: { onEdit: (record: T) => void }) => React.ReactNode);
   actions?: React.ReactNode;
   filters?: React.ReactNode;
 }
@@ -52,12 +52,10 @@ export function CrudPage<T>({
     setIsModalOpen(true);
   };
 
-  // Exponla vía render prop de `children` o pásala como parte de `actions`/columnas de la tabla
-  // (ver ejemplo de uso más abajo con la columna "Acciones").
-  /*const handleOpenEditModal = (record: T) => {
+  const handleOpenEditModal = (record: T) => {
     setEditingRecord(record);
     setIsModalOpen(true);
-  };*/
+  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -93,10 +91,11 @@ export function CrudPage<T>({
       {isLoading ? (
         <Spinner mensaje="Cargando información..." />
       ) : (
-        /* Contenido renderizado (Tablas, tarjetas o grid).
-           Si children necesita disparar edición, pásale handleOpenEditModal vía
-           render-prop function-as-children (ver nota de uso abajo). */
-        <div className="crud-content">{children}</div>
+        <div className="crud-content">
+          {typeof children === 'function'
+            ? children({ onEdit: handleOpenEditModal })
+            : children}
+        </div>
       )}
 
       {/* Modal de formulario CRUD (creación o edición según editingRecord) */}

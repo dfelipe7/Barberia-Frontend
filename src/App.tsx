@@ -1,26 +1,31 @@
 import { Route, Routes } from 'react-router-dom';
 
-import MainLayout from './components/layout/MainLayout';
-import ProtectedRoute from './components/common/ProtectedRoute';
+import MainLayout from './shared/layout/MainLayout';
+import ProtectedRoute from './shared/components/ProtectedRoute';
 
 import Dashboard from './pages/Dashboard/Dashboard';
 import NotFound from './pages/NotFound/NotFound';
 import SinAcceso from './pages/SinAcceso/SinAcceso';
 import HomePage from './pages/Home/HomePage';
 
-import UsuariosPage from './modules/usuarios/pages/UsuariosPage';
-import BarberosPage from './modules/usuarios/pages/BarberosPage';
-import CrearBarberoPage from './modules/usuarios/pages/CrearBarberoPage';
-import CrearAdministradorPage from './modules/usuarios/pages/CrearAdministradorPage';
-import EditarUsuarioPage from './modules/usuarios/pages/EditarUsuarioPage';
-import MiPerfilPage from './modules/usuarios/pages/MiPerfilPage';
+import UsuariosPage from './features/usuarios/pages/UsuariosPage';
+import CrearAdministradorPage from './features/usuarios/pages/CrearAdministradorPage';
+import EditarUsuarioPage from './features/usuarios/pages/EditarUsuarioPage';
+import MiPerfilPage from './features/usuarios/pages/MiPerfilPage';
+
+import BarberosPage from './features/barberos/pages/BarberosPage';
+import CrearBarberoPage from './features/barberos/pages/CrearBarberoPage';
+
+import ServiciosPage from './features/servicios/pages/ServiciosPage';
+import { ErrorBoundary } from './shared/components/ErrorBoundary';
 
 function App() {
   return (
+    <ErrorBoundary>
     <Routes>
       <Route element={<MainLayout />}>
-
-        {/* Dashboard */}
+        
+        {/* Dashboard y perfil */}
         <Route
           element={
             <ProtectedRoute
@@ -115,6 +120,23 @@ function App() {
           />
         </Route>
 
+        {/* Servicios */}
+        <Route
+          element={
+            <ProtectedRoute
+              rolesPermitidos={[
+                'SUPERADMIN',
+                'ADMINISTRADOR',
+              ]}
+            />
+          }
+        >
+          <Route
+            path="/servicios"
+            element={<ServiciosPage />}
+          />
+        </Route>
+
         {/* Página no encontrada */}
         <Route
           path="*"
@@ -129,6 +151,7 @@ function App() {
       {/* Sin acceso - fuera del layout para usuarios sin roles */}
       <Route path="/sin-acceso" element={<SinAcceso />} />
     </Routes>
+    </ErrorBoundary>
   );
 }
 
