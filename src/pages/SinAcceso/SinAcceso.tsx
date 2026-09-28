@@ -1,6 +1,5 @@
 import { useAuth } from '../../auth/AuthContext';
-
-const ROLES_APP = ['SUPERADMIN', 'ADMINISTRADOR', 'BARBERO'];
+import { esRolApp } from '../../shared/lib/autorizacion/roles';
 
 export default function SinAcceso() {
     const { keycloak, email, roles } = useAuth();
@@ -12,7 +11,7 @@ export default function SinAcceso() {
     };
 
     // ¿El usuario está autenticado pero sin ningún rol reconocido del sistema?
-    const sinRolesAsignados = roles.every((r) => !ROLES_APP.includes(r));
+    const sinRolesAsignados = roles.every((r) => !esRolApp(r));
 
     return (
         <div

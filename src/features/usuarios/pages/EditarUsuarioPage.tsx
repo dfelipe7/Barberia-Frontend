@@ -7,6 +7,8 @@ import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useAuth } from '../../../auth/AuthContext';
 import { useUsuario, useActualizarUsuario } from '../api/usuarios.facade';
+import { puedeGestionarEstado } from '../../../shared/lib/autorizacion/jerarquiaRoles';
+import type { Rol } from '../../../shared/lib/autorizacion/roles';
 import {
   editarUsuarioSchema,
   type EditarUsuarioFormValues,
@@ -17,7 +19,12 @@ export const EditarUsuarioPage: React.FC = () => {
   const usuarioId = Number(id);
   const navigate = useNavigate();
   const { roles, usuarioDb } = useAuth();
-  const esSuperadmin = roles.includes('SUPERADMIN');
+  const rolActorPrincipal = (roles.includes('SUPERADMIN')
+    ? 'SUPERADMIN'
+    : roles.includes('ADMINISTRADOR')
+    ? 'ADMINISTRADOR'
+    : 'BARBERO') as Rol;
+  const esSuperadmin = rolActorPrincipal === 'SUPERADMIN';
 
   const {
     data: usuario,
@@ -71,11 +78,13 @@ export const EditarUsuarioPage: React.FC = () => {
     }
   }, [usuario, setValue]);
 
-  // Protección si un administrador intenta editar a otro administrador sin ser superadmin
-  const esAdminObjetivo = Boolean(
+  // Protección si un usuario intenta editar a otro de jerarquía igual o superior sin ser superadmin
+  
+  const rolObjetivo: Rol =
     usuario?.administrador?.estado === 'ACTIVO' || usuario?.rol === 'ADMINISTRADOR'
-  );
-  if (!esSuperadmin && esAdminObjetivo && usuarioDb?.id !== usuarioId) {
+      ? 'ADMINISTRADOR'
+      : 'BARBERO';
+  if (!puedeGestionarEstado(rolActorPrincipal, rolObjetivo) && usuarioDb?.id !== usuarioId) {
     return (
       <div className="container py-4">
         <div className="alert alert-warning">

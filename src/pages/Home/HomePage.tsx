@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
-
-const ROLES_APP = ['SUPERADMIN', 'ADMINISTRADOR', 'BARBERO'];
+import { esRolApp } from '../../shared/lib/autorizacion/roles';
 
 const SERVICIOS = [
     {
@@ -59,7 +58,7 @@ export default function HomePage() {
     const { keycloak, isAuthenticated, nombre, roles } = useAuth();
     const navigate = useNavigate();
 
-    const tienePermiso = roles.some((rol) => ROLES_APP.includes(rol));
+    const tienePermiso = roles.some((r) => esRolApp(r));
 
     useEffect(() => {
         // Si inicia sesión pero no tiene ningún rol en la app, lo mandamos a la vista de "Sin Acceso"
