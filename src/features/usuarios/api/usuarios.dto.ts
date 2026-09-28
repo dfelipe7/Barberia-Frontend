@@ -56,8 +56,3 @@ export interface ConfigurarBarberoDTO {
   telefono: string;
   porcentajeComision: number;
 }
-
-export interface CambiarContrasenaDTO {
-  contrasenaActual: string;
-  nuevaContrasena: string;
-}

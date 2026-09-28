@@ -7,7 +7,6 @@ import type {
   ActualizarUsuarioDTO,
   CambiarEstadoDTO,
   ConfigurarBarberoDTO,
-  CambiarContrasenaDTO,
 } from './usuarios.dto';
 import type { AdministradorGestion, Usuario } from '../types/usuarios.types';
 
@@ -110,12 +109,5 @@ export function useConfigurarMeComoBarbero() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: usuariosKeys.perfil() });
     },
-  });
-}
-
-export function useCambiarContrasena() {
-  return useMutation({
-    mutationFn: (datos: CambiarContrasenaDTO) =>
-      usuariosService.cambiarContrasena(datos),
   });
 }

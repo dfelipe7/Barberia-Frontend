@@ -4,13 +4,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../../auth/AuthContext';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
-import { useActualizarUsuario, useCambiarContrasena } from '../api/usuarios.facade';
+import { useActualizarUsuario } from '../../usuarios/api/usuarios.facade';
+import { useCambiarContrasena } from '../api/perfil.facade';
 import {
   miPerfilSchema,
   type MiPerfilFormValues,
   cambiarContrasenaSchema,
   type CambiarContrasenaFormValues,
-} from '../schemas/usuario.schema';
+} from '../schemas/perfil.schema';
 
 const COLORES_ROL: Record<string, string> = {
   SUPERADMIN: 'danger',

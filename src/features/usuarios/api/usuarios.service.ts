@@ -6,7 +6,6 @@ import type {
   ActualizarUsuarioDTO,
   CambiarEstadoDTO,
   ConfigurarBarberoDTO,
-  CambiarContrasenaDTO,
 } from './usuarios.dto';
 
 /**
@@ -59,11 +58,6 @@ export const usuariosService = {
 
   async configurarMeComoBarbero(datos: ConfigurarBarberoDTO): Promise<void> {
     const response = await apiClient.post('/usuarios/me/barbero', datos);
-    return response.data;
-  },
-
-  async cambiarContrasena(datos: CambiarContrasenaDTO): Promise<{ mensaje: string }> {
-    const response = await apiClient.patch('/auth/cambiar-contrasena', datos);
     return response.data;
   },
 };

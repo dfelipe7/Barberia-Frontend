@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { ROLES_APP } from '../lib/autorizacion/roles';
 import Dashboard from '../../pages/Dashboard/Dashboard';
-import MiPerfilPage from '../../features/usuarios/pages/MiPerfilPage';
+import MiPerfilPage from '../../features/perfil/pages/MiPerfilPage';
 import UsuariosPage from '../../features/usuarios/pages/UsuariosPage';
 import CrearAdministradorPage from '../../features/usuarios/pages/CrearAdministradorPage';
 import EditarUsuarioPage from '../../features/usuarios/pages/EditarUsuarioPage';
