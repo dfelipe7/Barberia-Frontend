@@ -15,15 +15,20 @@ export const crearAdministradorSchema = z.object({
 
 export type CrearAdministradorFormValues = z.infer<typeof crearAdministradorSchema>;
 
-export const editarUsuarioSchema = z.object({
-  nombre: z.string().trim().min(2, 'El nombre es obligatorio.'),
-  apellido: z.string().trim().min(2, 'El apellido es obligatorio.'),
-  email: emailSchema,
-  telefono: z.string(),
-  porcentajeComision: porcentajeComisionSchema,
-  esAdministrador: z.boolean(),
-  esBarbero: z.boolean(),
-});
+export const editarUsuarioSchema = z
+  .object({
+    nombre: z.string().trim().min(2, 'El nombre es obligatorio.'),
+    apellido: z.string().trim().min(2, 'El apellido es obligatorio.'),
+    email: emailSchema,
+    telefono: z.string(),
+    porcentajeComision: porcentajeComisionSchema,
+    esAdministrador: z.boolean(),
+    esBarbero: z.boolean(),
+  })
+  .refine((data) => data.esAdministrador || data.esBarbero, {
+    message: 'Debes asignar al menos un rol: Administrador o Barbero.',
+    path: ['esBarbero'],
+  });
 
 export type EditarUsuarioFormValues = z.infer<typeof editarUsuarioSchema>;
 

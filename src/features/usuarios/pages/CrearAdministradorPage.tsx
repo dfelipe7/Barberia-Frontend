@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useCrearAdministrador } from '../api/usuarios.facade';
+import { mapApiError } from '../../../shared/lib/mapApiError';
 import {
   crearAdministradorSchema,
   type CrearAdministradorFormValues,
@@ -45,10 +46,7 @@ export const CrearAdministradorPage: React.FC = () => {
     }
   };
 
-  const errorMessage =
-    crearAdminMutation.error instanceof Error
-      ? crearAdminMutation.error.message
-      : null;
+  const errorMessage = crearAdminMutation.error ? mapApiError(crearAdminMutation.error) : null;
 
   return (
     <div className="container py-4" style={{ maxWidth: '640px' }}>

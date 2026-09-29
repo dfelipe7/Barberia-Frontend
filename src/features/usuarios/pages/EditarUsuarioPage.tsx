@@ -13,6 +13,7 @@ import {
   editarUsuarioSchema,
   type EditarUsuarioFormValues,
 } from '../schemas/usuario.schema';
+import { mapApiError } from '../../../shared/lib/mapApiError';
 
 export const EditarUsuarioPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -105,7 +106,7 @@ export const EditarUsuarioPage: React.FC = () => {
     return (
       <div className="container py-4">
         <ErrorMessage
-          message={errorUsuario?.message || 'No fue posible encontrar el usuario solicitado.'}
+          message={errorUsuario ? mapApiError(errorUsuario) : 'No fue posible encontrar el usuario solicitado.'}
         />
         <Link to="/usuarios" className="btn btn-outline-secondary">
           &larr; Volver
@@ -139,10 +140,9 @@ export const EditarUsuarioPage: React.FC = () => {
     }
   };
 
-  const errorMessage =
-    actualizarUsuarioMutation.error instanceof Error
-      ? actualizarUsuarioMutation.error.message
-      : null;
+  const errorMessage = actualizarUsuarioMutation.error
+    ? mapApiError(actualizarUsuarioMutation.error)
+    : null;
 
   return (
     <div className="container py-4" style={{ maxWidth: '680px' }}>
@@ -237,6 +237,10 @@ export const EditarUsuarioPage: React.FC = () => {
                     Perfil Barbero (Habilitado para atender citas y catálogo)
                   </label>
                 </div>
+
+                {errors.esBarbero && (
+                  <div className="text-danger small mt-1">{errors.esBarbero.message}</div>
+                )}
               </div>
             </div>
 

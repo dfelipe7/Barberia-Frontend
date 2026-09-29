@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../auth/AuthContext';
 import Spinner from '../../../shared/ui/Spinner';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
+import { mapApiError } from '../../../shared/lib/mapApiError';
 
 // Facades
 import {
@@ -68,6 +69,7 @@ export const UsuariosPage: React.FC = () => {
   const [adminAConfigurar, setAdminAConfigurar] = useState<AdministradorGestion | null>(null);
   const [barberoAEditarComision, setBarberoAEditarComision] = useState<BarberoGestion | null>(null);
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
+  const [mensajeExito, setMensajeExito] = useState<string | null>(null);
 
   // Handlers
   const handleVerDetalles = (entity: AdministradorGestion | BarberoGestion) => {
@@ -76,21 +78,23 @@ export const UsuariosPage: React.FC = () => {
 
   const handleCambiarEstadoAdmin = async (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => {
     try {
+      setMensajeExito(null);
       setErrorAccion(null);
       await cambiarEstadoAdminMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
+      setMensajeExito('El estado del usuario se actualizó correctamente.');
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Error al cambiar el estado del administrador.';
-      setErrorAccion(errorMsg);
+      setErrorAccion(mapApiError(err));
     }
   };
 
   const handleCambiarEstadoBarbero = async (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => {
     try {
+      setMensajeExito(null);
       setErrorAccion(null);
       await cambiarEstadoBarberoMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
+      setMensajeExito('El estado del usuario se actualizó correctamente.');
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Error al cambiar el estado del barbero.';
-      setErrorAccion(errorMsg);
+      setErrorAccion(mapApiError(err));
     }
   };
 
@@ -103,8 +107,7 @@ export const UsuariosPage: React.FC = () => {
       });
       setBarberoAEditarComision(null);
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Error al actualizar la comisión.';
-      setErrorAccion(errorMsg);
+      setErrorAccion(mapApiError(err));
     }
   };
 
@@ -122,8 +125,7 @@ export const UsuariosPage: React.FC = () => {
         window.location.reload();
       }
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Error al asignar el perfil de barbero.';
-      setErrorAccion(errorMsg);
+      setErrorAccion(mapApiError(err));
     }
   };
 
@@ -158,6 +160,12 @@ export const UsuariosPage: React.FC = () => {
       {mensajeNavegacion && (
         <div className="alert alert-success alert-dismissible fade show" role="alert">
           {mensajeNavegacion}
+        </div>
+      )}
+
+      {mensajeExito && (
+        <div className="alert alert-success alert-dismissible fade show" role="alert">
+          {mensajeExito}
         </div>
       )}
 
