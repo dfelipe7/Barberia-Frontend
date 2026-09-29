@@ -17,6 +17,7 @@ export interface UsuarioDTO {
     telefono: string;
     porcentajeComision: number;
     estado: 'ACTIVO' | 'INACTIVO';
+    fotoUrl?: string | null;
   } | null;
 }
 

@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Modal from '../../../shared/ui/Modal';
 import Button from '../../../shared/ui/Button';
+import ComisionSlider from '../../../shared/ui/molecules/ComisionSlider';
 import {
   actualizarComisionSchema,
   type ActualizarComisionFormValues,
@@ -28,6 +29,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
 }) => {
   const {
     register,
+    watch,
     handleSubmit,
     setValue,
     reset,
@@ -38,6 +40,8 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
       porcentajeComision: 50,
     },
   });
+
+  const valorComision = watch('porcentajeComision');
 
   useEffect(() => {
     if (barbero) {
@@ -94,27 +98,13 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
         </p>
 
         <div className="mb-3">
-          <label htmlFor="comisionInput" className="form-label fw-semibold">
-            Porcentaje de Comisión (%)
-          </label>
-          <div className="input-group">
-            <input
-              id="comisionInput"
-              type="number"
-              min="0"
-              max="100"
-              className={`form-control ${
-                errors.porcentajeComision ? 'is-invalid' : ''
-              }`}
-              {...register('porcentajeComision', { valueAsNumber: true })}
-            />
-            <span className="input-group-text">%</span>
-          </div>
-          {errors.porcentajeComision && (
-            <div className="invalid-feedback d-block">
-              {errors.porcentajeComision.message}
-            </div>
-          )}
+          <ComisionSlider
+            id="comisionInput"
+            valorActual={valorComision}
+            registerProps={register('porcentajeComision', { valueAsNumber: true })}
+            error={errors.porcentajeComision?.message}
+            disabled={isLoading}
+          />
         </div>
       </form>
     </Modal>

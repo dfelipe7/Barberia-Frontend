@@ -3,6 +3,7 @@ export interface BarberoCatalogoDTO {
   nombre: string;
   apellido: string;
   telefono: string;
+  fotoUrl?: string | null;
 }
 
 export interface BarberoGestionDTO {

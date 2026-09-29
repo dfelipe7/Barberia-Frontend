@@ -40,6 +40,7 @@ export const usuariosMapper = {
             telefono: dto.barbero.telefono,
             porcentajeComision: Number(dto.barbero.porcentajeComision) || 0,
             estado: dto.barbero.estado,
+            fotoUrl: dto.barbero.fotoUrl ?? null,
           }
         : null,
     };

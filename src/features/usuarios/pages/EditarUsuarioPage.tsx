@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Spinner from '../../../shared/ui/Spinner';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
+import ComisionSlider from '../../../shared/ui/molecules/ComisionSlider';
 import { useAuth } from '../../../auth/AuthContext';
 import { useUsuario, useActualizarUsuario } from '../api/usuarios.facade';
 import { puedeGestionarEstado } from '../../../shared/lib/autorizacion/jerarquiaRoles';
@@ -55,6 +56,7 @@ export const EditarUsuarioPage: React.FC = () => {
   });
 
   const esBarberoWatch = watch('esBarbero');
+  const valorComision = watch('porcentajeComision');
 
   useEffect(() => {
     if (usuario) {
@@ -266,27 +268,13 @@ export const EditarUsuarioPage: React.FC = () => {
                   </div>
 
                   <div className="col-12 col-sm-6">
-                    <label htmlFor="porcentajeComision" className="form-label fw-semibold">
-                      Comisión (%)
-                    </label>
-                    <div className="input-group">
-                      <input
-                        id="porcentajeComision"
-                        type="number"
-                        min="0"
-                        max="100"
-                        className={`form-control ${
-                          errors.porcentajeComision ? 'is-invalid' : ''
-                        }`}
-                        {...register('porcentajeComision', { valueAsNumber: true })}
-                      />
-                      <span className="input-group-text">%</span>
-                    </div>
-                    {errors.porcentajeComision && (
-                      <div className="invalid-feedback d-block">
-                        {errors.porcentajeComision.message}
-                      </div>
-                    )}
+                    <ComisionSlider
+                      id="porcentajeComision"
+                      valorActual={valorComision}
+                      registerProps={register('porcentajeComision', { valueAsNumber: true })}
+                      error={errors.porcentajeComision?.message}
+                      disabled={actualizarUsuarioMutation.isPending}
+                    />
                   </div>
                 </div>
               </div>

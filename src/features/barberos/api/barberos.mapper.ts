@@ -15,6 +15,7 @@ export const barberosMapper = {
       nombre: dto.nombre,
       apellido: dto.apellido,
       telefono: dto.telefono,
+      fotoUrl: dto.fotoUrl ?? null,
     };
   },
 

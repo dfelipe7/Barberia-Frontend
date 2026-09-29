@@ -1,5 +1,6 @@
 import React from 'react';
 import type { BarberoCatalogo } from '../types/barberos.types';
+import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 
 interface BarberoCardProps {
   barbero: BarberoCatalogo;
@@ -15,12 +16,21 @@ export const BarberoCard: React.FC<BarberoCardProps> = ({ barbero }) => {
         onMouseOut={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
       >
         <div className="card-body p-4 text-center d-flex flex-column align-items-center">
-          <div
-            className="rounded-circle bg-dark text-white d-inline-flex justify-content-center align-items-center mb-3 shadow-sm"
-            style={{ width: '64px', height: '64px', fontSize: '1.5rem' }}
-          >
-            💈
-          </div>
+          {obtenerUrlFoto(barbero.fotoUrl) ? (
+            <img
+              src={obtenerUrlFoto(barbero.fotoUrl)!}
+              alt={`${barbero.nombre} ${barbero.apellido}`}
+              className="rounded-circle shadow-sm mb-3"
+              style={{ width: '64px', height: '64px', objectFit: 'cover' }}
+            />
+          ) : (
+            <div
+              className="rounded-circle bg-dark text-white d-inline-flex justify-content-center align-items-center mb-3 shadow-sm"
+              style={{ width: '64px', height: '64px', fontSize: '1.5rem' }}
+            >
+              {barbero.nombre.charAt(0)}{barbero.apellido.charAt(0)}
+            </div>
+          )}
           <h5 className="card-title fw-bold mb-1">
             {barbero.nombre} {barbero.apellido}
           </h5>

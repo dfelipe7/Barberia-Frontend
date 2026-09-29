@@ -35,7 +35,21 @@ export const barberosService = {
     id: number,
     datos: ActualizarComisionDTO
   ): Promise<{ mensaje: string }> {
-    const response = await apiClient.patch(`/usuarios/${id}/comision`, datos);
+    const response = await apiClient.patch(`/usuarios/barberos/${id}/comision`, datos);
+    return response.data;
+  },
+
+  async subirFotoPropia(file: File): Promise<{ fotoUrl: string; mensaje: string }> {
+    const formData = new FormData();
+    formData.append('foto', file);
+    const response = await apiClient.post('/usuarios/barberos/foto', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  async eliminarFotoPropia(): Promise<{ mensaje: string }> {
+    const response = await apiClient.delete('/usuarios/barberos/foto');
     return response.data;
   },
 };

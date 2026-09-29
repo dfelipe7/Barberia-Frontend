@@ -5,6 +5,7 @@ export interface BarberoCatalogo {
   nombre: string;
   apellido: string;
   telefono: string;
+  fotoUrl?: string | null;
 }
 
 export interface BarberoGestion {

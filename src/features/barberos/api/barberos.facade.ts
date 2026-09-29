@@ -67,3 +67,25 @@ export function useActualizarComision() {
     },
   });
 }
+
+export function useSubirFotoPropia() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (file: File) => barberosService.subirFotoPropia(file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
+      queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
+    },
+  });
+}
+
+export function useEliminarFotoPropia() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => barberosService.eliminarFotoPropia(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
+      queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
+    },
+  });
+}
