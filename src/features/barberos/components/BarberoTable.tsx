@@ -3,13 +3,16 @@ import { Link } from 'react-router-dom';
 import Table, { type Column } from '../../../shared/ui/Table';
 import Button from '../../../shared/ui/Button';
 import type { BarberoGestion } from '../types/barberos.types';
+import { puedeGestionarEstado } from '../../../shared/lib/autorizacion/jerarquiaRoles';
+import type { Rol } from '../../../shared/lib/autorizacion/roles';
 
 interface BarberoTableProps {
   barberos: BarberoGestion[];
   onSelectBarbero: (barbero: BarberoGestion) => void;
   onEditarComision: (barbero: BarberoGestion) => void;
+  onEditarFoto: (barbero: BarberoGestion) => void; 
   onCambiarEstado: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
-  esSuperAdmin: boolean;
+  rolActorPrincipal: Rol; 
   isUpdatingId?: number | null;
 }
 
@@ -17,8 +20,9 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
   barberos,
   onSelectBarbero,
   onEditarComision,
+  onEditarFoto,
   onCambiarEstado,
-  esSuperAdmin,
+  rolActorPrincipal,
   isUpdatingId,
 }) => {
   const columns: Column<BarberoGestion>[] = [
@@ -90,7 +94,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
       className: 'text-end',
       render: (barbero) => {
         const isCurrentUpdating = isUpdatingId === barbero.id;
-
+        const puedeEditar = puedeGestionarEstado(rolActorPrincipal, 'BARBERO');
         return (
           <div className="d-inline-flex align-items-center justify-content-end gap-1">
             <Button
@@ -110,7 +114,16 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
             >
               % Comisión
             </Button>
-
+            {puedeEditar && (
+              <Button
+                variant="outline-info"
+                size="sm"
+                onClick={() => onEditarFoto(barbero)}
+                title="Cambiar foto"
+              >
+                Foto
+              </Button>
+            )}
             <Button
               variant={barbero.estado === 'ACTIVO' ? 'outline-danger' : 'outline-success'}
               size="sm"
@@ -125,7 +138,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
               {barbero.estado === 'ACTIVO' ? 'Inactivar' : 'Activar'}
             </Button>
 
-            {esSuperAdmin && (
+            {puedeEditar && (
               <Link
                 to={`/usuarios/${barbero.id}/editar`}
                 className="btn btn-outline-primary btn-sm"

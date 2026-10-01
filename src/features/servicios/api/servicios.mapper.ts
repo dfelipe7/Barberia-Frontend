@@ -11,7 +11,7 @@ export const serviciosMapper = {
       duracionMinutos: Number(dto.duracionMinutos),
       activo: Boolean(dto.activo),
       categoria: dto.categoria,
-      imagenUrl: dto.imagenUrl ?? undefined,
+      fotoUrl: dto.fotoUrl ?? undefined,
     };
   },
 
@@ -22,7 +22,7 @@ export const serviciosMapper = {
       precio: domain.precio,
       duracionMinutos: domain.duracionMinutos,
       categoria: domain.categoria?.trim(),
-      imagenUrl: domain.imagenUrl ?? undefined,
+      fotoUrl: domain.fotoUrl ?? undefined,
     };
   },
 };

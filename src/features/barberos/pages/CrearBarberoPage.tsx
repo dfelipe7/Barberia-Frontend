@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useCrearBarbero } from '../api/barberos.facade';
+import { mapApiError } from '../../../shared/lib/mapApiError';
 import {
   crearBarberoSchema,
   type CrearBarberoFormValues,
@@ -49,10 +50,9 @@ export const CrearBarberoPage: React.FC = () => {
     }
   };
 
-  const errorMessage =
-    crearBarberoMutation.error instanceof Error
-      ? crearBarberoMutation.error.message
-      : null;
+  const errorMessage = crearBarberoMutation.error
+  ? mapApiError(crearBarberoMutation.error)
+  : null;
 
   return (
     <div className="container py-4" style={{ maxWidth: '680px' }}>

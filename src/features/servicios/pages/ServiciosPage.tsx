@@ -1,6 +1,7 @@
 import React from 'react';
 import CrudPage from '../../../shared/components/CrudPage';
 import CatalogCard from '../../../shared/ui/Catalogcard';
+import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { useServicios } from '../api/servicios.facade';
 import type { Servicio } from '../types/servicios.types';
 
@@ -37,7 +38,7 @@ export const ServiciosPage: React.FC = () => {
           {servicios.map((s) => (
             <div className="col" key={s.id}>
               <CatalogCard
-                imageUrl={s.imagenUrl}
+                imageUrl={obtenerUrlFoto(s.fotoUrl) || undefined}
                 title={s.nombre}
                 subtitle={`${s.duracionMinutos} min · ${s.categoria || 'General'}`}
                 isActive={s.activo}

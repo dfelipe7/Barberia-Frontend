@@ -1,5 +1,6 @@
 import { useAuth } from '../../auth/AuthContext';
 import { esRolApp } from '../../shared/lib/autorizacion/roles';
+import BrandLogo from '../../shared/ui/BrandLogo';
 
 export default function SinAcceso() {
     const { keycloak, email, roles } = useAuth();
@@ -15,11 +16,15 @@ export default function SinAcceso() {
 
     return (
         <div
-            className="d-flex flex-column align-items-center justify-content-center text-center"
+            className="d-flex flex-column align-items-center justify-content-center text-center p-3"
             style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}
         >
-            <div className="card shadow p-5" style={{ maxWidth: 500 }}>
-                <div className="mb-3" style={{ fontSize: '3rem' }}>
+            <div className="card shadow p-4 p-md-5" style={{ maxWidth: 500, width: '100%' }}>
+                <div className="mb-4">
+                    <BrandLogo variant="black" height={36} />
+                </div>
+
+                <div className="mb-3" style={{ fontSize: '2.5rem' }}>
                     {sinRolesAsignados ? '⚠️' : '🚫'}
                 </div>
 

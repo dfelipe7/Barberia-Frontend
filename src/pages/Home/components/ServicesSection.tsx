@@ -1,0 +1,113 @@
+import React from 'react';
+import { useServicios } from '../../../features/servicios/api/servicios.facade';
+import type { Servicio } from '../../../features/servicios/types/servicios.types';
+import ServiceCard from './ServiceCard';
+
+interface ServicesSectionProps {
+  onReservarServicio: (servicio: Servicio) => void;
+}
+
+export const ServicesSection: React.FC<ServicesSectionProps> = ({
+  onReservarServicio,
+}) => {
+  const { data: servicios = [], isLoading, error, refetch } = useServicios();
+
+  // Filtrar exclusivamente los servicios activos para el público
+  const serviciosActivos = servicios.filter((s) => s.activo);
+
+  return (
+    <section id="servicios" className="kyrios-section" aria-labelledby="servicios-heading">
+      <div className="container">
+        {/* Cabecera de la sección */}
+        <div className="kyrios-section-header text-center mx-auto" style={{ maxWidth: '680px' }}>
+          <span className="kyrios-eyebrow justify-content-center mb-2">
+            Catálogo Profesional
+          </span>
+          <h2 id="servicios-heading" className="kyrios-section-title kyrios-title-display">
+            Nuestros Servicios
+          </h2>
+          <p className="kyrios-section-desc mx-auto">
+            Técnicas de barbería clásica y contemporánea ejecutadas con precisión milimétrica 
+            y los mejores productos del mercado.
+          </p>
+        </div>
+
+        {/* Estado: Cargando */}
+        {isLoading && (
+          <div className="row g-4" aria-busy="true" aria-label="Cargando catálogo de servicios">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="col-12 col-md-6 col-lg-4">
+                <div
+                  className="kyrios-service-card"
+                  style={{ minHeight: '380px', opacity: 0.6 }}
+                >
+                  <div
+                    className="kyrios-service-img-wrap d-flex align-items-center justify-content-center"
+                    style={{ background: '#f5f5f5' }}
+                  >
+                    <div className="spinner-border spinner-border-sm text-secondary" role="status" />
+                  </div>
+                  <div className="p-4">
+                    <div
+                      className="placeholder-glow mb-2"
+                      style={{ height: '22px', width: '60%', background: '#eaeaea' }}
+                    />
+                    <div
+                      className="placeholder-glow mb-1"
+                      style={{ height: '14px', width: '90%', background: '#f0f0f0' }}
+                    />
+                    <div
+                      className="placeholder-glow"
+                      style={{ height: '14px', width: '75%', background: '#f0f0f0' }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Estado: Error */}
+        {!isLoading && error && (
+          <div className="text-center py-5">
+            <p className="text-muted mb-3">
+              No se pudo sincronizar el catálogo de servicios en este momento.
+            </p>
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-dark px-3"
+              onClick={() => refetch()}
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
+
+        {/* Estado: Vacío */}
+        {!isLoading && !error && serviciosActivos.length === 0 && (
+          <div className="text-center py-5 border border-dashed rounded p-4" style={{ borderColor: '#e2dfd8' }}>
+            <p className="text-muted mb-0">
+              Pronto publicaremos nuestros nuevos servicios y tarifas actualizadas.
+            </p>
+          </div>
+        )}
+
+        {/* Estado: Lista de Servicios Activos */}
+        {!isLoading && !error && serviciosActivos.length > 0 && (
+          <div className="row g-4">
+            {serviciosActivos.map((servicio) => (
+              <div key={servicio.id} className="col-12 col-md-6 col-lg-4">
+                <ServiceCard
+                  servicio={servicio}
+                  onReservar={onReservarServicio}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
+export default ServicesSection;

@@ -19,4 +19,5 @@ export interface BarberoGestion {
   estadoAdmin?: EstadoEntidad;
   estadoGlobal: EstadoEntidad;
   esAdministrador: boolean;
+  fotoUrl?: string | null;
 }
