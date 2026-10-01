@@ -1,5 +1,5 @@
 import React from 'react';
-import { useServicios } from '../../../features/servicios/api/servicios.facade';
+import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
 import type { Servicio } from '../../../features/servicios/types/servicios.types';
 import ServiceCard from './ServiceCard';
 
@@ -10,10 +10,11 @@ interface ServicesSectionProps {
 export const ServicesSection: React.FC<ServicesSectionProps> = ({
   onReservarServicio,
 }) => {
-  const { data: servicios = [], isLoading, error, refetch } = useServicios();
+  const { data: servicios = [], isLoading, error, refetch } = useServiciosCatalogo();
 
-  // Filtrar exclusivamente los servicios activos para el público
-  const serviciosActivos = servicios.filter((s) => s.activo);
+  // El backend ya filtra a solo ACTIVOS en el catálogo público; este filtro es una
+  // salvaguarda adicional del lado del cliente.
+  const serviciosActivos = servicios.filter((s) => s.estado === 'ACTIVO');
 
   return (
     <section id="servicios" className="kyrios-section" aria-labelledby="servicios-heading">

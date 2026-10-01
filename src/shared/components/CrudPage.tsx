@@ -17,6 +17,7 @@ export interface CrudPageProps<T> {
   editModalTitle?: string;
   // T se usa aquí: el form recibe el registro cuando se está editando (undefined = modo creación)
   renderModalForm?: (props: { onClose: () => void; record?: T }) => React.ReactNode;
+  onModalClose?: () => void;
   // Contenido de la vista
   children: React.ReactNode | ((ctx: { onEdit: (record: T) => void }) => React.ReactNode);
   actions?: React.ReactNode;
@@ -40,6 +41,7 @@ export function CrudPage<T>({
   modalTitle = 'Nuevo Registro',
   editModalTitle = 'Editar Registro',
   renderModalForm,
+  onModalClose,
   children,
   actions,
   filters,
@@ -58,6 +60,9 @@ export function CrudPage<T>({
   };
 
   const handleCloseModal = () => {
+    if (onModalClose) {
+      onModalClose();
+    }
     setIsModalOpen(false);
     setEditingRecord(undefined);
   };
