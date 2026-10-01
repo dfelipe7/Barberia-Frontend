@@ -6,5 +6,5 @@ export interface Servicio {
   duracionMinutos: number;
   activo: boolean;
   categoria?: string;
-  imagenUrl?: string;
+  fotoUrl?: string;
 }

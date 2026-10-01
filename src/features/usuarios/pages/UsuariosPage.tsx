@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../auth/AuthContext';
 import Spinner from '../../../shared/ui/Spinner';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
@@ -16,6 +16,7 @@ import {
   useBarberosGestion,
   useCambiarEstadoBarbero,
   useActualizarComision,
+  useSubirFotoAdmin,
 } from '../../barberos/api/barberos.facade';
 
 // Atomic Components
@@ -24,20 +25,28 @@ import BarberoTable from '../../barberos/components/BarberoTable';
 import UserDetailModal from '../components/UserDetailModal';
 import BarberoConfigModal from '../components/BarberoConfigModal';
 import CommissionModal from '../../barberos/components/CommissionModal';
+import FotoBarberoModal from '../../barberos/components/FotoBarberoModal';
 
 // Types & Mappers
 import type { AdministradorGestion, UsuarioDetalle } from '../types/usuarios.types';
 import type { BarberoGestion } from '../../barberos/types/barberos.types';
 import { usuariosMapper } from '../api/usuarios.mapper';
 import type { ConfigurarBarberoFormValues } from '../schemas/usuario.schema';
+import type { Rol } from '../../../shared/lib/autorizacion/roles';
 
 type Pestaña = 'administradores' | 'barberos';
 
 export const UsuariosPage: React.FC = () => {
   const { roles, usuarioDb } = useAuth();
   const location = useLocation();
-
+  const navigate = useNavigate();
   const esSuperAdmin = roles.includes('SUPERADMIN');
+  const esAdministrador = roles.includes('ADMINISTRADOR');
+  const rolActorPrincipal: Rol = esSuperAdmin
+  ? 'SUPERADMIN'
+  : esAdministrador
+    ? 'ADMINISTRADOR'
+    : 'BARBERO';
   const [pestañaActiva, setPestañaActiva] = useState<Pestaña>(
     esSuperAdmin ? 'administradores' : 'barberos'
   );
@@ -48,14 +57,14 @@ export const UsuariosPage: React.FC = () => {
     isLoading: cargandoAdmins,
     error: errorAdmins,
     refetch: refetchAdmins,
-  } = useAdministradores(esSuperAdmin && pestañaActiva === 'administradores');
+  } = useAdministradores(esSuperAdmin);
 
   const {
     data: barberos = [],
     isLoading: cargandoBarberos,
     error: errorBarberos,
     refetch: refetchBarberos,
-  } = useBarberosGestion(pestañaActiva === 'barberos');
+  } = useBarberosGestion(esSuperAdmin || esAdministrador);
 
   // Mutaciones
   const cambiarEstadoAdminMutation = useCambiarEstadoAdministrador();
@@ -63,14 +72,39 @@ export const UsuariosPage: React.FC = () => {
   const actualizarComisionMutation = useActualizarComision();
   const configurarBarberoMutation = useConfigurarBarbero();
   const configurarMeMutation = useConfigurarMeComoBarbero();
+  const subirFotoAdminMutation = useSubirFotoAdmin();
 
   // Estados de modales
   const [usuarioDetalle, setUsuarioDetalle] = useState<UsuarioDetalle | null>(null);
   const [adminAConfigurar, setAdminAConfigurar] = useState<AdministradorGestion | null>(null);
   const [barberoAEditarComision, setBarberoAEditarComision] = useState<BarberoGestion | null>(null);
+  const [barberoAEditarFoto, setBarberoAEditarFoto] = useState<BarberoGestion | null>(null);
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
   const [mensajeExito, setMensajeExito] = useState<string | null>(null);
 
+  useEffect(() => {
+    const mensaje = location.state?.mensaje as string | undefined;
+
+    if (!mensaje) return;
+
+    setMensajeExito(mensaje);
+
+    navigate(location.pathname, {
+      replace: true,
+      state: null,
+    });
+  }, [location.state?.mensaje, location.pathname, navigate]);
+  useEffect(() => {
+    if (!mensajeExito) return;
+
+    const timer = window.setTimeout(() => {
+      setMensajeExito(null);
+    }, 3000);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [mensajeExito]);
   // Handlers
   const handleVerDetalles = (entity: AdministradorGestion | BarberoGestion) => {
     setUsuarioDetalle(usuariosMapper.toDetalleDomain(entity));
@@ -100,12 +134,33 @@ export const UsuariosPage: React.FC = () => {
 
   const handleGuardarComision = async (barberoId: number, porcentaje: number) => {
     try {
+    setMensajeExito(null);
+    setErrorAccion(null);
+
+    await actualizarComisionMutation.mutateAsync({
+      id: barberoId,
+      datos: { porcentajeComision: porcentaje },
+    });
+
+    setBarberoAEditarComision(null);
+    setMensajeExito('La comisión del barbero se actualizó correctamente.');
+    } catch (err: unknown) {
+      setErrorAccion(mapApiError(err));
+    }
+  };
+
+  const handleGuardarFoto = async (barberoId: number, file: File) => {
+    try {
+      setMensajeExito(null);
       setErrorAccion(null);
-      await actualizarComisionMutation.mutateAsync({
+
+      await subirFotoAdminMutation.mutateAsync({
         id: barberoId,
-        datos: { porcentajeComision: porcentaje },
+        file,
       });
-      setBarberoAEditarComision(null);
+
+      setBarberoAEditarFoto(null);
+      setMensajeExito('La foto del barbero se actualizó correctamente.');
     } catch (err: unknown) {
       setErrorAccion(mapApiError(err));
     }
@@ -129,7 +184,6 @@ export const UsuariosPage: React.FC = () => {
     }
   };
 
-  const mensajeNavegacion = location.state?.mensaje as string | undefined;
 
   return (
     <div className="usuarios-page-container">
@@ -157,14 +211,8 @@ export const UsuariosPage: React.FC = () => {
         </div>
       </div>
 
-      {mensajeNavegacion && (
-        <div className="alert alert-success alert-dismissible fade show" role="alert">
-          {mensajeNavegacion}
-        </div>
-      )}
-
       {mensajeExito && (
-        <div className="alert alert-success alert-dismissible fade show" role="alert">
+        <div className="alert alert-success py-2 mb-4" role="alert">
           {mensajeExito}
         </div>
       )}
@@ -245,8 +293,9 @@ export const UsuariosPage: React.FC = () => {
               barberos={barberos}
               onSelectBarbero={handleVerDetalles}
               onEditarComision={(barbero) => setBarberoAEditarComision(barbero)}
+              onEditarFoto={(barbero) => setBarberoAEditarComision(barbero)}
               onCambiarEstado={handleCambiarEstadoBarbero}
-              esSuperAdmin={esSuperAdmin}
+              rolActorPrincipal={rolActorPrincipal}
               isUpdatingId={cambiarEstadoBarberoMutation.isPending ? cambiarEstadoBarberoMutation.variables?.id : null}
             />
           )}
@@ -274,6 +323,15 @@ export const UsuariosPage: React.FC = () => {
         onClose={() => setBarberoAEditarComision(null)}
         onSubmit={handleGuardarComision}
         isLoading={actualizarComisionMutation.isPending}
+        error={errorAccion}
+      />
+
+      <FotoBarberoModal
+        isOpen={Boolean(barberoAEditarFoto)}
+        barbero={barberoAEditarFoto}
+        onClose={() => setBarberoAEditarFoto(null)}
+        onSubmit={handleGuardarFoto}
+        isLoading={subirFotoAdminMutation.isPending}
         error={errorAccion}
       />
     </div>

@@ -6,7 +6,7 @@ export interface ServicioDTO {
   duracionMinutos: number;
   activo: boolean;
   categoria?: string;
-  imagenUrl?: string;
+  fotoUrl?: string;
 }
 
 export interface CrearServicioDTO {
@@ -15,5 +15,5 @@ export interface CrearServicioDTO {
   precio: number;
   duracionMinutos: number;
   categoria?: string;
-  imagenUrl?: string;
+  fotoUrl?: string;
 }

@@ -52,4 +52,13 @@ export const barberosService = {
     const response = await apiClient.delete('/usuarios/barberos/foto');
     return response.data;
   },
+  
+  async subirFotoAdmin(id: number, file: File): Promise<{ fotoUrl: string; mensaje: string }> {
+    const formData = new FormData();
+    formData.append('foto', file);
+    const response = await apiClient.post(`/usuarios/barberos/${id}/foto`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
 };

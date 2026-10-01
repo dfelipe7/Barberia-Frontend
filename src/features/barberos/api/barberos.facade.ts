@@ -89,3 +89,15 @@ export function useEliminarFotoPropia() {
     },
   });
 }
+
+export function useSubirFotoAdmin() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, file }: { id: number; file: File }) =>
+      barberosService.subirFotoAdmin(id, file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
+      queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
+    },
+  });
+}

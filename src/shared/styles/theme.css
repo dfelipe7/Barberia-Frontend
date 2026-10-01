@@ -1,5 +1,47 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
 
+/* ─── Tipografía de marca: Percolator-Bold ─────────────────────────────────
+   Si se incorpora el archivo de fuente, descomentar el bloque @font-face.
+   Por ahora usa Barlow Condensed como fallback de display.
+
+@font-face {
+  font-family: 'Percolator-Bold';
+  src: url('/src/assets/brand/fonts/Percolator-Bold.woff2') format('woff2'),
+       url('/src/assets/brand/fonts/Percolator-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+─────────────────────────────────────────────────────────────────────────── */
+
+/* ─── Tokens de color de la marca ──────────────────────────────────────── */
+:root {
+  /* Colores primarios de la identidad Kyrios Studio */
+  --brand-white:  #FFFDFA;
+  --brand-black:  #0C0C0C;
+  --brand-blue:   #0071BC;
+
+  /* Variaciones derivadas */
+  --brand-blue-hover:   #005fa0;
+  --brand-blue-light:   rgba(0, 113, 188, 0.12);
+  --brand-black-soft:   #1a1a1a;
+  --brand-black-border: #2a2a2a;
+  --brand-white-dim:    #F0EEE9;
+
+  /* Tipografía de marca */
+  --font-brand:   "Percolator-Bold", "Barlow Condensed", sans-serif;
+  --font-body:    "Inter", system-ui, sans-serif;
+}
+
+/* Clase utilitaria para tipografía de display/marca */
+.font-brand {
+  font-family: var(--font-brand);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+/* ──────────────────────────────────────────────────────────────────────── */
+
 :root {
   /* Sobrescribe variables de Bootstrap 5 */
   --bs-primary: #0a0a0a;
@@ -148,4 +190,26 @@ body {
 /* ─── CrudPage container padding ─── */
 .crud-page-container {
   padding: 1.5rem;
-}
+}
+
+/* ─── Logo de Marca Responsivo ─── */
+.brand-logo-img {
+  display: inline-block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+@media (max-width: 425px) {
+  .brand-logo-img {
+    max-height: 28px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .brand-logo-img {
+    max-height: 24px !important;
+  }
+}

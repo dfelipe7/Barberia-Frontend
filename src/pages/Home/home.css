@@ -1,0 +1,644 @@
+/* ─── Kyrios Studio Home Styling ────────────────────────────────────────── */
+
+/* Tokens locales para la página de Home */
+.kyrios-home {
+  --k-bg-dark: #0C0C0C;
+  --k-bg-card-dark: #141414;
+  --k-bg-light: #FFFDFA;
+  --k-bg-card-light: #FFFFFF;
+  --k-blue: #0071BC;
+  --k-blue-hover: #005fa0;
+  --k-blue-glow: rgba(0, 113, 188, 0.2);
+  --k-text-muted: #8E8E8E;
+  --k-border-dark: #222222;
+  --k-border-light: #E7E5E0;
+  
+  font-family: var(--font-body, 'Inter', system-ui, sans-serif);
+  background-color: var(--k-bg-light);
+  color: var(--k-bg-dark);
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* ─── Tipografía ─── */
+.kyrios-title-display {
+  font-family: var(--font-brand, 'Barlow Condensed', sans-serif);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.05;
+}
+
+.kyrios-subtitle-display {
+  font-family: var(--font-brand, 'Barlow Condensed', sans-serif);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kyrios-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--k-blue);
+}
+
+.kyrios-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 2px;
+  background-color: var(--k-blue);
+}
+
+/* ─── Navbar ─── */
+.kyrios-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: rgba(12, 12, 12, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--k-border-dark);
+  transition: all 0.3s ease;
+}
+
+.kyrios-nav-link {
+  color: #c5c5c5;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.5rem 0.85rem;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.kyrios-nav-link:hover,
+.kyrios-nav-link:focus-visible {
+  color: #ffffff;
+}
+
+.kyrios-nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: var(--k-blue);
+  transition: all 0.25s ease;
+  transform: translateX(-50%);
+}
+
+.kyrios-nav-link:hover::after {
+  width: 60%;
+}
+
+/* Botones principales de la marca */
+.btn-kyrios-primary {
+  background-color: var(--k-blue);
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--k-blue);
+  border-radius: 3px;
+  padding: 0.65rem 1.4rem;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  box-shadow: 0 4px 14px var(--k-blue-glow);
+}
+
+.btn-kyrios-primary:hover,
+.btn-kyrios-primary:focus-visible {
+  background-color: var(--k-blue-hover);
+  border-color: var(--k-blue-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 113, 188, 0.35);
+}
+
+.btn-kyrios-outline {
+  background-color: transparent;
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 3px;
+  padding: 0.65rem 1.4rem;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.btn-kyrios-outline:hover,
+.btn-kyrios-outline:focus-visible {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.btn-kyrios-dark {
+  background-color: var(--k-bg-dark);
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border: 1px solid var(--k-bg-dark);
+  border-radius: 3px;
+  padding: 0.55rem 1.1rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.btn-kyrios-dark:hover,
+.btn-kyrios-dark:focus-visible {
+  background-color: var(--k-blue);
+  border-color: var(--k-blue);
+  transform: translateY(-1px);
+}
+
+/* ─── Hero Section ─── */
+.kyrios-hero {
+  position: relative;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  background-color: var(--k-bg-dark);
+  color: #ffffff;
+  overflow: hidden;
+  padding: 5rem 0;
+}
+
+.kyrios-hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+  opacity: 0.42;
+  filter: grayscale(85%) contrast(115%);
+  transform: scale(1.03);
+  transition: transform 12s ease-out;
+}
+
+.kyrios-hero:hover .kyrios-hero-bg {
+  transform: scale(1.08);
+}
+
+.kyrios-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 75% 30%, rgba(0, 113, 188, 0.18) 0%, transparent 60%),
+              linear-gradient(180deg, rgba(12, 12, 12, 0.7) 0%, rgba(12, 12, 12, 0.95) 100%);
+  pointer-events: none;
+}
+
+.kyrios-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 780px;
+}
+
+.kyrios-hero-title {
+  font-size: clamp(2.6rem, 6.5vw, 5.2rem);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  margin-bottom: 1.25rem;
+}
+
+.kyrios-hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: #d6d6d6;
+  line-height: 1.7;
+  max-width: 600px;
+  margin-bottom: 2rem;
+  font-weight: 300;
+}
+
+/* ─── Trust Block ─── */
+.kyrios-trust-section {
+  background-color: var(--k-bg-card-dark);
+  border-top: 1px solid var(--k-border-dark);
+  border-bottom: 1px solid var(--k-border-dark);
+  color: #ffffff;
+  padding: 3.5rem 0;
+}
+
+.kyrios-trust-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  padding: 1.2rem;
+  border-radius: 4px;
+  transition: background-color 0.25s ease;
+}
+
+.kyrios-trust-item:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.kyrios-trust-icon-box {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: rgba(0, 113, 188, 0.12);
+  border: 1px solid rgba(0, 113, 188, 0.3);
+  color: var(--k-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── Secciones generales ─── */
+.kyrios-section {
+  padding: 5.5rem 0;
+}
+
+.kyrios-section-header {
+  margin-bottom: 3.5rem;
+}
+
+.kyrios-section-title {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  color: var(--k-bg-dark);
+  margin-bottom: 0.75rem;
+}
+
+.kyrios-section-desc {
+  color: var(--k-text-muted);
+  font-size: 1.05rem;
+  max-width: 620px;
+}
+
+/* ─── Tarjetas de Servicios ─── */
+.kyrios-service-card {
+  background: #ffffff;
+  border: 1px solid var(--k-border-light);
+  border-radius: 4px;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.kyrios-service-card:hover {
+  border-color: rgba(0, 113, 188, 0.4);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.kyrios-service-img-wrap {
+  position: relative;
+  height: 200px;
+  background: #f1efe9;
+  overflow: hidden;
+}
+
+.kyrios-service-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.kyrios-service-card:hover .kyrios-service-img {
+  transform: scale(1.05);
+}
+
+.kyrios-service-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #161616 0%, #0a0a0a 100%);
+  color: rgba(255, 255, 255, 0.15);
+  font-size: 3rem;
+  font-family: var(--font-brand, sans-serif);
+  font-weight: 800;
+}
+
+.kyrios-service-category {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(12, 12, 12, 0.85);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.65rem;
+  border-radius: 2px;
+}
+
+.kyrios-service-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.kyrios-service-title {
+  font-size: 1.25rem;
+  font-family: var(--font-brand, sans-serif);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--k-bg-dark);
+  margin-bottom: 0.5rem;
+}
+
+.kyrios-service-desc {
+  font-size: 0.9rem;
+  color: #6c6c6c;
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+  flex-grow: 1;
+}
+
+.kyrios-service-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid #f0eee8;
+  margin-top: auto;
+}
+
+.kyrios-service-price {
+  font-family: var(--font-brand, sans-serif);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--k-bg-dark);
+}
+
+.kyrios-service-duration {
+  font-size: 0.78rem;
+  color: var(--k-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* ─── Tarjetas de Barberos ─── */
+.kyrios-barber-card {
+  background: var(--k-bg-card-dark);
+  border: 1px solid var(--k-border-dark);
+  border-radius: 4px;
+  overflow: hidden;
+  color: #ffffff;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.kyrios-barber-card:hover {
+  border-color: rgba(0, 113, 188, 0.5);
+  transform: translateY(-5px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+}
+
+.kyrios-barber-img-wrap {
+  position: relative;
+  aspect-ratio: 4 / 4.8;
+  background: #111111;
+  overflow: hidden;
+}
+
+.kyrios-barber-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  filter: grayscale(40%) contrast(105%);
+  transition: all 0.5s ease;
+}
+
+.kyrios-barber-card:hover .kyrios-barber-img {
+  filter: grayscale(0%) contrast(100%);
+  transform: scale(1.04);
+}
+
+.kyrios-barber-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #1b1b1b 0%, #101010 100%);
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.kyrios-barber-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.kyrios-barber-name {
+  font-family: var(--font-brand, sans-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 0.2rem;
+}
+
+.kyrios-barber-role {
+  color: var(--k-blue);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.kyrios-barber-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #aaaaaa;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  margin-top: auto;
+}
+
+.kyrios-barber-phone:hover {
+  color: #ffffff;
+}
+
+/* ─── Ubicación ─── */
+.kyrios-location-card {
+  background: #ffffff;
+  border: 1px solid var(--k-border-light);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.kyrios-map-visual {
+  height: 100%;
+  min-height: 320px;
+  background: linear-gradient(135deg, #161a1f 0%, #0d1014 100%);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.kyrios-map-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.kyrios-map-radar {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 1px dashed rgba(0, 113, 188, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: radarPulse 4s infinite linear;
+}
+
+@keyframes radarPulse {
+  0% { transform: scale(0.95); opacity: 0.6; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.6; }
+}
+
+/* ─── Footer ─── */
+.kyrios-footer {
+  background-color: var(--k-bg-dark);
+  border-top: 1px solid var(--k-border-dark);
+  color: #ffffff;
+  padding: 4.5rem 0 2rem 0;
+}
+
+.kyrios-footer-link {
+  color: #9c9c9c;
+  font-size: 0.88rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-block;
+  margin-bottom: 0.6rem;
+}
+
+.kyrios-footer-link:hover,
+.kyrios-footer-link:focus-visible {
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
+.kyrios-social-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--k-border-dark);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.kyrios-social-btn:hover {
+  background: var(--k-blue);
+  border-color: var(--k-blue);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* ─── Animaciones y Accesibilidad ─── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.kyrios-fade-in {
+  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .kyrios-hero-bg {
+    transition: none !important;
+  }
+}
+
+/* ─── Responsive adjustments ─── */
+@media (max-width: 991.98px) {
+  .kyrios-nav-collapse {
+    background-color: var(--k-bg-dark);
+    padding: 1.5rem;
+    border-top: 1px solid var(--k-border-dark);
+    margin-top: 0.75rem;
+  }
+  .kyrios-hero {
+    min-height: 75vh;
+    padding: 4rem 0;
+  }
+  .kyrios-section {
+    padding: 4rem 0;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .kyrios-hero-title {
+    font-size: 2.5rem;
+  }
+  .kyrios-trust-item {
+    padding: 0.75rem 0;
+  }
+}
