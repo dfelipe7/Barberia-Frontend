@@ -1,148 +1,287 @@
+import type { ComponentType } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Globe } from 'lucide-react';
+import {
+    Calendar,
+    Scissors,
+    Globe,
+    Users,
+    LayoutGrid,
+    Package,
+    ArrowUpRight,
+    LogOut,
+} from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 
-const SHORTCUTS = [
-    { label: 'Reservas', descripcion: 'Gestiona las reservas de la barbería.', to: '/reservas', icon: '📅' },
-    { label: 'Barberos', descripcion: 'Consulta y administra los barberos.', to: '/barberos', icon: '✂️' },
-    { label: 'Servicios', descripcion: 'Gestiona los servicios disponibles.', to: '/servicios', icon: '🗂️' },
-    { label: 'Productos', descripcion: 'Administra el catálogo de productos.', to: '/productos', icon: '📦' },
-] as const;
+interface ShortcutItem {
+    label: string;
+    descripcion: string;
+    to: string;
+    icon: ComponentType<{ size?: number | string; strokeWidth?: number | string; className?: string }>;
+    color: string;
+    badge?: string;
+}
+
+const SHORTCUTS_OPERATIVOS: ShortcutItem[] = [
+    {
+        label: 'Reservas',
+        descripcion: 'Gestiona la agenda, citas y reservas del día.',
+        to: '/reservas',
+        icon: Calendar,
+        color: '#0071BC',
+    },
+    {
+        label: 'Barberos',
+        descripcion: 'Consulta y administra el equipo de profesionales.',
+        to: '/barberos',
+        icon: Scissors,
+        color: '#C9A961',
+    },
+    {
+        label: 'Sitio Público',
+        descripcion: 'Explora la landing y catálogo tal como lo ven tus clientes.',
+        to: '/',
+        icon: Globe,
+        color: '#0C0C0C',
+        badge: 'LANDING',
+    },
+];
+
+const SHORTCUTS_GESTION: ShortcutItem[] = [
+    {
+        label: 'Usuarios',
+        descripcion: 'Administra cuentas, roles, permisos y estado del personal.',
+        to: '/usuarios',
+        icon: Users,
+        color: '#0071BC',
+    },
+    {
+        label: 'Servicios',
+        descripcion: 'Gestiona el catálogo de servicios, precios y duraciones.',
+        to: '/servicios',
+        icon: LayoutGrid,
+        color: '#10B981',
+    },
+    {
+        label: 'Productos',
+        descripcion: 'Controla el inventario y venta de productos exclusivos.',
+        to: '/productos',
+        icon: Package,
+        color: '#8B5CF6',
+    },
+];
+
+const ROLES_APP = ['SUPERADMIN', 'ADMINISTRADOR', 'BARBERO'];
 
 export default function Dashboard() {
     const {
+        keycloak,
         nombre,
         apellido,
+        email,
         roles,
     } = useAuth();
 
-    return (
-        <div className="p-4">
-            {/* ── Cabecera ── */}
-            <div className="mb-5">
-                <p className="text-eyebrow mb-2">Panel principal</p>
-                <h1 className="font-display mb-1" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 800 }}>
-                    Dashboard
-                </h1>
-                <p className="mb-3" style={{ color: 'var(--catalog-muted)', fontSize: '0.95rem' }}>
-                    Bienvenido, {nombre} {apellido}.
-                </p>
+    const esSuperAdmin = roles.includes('SUPERADMIN');
+    const esAdministrador = roles.includes('ADMINISTRADOR');
+    const esAdmin = esSuperAdmin || esAdministrador;
 
-                {/* Roles como badges */}
-                <div className="d-flex flex-wrap gap-2">
-                    {roles.map((rol) => (
-                        <span key={rol} className="dash-role-badge">
-                            {rol}
-                        </span>
-                    ))}
-                </div>
-            </div>
+    const rolesApp = roles.filter((r) => ROLES_APP.includes(r));
+    const rolesMostrados = rolesApp.length > 0 ? rolesApp : roles;
 
-            {/* ── Divisor editorial ── */}
-            <div className="d-flex align-items-center gap-3 mb-4">
-                <h2 className="font-display mb-0" style={{ fontSize: '0.85rem', letterSpacing: '0.12em' }}>
-                    ACCESOS DIRECTOS
-                </h2>
-                <div style={{ flex: 1, height: '1px', background: 'var(--catalog-muted-border)' }} />
-            </div>
+    const cerrarSesion = () => {
+        if (keycloak) {
+            keycloak.logout({
+                redirectUri: window.location.origin,
+            });
+        }
+    };
 
-            {/* ── Tarjetas de acceso directo ── */}
-            <div className="row g-3">
-                {/* ── Tarjeta destacada: Sitio Público ── */}
-                <div className="col-12">
-                    <NavLink
-                        to="/"
-                        end
-                        className="text-decoration-none"
-                        style={{ display: 'block' }}
+    const renderCard = ({ label, descripcion, to, icon: Icon, color, badge }: ShortcutItem) => {
+        const isDarkAccent = color === '#0C0C0C';
+
+        return (
+            <div key={label} className="col-12 col-md-6 col-xl-3">
+                <NavLink
+                    to={to}
+                    className="dash-shortcut-link"
+                >
+                    <div
+                        className="dash-shortcut-card card h-100 border-start border-4"
+                        style={{ borderLeftColor: color }}
                     >
-                        <div
-                            className="dash-shortcut-card dash-shortcut-card--featured card border-start border-4"
-                            style={{ borderLeftColor: '#0071BC' }}
-                        >
-                            <div className="card-body p-3 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
-                                <div className="d-flex align-items-center gap-3">
+                        <div className="card-body p-4 d-flex flex-column justify-content-between h-100">
+                            <div>
+                                <div className="d-flex align-items-center justify-content-between mb-3">
                                     <div
-                                        className="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
+                                        className="dash-shortcut-card__icon"
                                         style={{
-                                            width: '42px',
-                                            height: '42px',
-                                            backgroundColor: 'rgba(0, 113, 188, 0.1)',
-                                            color: '#0071BC',
+                                            backgroundColor: isDarkAccent
+                                                ? 'var(--dash-public-icon-bg, rgba(12, 12, 12, 0.08))'
+                                                : `${color}18`,
+                                            color: isDarkAccent
+                                                ? 'var(--dash-public-color, #0C0C0C)'
+                                                : color,
+                                            width: '46px',
+                                            height: '46px',
                                         }}
                                     >
-                                        <Globe size={22} strokeWidth={2} />
+                                        <Icon size={26} strokeWidth={2} />
                                     </div>
-                                    <div>
-                                        <div className="d-flex align-items-center gap-2">
-                                            <h3
-                                                className="font-display mb-0"
-                                                style={{ fontSize: '1rem', fontWeight: 700, color: '#0a0a0a' }}
-                                            >
-                                                Sitio Público
-                                            </h3>
-                                            <span
-                                                className="badge"
-                                                style={{
-                                                    backgroundColor: 'rgba(0, 113, 188, 0.12)',
-                                                    color: '#0071BC',
-                                                    fontSize: '0.65rem',
-                                                    letterSpacing: '0.08em',
-                                                    fontWeight: 700,
-                                                    borderRadius: '2px',
-                                                }}
-                                            >
-                                                LANDING
-                                            </span>
-                                        </div>
-                                        <p
-                                            className="mb-0 mt-1"
-                                            style={{ fontSize: '0.825rem', color: 'var(--catalog-muted)', lineHeight: 1.5 }}
+                                    {badge && (
+                                        <span
+                                            className="badge font-display"
+                                            style={{
+                                                backgroundColor: 'rgba(0, 113, 188, 0.1)',
+                                                color: '#0071BC',
+                                                fontSize: '0.65rem',
+                                                letterSpacing: '0.08em',
+                                                fontWeight: 700,
+                                                borderRadius: '2px',
+                                                padding: '0.3em 0.6em',
+                                            }}
                                         >
-                                            Ver la landing de Kyrios Studio tal como la ven tus clientes.
-                                        </p>
-                                    </div>
+                                            {badge}
+                                        </span>
+                                    )}
                                 </div>
-
-                                <div
-                                    className="d-flex align-items-center gap-1 fw-semibold small flex-shrink-0"
-                                    style={{ color: '#0071BC' }}
+                                <h3
+                                    className="font-display mb-1"
+                                    style={{ fontSize: '1.05rem', fontWeight: 700 }}
                                 >
-                                    <span>Ver sitio</span>
-                                    <span aria-hidden="true">&rarr;</span>
-                                </div>
+                                    {label}
+                                </h3>
+                                <p
+                                    className="text-muted small mb-0"
+                                    style={{ lineHeight: 1.5 }}
+                                >
+                                    {descripcion}
+                                </p>
+                            </div>
+
+                            <div className="d-flex justify-content-end align-items-center mt-3 pt-2">
+                                <ArrowUpRight
+                                    size={16}
+                                    className="dash-shortcut-card__arrow text-muted"
+                                    aria-hidden="true"
+                                />
                             </div>
                         </div>
-                    </NavLink>
+                    </div>
+                </NavLink>
+            </div>
+        );
+    };
+
+    return (
+        <div className="p-3 p-md-4">
+            {/* ── 1. Cabecera con identidad de marca ── */}
+            <div className="mb-5 pb-4 border-bottom">
+                <span className="text-eyebrow mb-2 d-block">Panel principal</span>
+                <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div>
+                        <h1 className="font-display mb-2" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 800 }}>
+                            Hola, {nombre || 'Usuario'}
+                        </h1>
+                        <p className="text-muted mb-0">
+                            Bienvenido de nuevo. Este es el resumen de tu actividad en Kyrios Studio.
+                        </p>
+                    </div>
+                    <div className="d-flex flex-wrap gap-2">
+                        {rolesMostrados.map((rol) => (
+                            <span key={rol} className="dash-role-badge">
+                                {rol}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* ── 2. Bloque A: Accesos Operativos ── */}
+            <div className="mb-4">
+                <div className="d-flex align-items-center gap-3 mb-3">
+                    <h2 className="font-display mb-0" style={{ fontSize: '0.85rem', letterSpacing: '0.12em' }}>
+                        OPERATIVO
+                    </h2>
+                    <div style={{ flex: 1, height: '1px', background: 'var(--catalog-muted-border)' }} />
                 </div>
 
-                {SHORTCUTS.map(({ label, descripcion, to, icon }) => (
-                    <div key={label} className="col-md-6 col-xl-3">
-                        <NavLink
-                            to={to}
-                            className="text-decoration-none"
-                            style={{ display: 'block', height: '100%' }}
-                        >
-                            <div className="dash-shortcut-card card h-100">
-                                <div className="card-body p-3 d-flex flex-column gap-2">
-                                    <span style={{ fontSize: '1.6rem' }}>{icon}</span>
-                                    <h3
-                                        className="font-display mb-0"
-                                        style={{ fontSize: '1rem', fontWeight: 700, color: '#0a0a0a' }}
-                                    >
-                                        {label}
-                                    </h3>
-                                    <p
-                                        className="mb-0"
-                                        style={{ fontSize: '0.825rem', color: 'var(--catalog-muted)', lineHeight: 1.6 }}
-                                    >
-                                        {descripcion}
-                                    </p>
-                                </div>
-                            </div>
-                        </NavLink>
+                <div className="row g-3">
+                    {SHORTCUTS_OPERATIVOS.map(renderCard)}
+                </div>
+            </div>
+
+            {/* ── 3. Bloque B: Accesos de Gestión (solo Administradores) ── */}
+            {esAdmin && (
+                <div className="mt-5 mb-4">
+                    <div className="d-flex align-items-center gap-3 mb-3">
+                        <h2 className="font-display mb-0" style={{ fontSize: '0.85rem', letterSpacing: '0.12em' }}>
+                            GESTIÓN
+                        </h2>
+                        <div style={{ flex: 1, height: '1px', background: 'var(--catalog-muted-border)' }} />
                     </div>
-                ))}
+
+                    <div className="row g-3">
+                        {SHORTCUTS_GESTION.map(renderCard)}
+                    </div>
+                </div>
+            )}
+
+            {/* ── 4. Bloque Informativo: Estado del Sistema ── */}
+            <div className="mt-5 pt-4">
+                <div className="d-flex align-items-center gap-3 mb-3">
+                    <h2 className="font-display mb-0" style={{ fontSize: '0.85rem', letterSpacing: '0.12em' }}>
+                        ESTADO DEL SISTEMA
+                    </h2>
+                    <div style={{ flex: 1, height: '1px', background: 'var(--catalog-muted-border)' }} />
+                </div>
+
+                <div className="dash-system-card card p-3 p-md-4">
+                    <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                        <div className="d-flex align-items-center gap-3">
+                            <div
+                                className="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
+                                style={{
+                                    width: '10px',
+                                    height: '10px',
+                                    backgroundColor: '#10B981',
+                                    boxShadow: '0 0 0 3px rgba(16, 185, 129, 0.2)',
+                                }}
+                                title="Sesión activa"
+                            />
+                            <div>
+                                <div className="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                    <span className="fw-bold" style={{ fontSize: '0.95rem' }}>
+                                        Conectado como {nombre} {apellido}
+                                    </span>
+                                    {email && (
+                                        <span className="text-muted small">
+                                            ({email})
+                                        </span>
+                                    )}
+                                </div>
+                                <p className="text-muted small mb-0">
+                                    Sesión activa mediante autenticación Keycloak SSO. Roles asignados:{' '}
+                                    <span className="fw-semibold">{rolesMostrados.join(', ') || 'Sin rol asignado'}</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="d-flex align-items-center gap-2 flex-shrink-0">
+                            <button
+                                type="button"
+                                onClick={cerrarSesion}
+                                className="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold"
+                                style={{
+                                    borderRadius: '4px',
+                                    transition: 'all 180ms cubic-bezier(0.16, 1, 0.3, 1)',
+                                }}
+                            >
+                                <LogOut size={16} strokeWidth={2} />
+                                <span>Cerrar sesión</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
