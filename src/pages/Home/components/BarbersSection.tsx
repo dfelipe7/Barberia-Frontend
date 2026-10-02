@@ -15,8 +15,7 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
   return (
     <section
       id="barberos"
-      className="kyrios-section"
-      style={{ backgroundColor: '#0C0C0C', color: '#ffffff' }}
+      className="kyrios-section kyrios-section--alt"
       aria-labelledby="barberos-heading"
     >
       <div className="container">
@@ -27,11 +26,11 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
           </span>
           <h2
             id="barberos-heading"
-            className="kyrios-section-title kyrios-title-display text-white"
+            className="kyrios-section-title kyrios-title-display"
           >
             Nuestros Barberos
           </h2>
-          <p className="kyrios-section-desc mx-auto text-white-50">
+          <p className="kyrios-section-desc mx-auto">
             Profesionales comprometidos con el detalle, la higiene y la satisfacción 
             absoluta en cada sesión.
           </p>
@@ -48,18 +47,18 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
                 >
                   <div
                     className="kyrios-barber-img-wrap d-flex align-items-center justify-content-center"
-                    style={{ background: '#1c1c1c' }}
+                    style={{ background: 'var(--home-surface-alt)' }}
                   >
-                    <div className="spinner-border spinner-border-sm text-light" role="status" />
+                    <div className="spinner-border spinner-border-sm text-secondary" role="status" />
                   </div>
                   <div className="p-4">
                     <div
                       className="placeholder-glow mb-2"
-                      style={{ height: '22px', width: '70%', background: '#2a2a2a' }}
+                      style={{ height: '22px', width: '70%', background: 'var(--home-surface-border)' }}
                     />
                     <div
                       className="placeholder-glow"
-                      style={{ height: '14px', width: '40%', background: '#222222' }}
+                      style={{ height: '14px', width: '40%', background: 'var(--home-meta-border)' }}
                     />
                   </div>
                 </div>
@@ -71,12 +70,12 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
         {/* Estado: Error */}
         {!isLoading && error && (
           <div className="text-center py-5">
-            <p className="text-white-50 mb-3">
+            <p className="kyrios-section-desc mb-3 mx-auto">
               No fue posible cargar el equipo de barberos en este momento.
             </p>
             <button
               type="button"
-              className="btn btn-sm btn-outline-light px-3"
+              className="btn-kyrios-dark px-3 py-1"
               onClick={() => refetch()}
             >
               Reintentar
@@ -88,9 +87,9 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
         {!isLoading && !error && barberos.length === 0 && (
           <div
             className="text-center py-5 border border-dashed rounded p-4"
-            style={{ borderColor: '#222222' }}
+            style={{ borderColor: 'var(--home-surface-border)' }}
           >
-            <p className="text-white-50 mb-0">
+            <p className="kyrios-section-desc mb-0 mx-auto">
               Nuestro equipo de profesionales estará disponible para reservas muy pronto.
             </p>
           </div>

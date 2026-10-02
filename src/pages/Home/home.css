@@ -1,23 +1,84 @@
 /* ─── Kyrios Studio Home Styling ────────────────────────────────────────── */
 
-/* Tokens locales para la página de Home */
+/* Tokens estáticos (marca) */
 .kyrios-home {
-  --k-bg-dark: #0C0C0C;
-  --k-bg-card-dark: #141414;
-  --k-bg-light: #FFFDFA;
-  --k-bg-card-light: #FFFFFF;
-  --k-blue: #0071BC;
-  --k-blue-hover: #005fa0;
-  --k-blue-glow: rgba(0, 113, 188, 0.2);
-  --k-text-muted: #8E8E8E;
-  --k-border-dark: #222222;
-  --k-border-light: #E7E5E0;
-  
+  --k-blue:        #0071BC;
+  --k-blue-hover:  #005fa0;
+  --k-blue-glow:   rgba(0, 113, 188, 0.2);
+
+  /* ── Tokens semánticos — modo CLARO (por defecto) ─────────────────────── */
+  --home-bg:                #FFFDFA;
+  --home-fg:                #0C0C0C;
+  --home-fg-muted:          #6b6375;
+  --home-surface:           #FFFFFF;
+  --home-surface-alt:       #F7F5F0;
+  --home-surface-border:    #E7E5E0;
+  --home-meta-border:       #f0eee8;
+
+  /* Hero */
+  --home-hero-overlay-from: rgba(255, 253, 250, 0.75);
+  --home-hero-overlay-to:   rgba(255, 253, 250, 0.95);
+  --home-hero-fg:           #0C0C0C;
+  --home-hero-title-shadow: none;
+
+  /* Nav */
+  --home-nav-bg:            rgba(255, 253, 250, 0.94);
+  --home-nav-border:        #E7E5E0;
+  --home-nav-link:          #4a4a4a;
+  --home-nav-link-hover:    #0C0C0C;
+  --home-nav-collapse-bg:   rgba(255, 253, 250, 0.98);
+
+  /* btn-outline */
+  --home-outline-color:        #0C0C0C;
+  --home-outline-border:       #0C0C0C;
+  --home-outline-hover-bg:     rgba(12, 12, 12, 0.08);
+  --home-outline-hover-border: #0C0C0C;
+
+  /* btn-dark */
+  --home-btn-dark-bg:          #0C0C0C;
+  --home-btn-dark-border:      #0C0C0C;
+  --home-btn-dark-fg:          #FFFFFF;
+
   font-family: var(--font-body, 'Inter', system-ui, sans-serif);
-  background-color: var(--k-bg-light);
-  color: var(--k-bg-dark);
+  background-color: var(--home-bg);
+  color: var(--home-fg);
   overflow-x: hidden;
   scroll-behavior: smooth;
+}
+
+/* ── Overrides MODO OSCURO ──────────────────────────────────────────────── */
+[data-theme="dark"] .kyrios-home {
+  --home-bg:                #0C0C0C;
+  --home-fg:                #FFFDFA;
+  --home-fg-muted:          #9ca3af;
+  --home-surface:           #1a1a1a;
+  --home-surface-alt:       #161616;
+  --home-surface-border:    #2a2a2a;
+  --home-meta-border:       #222222;
+
+  /* Hero */
+  --home-hero-overlay-from: rgba(12, 12, 12, 0.7);
+  --home-hero-overlay-to:   rgba(12, 12, 12, 0.95);
+  --home-hero-fg:           #FFFFFF;
+  --home-hero-title-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+
+  /* Nav */
+  --home-nav-bg:            rgba(12, 12, 12, 0.94);
+  --home-nav-border:        #222222;
+  --home-nav-link:          #c5c5c5;
+  --home-nav-link-hover:    #ffffff;
+  --home-nav-collapse-bg:   rgba(12, 12, 12, 0.98);
+
+  /* btn-outline */
+  --home-outline-color:        #ffffff;
+  --home-outline-border:       rgba(255, 255, 255, 0.45);
+  --home-outline-hover-bg:     rgba(255, 255, 255, 0.12);
+  --home-outline-hover-border: #ffffff;
+
+  /* btn-dark */
+  --home-btn-dark-bg:          #262626;
+  --home-btn-dark-border:      #3a3a3a;
+  --home-btn-dark-fg:          #FFFFFF;
 }
 
 /* ─── Tipografía ─── */
@@ -63,11 +124,11 @@
   right: 0;
   width: 100%;
   z-index: 1030;
-  background: rgba(12, 12, 12, 0.94);
+  background: var(--home-nav-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--k-border-dark);
-  transition: all 0.3s ease;
+  border-bottom: 1px solid var(--home-nav-border);
+  transition: background-color 200ms ease, border-color 200ms ease;
 }
 
 /* Compensa el espacio ocupado por el nav fijo */
@@ -76,7 +137,7 @@
 }
 
 .kyrios-nav-link {
-  color: #c5c5c5;
+  color: var(--home-nav-link);
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -89,7 +150,7 @@
 
 .kyrios-nav-link:hover,
 .kyrios-nav-link:focus-visible {
-  color: #ffffff;
+  color: var(--home-nav-link-hover);
 }
 
 .kyrios-nav-link::after {
@@ -108,7 +169,30 @@
   width: 60%;
 }
 
-/* Botones principales de la marca */
+/* Texto de saludo en navbar */
+.kyrios-nav-greeting {
+  font-size: 0.85rem;
+  color: var(--home-nav-link);
+  transition: color 200ms ease;
+}
+
+/* Botón hamburguesa — heredado del nav para evitar btn text-white hardcoded */
+.kyrios-nav-hamburger {
+  background: transparent;
+  color: var(--home-nav-link-hover);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  transition: color 200ms ease;
+}
+
+.kyrios-nav-hamburger:hover {
+  color: var(--k-blue);
+}
+
 .btn-kyrios-primary {
   background-color: var(--k-blue);
   color: #ffffff !important;
@@ -138,12 +222,12 @@
 
 .btn-kyrios-outline {
   background-color: transparent;
-  color: #ffffff !important;
+  color: var(--home-outline-color) !important;
   font-weight: 700;
   font-size: 0.82rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  border: 1px solid var(--home-outline-border);
   border-radius: 3px;
   padding: 0.65rem 1.4rem;
   transition: all 0.25s ease;
@@ -156,19 +240,20 @@
 
 .btn-kyrios-outline:hover,
 .btn-kyrios-outline:focus-visible {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: #ffffff;
+  background-color: var(--home-outline-hover-bg);
+  border-color: var(--home-outline-hover-border);
+  color: var(--home-outline-color) !important;
   transform: translateY(-2px);
 }
 
 .btn-kyrios-dark {
-  background-color: var(--k-bg-dark);
-  color: #ffffff !important;
+  background-color: var(--home-btn-dark-bg);
+  color: var(--home-btn-dark-fg) !important;
   font-weight: 700;
   font-size: 0.8rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  border: 1px solid var(--k-bg-dark);
+  border: 1px solid var(--home-btn-dark-border);
   border-radius: 3px;
   padding: 0.55rem 1.1rem;
   transition: all 0.2s ease;
@@ -182,6 +267,7 @@
 .btn-kyrios-dark:focus-visible {
   background-color: var(--k-blue);
   border-color: var(--k-blue);
+  color: #FFFFFF !important;
   transform: translateY(-1px);
 }
 
@@ -191,10 +277,11 @@
   min-height: 85vh;
   display: flex;
   align-items: center;
-  background-color: var(--k-bg-dark);
-  color: #ffffff;
+  background-color: var(--home-bg);
+  color: var(--home-hero-fg);
   overflow: hidden;
   padding: 5rem 0;
+  transition: background-color 200ms ease, color 200ms ease;
 }
 
 .kyrios-hero-bg {
@@ -204,10 +291,14 @@
   height: 100%;
   object-fit: cover;
   object-position: center 35%;
-  opacity: 0.42;
+  opacity: 0.35;
   filter: grayscale(85%) contrast(115%);
   transform: scale(1.03);
-  transition: transform 12s ease-out;
+  transition: transform 12s ease-out, opacity 200ms ease;
+}
+
+[data-theme="dark"] .kyrios-hero-bg {
+  opacity: 0.42;
 }
 
 .kyrios-hero:hover .kyrios-hero-bg {
@@ -217,9 +308,10 @@
 .kyrios-hero-overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 75% 30%, rgba(0, 113, 188, 0.18) 0%, transparent 60%),
-              linear-gradient(180deg, rgba(12, 12, 12, 0.7) 0%, rgba(12, 12, 12, 0.95) 100%);
+  background: radial-gradient(circle at 75% 30%, rgba(0, 113, 188, 0.15) 0%, transparent 60%),
+              linear-gradient(180deg, var(--home-hero-overlay-from) 0%, var(--home-hero-overlay-to) 100%);
   pointer-events: none;
+  transition: background 200ms ease;
 }
 
 .kyrios-hero-content {
@@ -230,26 +322,30 @@
 
 .kyrios-hero-title {
   font-size: clamp(2.6rem, 6.5vw, 5.2rem);
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  color: var(--home-hero-fg);
+  text-shadow: var(--home-hero-title-shadow, none);
   margin-bottom: 1.25rem;
+  transition: color 200ms ease;
 }
 
 .kyrios-hero-subtitle {
   font-size: clamp(1rem, 2vw, 1.2rem);
-  color: #d6d6d6;
+  color: var(--home-fg-muted);
   line-height: 1.7;
   max-width: 600px;
   margin-bottom: 2rem;
   font-weight: 300;
+  transition: color 200ms ease;
 }
 
 /* ─── Trust Block ─── */
 .kyrios-trust-section {
-  background-color: var(--k-bg-card-dark);
-  border-top: 1px solid var(--k-border-dark);
-  border-bottom: 1px solid var(--k-border-dark);
-  color: #ffffff;
+  background-color: var(--home-surface);
+  border-top: 1px solid var(--home-surface-border);
+  border-bottom: 1px solid var(--home-surface-border);
+  color: var(--home-fg);
   padding: 3.5rem 0;
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
 }
 
 .kyrios-trust-item {
@@ -281,6 +377,12 @@
 /* ─── Secciones generales ─── */
 .kyrios-section {
   padding: 5.5rem 0;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+/* Sección con fondo alternado (Barberos) — ligeramente distinto al body */
+.kyrios-section--alt {
+  background-color: var(--home-surface-alt);
 }
 
 .kyrios-section-header {
@@ -289,27 +391,29 @@
 
 .kyrios-section-title {
   font-size: clamp(2rem, 4vw, 3.2rem);
-  color: var(--k-bg-dark);
+  color: var(--home-fg);
   margin-bottom: 0.75rem;
+  transition: color 200ms ease;
 }
 
 .kyrios-section-desc {
-  color: var(--k-text-muted);
+  color: var(--home-fg-muted);
   font-size: 1.05rem;
   max-width: 620px;
+  transition: color 200ms ease;
 }
 
 /* ─── Tarjetas de Servicios ─── */
 .kyrios-service-card {
-  background: #ffffff;
-  border: 1px solid var(--k-border-light);
+  background: var(--home-surface);
+  border: 1px solid var(--home-surface-border);
   border-radius: 4px;
   overflow: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 200ms ease, border-color 200ms ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 
 .kyrios-service-card:hover {
@@ -321,7 +425,7 @@
 .kyrios-service-img-wrap {
   position: relative;
   height: 200px;
-  background: #f1efe9;
+  background: var(--home-surface-alt);
   overflow: hidden;
 }
 
@@ -376,16 +480,18 @@
   font-family: var(--font-brand, sans-serif);
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--k-bg-dark);
+  color: var(--home-fg);
   margin-bottom: 0.5rem;
+  transition: color 200ms ease;
 }
 
 .kyrios-service-desc {
   font-size: 0.9rem;
-  color: #6c6c6c;
+  color: var(--home-fg-muted);
   line-height: 1.6;
   margin-bottom: 1.2rem;
   flex-grow: 1;
+  transition: color 200ms ease;
 }
 
 .kyrios-service-meta {
@@ -393,33 +499,36 @@
   align-items: center;
   justify-content: space-between;
   padding-top: 1rem;
-  border-top: 1px solid #f0eee8;
+  border-top: 1px solid var(--home-meta-border);
   margin-top: auto;
+  transition: border-color 200ms ease;
 }
 
 .kyrios-service-price {
   font-family: var(--font-brand, sans-serif);
   font-size: 1.35rem;
   font-weight: 800;
-  color: var(--k-bg-dark);
+  color: var(--home-fg);
+  transition: color 200ms ease;
 }
 
 .kyrios-service-duration {
   font-size: 0.78rem;
-  color: var(--k-text-muted);
+  color: var(--home-fg-muted);
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  transition: color 200ms ease;
 }
 
 /* ─── Tarjetas de Barberos ─── */
 .kyrios-barber-card {
-  background: var(--k-bg-card-dark);
-  border: 1px solid var(--k-border-dark);
+  background: var(--home-surface);
+  border: 1px solid var(--home-surface-border);
   border-radius: 4px;
   overflow: hidden;
-  color: #ffffff;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--home-fg);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 200ms ease, border-color 200ms ease;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -434,7 +543,7 @@
 .kyrios-barber-img-wrap {
   position: relative;
   aspect-ratio: 4 / 4.8;
-  background: #111111;
+  background: var(--home-surface-alt);
   overflow: hidden;
 }
 
@@ -475,8 +584,9 @@
   font-size: 1.35rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: #ffffff;
+  color: var(--home-fg);
   margin-bottom: 0.2rem;
+  transition: color 200ms ease;
 }
 
 .kyrios-barber-role {
@@ -492,7 +602,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #aaaaaa;
+  color: var(--home-fg-muted);
   font-size: 0.85rem;
   text-decoration: none;
   transition: color 0.2s ease;
@@ -500,16 +610,51 @@
 }
 
 .kyrios-barber-phone:hover {
-  color: #ffffff;
+  color: var(--home-fg);
+}
+
+.kyrios-barber-sede {
+  color: var(--home-fg-muted);
+  font-size: 0.82rem;
+  transition: color 200ms ease;
 }
 
 /* ─── Ubicación ─── */
 .kyrios-location-card {
-  background: #ffffff;
-  border: 1px solid var(--k-border-light);
+  background: var(--home-surface);
+  border: 1px solid var(--home-surface-border);
   border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.kyrios-location-desc {
+  color: var(--home-fg-muted);
+  line-height: 1.7;
+  transition: color 200ms ease;
+}
+
+.kyrios-location-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 4px;
+  background: rgba(0, 113, 188, 0.12);
+  color: var(--k-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kyrios-location-item-title {
+  color: var(--home-fg);
+  transition: color 200ms ease;
+}
+
+.kyrios-location-item-desc {
+  color: var(--home-fg-muted);
+  transition: color 200ms ease;
 }
 
 .kyrios-map-visual {
@@ -552,11 +697,19 @@
 }
 
 /* ─── Footer ─── */
+/* El footer actúa como "sello de marca": siempre oscuro en ambos temas.
+   En dark usa un negro más puro para separarse del body. */
 .kyrios-footer {
-  background-color: var(--k-bg-dark);
-  border-top: 1px solid var(--k-border-dark);
+  background-color: #0C0C0C;
+  border-top: 1px solid #222222;
   color: #ffffff;
   padding: 4.5rem 0 2rem 0;
+  transition: background-color 200ms ease;
+}
+
+[data-theme="dark"] .kyrios-footer {
+  background-color: #000000;
+  border-top-color: #1a1a1a;
 }
 
 .kyrios-footer-link {
@@ -628,10 +781,17 @@
 /* ─── Responsive adjustments ─── */
 @media (max-width: 991.98px) {
   .kyrios-nav-collapse {
-    background-color: var(--k-bg-dark);
+    background-color: var(--home-nav-collapse-bg);
     padding: 1.5rem;
-    border-top: 1px solid var(--k-border-dark);
+    border-top: 1px solid var(--home-nav-border);
     margin-top: 0.75rem;
+    transition: background-color 200ms ease, border-color 200ms ease;
+  }
+  .kyrios-nav-link-mobile {
+    border-bottom: 1px solid var(--home-nav-border);
+  }
+  .kyrios-nav-mobile-divider {
+    border-top: 1px solid var(--home-nav-border);
   }
   .kyrios-hero {
     min-height: 75vh;
@@ -727,4 +887,30 @@
     will-change: opacity;
   }
 }
+
+/* ─── Transiciones globales al alternar tema (Emil Kowalski) ─── */
+.kyrios-home,
+.kyrios-section,
+.kyrios-service-card,
+.kyrios-barber-card,
+.kyrios-nav,
+.kyrios-footer,
+.kyrios-location-card,
+.kyrios-trust-section {
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kyrios-home,
+  .kyrios-section,
+  .kyrios-service-card,
+  .kyrios-barber-card,
+  .kyrios-nav,
+  .kyrios-footer,
+  .kyrios-location-card,
+  .kyrios-trust-section {
+    transition: none !important;
+  }
+}
+
 

@@ -49,7 +49,7 @@ export const BarberCard: React.FC<BarberCardProps> = ({
               <span>{barbero.telefono}</span>
             </a>
           ) : (
-            <span className="small text-white-50">Atención en sede</span>
+            <span className="kyrios-barber-sede small">Atención en sede</span>
           )}
 
           <button

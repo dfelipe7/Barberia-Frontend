@@ -42,20 +42,18 @@ export const ReservaEnProcesoAlert: React.FC<ReservaEnProcesoAlertProps> = ({
         isExiting ? 'reserva-alert-exiting' : 'reserva-alert-animating'
       }`}
       style={{
-        background: '#ffffff',
-        backgroundImage:
-          'linear-gradient(135deg, rgba(0, 113, 188, 0.08), rgba(12, 12, 12, 0.04))',
-        border: '1px solid rgba(0, 113, 188, 0.2)',
+        background: 'var(--home-surface)',
+        border: '1px solid rgba(0, 113, 188, 0.25)',
         borderLeft: '4px solid #0071BC',
       }}
     >
       {/* Botón X de cierre */}
       <button
         type="button"
-        className="btn btn-sm btn-link text-muted position-absolute top-0 end-0 m-2 p-1 text-decoration-none"
+        className="btn btn-sm btn-link position-absolute top-0 end-0 m-2 p-1 text-decoration-none"
         onClick={handleClose}
         aria-label="Cerrar advertencia de reserva"
-        style={{ opacity: 0.7 }}
+        style={{ color: 'var(--home-fg-muted)', opacity: 0.8 }}
       >
         <X size={18} />
       </button>
@@ -67,7 +65,7 @@ export const ReservaEnProcesoAlert: React.FC<ReservaEnProcesoAlertProps> = ({
           style={{
             width: '42px',
             height: '42px',
-            backgroundColor: 'rgba(0, 113, 188, 0.12)',
+            backgroundColor: 'rgba(0, 113, 188, 0.15)',
             color: '#0071BC',
           }}
         >
@@ -79,7 +77,7 @@ export const ReservaEnProcesoAlert: React.FC<ReservaEnProcesoAlertProps> = ({
           <div className="d-flex flex-wrap align-items-center gap-2 mb-1">
             <h4
               className="mb-0 fw-bold font-display"
-              style={{ fontSize: '1.05rem', color: '#0C0C0C', letterSpacing: '0.02em' }}
+              style={{ fontSize: '1.05rem', color: 'var(--home-fg)', letterSpacing: '0.02em' }}
             >
               Reserva en proceso
             </h4>
@@ -98,14 +96,20 @@ export const ReservaEnProcesoAlert: React.FC<ReservaEnProcesoAlertProps> = ({
             </span>
           </div>
 
-          <p className="mb-2 text-surface-card small" style={{ lineHeight: 1.55 }}>
+          <p className="mb-2 small" style={{ color: 'var(--home-fg-muted)', lineHeight: 1.55 }}>
             Tu selección fue registrada. El sistema de reservas en línea estará disponible muy pronto. Mientras tanto, contáctanos para confirmar tu cita.
           </p>
 
           {/* Resumen de selección */}
           {(servicioNombre || barberoNombre) && (
-            <div className="d-flex flex-wrap align-items-center gap-2 mb-3 py-1 px-2 rounded bg-surface-card border border-light-subtle">
-              <span className="small text-surface-muted fw-semibold">Selección actual:</span>
+            <div
+              className="d-flex flex-wrap align-items-center gap-2 mb-3 py-1 px-2 rounded border"
+              style={{
+                backgroundColor: 'var(--home-surface-alt)',
+                borderColor: 'var(--home-surface-border)',
+              }}
+            >
+              <span className="small fw-semibold" style={{ color: 'var(--home-fg-muted)' }}>Selección actual:</span>
               {servicioNombre && (
                 <span className="badge bg-dark text-white fw-medium">
                   Servicio: {servicioNombre}
@@ -161,9 +165,9 @@ export const ReservaEnProcesoAlert: React.FC<ReservaEnProcesoAlertProps> = ({
 
             <button
               type="button"
-              className="btn btn-sm btn-outline-dark fw-semibold px-3 py-2"
+              className="btn-kyrios-dark px-3 py-1"
               onClick={handleClose}
-              style={{ borderRadius: '4px' }}
+              style={{ borderRadius: '4px', fontSize: '0.82rem' }}
             >
               Entendido
             </button>

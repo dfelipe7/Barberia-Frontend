@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import BrandLogo from '../../../shared/ui/BrandLogo';
 import { BRAND } from '../../../config/brand';
 import { MenuIcon, CloseIcon } from './HomeIcons';
+import { useTheme } from '../../../shared/context/ThemeContext';
 
 interface HomeNavbarProps {
   isAuthenticated: boolean;
@@ -17,6 +18,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { isDark } = useTheme();
 
   const toggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
   const closeMobileMenu = () => setMobileMenuOpen(false);
@@ -31,7 +33,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           onClick={closeMobileMenu}
           aria-label="Ir al inicio de Kyrios Studio"
         >
-          <BrandLogo variant="white" height={36} alt={BRAND.name} />
+          <BrandLogo variant={isDark ? 'white' : 'black'} height={36} alt={BRAND.name} />
         </a>
 
         {/* Navegación Desktop */}
@@ -54,8 +56,8 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
         <div className="d-none d-lg-flex align-items-center gap-3">
           {isAuthenticated ? (
             <div className="d-flex align-items-center gap-3">
-              <span className="text-white-50 small">
-                Hola, <strong className="text-white">{nombre || 'Usuario'}</strong>
+              <span className="kyrios-nav-greeting">
+                Hola, <strong>{nombre || 'Usuario'}</strong>
               </span>
               <button
                 type="button"
@@ -100,7 +102,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 
           <button
             type="button"
-            className="btn text-white p-2 border-0"
+            className="kyrios-nav-hamburger p-2 border-0"
             onClick={toggleMobileMenu}
             aria-expanded={mobileMenuOpen}
             aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú de navegación'}
@@ -116,21 +118,21 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           <div className="container d-flex flex-column gap-2">
             <a
               href="#inicio"
-              className="kyrios-nav-link py-2 border-bottom border-dark"
+              className="kyrios-nav-link py-2 kyrios-nav-link-mobile"
               onClick={closeMobileMenu}
             >
               Inicio
             </a>
             <a
               href="#servicios"
-              className="kyrios-nav-link py-2 border-bottom border-dark"
+              className="kyrios-nav-link py-2 kyrios-nav-link-mobile"
               onClick={closeMobileMenu}
             >
               Servicios
             </a>
             <a
               href="#barberos"
-              className="kyrios-nav-link py-2 border-bottom border-dark"
+              className="kyrios-nav-link py-2 kyrios-nav-link-mobile"
               onClick={closeMobileMenu}
             >
               Barberos
@@ -143,11 +145,11 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
               Ubicación
             </a>
 
-            <div className="pt-3 mt-2 border-top border-dark d-flex flex-column gap-2">
+            <div className="pt-3 mt-2 kyrios-nav-mobile-divider d-flex flex-column gap-2">
               {isAuthenticated ? (
                 <>
-                  <div className="text-white-50 small mb-1">
-                    Conectado como <strong className="text-white">{nombre}</strong>
+                  <div className="kyrios-nav-greeting mb-1">
+                    Conectado como <strong>{nombre}</strong>
                   </div>
                   <button
                     type="button"

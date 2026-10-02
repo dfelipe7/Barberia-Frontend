@@ -35,12 +35,12 @@ export const TrustSection: React.FC = () => {
                 </div>
                 <div>
                   <h3
-                    className="kyrios-subtitle-display fs-5 text-white mb-1"
+                    className="kyrios-subtitle-display fs-5 mb-1"
                     style={{ letterSpacing: '0.04em' }}
                   >
                     {item.title}
                   </h3>
-                  <p className="text-white-50 small mb-0" style={{ lineHeight: 1.6 }}>
+                  <p className="kyrios-section-desc small mb-0" style={{ lineHeight: 1.6 }}>
                     {item.description}
                   </p>
                 </div>
