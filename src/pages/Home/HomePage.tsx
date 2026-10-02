@@ -15,17 +15,17 @@ import LocationSection from './components/LocationSection';
 import HomeFooter from './components/HomeFooter';
 
 export const HomePage: React.FC = () => {
-  const { keycloak, isAuthenticated, nombre, roles } = useAuth();
+  const { keycloak, isAuthenticated, nombre, roles, usuarioDb } = useAuth();
   const navigate = useNavigate();
 
   const tienePermiso = roles.some((r) => esRolApp(r));
 
   useEffect(() => {
-    // Si inicia sesión pero no posee ningún rol en la aplicación, redirigir a "Sin Acceso"
-    if (isAuthenticated && !tienePermiso) {
+    // Si inicia sesión pero no posee ningún rol en la aplicación o está bloqueado globalmente, redirigir a "Sin Acceso"
+    if (isAuthenticated && (!tienePermiso || usuarioDb?.estado === 'INACTIVO')) {
       navigate('/sin-acceso');
     }
-  }, [isAuthenticated, tienePermiso, navigate]);
+  }, [isAuthenticated, tienePermiso, usuarioDb, navigate]);
 
   // Manejo de la acción de reserva respetando el estado actual de la app (sin inventar endpoints)
   const handleReservarGeneral = useCallback(() => {

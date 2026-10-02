@@ -53,6 +53,10 @@ export interface CambiarEstadoDTO {
   estado: 'ACTIVO' | 'INACTIVO';
 }
 
+export interface CambiarEstadoUsuarioDTO {
+  estado: 'ACTIVO' | 'INACTIVO';
+}
+
 export interface ConfigurarBarberoDTO {
   telefono: string;
   porcentajeComision: number;

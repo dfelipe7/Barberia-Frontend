@@ -9,12 +9,14 @@ import { mapApiError } from '../../../shared/lib/mapApiError';
 import {
   useAdministradores,
   useCambiarEstadoAdministrador,
+  useCambiarEstadoUsuarioGlobal,
   useConfigurarBarbero,
   useConfigurarMeComoBarbero,
 } from '../api/usuarios.facade';
 import {
   useBarberosGestion,
   useCambiarEstadoBarbero,
+  useCambiarEstadoGlobalBarbero,
   useActualizarComision,
   useSubirFotoAdmin,
 } from '../../barberos/api/barberos.facade';
@@ -68,7 +70,9 @@ export const UsuariosPage: React.FC = () => {
 
   // Mutaciones
   const cambiarEstadoAdminMutation = useCambiarEstadoAdministrador();
+  const cambiarEstadoGlobalAdminMutation = useCambiarEstadoUsuarioGlobal();
   const cambiarEstadoBarberoMutation = useCambiarEstadoBarbero();
+  const cambiarEstadoGlobalBarberoMutation = useCambiarEstadoGlobalBarbero();
   const actualizarComisionMutation = useActualizarComision();
   const configurarBarberoMutation = useConfigurarBarbero();
   const configurarMeMutation = useConfigurarMeComoBarbero();
@@ -121,6 +125,24 @@ export const UsuariosPage: React.FC = () => {
     }
   };
 
+  const handleCambiarEstadoGlobalAdmin = async (
+    id: number,
+    nuevoEstado: 'ACTIVO' | 'INACTIVO'
+  ) => {
+    try {
+      setMensajeExito(null);
+      setErrorAccion(null);
+      await cambiarEstadoGlobalAdminMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
+      setMensajeExito(
+        nuevoEstado === 'ACTIVO'
+          ? 'Cuenta desbloqueada correctamente.'
+          : 'Cuenta bloqueada globalmente.'
+      );
+    } catch (err) {
+      setErrorAccion(mapApiError(err));
+    }
+  };
+
   const handleCambiarEstadoBarbero = async (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => {
     try {
       setMensajeExito(null);
@@ -128,6 +150,24 @@ export const UsuariosPage: React.FC = () => {
       await cambiarEstadoBarberoMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
       setMensajeExito('El estado del usuario se actualizó correctamente.');
     } catch (err: unknown) {
+      setErrorAccion(mapApiError(err));
+    }
+  };
+
+  const handleCambiarEstadoGlobalBarbero = async (
+    id: number,
+    nuevoEstado: 'ACTIVO' | 'INACTIVO'
+  ) => {
+    try {
+      setMensajeExito(null);
+      setErrorAccion(null);
+      await cambiarEstadoGlobalBarberoMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
+      setMensajeExito(
+        nuevoEstado === 'ACTIVO'
+          ? 'Cuenta desbloqueada correctamente.'
+          : 'Cuenta bloqueada globalmente.'
+      );
+    } catch (err) {
       setErrorAccion(mapApiError(err));
     }
   };
@@ -268,10 +308,12 @@ export const UsuariosPage: React.FC = () => {
               administradores={administradores}
               onSelectUsuario={handleVerDetalles}
               onCambiarEstado={handleCambiarEstadoAdmin}
+              onCambiarEstadoGlobal={handleCambiarEstadoGlobalAdmin}
               onConfigurarBarbero={(admin) => setAdminAConfigurar(admin)}
               esSuperAdmin={esSuperAdmin}
               currentUserId={usuarioDb?.id}
               isUpdatingId={cambiarEstadoAdminMutation.isPending ? cambiarEstadoAdminMutation.variables?.id : null}
+              isUpdatingGlobalId={cambiarEstadoGlobalAdminMutation.isPending ? cambiarEstadoGlobalAdminMutation.variables?.id : null}
             />
           )}
         </>
@@ -293,10 +335,13 @@ export const UsuariosPage: React.FC = () => {
               barberos={barberos}
               onSelectBarbero={handleVerDetalles}
               onEditarComision={(barbero) => setBarberoAEditarComision(barbero)}
-              onEditarFoto={(barbero) => setBarberoAEditarComision(barbero)}
+              onEditarFoto={(barbero) => setBarberoAEditarFoto(barbero)}
               onCambiarEstado={handleCambiarEstadoBarbero}
+              onCambiarEstadoGlobal={handleCambiarEstadoGlobalBarbero}
               rolActorPrincipal={rolActorPrincipal}
+              currentUserId={usuarioDb?.id}
               isUpdatingId={cambiarEstadoBarberoMutation.isPending ? cambiarEstadoBarberoMutation.variables?.id : null}
+              isUpdatingGlobalId={cambiarEstadoGlobalBarberoMutation.isPending ? cambiarEstadoGlobalBarberoMutation.variables?.id : null}
             />
           )}
         </>

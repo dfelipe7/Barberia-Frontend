@@ -31,6 +31,14 @@ export const barberosService = {
     return response.data;
   },
 
+  async cambiarEstadoGlobalBarbero(
+    id: number,
+    datos: CambiarEstadoBarberoDTO
+  ): Promise<{ mensaje: string }> {
+    const response = await apiClient.patch(`/usuarios/${id}/estado`, datos);
+    return response.data;
+  },
+
   async actualizarComision(
     id: number,
     datos: ActualizarComisionDTO

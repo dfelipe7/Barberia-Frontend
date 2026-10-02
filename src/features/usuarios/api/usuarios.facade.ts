@@ -6,6 +6,7 @@ import type {
   CrearAdministradorDTO,
   ActualizarUsuarioDTO,
   CambiarEstadoDTO,
+  CambiarEstadoUsuarioDTO,
   ConfigurarBarberoDTO,
 } from './usuarios.dto';
 import type { AdministradorGestion, Usuario } from '../types/usuarios.types';
@@ -60,6 +61,18 @@ export function useActualizarUsuario() {
       queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
       queryClient.invalidateQueries({ queryKey: usuariosKeys.detail(variables.id) });
       queryClient.invalidateQueries({ queryKey: usuariosKeys.perfil() });
+    },
+  });
+}
+
+export function useCambiarEstadoUsuarioGlobal() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, datos }: { id: number; datos: CambiarEstadoUsuarioDTO }) =>
+      usuariosService.cambiarEstadoUsuario(id, datos),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
+      queryClient.invalidateQueries({ queryKey: ['barberos', 'gestion'] });
     },
   });
 }

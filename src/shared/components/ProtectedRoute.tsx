@@ -12,7 +12,7 @@ interface ProtectedRouteProps {
  * de autenticación (Keycloak) y de autorización RBAC (rolesPermitidos).
  */
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ rolesPermitidos }) => {
-  const { roles, isAuthenticated, keycloak } = useAuth();
+  const { roles, isAuthenticated, keycloak, usuarioDb } = useAuth();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -26,7 +26,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ rolesPermitidos 
 
   const tienePermiso = rolesPermitidos.some((rol) => roles.includes(rol));
 
-  if (!tienePermiso) {
+  if (!tienePermiso || usuarioDb?.estado === 'INACTIVO') {
     return <Navigate to="/sin-acceso" replace />;
   }
 
