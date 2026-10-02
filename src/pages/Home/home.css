@@ -57,14 +57,22 @@
 
 /* ─── Navbar ─── */
 .kyrios-nav {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 1030;
   background: rgba(12, 12, 12, 0.94);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--k-border-dark);
   transition: all 0.3s ease;
+}
+
+/* Compensa el espacio ocupado por el nav fijo */
+.kyrios-home > main {
+  padding-top: 64px;
 }
 
 .kyrios-nav-link {

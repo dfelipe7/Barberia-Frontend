@@ -3,7 +3,7 @@ import { esRolApp } from '../../shared/lib/autorizacion/roles';
 import BrandLogo from '../../shared/ui/BrandLogo';
 
 export default function SinAcceso() {
-    const { keycloak, email, roles } = useAuth();
+    const { keycloak, email, roles, usuarioDb } = useAuth();
 
     const cerrarSesion = () => {
         keycloak.logout({
@@ -11,6 +11,7 @@ export default function SinAcceso() {
         });
     };
 
+    const cuentaBloqueada = usuarioDb?.estado === 'INACTIVO';
     // ¿El usuario está autenticado pero sin ningún rol reconocido del sistema?
     const sinRolesAsignados = roles.every((r) => !esRolApp(r));
 
@@ -25,14 +26,23 @@ export default function SinAcceso() {
                 </div>
 
                 <div className="mb-3" style={{ fontSize: '2.5rem' }}>
-                    {sinRolesAsignados ? '⚠️' : '🚫'}
+                    {cuentaBloqueada ? '🔒' : sinRolesAsignados ? '⚠️' : '🚫'}
                 </div>
 
                 <h1 className="h3 fw-bold mb-2">
-                    {sinRolesAsignados ? 'Sin roles asignados' : 'Sin acceso'}
+                    {cuentaBloqueada ? 'Cuenta bloqueada' : sinRolesAsignados ? 'Sin roles asignados' : 'Sin acceso'}
                 </h1>
 
-                {sinRolesAsignados ? (
+                {cuentaBloqueada ? (
+                    <>
+                        <p className="text-muted mb-1">
+                            Tu cuenta <strong>{email}</strong> ha sido bloqueada globalmente por un administrador.
+                        </p>
+                        <p className="text-muted mb-4">
+                            No tienes acceso al sistema mientras tu cuenta permanezca inactiva. Comunícate con la administración para más información.
+                        </p>
+                    </>
+                ) : sinRolesAsignados ? (
                     <>
                         <p className="text-muted mb-1">
                             Tu cuenta <strong>{email}</strong> está activa pero no tiene ningún rol

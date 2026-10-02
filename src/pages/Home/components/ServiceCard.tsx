@@ -37,10 +37,6 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
             <span>{servicio.nombre.charAt(0)}</span>
           </div>
         )}
-
-        {servicio.categoria && (
-          <span className="kyrios-service-category">{servicio.categoria}</span>
-        )}
       </div>
 
       <div className="kyrios-service-body">

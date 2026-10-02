@@ -5,6 +5,7 @@ import type {
   CrearAdministradorDTO,
   ActualizarUsuarioDTO,
   CambiarEstadoDTO,
+  CambiarEstadoUsuarioDTO,
   ConfigurarBarberoDTO,
 } from './usuarios.dto';
 
@@ -35,6 +36,14 @@ export const usuariosService = {
 
   async actualizarUsuario(id: number, datos: ActualizarUsuarioDTO): Promise<UsuarioDTO> {
     const response = await apiClient.patch<UsuarioDTO>(`/usuarios/${id}`, datos);
+    return response.data;
+  },
+
+  async cambiarEstadoUsuario(
+    id: number,
+    datos: CambiarEstadoUsuarioDTO
+  ): Promise<{ mensaje: string }> {
+    const response = await apiClient.patch(`/usuarios/${id}/estado`, datos);
     return response.data;
   },
 

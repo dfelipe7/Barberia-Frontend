@@ -56,6 +56,18 @@ export function useCambiarEstadoBarbero() {
   });
 }
 
+export function useCambiarEstadoGlobalBarbero() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, datos }: { id: number; datos: CambiarEstadoBarberoDTO }) =>
+      barberosService.cambiarEstadoGlobalBarbero(id, datos),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
+      queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
+    },
+  });
+}
+
 export function useActualizarComision() {
   const queryClient = useQueryClient();
 

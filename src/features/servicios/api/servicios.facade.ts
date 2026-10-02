@@ -2,35 +2,88 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { serviciosService } from './servicios.service';
 import { serviciosMapper } from './servicios.mapper';
 import { serviciosKeys } from './servicios.keys';
-import type { Servicio } from '../types/servicios.types';
+import type { Servicio, FiltroServicios } from '../types/servicios.types';
+import type { CambiarEstadoServicioDTO } from './servicios.dto';
 
-export function useServicios() {
+export function useServiciosGestion(filtro?: FiltroServicios) {
   return useQuery<Servicio[], Error>({
-    queryKey: serviciosKeys.lists(),
+    queryKey: serviciosKeys.gestion(filtro),
     queryFn: async () => {
-      try {
-        const dtos = await serviciosService.obtenerServicios();
-        return dtos.map(serviciosMapper.toDomain);
-      } catch {
-        // En caso de que el endpoint no esté desplegado aún en el backend, devuelve lista inicial
-        return [
-          { id: 1, nombre: 'Corte Clásico', descripcion: 'Corte a tijera o máquina', precio: 25000, duracionMinutos: 30, activo: true, categoria: 'Cortes' },
-          { id: 2, nombre: 'Arreglo de Barba', descripcion: 'Perfilado con toalla caliente', precio: 15000, duracionMinutos: 20, activo: true, categoria: 'Barba' },
-          { id: 3, nombre: 'Corte + Barba VIP', descripcion: 'Paquete integral con lavado', precio: 35000, duracionMinutos: 45, activo: true, categoria: 'Combos' },
-        ];
-      }
+      const dtos = await serviciosService.obtenerServiciosGestion(
+        serviciosMapper.toFiltroDTO(filtro)
+      );
+      return dtos.map(serviciosMapper.toDomain);
     },
   });
 }
 
 export function useCrearServicio() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (datos: Omit<Servicio, 'id' | 'activo'>) =>
+    mutationFn: (datos: Parameters<typeof serviciosMapper.toCrearDTO>[0]) =>
       serviciosService.crearServicio(serviciosMapper.toCrearDTO(datos)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
+    },
+  });
+}
+
+export function useActualizarServicio() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      datos,
+    }: {
+      id: number;
+      datos: Parameters<typeof serviciosMapper.toActualizarDTO>[0];
+    }) => serviciosService.actualizarServicio(id, serviciosMapper.toActualizarDTO(datos)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
+    },
+  });
+}
+
+export function useCambiarEstadoServicio() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, datos }: { id: number; datos: CambiarEstadoServicioDTO }) =>
+      serviciosService.cambiarEstadoServicio(id, datos),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
+    },
+  });
+}
+
+export function useSubirFotoServicio() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, file }: { id: number; file: File }) =>
+      serviciosService.subirFotoServicio(id, file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
+    },
+  });
+}
+
+export function useEliminarFotoServicio() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => serviciosService.eliminarFotoServicio(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
+    },
+  });
+}
+
+export function useServiciosCatalogo(filtro?: FiltroServicios) {
+  return useQuery<Servicio[], Error>({
+    queryKey: serviciosKeys.catalogo(filtro),
+    queryFn: async () => {
+      const dtos = await serviciosService.obtenerServiciosCatalogo(
+        serviciosMapper.toFiltroDTO(filtro)
+      );
+      return dtos.map(serviciosMapper.toDomain);
     },
   });
 }

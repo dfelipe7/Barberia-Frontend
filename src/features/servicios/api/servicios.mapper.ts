@@ -1,28 +1,71 @@
-import type { ServicioDTO, CrearServicioDTO } from './servicios.dto';
-import type { Servicio } from '../types/servicios.types';
+import type {
+  ServicioDTO,
+  CrearServicioDTO,
+  ActualizarServicioDTO,
+  FiltroServiciosDTO,
+} from './servicios.dto';
+import type { Servicio, FiltroServicios, EstadoEntidad } from '../types/servicios.types';
 
 export const serviciosMapper = {
   toDomain(dto: ServicioDTO): Servicio {
     return {
       id: dto.id,
       nombre: dto.nombre,
-      descripcion: dto.descripcion,
+      descripcion: dto.descripcion ?? null,
       precio: Number(dto.precio),
       duracionMinutos: Number(dto.duracionMinutos),
-      activo: Boolean(dto.activo),
-      categoria: dto.categoria,
-      fotoUrl: dto.fotoUrl ?? undefined,
+      fotoUrl: dto.fotoUrl ?? null,
+      estado: dto.estado as EstadoEntidad,
+      barberos: dto.barberos.map((b) => ({
+        id: b.id,
+        nombre: b.nombre,
+        apellido: b.apellido,
+        fotoUrl: b.fotoUrl ?? null,
+      })),
     };
   },
 
-  toCrearDTO(domain: Omit<Servicio, 'id' | 'activo'>): CrearServicioDTO {
+  toCrearDTO(datos: {
+    nombre: string;
+    descripcion?: string;
+    precio: number;
+    duracionMinutos: number;
+    barberoIds?: number[];
+  }): CrearServicioDTO {
     return {
-      nombre: domain.nombre.trim(),
-      descripcion: domain.descripcion.trim(),
-      precio: domain.precio,
-      duracionMinutos: domain.duracionMinutos,
-      categoria: domain.categoria?.trim(),
-      fotoUrl: domain.fotoUrl ?? undefined,
+      nombre: datos.nombre.trim(),
+      ...(datos.descripcion && { descripcion: datos.descripcion.trim() }),
+      precio: Number(datos.precio),
+      duracionMinutos: Number(datos.duracionMinutos),
+      ...(datos.barberoIds !== undefined && {
+        barberoIds: datos.barberoIds.map((id) => Number(id)),
+      }),
+    };
+  },
+
+  toActualizarDTO(datos: {
+    nombre?: string;
+    descripcion?: string;
+    precio?: number;
+    duracionMinutos?: number;
+    barberoIds?: number[];
+  }): ActualizarServicioDTO {
+    return {
+      ...(datos.nombre !== undefined && { nombre: datos.nombre.trim() }),
+      ...(datos.descripcion !== undefined && { descripcion: datos.descripcion.trim() }),
+      ...(datos.precio !== undefined && { precio: Number(datos.precio) }),
+      ...(datos.duracionMinutos !== undefined && { duracionMinutos: Number(datos.duracionMinutos) }),
+      ...(datos.barberoIds !== undefined && {
+        barberoIds: datos.barberoIds.map((id) => Number(id)),
+      }),
+    };
+  },
+
+  toFiltroDTO(filtro?: FiltroServicios): FiltroServiciosDTO | undefined {
+    if (!filtro) return undefined;
+    return {
+      ...(filtro.nombre && { nombre: filtro.nombre }),
+      ...(filtro.estado && { estado: filtro.estado }),
     };
   },
 };

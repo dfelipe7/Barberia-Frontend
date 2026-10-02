@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Lock, Unlock, UserMinus, UserCheck } from 'lucide-react';
 import Table, { type Column } from '../../../shared/ui/Table';
 import Button from '../../../shared/ui/Button';
 import type { AdministradorGestion } from '../types/usuarios.types';
@@ -8,20 +9,24 @@ interface UserTableProps {
   administradores: AdministradorGestion[];
   onSelectUsuario: (admin: AdministradorGestion) => void;
   onCambiarEstado: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
+  onCambiarEstadoGlobal: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
   onConfigurarBarbero: (admin: AdministradorGestion) => void;
   esSuperAdmin: boolean;
   currentUserId?: number;
   isUpdatingId?: number | null;
+  isUpdatingGlobalId?: number | null;
 }
 
 export const UserTable: React.FC<UserTableProps> = ({
   administradores,
   onSelectUsuario,
   onCambiarEstado,
+  onCambiarEstadoGlobal,
   onConfigurarBarbero,
   esSuperAdmin,
   currentUserId,
   isUpdatingId,
+  isUpdatingGlobalId,
 }) => {
   const columns: Column<AdministradorGestion>[] = [
     {
@@ -58,15 +63,28 @@ export const UserTable: React.FC<UserTableProps> = ({
       ),
     },
     {
-      key: 'estado',
-      header: 'Estado',
+      key: 'estadoGlobal',
+      header: 'Estado Global',
       render: (admin) => (
         <span
           className={`badge ${
-            admin.estado === 'ACTIVO' ? 'bg-success' : 'bg-secondary'
+            admin.estado === 'ACTIVO' ? 'bg-success' : 'bg-danger'
           }`}
         >
-          {admin.estado}
+          {admin.estado === 'ACTIVO' ? 'Habilitada' : 'Bloqueada'}
+        </span>
+      ),
+    },
+    {
+      key: 'estadoAdmin',
+      header: 'Rol Admin',
+      render: (admin) => (
+        <span
+          className={`badge ${
+            admin.estadoAdmin === 'ACTIVO' ? 'bg-success' : 'bg-secondary'
+          }`}
+        >
+          {admin.estadoAdmin ?? 'INACTIVO'}
         </span>
       ),
     },
@@ -78,6 +96,7 @@ export const UserTable: React.FC<UserTableProps> = ({
         const esMismoUsuario = currentUserId === admin.id;
         const puedeEditar = esSuperAdmin || esMismoUsuario;
         const isCurrentUpdating = isUpdatingId === admin.id;
+        const isCurrentUpdatingGlobal = isUpdatingGlobalId === admin.id;
 
         return (
           <div className="d-inline-flex align-items-center justify-content-end gap-1">
@@ -103,17 +122,56 @@ export const UserTable: React.FC<UserTableProps> = ({
 
             {esSuperAdmin && !esMismoUsuario && (
               <Button
-                variant={admin.estado === 'ACTIVO' ? 'outline-danger' : 'outline-success'}
+                variant={admin.estadoAdmin === 'ACTIVO' ? 'outline-warning' : 'outline-success'}
                 size="sm"
                 isLoading={isCurrentUpdating}
                 onClick={() =>
                   onCambiarEstado(
                     admin.id,
+                    admin.estadoAdmin === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
+                  )
+                }
+                title={
+                  admin.estadoAdmin === 'ACTIVO'
+                    ? 'Inactivar rol administrador'
+                    : 'Activar rol administrador'
+                }
+              >
+                {admin.estadoAdmin === 'ACTIVO' ? (
+                  <>
+                    <UserMinus size={16} className="me-1" />
+                    Inactivar Rol
+                  </>
+                ) : (
+                  <>
+                    <UserCheck size={16} className="me-1" />
+                    Activar Rol
+                  </>
+                )}
+              </Button>
+            )}
+
+            {esSuperAdmin && (
+              <Button
+                variant={admin.estado === 'ACTIVO' ? 'outline-danger' : 'outline-success'}
+                size="sm"
+                disabled={esMismoUsuario}
+                isLoading={isCurrentUpdatingGlobal}
+                onClick={() =>
+                  onCambiarEstadoGlobal(
+                    admin.id,
                     admin.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
                   )
                 }
+                title={
+                  esMismoUsuario
+                    ? 'No puedes bloquear tu propia cuenta'
+                    : admin.estado === 'ACTIVO'
+                    ? 'Bloquear cuenta global'
+                    : 'Desbloquear cuenta global'
+                }
               >
-                {admin.estado === 'ACTIVO' ? 'Inactivar' : 'Activar'}
+                {admin.estado === 'ACTIVO' ? <Lock size={16} /> : <Unlock size={16} />}
               </Button>
             )}
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Lock, Unlock, UserMinus, UserCheck } from 'lucide-react';
 import Table, { type Column } from '../../../shared/ui/Table';
 import Button from '../../../shared/ui/Button';
 import type { BarberoGestion } from '../types/barberos.types';
@@ -12,8 +13,11 @@ interface BarberoTableProps {
   onEditarComision: (barbero: BarberoGestion) => void;
   onEditarFoto: (barbero: BarberoGestion) => void; 
   onCambiarEstado: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
+  onCambiarEstadoGlobal: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
   rolActorPrincipal: Rol; 
+  currentUserId?: number;
   isUpdatingId?: number | null;
+  isUpdatingGlobalId?: number | null;
 }
 
 export const BarberoTable: React.FC<BarberoTableProps> = ({
@@ -22,8 +26,11 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
   onEditarComision,
   onEditarFoto,
   onCambiarEstado,
+  onCambiarEstadoGlobal,
   rolActorPrincipal,
+  currentUserId,
   isUpdatingId,
+  isUpdatingGlobalId,
 }) => {
   const columns: Column<BarberoGestion>[] = [
     {
@@ -76,8 +83,21 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
       ),
     },
     {
+      key: 'estadoGlobal',
+      header: 'Estado Global',
+      render: (barbero) => (
+        <span
+          className={`badge ${
+            barbero.estadoGlobal === 'ACTIVO' ? 'bg-success' : 'bg-danger'
+          }`}
+        >
+          {barbero.estadoGlobal === 'ACTIVO' ? 'Habilitada' : 'Bloqueada'}
+        </span>
+      ),
+    },
+    {
       key: 'estado',
-      header: 'Estado',
+      header: 'Rol Barbero',
       render: (barbero) => (
         <span
           className={`badge ${
@@ -93,7 +113,9 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
       header: 'Acciones',
       className: 'text-end',
       render: (barbero) => {
+        const esMismoUsuario = currentUserId === barbero.id;
         const isCurrentUpdating = isUpdatingId === barbero.id;
+        const isCurrentUpdatingGlobal = isUpdatingGlobalId === barbero.id;
         const puedeEditar = puedeGestionarEstado(rolActorPrincipal, 'BARBERO');
         return (
           <div className="d-inline-flex align-items-center justify-content-end gap-1">
@@ -124,19 +146,60 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
                 Foto
               </Button>
             )}
-            <Button
-              variant={barbero.estado === 'ACTIVO' ? 'outline-danger' : 'outline-success'}
-              size="sm"
-              isLoading={isCurrentUpdating}
-              onClick={() =>
-                onCambiarEstado(
-                  barbero.id,
-                  barbero.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
-                )
-              }
-            >
-              {barbero.estado === 'ACTIVO' ? 'Inactivar' : 'Activar'}
-            </Button>
+            {puedeEditar && (
+              <Button
+                variant={barbero.estado === 'ACTIVO' ? 'outline-warning' : 'outline-success'}
+                size="sm"
+                isLoading={isCurrentUpdating}
+                onClick={() =>
+                  onCambiarEstado(
+                    barbero.id,
+                    barbero.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
+                  )
+                }
+                title={
+                  barbero.estado === 'ACTIVO'
+                    ? 'Inactivar rol barbero'
+                    : 'Activar rol barbero'
+                }
+              >
+                {barbero.estado === 'ACTIVO' ? (
+                  <>
+                    <UserMinus size={16} className="me-1" />
+                    Inactivar Rol
+                  </>
+                ) : (
+                  <>
+                    <UserCheck size={16} className="me-1" />
+                    Activar Rol
+                  </>
+                )}
+              </Button>
+            )}
+
+            {puedeEditar && (
+              <Button
+                variant={barbero.estadoGlobal === 'ACTIVO' ? 'outline-danger' : 'outline-success'}
+                size="sm"
+                disabled={esMismoUsuario}
+                isLoading={isCurrentUpdatingGlobal}
+                onClick={() =>
+                  onCambiarEstadoGlobal(
+                    barbero.id,
+                    barbero.estadoGlobal === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
+                  )
+                }
+                title={
+                  esMismoUsuario
+                    ? 'No puedes bloquear tu propia cuenta'
+                    : barbero.estadoGlobal === 'ACTIVO'
+                    ? 'Bloquear cuenta global'
+                    : 'Desbloquear cuenta global'
+                }
+              >
+                {barbero.estadoGlobal === 'ACTIVO' ? <Lock size={16} /> : <Unlock size={16} />}
+              </Button>
+            )}
 
             {puedeEditar && (
               <Link

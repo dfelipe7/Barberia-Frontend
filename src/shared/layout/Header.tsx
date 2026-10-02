@@ -34,7 +34,7 @@ export default function Header() {
     };
 
     return (
-        <header>
+        <header style={{ position: 'sticky', top: 0, zIndex: 1030 }}>
             <nav
                 className={`navbar ${isDark ? 'navbar-dark bg-dark' : 'navbar-light bg-white'} border-bottom shadow-sm`}
                 style={{
@@ -45,9 +45,9 @@ export default function Header() {
             >
                 <div className="container-fluid d-flex align-items-center justify-content-between">
                     <Link
-                        to="/dashboard"
+                        to="/"
                         className="navbar-brand mb-0 d-flex align-items-center py-1"
-                        aria-label={`Ir al Dashboard de ${BRAND.name}`}
+                        aria-label={`Ir al inicio de ${BRAND.name}`}
                     >
                         {/* Se usa el logo real con detección automática de tema:
                             fondo oscuro -> logo-white
