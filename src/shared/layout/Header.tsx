@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
-import { Globe, User } from 'lucide-react';
+import { Globe, User, Menu } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import { obtenerUrlFoto } from '../lib/obtenerUrlFoto';
 import BrandLogo from '../ui/BrandLogo';
 import { useSystemTheme } from '../lib/useSystemTheme';
 import { BRAND } from '../../config/brand';
 import UserDropdown from './UserDropdown';
+import { useSidebar } from './SidebarContext';
 
 const ROLES_APP = ['SUPERADMIN', 'ADMINISTRADOR', 'BARBERO'];
 
@@ -26,6 +27,7 @@ export default function Header() {
     } = useAuth();
     const systemTheme = useSystemTheme();
     const isDark = systemTheme === 'dark';
+    const { toggleMobile, isMobileOpen } = useSidebar();
 
     const rolesApp = roles.filter((r) => ROLES_APP.includes(r));
     const rolPrincipal = [...rolesApp].sort(
@@ -96,6 +98,17 @@ export default function Header() {
                 <div className="container-fluid px-2 px-sm-3 d-flex align-items-center justify-content-between">
                     {/* ── Zona izquierda — Marca + Home ── */}
                     <div className="d-flex align-items-center gap-2 gap-sm-3">
+                        <button
+                            type="button"
+                            onClick={toggleMobile}
+                            className={`btn btn-sm d-lg-none ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} p-1 header-action-btn`}
+                            aria-label="Abrir menú de navegación"
+                            aria-expanded={isMobileOpen}
+                            aria-controls="mobile-sidebar-drawer"
+                        >
+                            <Menu size={20} strokeWidth={2} />
+                        </button>
+
                         <Link
                             to="/dashboard"
                             className="navbar-brand d-flex align-items-center py-0 me-0"
