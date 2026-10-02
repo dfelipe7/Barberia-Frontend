@@ -1,17 +1,18 @@
 import { Link } from 'react-router-dom';
-import { Globe } from 'lucide-react';
+import { Globe, User } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import { obtenerUrlFoto } from '../lib/obtenerUrlFoto';
 import BrandLogo from '../ui/BrandLogo';
 import { useSystemTheme } from '../lib/useSystemTheme';
 import { BRAND } from '../../config/brand';
+import UserDropdown from './UserDropdown';
 
 const ROLES_APP = ['SUPERADMIN', 'ADMINISTRADOR', 'BARBERO'];
 
-const COLORES_ROL: Record<string, string> = {
-    SUPERADMIN: 'danger',
-    ADMINISTRADOR: 'warning',
-    BARBERO: 'info',
+const NIVEL_ROL: Record<string, number> = {
+    SUPERADMIN: 3,
+    ADMINISTRADOR: 2,
+    BARBERO: 1,
 };
 
 export default function Header() {
@@ -19,6 +20,7 @@ export default function Header() {
         keycloak,
         nombre,
         apellido,
+        email,
         roles,
         usuarioDb,
     } = useAuth();
@@ -26,6 +28,10 @@ export default function Header() {
     const isDark = systemTheme === 'dark';
 
     const rolesApp = roles.filter((r) => ROLES_APP.includes(r));
+    const rolPrincipal = [...rolesApp].sort(
+        (a, b) => (NIVEL_ROL[b] || 0) - (NIVEL_ROL[a] || 0)
+    )[0] || roles[0] || 'USUARIO';
+
     const fotoUrl = obtenerUrlFoto(usuarioDb?.barbero?.fotoUrl);
 
     const cerrarSesion = () => {
@@ -34,81 +40,141 @@ export default function Header() {
         });
     };
 
+    const renderCentralAvatar = () => {
+        if (fotoUrl) {
+            return (
+                <img
+                    src={fotoUrl}
+                    alt={`Foto de ${nombre || 'usuario'}`}
+                    className="rounded-circle border"
+                    style={{
+                        width: '32px',
+                        height: '32px',
+                        objectFit: 'cover',
+                        borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(12,12,12,0.15)',
+                        flexShrink: 0,
+                    }}
+                />
+            );
+        }
+
+        const iniN = (nombre || '').trim()[0] || '';
+        const iniA = (apellido || '').trim()[0] || '';
+        const iniciales = (iniN + iniA).toUpperCase() || 'U';
+
+        return (
+            <div
+                className="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold"
+                style={{
+                    width: '32px',
+                    height: '32px',
+                    fontSize: '0.75rem',
+                    backgroundColor: '#0071BC',
+                    color: '#FFFDFA',
+                    flexShrink: 0,
+                    letterSpacing: '0.04em',
+                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,113,188,0.3)'}`,
+                }}
+                aria-hidden="true"
+            >
+                {iniciales}
+            </div>
+        );
+    };
+
     return (
         <header style={{ position: 'sticky', top: 0, zIndex: 1030 }}>
             <nav
-                className={`navbar ${isDark ? 'navbar-dark bg-dark' : 'navbar-light bg-white'} border-bottom shadow-sm`}
+                className={`navbar ${isDark ? 'navbar-dark' : 'navbar-light'} border-bottom`}
                 style={{
-                    backgroundColor: isDark ? 'var(--brand-black, #0C0C0C)' : 'var(--brand-white, #FFFDFA)',
+                    backgroundColor: isDark ? '#0C0C0C' : '#FFFDFA',
                     borderColor: isDark ? '#222222' : '#e5e3dc',
-                    transition: 'background-color 0.25s ease, border-color 0.25s ease',
+                    color: isDark ? '#FFFDFA' : '#0C0C0C',
+                    transition: 'background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease',
                 }}
             >
-                <div className="container-fluid d-flex align-items-center justify-content-between">
-                    <Link
-                        to="/"
-                        className="navbar-brand mb-0 d-flex align-items-center py-1"
-                        aria-label={`Ir al inicio de ${BRAND.name}`}
-                    >
-                        {/* Se usa el logo real con detección automática de tema:
-                            fondo oscuro -> logo-white
-                            fondo claro  -> logo-black
-                        */}
-                        <BrandLogo
-                            variant={isDark ? 'white' : 'black'}
-                            height={30}
-                            alt={BRAND.name}
-                        />
-                    </Link>
-
-                    <div className="d-flex align-items-center gap-3">
-                        <div className="d-flex align-items-center gap-2">
-                            {fotoUrl && (
-                                <img
-                                    src={fotoUrl}
-                                    alt={`Foto de ${nombre || 'usuario'}`}
-                                    className="rounded-circle border border-1 me-1"
-                                    style={{
-                                        width: '32px',
-                                        height: '32px',
-                                        objectFit: 'cover',
-                                        borderColor: isDark ? '#ffffff' : '#0C0C0C',
-                                    }}
-                                />
-                            )}
-                            <span className={isDark ? 'text-white' : 'text-dark'}>
-                                {nombre} {apellido}
-                            </span>
-
-                            {rolesApp.map((rol) => (
-                                <span key={rol} className={`badge bg-${COLORES_ROL[rol] || 'secondary'}`}>
-                                    {rol}
-                                </span>
-                            ))}
-                        </div>
+                <div className="container-fluid px-2 px-sm-3 d-flex align-items-center justify-content-between">
+                    {/* ── Zona izquierda — Marca + Home ── */}
+                    <div className="d-flex align-items-center gap-2 gap-sm-3">
+                        <Link
+                            to="/dashboard"
+                            className="navbar-brand d-flex align-items-center py-0 me-0"
+                            aria-label={`Ir al dashboard de ${BRAND.name}`}
+                        >
+                            <BrandLogo
+                                variant={isDark ? 'white' : 'black'}
+                                height={30}
+                                className="brand-logo-header"
+                                alt={BRAND.name}
+                            />
+                        </Link>
 
                         <Link
-                            className={`btn btn-sm ${isDark ? 'btn-outline-secondary' : 'btn-outline-dark'} d-inline-flex align-items-center gap-1`}
                             to="/"
-                            title="Ver sitio público"
-                            aria-label="Ver sitio público"
+                            className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-inline-flex align-items-center gap-1 header-action-btn`}
+                            title="Ir al sitio público"
+                            aria-label="Ir al sitio público"
                         >
-                            <Globe size={15} />
-                            <span className="d-none d-sm-inline">Ver sitio público</span>
+                            <Globe size={15} strokeWidth={2} />
+                            <span className="d-none d-sm-inline" style={{ fontSize: '0.825rem' }}>
+                                Sitio público
+                            </span>
+                        </Link>
+                    </div>
+
+                    {/* ── Zona central — Identidad del usuario (oculta en móvil y tablets < 992px) ── */}
+                    <div className="d-none d-lg-flex align-items-center gap-2">
+                        {renderCentralAvatar()}
+                        <span
+                            className="fw-semibold text-truncate"
+                            style={{
+                                fontSize: '0.875rem',
+                                maxWidth: '200px',
+                                color: isDark ? '#FFFDFA' : '#0C0C0C',
+                            }}
+                        >
+                            {nombre} {apellido}
+                        </span>
+                        <span
+                            className="badge font-display"
+                            style={{
+                                backgroundColor: isDark ? 'rgba(0, 113, 188, 0.2)' : 'rgba(0, 113, 188, 0.1)',
+                                color: isDark ? '#38bdf8' : '#0071BC',
+                                border: `1px solid ${isDark ? 'rgba(56, 189, 248, 0.3)' : 'rgba(0, 113, 188, 0.25)'}`,
+                                fontSize: '0.68rem',
+                                letterSpacing: '0.06em',
+                                fontWeight: 700,
+                                padding: '0.25rem 0.55rem',
+                                borderRadius: '3px',
+                            }}
+                        >
+                            {rolPrincipal}
+                        </span>
+                    </div>
+
+                    {/* ── Zona derecha — Acciones ── */}
+                    <div className="d-flex align-items-center gap-2">
+                        <Link
+                            to="/mi-perfil"
+                            className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-inline-flex align-items-center gap-1 header-action-btn`}
+                            title="Mi Perfil"
+                            aria-label="Ir a Mi Perfil"
+                        >
+                            <User size={15} strokeWidth={2} />
+                            <span className="d-none d-md-inline" style={{ fontSize: '0.825rem' }}>
+                                Mi Perfil
+                            </span>
                         </Link>
 
-                        <Link
-                            className={`btn btn-sm ${isDark ? 'btn-outline-info' : 'btn-outline-primary'}`}
-                            to="/mi-perfil"
-                        >
-                            Mi Perfil
-                        </Link>
-                        <button
-                            className={`btn btn-sm ${isDark ? 'btn-outline-light' : 'btn-outline-secondary'}`}
-                            onClick={cerrarSesion}
-                        >
-                            Cerrar sesión
-                        </button>
+                        <UserDropdown
+                            nombre={nombre}
+                            apellido={apellido}
+                            email={email}
+                            roles={roles}
+                            fotoUrl={fotoUrl}
+                            isDark={isDark}
+                            onCerrarSesion={cerrarSesion}
+                        />
                     </div>
                 </div>
             </nav>
