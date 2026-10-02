@@ -6,7 +6,7 @@ import BrandLogo from '../ui/BrandLogo';
 import { useTheme } from '../context/ThemeContext';
 import { BRAND } from '../../config/brand';
 import UserDropdown from './UserDropdown';
-import { useSidebar } from './SidebarContext';
+import { useUi } from '../contexts/UiContext';
 
 const ROLES_APP = ['SUPERADMIN', 'ADMINISTRADOR', 'BARBERO'];
 
@@ -26,7 +26,7 @@ export default function Header() {
         usuarioDb,
     } = useAuth();
     const { theme, setTheme, isDark } = useTheme();
-    const { toggleMobile, isMobileOpen } = useSidebar();
+    const { toggleSidebar, isSidebarOpen } = useUi();
 
     const cycleTheme = () => {
         if (theme === 'system') setTheme('light');
@@ -109,12 +109,13 @@ export default function Header() {
                     {/* ── Zona izquierda — Marca + Home ── */}
                     <div className="d-flex align-items-center gap-2 gap-sm-3">
                         <button
+                            id="hamburger-btn"
                             type="button"
-                            onClick={toggleMobile}
+                            onClick={toggleSidebar}
                             className={`btn btn-sm d-lg-none ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} p-1 header-action-btn`}
-                            aria-label="Abrir menú de navegación"
-                            aria-expanded={isMobileOpen}
-                            aria-controls="mobile-sidebar-drawer"
+                            aria-label={isSidebarOpen ? 'Cerrar menú' : 'Abrir menú'}
+                            aria-expanded={isSidebarOpen}
+                            aria-controls="main-sidebar"
                         >
                             <Menu size={20} strokeWidth={2} />
                         </button>
