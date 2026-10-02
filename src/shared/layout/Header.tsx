@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Globe } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import { obtenerUrlFoto } from '../lib/obtenerUrlFoto';
 import BrandLogo from '../ui/BrandLogo';
@@ -85,6 +86,16 @@ export default function Header() {
                                 </span>
                             ))}
                         </div>
+
+                        <Link
+                            className={`btn btn-sm ${isDark ? 'btn-outline-secondary' : 'btn-outline-dark'} d-inline-flex align-items-center gap-1`}
+                            to="/"
+                            title="Ver sitio público"
+                            aria-label="Ver sitio público"
+                        >
+                            <Globe size={15} />
+                            <span className="d-none d-sm-inline">Ver sitio público</span>
+                        </Link>
 
                         <Link
                             className={`btn btn-sm ${isDark ? 'btn-outline-info' : 'btn-outline-primary'}`}

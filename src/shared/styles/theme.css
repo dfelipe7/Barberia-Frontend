@@ -171,11 +171,30 @@ body {
 .dash-shortcut-card {
   border: 1px solid var(--catalog-muted-border);
   border-radius: 2px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform;
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .dash-shortcut-card:hover {
   border-color: #0a0a0a;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+.dash-shortcut-card--featured {
+  border-left: 4px solid #0071BC !important;
+}
+.dash-shortcut-card--featured:hover {
+  border-color: #0a0a0a;
+  border-left-color: #0071BC !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-shortcut-card {
+    will-change: auto;
+    transition: none !important;
+  }
+  .dash-shortcut-card:hover {
+    transform: none !important;
+  }
 }
 .dash-role-badge {
   font-size: 0.65rem;

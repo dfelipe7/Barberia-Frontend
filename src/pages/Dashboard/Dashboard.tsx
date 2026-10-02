@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { Globe } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 
 const SHORTCUTS = [
@@ -47,6 +48,74 @@ export default function Dashboard() {
 
             {/* ── Tarjetas de acceso directo ── */}
             <div className="row g-3">
+                {/* ── Tarjeta destacada: Sitio Público ── */}
+                <div className="col-12">
+                    <NavLink
+                        to="/"
+                        end
+                        className="text-decoration-none"
+                        style={{ display: 'block' }}
+                    >
+                        <div
+                            className="dash-shortcut-card dash-shortcut-card--featured card border-start border-4"
+                            style={{ borderLeftColor: '#0071BC' }}
+                        >
+                            <div className="card-body p-3 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+                                <div className="d-flex align-items-center gap-3">
+                                    <div
+                                        className="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
+                                        style={{
+                                            width: '42px',
+                                            height: '42px',
+                                            backgroundColor: 'rgba(0, 113, 188, 0.1)',
+                                            color: '#0071BC',
+                                        }}
+                                    >
+                                        <Globe size={22} strokeWidth={2} />
+                                    </div>
+                                    <div>
+                                        <div className="d-flex align-items-center gap-2">
+                                            <h3
+                                                className="font-display mb-0"
+                                                style={{ fontSize: '1rem', fontWeight: 700, color: '#0a0a0a' }}
+                                            >
+                                                Sitio Público
+                                            </h3>
+                                            <span
+                                                className="badge"
+                                                style={{
+                                                    backgroundColor: 'rgba(0, 113, 188, 0.12)',
+                                                    color: '#0071BC',
+                                                    fontSize: '0.65rem',
+                                                    letterSpacing: '0.08em',
+                                                    fontWeight: 700,
+                                                    borderRadius: '2px',
+                                                }}
+                                            >
+                                                LANDING
+                                            </span>
+                                        </div>
+                                        <p
+                                            className="mb-0 mt-1"
+                                            style={{ fontSize: '0.825rem', color: 'var(--catalog-muted)', lineHeight: 1.5 }}
+                                        >
+                                            Ver la landing de Kyrios Studio tal como la ven tus clientes.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div
+                                    className="d-flex align-items-center gap-1 fw-semibold small flex-shrink-0"
+                                    style={{ color: '#0071BC' }}
+                                >
+                                    <span>Ver sitio</span>
+                                    <span aria-hidden="true">&rarr;</span>
+                                </div>
+                            </div>
+                        </div>
+                    </NavLink>
+                </div>
+
                 {SHORTCUTS.map(({ label, descripcion, to, icon }) => (
                     <div key={label} className="col-md-6 col-xl-3">
                         <NavLink
