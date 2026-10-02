@@ -102,6 +102,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
             id="comisionInput"
             valorActual={valorComision}
             registerProps={register('porcentajeComision', { valueAsNumber: true })}
+            onChange={(n) => setValue('porcentajeComision', n, { shouldValidate: true })}
             error={errors.porcentajeComision?.message}
             disabled={isLoading}
           />

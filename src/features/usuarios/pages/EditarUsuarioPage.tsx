@@ -251,7 +251,7 @@ export const EditarUsuarioPage: React.FC = () => {
               <div className="col-12 p-3 bg-surface-card rounded border border-surface-card">
                 <h6 className="fw-bold text-info mb-3">Datos del Perfil de Barbero</h6>
                 <div className="row g-3">
-                  <div className="col-12 col-sm-6">
+                  <div className="col-12 col-sm-6 min-width-0">
                     <label htmlFor="telefono" className="form-label fw-semibold">
                       Teléfono de Contacto
                     </label>
@@ -267,11 +267,12 @@ export const EditarUsuarioPage: React.FC = () => {
                     )}
                   </div>
 
-                  <div className="col-12 col-sm-6">
+                  <div className="col-12 col-sm-6 min-width-0">
                     <ComisionSlider
                       id="porcentajeComision"
                       valorActual={valorComision}
                       registerProps={register('porcentajeComision', { valueAsNumber: true })}
+                      onChange={(n) => setValue('porcentajeComision', n, { shouldValidate: true })}
                       error={errors.porcentajeComision?.message}
                       disabled={actualizarUsuarioMutation.isPending}
                     />

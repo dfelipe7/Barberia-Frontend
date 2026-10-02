@@ -1373,3 +1373,9 @@ a.btn:focus-visible {
   }
 }
 
+/* ─── Utilidad global de layout ─────────────────────────────────────────── */
+/* Los estilos del ComisionSlider viven en ComisionSlider.css              */
+.min-width-0 {
+  min-width: 0 !important;
+}
+
