@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { UserCog, Shield, Eye, Percent, Camera, Pencil, Scissors, UserMinus, UserCheck, Lock, Unlock } from 'lucide-react';
 import Table, { type Column } from '../../../shared/ui/Table';
 import AccionesDropdown from '../../../shared/ui/AccionesDropdown';
+import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import { useMediaQuery } from '../../../shared/lib/useMediaQuery';
 import type { BarberoGestion } from '../types/barberos.types';
 import { puedeGestionarEstado } from '../../../shared/lib/autorizacion/jerarquiaRoles';
@@ -370,7 +371,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
                     aria-label={barbero.estado === 'ACTIVO' ? 'Desactivar rol de barbero' : 'Activar rol de barbero'}
                   >
                     {isCurrentUpdating ? (
-                      <span className="spinner-border spinner-border-sm" role="status" />
+                      <KyriosSpinner size="xs" aria-hidden="true" />
                     ) : barbero.estado === 'ACTIVO' ? (
                       <UserMinus size={18} />
                     ) : (
@@ -400,7 +401,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
                     aria-label={isActivo ? 'Bloquear cuenta completa' : 'Desbloquear cuenta global'}
                   >
                     {isCurrentUpdatingGlobal ? (
-                      <span className="spinner-border spinner-border-sm" role="status" />
+                      <KyriosSpinner size="xs" aria-hidden="true" />
                     ) : isActivo ? (
                       <Lock size={18} />
                     ) : (

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useBarberosCatalogo } from '../../../features/barberos/api/barberos.facade';
 import type { BarberoCatalogo } from '../../../features/barberos/types/barberos.types';
+import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import BarberCard from './BarberCard';
 
 interface BarbersSectionProps {
@@ -49,7 +50,7 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
                     className="kyrios-barber-img-wrap d-flex align-items-center justify-content-center"
                     style={{ background: 'var(--home-surface-alt)' }}
                   >
-                    <div className="spinner-border spinner-border-sm text-secondary" role="status" />
+                    <KyriosSpinner size="sm" aria-hidden="true" />
                   </div>
                   <div className="p-4">
                     <div

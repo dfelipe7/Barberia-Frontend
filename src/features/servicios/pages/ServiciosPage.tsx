@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { CheckCircle2, EyeOff, Lock, Unlock } from 'lucide-react';
 import CrudPage from '../../../shared/components/CrudPage';
+import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import CatalogCard from '../../../shared/ui/Catalogcard';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
@@ -183,13 +184,7 @@ export const ServiciosPage: React.FC = () => {
                     style={{ pointerEvents: 'none' }}
                     title="Buscando..."
                   >
-                    <span
-                      className="spinner-border spinner-border-sm text-primary"
-                      role="status"
-                      style={{ width: '14px', height: '14px', borderWidth: '2px' }}
-                    >
-                      <span className="visually-hidden">Buscando...</span>
-                    </span>
+                    <KyriosSpinner size="xs" aria-hidden="true" />
                   </div>
                 )}
               </div>
@@ -341,11 +336,7 @@ export const ServiciosPage: React.FC = () => {
                         aria-label={s.estado === 'ACTIVO' ? `Desactivar ${s.nombre}` : `Activar ${s.nombre}`}
                       >
                         {cambiarEstadoMutation.isPending && idServicioCambiando === s.id ? (
-                          <span
-                            className="spinner-border spinner-border-sm"
-                            role="status"
-                            style={{ width: '13px', height: '13px' }}
-                          />
+                          <KyriosSpinner size="xs" aria-hidden="true" />
                         ) : s.estado === 'ACTIVO' ? (
                           <>
                             <Lock size={13} />

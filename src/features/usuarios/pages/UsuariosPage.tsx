@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Shield, Scissors } from 'lucide-react';
 import { useAuth } from '../../../auth/AuthContext';
 import Spinner from '../../../shared/ui/Spinner';
+import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useToast } from '../../../shared/lib/useToast';
@@ -313,13 +314,7 @@ export const UsuariosPage: React.FC = () => {
               style={{ pointerEvents: 'none' }}
               title="Filtrando..."
             >
-              <span
-                className="spinner-border spinner-border-sm text-primary"
-                role="status"
-                style={{ width: '14px', height: '14px', borderWidth: '2px' }}
-              >
-                <span className="visually-hidden">Buscando...</span>
-              </span>
+              <KyriosSpinner size="xs" aria-hidden="true" />
             </div>
           )}
         </div>

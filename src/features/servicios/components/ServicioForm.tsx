@@ -3,6 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle2, EyeOff } from 'lucide-react';
 import Button from '../../../shared/ui/Button';
+import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import { useBarberosGestion } from '../../barberos';
 import { servicioSchema, type ServicioFormValues, type ServicioFormInput } from '../schemas/servicio.schema';
 import type { Servicio } from '../types/servicios.types';
@@ -142,7 +143,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
         <div className="col-12">
           <label className="form-label fw-semibold">Barberos que realizan este servicio</label>
           {cargandoBarberos ? (
-            <div className="text-muted small">Cargando barberos...</div>
+            <KyriosSpinner size="xs" variant="inline" mensaje="Cargando barberos..." className="my-2" />
           ) : (
             <Controller
               control={control}

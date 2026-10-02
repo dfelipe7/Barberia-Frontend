@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../auth/AuthContext';
 import Spinner from '../../../shared/ui/Spinner';
+import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useBarberosCatalogo } from '../api/barberos.facade';
 import BarberoCard from '../components/BarberoCard';
@@ -87,13 +88,7 @@ export const BarberosPage: React.FC = () => {
               style={{ pointerEvents: 'none' }}
               title="Filtrando..."
             >
-              <span
-                className="spinner-border spinner-border-sm text-primary"
-                role="status"
-                style={{ width: '14px', height: '14px', borderWidth: '2px' }}
-              >
-                <span className="visually-hidden">Buscando...</span>
-              </span>
+              <KyriosSpinner size="xs" aria-hidden="true" />
             </div>
           )}
         </div>

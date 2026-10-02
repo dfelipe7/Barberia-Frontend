@@ -1,6 +1,7 @@
 import React from 'react';
 import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
 import type { Servicio } from '../../../features/servicios/types/servicios.types';
+import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import ServiceCard from './ServiceCard';
 
 interface ServicesSectionProps {
@@ -48,7 +49,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
                     className="kyrios-service-img-wrap d-flex align-items-center justify-content-center"
                     style={{ background: 'var(--home-surface-alt)' }}
                   >
-                    <div className="spinner-border spinner-border-sm text-secondary" role="status" />
+                    <KyriosSpinner size="sm" aria-hidden="true" />
                   </div>
                   <div className="p-4">
                     <div

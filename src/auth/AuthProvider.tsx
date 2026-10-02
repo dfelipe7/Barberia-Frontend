@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 
 import keycloak from './keycloak';
 import { AuthContextProvider } from './AuthContext';
+import KyriosSpinner from '../shared/ui/KyriosSpinner';
 
 interface AuthProviderProps {
     children: React.ReactNode;
@@ -40,10 +41,8 @@ export default function AuthProvider({
 
     if (loading) {
         return (
-            <div className="d-flex justify-content-center align-items-center vh-100">
-                <div className="spinner-border" role="status">
-                    <span className="visually-hidden">Cargando...</span>
-                </div>
+            <div className="d-flex justify-content-center align-items-center vh-100 bg-surface-app">
+                <KyriosSpinner size="lg" mensaje="Iniciando sesión..." variant="block" />
             </div>
         );
     }

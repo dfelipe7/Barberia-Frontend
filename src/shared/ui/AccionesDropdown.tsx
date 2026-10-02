@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
+import KyriosSpinner from './KyriosSpinner';
 
 export interface AccionItem {
   key: string;
@@ -94,11 +95,7 @@ export const AccionesDropdown: React.FC<AccionesDropdownProps> = ({
                   style={{ width: '20px' }}
                 >
                   {item.isLoading ? (
-                    <span
-                      className="spinner-border spinner-border-sm"
-                      role="status"
-                      style={{ width: '13px', height: '13px' }}
-                    />
+                    <KyriosSpinner size="xs" aria-hidden="true" />
                   ) : (
                     item.icon
                   )}

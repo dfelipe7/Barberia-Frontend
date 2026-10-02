@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { UserCog, Shield, Eye, Pencil, UserMinus, UserCheck, Lock, Unlock, Scissors } from 'lucide-react';
 import Table, { type Column } from '../../../shared/ui/Table';
 import AccionesDropdown from '../../../shared/ui/AccionesDropdown';
+import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import { useMediaQuery } from '../../../shared/lib/useMediaQuery';
 import type { AdministradorGestion } from '../types/usuarios.types';
 
@@ -338,7 +339,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                     aria-label={admin.estadoAdmin === 'ACTIVO' ? 'Desactivar rol de administrador' : 'Activar rol de administrador'}
                   >
                     {isCurrentUpdating ? (
-                      <span className="spinner-border spinner-border-sm" role="status" />
+                      <KyriosSpinner size="xs" aria-hidden="true" />
                     ) : admin.estadoAdmin === 'ACTIVO' ? (
                       <UserMinus size={18} />
                     ) : (
@@ -368,7 +369,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                     aria-label={isActivo ? 'Bloquear cuenta completa' : 'Desbloquear cuenta global'}
                   >
                     {isCurrentUpdatingGlobal ? (
-                      <span className="spinner-border spinner-border-sm" role="status" />
+                      <KyriosSpinner size="xs" aria-hidden="true" />
                     ) : isActivo ? (
                       <Lock size={18} />
                     ) : (

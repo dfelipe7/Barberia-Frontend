@@ -1288,3 +1288,55 @@ a.btn:focus-visible {
 [data-theme="dark"] .rounded-circle.bg-primary.bg-opacity-10.text-primary {
   background-color: rgba(0, 113, 188, 0.2) !important;
 }
+
+/* ─── Kyrios Spinner (Brand Spinner) ────────────────────────────────────── */
+@keyframes kyriosSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.kyrios-spinner {
+  display: inline-flex;
+  align-items: center;
+}
+
+.kyrios-spinner--inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kyrios-spinner--block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.kyrios-spinner__icon {
+  animation: kyriosSpin 1.4s linear infinite;
+  will-change: transform;
+  color: var(--brand-blue, #0071BC);
+  flex-shrink: 0;
+  transform-origin: center;
+}
+
+.kyrios-spinner__icon--pulse {
+  animation: kyriosSpin 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.kyrios-spinner__text {
+  font-size: 0.88rem;
+  color: var(--surface-app-muted, #6b6375);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kyrios-spinner__icon,
+  .kyrios-spinner__icon--pulse {
+    animation: none !important;
+    opacity: 0.6;   /* estático, pero visible como "cargando" */
+  }
+}
+
