@@ -25,6 +25,8 @@ export function useAdministradores(enabled = true) {
       return dtos.map(usuariosMapper.toAdminGestionDomain);
     },
     enabled,
+    placeholderData: (prev) => prev,
+    staleTime: 30_000,
   });
 }
 

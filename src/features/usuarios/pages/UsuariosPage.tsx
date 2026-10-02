@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Shield, Scissors } from 'lucide-react';
 import { useAuth } from '../../../auth/AuthContext';
@@ -7,6 +7,7 @@ import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useToast } from '../../../shared/lib/useToast';
 import { ToastContainer } from '../../../shared/ui/ToastContainer';
+import { useDebounce } from '../../../shared/lib/useDebounce';
 
 // Facades
 import {
@@ -70,6 +71,26 @@ export const UsuariosPage: React.FC = () => {
     error: errorBarberos,
     refetch: refetchBarberos,
   } = useBarberosGestion(esSuperAdmin || esAdministrador);
+
+  // Búsqueda debounced para administradores y barberos
+  const [filtroBusqueda, setFiltroBusqueda] = useState('');
+  const debouncedBusqueda = useDebounce(filtroBusqueda, 350);
+
+  const administradoresFiltrados = useMemo(() => {
+    if (!debouncedBusqueda.trim()) return administradores;
+    const q = debouncedBusqueda.toLowerCase().trim();
+    return administradores.filter((a) =>
+      `${a.nombre} ${a.apellido} ${a.email}`.toLowerCase().includes(q)
+    );
+  }, [administradores, debouncedBusqueda]);
+
+  const barberosFiltrados = useMemo(() => {
+    if (!debouncedBusqueda.trim()) return barberos;
+    const q = debouncedBusqueda.toLowerCase().trim();
+    return barberos.filter((b) =>
+      `${b.nombre} ${b.apellido} ${b.email}`.toLowerCase().includes(q)
+    );
+  }, [barberos, debouncedBusqueda]);
 
   // Mutaciones
   const cambiarEstadoAdminMutation = useCambiarEstadoAdministrador();
@@ -271,6 +292,48 @@ export const UsuariosPage: React.FC = () => {
         </button>
       </div>
 
+      {/* ── Barra de búsqueda debounced para usuarios ── */}
+      <div className="mb-4" style={{ maxWidth: '440px' }}>
+        <div className="position-relative">
+          <input
+            type="text"
+            className="form-control pe-5"
+            placeholder={`Buscar en ${pestañaActiva === 'administradores' ? 'administradores' : 'barberos'} por nombre o correo...`}
+            value={filtroBusqueda}
+            onChange={(e) => setFiltroBusqueda(e.target.value)}
+            style={{
+              transition: 'border-color 150ms ease, box-shadow 150ms ease',
+            }}
+            aria-label="Buscar usuarios"
+          />
+
+          {filtroBusqueda !== debouncedBusqueda && (
+            <div
+              className="position-absolute end-0 top-50 translate-middle-y me-3 d-flex align-items-center"
+              style={{ pointerEvents: 'none' }}
+              title="Filtrando..."
+            >
+              <span
+                className="spinner-border spinner-border-sm text-primary"
+                role="status"
+                style={{ width: '14px', height: '14px', borderWidth: '2px' }}
+              >
+                <span className="visually-hidden">Buscando...</span>
+              </span>
+            </div>
+          )}
+        </div>
+
+        {filtroBusqueda !== debouncedBusqueda && (
+          <div
+            className="text-surface-muted small mt-1 ms-1"
+            style={{ fontSize: '0.75rem', animation: 'fadeInSpinner 120ms ease-out' }}
+          >
+            Buscando...
+          </div>
+        )}
+      </div>
+
       {/* Contenido según pestaña con microinteracción de transición */}
       <div key={pestañaActiva} className="usuarios-tab-pane">
         {pestañaActiva === 'administradores' && (
@@ -292,9 +355,22 @@ export const UsuariosPage: React.FC = () => {
 
             {cargandoAdmins ? (
               <Spinner mensaje="Cargando administradores..." />
+            ) : administradoresFiltrados.length === 0 && debouncedBusqueda ? (
+              <div className="alert-surface text-center py-5 px-3 text-surface-muted border rounded">
+                <p className="mb-2 fs-6 fw-semibold text-surface-card">
+                  No se encontraron administradores que coincidan con "{debouncedBusqueda}".
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={() => setFiltroBusqueda('')}
+                >
+                  Limpiar búsqueda
+                </button>
+              </div>
             ) : (
               <UserTable
-                administradores={administradores}
+                administradores={administradoresFiltrados}
                 onSelectUsuario={handleVerDetalles}
                 onCambiarEstado={handleCambiarEstadoAdmin}
                 onCambiarEstadoGlobal={handleCambiarEstadoGlobalAdmin}
@@ -327,9 +403,22 @@ export const UsuariosPage: React.FC = () => {
 
             {cargandoBarberos ? (
               <Spinner mensaje="Cargando barberos de gestión..." />
+            ) : barberosFiltrados.length === 0 && debouncedBusqueda ? (
+              <div className="alert-surface text-center py-5 px-3 text-surface-muted border rounded">
+                <p className="mb-2 fs-6 fw-semibold text-surface-card">
+                  No se encontraron barberos que coincidan con "{debouncedBusqueda}".
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={() => setFiltroBusqueda('')}
+                >
+                  Limpiar búsqueda
+                </button>
+              </div>
             ) : (
               <BarberoTable
-                barberos={barberos}
+                barberos={barberosFiltrados}
                 onSelectBarbero={handleVerDetalles}
                 onEditarComision={(barbero) => setBarberoAEditarComision(barbero)}
                 onEditarFoto={(barbero) => setBarberoAEditarFoto(barbero)}

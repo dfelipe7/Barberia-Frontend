@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { CheckCircle2, EyeOff, Lock, Unlock } from 'lucide-react';
 import CrudPage from '../../../shared/components/CrudPage';
 import CatalogCard from '../../../shared/ui/Catalogcard';
@@ -7,6 +7,7 @@ import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useToast } from '../../../shared/lib/useToast';
 import { ToastContainer } from '../../../shared/ui/ToastContainer';
+import { useDebounce } from '../../../shared/lib/useDebounce';
 import {
   useServiciosGestion,
   useCrearServicio,
@@ -19,8 +20,14 @@ import type { Servicio } from '../types/servicios.types';
 import type { ServicioFormValues } from '../schemas/servicio.schema';
 
 export const ServiciosPage: React.FC = () => {
+  // Estado local e inmediato para el campo de búsqueda (evita lag en input)
   const [filtroNombre, setFiltroNombre] = useState('');
+  // Valor debounced para la petición HTTP (350ms delay)
+  const debouncedNombre = useDebounce(filtroNombre, 350);
+
+  // Filtro discreto de estado (inmediato, sin debounce)
   const [filtroEstado, setFiltroEstado] = useState<'' | 'ACTIVO' | 'INACTIVO'>('');
+
   const [servicioAEditarFoto, setServicioAEditarFoto] = useState<Servicio | null>(null);
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
   const [errorForm, setErrorForm] = useState<string | null>(null);
@@ -28,16 +35,37 @@ export const ServiciosPage: React.FC = () => {
   const [idServicioAnimado, setIdServicioAnimado] = useState<number | null>(null);
   const { toast, showToast, hideToast } = useToast(4000);
 
-  const { data: todosLosServicios = [], isLoading, error, refetch } = useServiciosGestion({
-    ...(filtroNombre.trim() && { nombre: filtroNombre.trim() }),
-  });
+  // Memorizar objeto de filtro para queryKey estable
+  const filtroGestion = useMemo(() => ({
+    ...(debouncedNombre.trim() ? { nombre: debouncedNombre.trim() } : {}),
+    ...(filtroEstado ? { estado: filtroEstado } : {}),
+  }), [debouncedNombre, filtroEstado]);
 
-  const activos = todosLosServicios.filter((s) => s.estado === 'ACTIVO').length;
-  const inactivos = todosLosServicios.filter((s) => s.estado === 'INACTIVO').length;
+  const {
+    data: servicios = [],
+    isLoading,
+    isFetching,
+    error,
+    refetch,
+  } = useServiciosGestion(Object.keys(filtroGestion).length > 0 ? filtroGestion : undefined);
 
-  const servicios = filtroEstado
-    ? todosLosServicios.filter((s) => s.estado === filtroEstado)
-    : todosLosServicios;
+  // Guardar conteos de activos/inactivos para mantener el resumen aun al filtrar
+  const [conteos, setConteos] = useState<{ activos: number; inactivos: number }>({ activos: 0, inactivos: 0 });
+
+  useEffect(() => {
+    if (!filtroEstado && servicios.length > 0) {
+      setConteos({
+        activos: servicios.filter((s) => s.estado === 'ACTIVO').length,
+        inactivos: servicios.filter((s) => s.estado === 'INACTIVO').length,
+      });
+    }
+  }, [servicios, filtroEstado]);
+
+  const activos = conteos.activos || servicios.filter((s) => s.estado === 'ACTIVO').length;
+  const inactivos = conteos.inactivos || servicios.filter((s) => s.estado === 'INACTIVO').length;
+
+  // Indicador de búsqueda en curso (mientras el debounce espera o la query hace fetch)
+  const estaBuscando = isFetching || filtroNombre !== debouncedNombre;
 
   const crearMutation = useCrearServicio();
   const actualizarMutation = useActualizarServicio();
@@ -87,13 +115,18 @@ export const ServiciosPage: React.FC = () => {
     }
   };
 
+  const handleLimpiarFiltros = () => {
+    setFiltroNombre('');
+    setFiltroEstado('');
+  };
+
   return (
     <CrudPage<Servicio>
       title="Catálogo de Servicios"
       subtitle="Gestiona los cortes, tratamientos y tarifas disponibles para los clientes."
       createButtonText="+ Nuevo Servicio"
       canCreate={true}
-      isLoading={isLoading}
+      isLoading={isLoading && servicios.length === 0}
       error={error ? mapApiError(error) : undefined}
       onRetry={refetch}
       modalTitle="Registrar Nuevo Servicio"
@@ -127,17 +160,51 @@ export const ServiciosPage: React.FC = () => {
             </span>
           </div>
 
-          {/* ── 3. Barra de filtros con pills destacadas ── */}
+          {/* ── 3. Barra de filtros con búsqueda debounced y pills destacadas ── */}
           <div className="row g-2 mb-4 align-items-center">
             <div className="col-12 col-md-7">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Buscar por nombre o descripción..."
-                value={filtroNombre}
-                onChange={(e) => setFiltroNombre(e.target.value)}
-              />
+              <div className="position-relative">
+                <input
+                  type="text"
+                  className="form-control pe-5"
+                  placeholder="Buscar por nombre o descripción..."
+                  value={filtroNombre}
+                  onChange={(e) => setFiltroNombre(e.target.value)}
+                  style={{
+                    transition: 'border-color 150ms ease, box-shadow 150ms ease',
+                  }}
+                  aria-label="Buscar servicios"
+                />
+
+                {/* Spinner inline discreto (14px) dentro del input */}
+                {estaBuscando && (
+                  <div
+                    className="position-absolute end-0 top-50 translate-middle-y me-3 d-flex align-items-center"
+                    style={{ pointerEvents: 'none' }}
+                    title="Buscando..."
+                  >
+                    <span
+                      className="spinner-border spinner-border-sm text-primary"
+                      role="status"
+                      style={{ width: '14px', height: '14px', borderWidth: '2px' }}
+                    >
+                      <span className="visually-hidden">Buscando...</span>
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {estaBuscando && (
+                <div
+                  className="text-surface-muted small mt-1 ms-1"
+                  style={{ fontSize: '0.75rem', animation: 'fadeInSpinner 120ms ease-out' }}
+                  aria-live="polite"
+                >
+                  Buscando...
+                </div>
+              )}
             </div>
+
             <div className="col-12 col-md-5 d-flex align-items-center justify-content-md-end">
               <div
                 className="d-inline-flex p-1 rounded border bg-surface-card gap-1 w-100 w-md-auto justify-content-between justify-content-md-start"
@@ -192,15 +259,39 @@ export const ServiciosPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Grid de servicios */}
-          <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
-            {servicios.length === 0 && (
+          {/* Grid de servicios con placeholderData (mantiene lista previa sin parpadeo) */}
+          <div
+            className={`row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 search-results-fade ${
+              isFetching && servicios.length > 0 ? 'opacity-75' : ''
+            }`}
+            style={{ transition: 'opacity 150ms ease' }}
+          >
+            {servicios.length === 0 && !isLoading && (
               <div className="col-12">
-                <div className="alert-surface text-center py-5 text-surface-muted border rounded">
-                  <p className="mb-0 fs-6">No se encontraron servicios con el filtro seleccionado.</p>
+                <div className="alert-surface text-center py-5 px-3 text-surface-muted border rounded">
+                  <p className="mb-2 fs-6 fw-semibold text-surface-card">
+                    {filtroNombre || filtroEstado
+                      ? 'No encontramos servicios con ese criterio de búsqueda.'
+                      : 'No hay servicios registrados en este momento.'}
+                  </p>
+                  <p className="mb-3 small">
+                    {filtroNombre || filtroEstado
+                      ? 'Intenta con otro término o restablece los filtros.'
+                      : 'Comienza creando un nuevo servicio para tu catálogo.'}
+                  </p>
+                  {(filtroNombre || filtroEstado) && (
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={handleLimpiarFiltros}
+                    >
+                      Limpiar búsqueda
+                    </button>
+                  )}
                 </div>
               </div>
             )}
+
             {servicios.map((s) => (
               <div className="col" key={s.id}>
                 <CatalogCard
