@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { CheckCircle2, EyeOff } from 'lucide-react';
 import Button from '../../../shared/ui/Button';
 import { useBarberosGestion } from '../../barberos';
 import { servicioSchema, type ServicioFormValues, type ServicioFormInput } from '../schemas/servicio.schema';
@@ -55,6 +56,28 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      {/* Banner de visibilidad de servicio */}
+      {servicioInicial && (
+        <div
+          className={`alert ${
+            servicioInicial.estado === 'ACTIVO' ? 'alert-success' : 'alert-warning'
+          } py-2 px-3 small d-flex align-items-center gap-2 mb-3`}
+          role="status"
+        >
+          {servicioInicial.estado === 'ACTIVO' ? (
+            <>
+              <CheckCircle2 size={16} className="flex-shrink-0 text-success" />
+              <span>Este servicio está visible para los clientes.</span>
+            </>
+          ) : (
+            <>
+              <EyeOff size={16} className="flex-shrink-0 text-warning-emphasis" />
+              <span>Este servicio <strong>NO</strong> está visible para los clientes.</span>
+            </>
+          )}
+        </div>
+      )}
+
       {errorMensaje && <div className="alert alert-danger py-2 small">{errorMensaje}</div>}
       <div className="row g-3">
         <div className="col-12 col-sm-8">

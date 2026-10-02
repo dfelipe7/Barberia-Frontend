@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CheckCircle2, EyeOff, Lock, Unlock } from 'lucide-react';
 import CrudPage from '../../../shared/components/CrudPage';
 import CatalogCard from '../../../shared/ui/Catalogcard';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
@@ -23,12 +24,20 @@ export const ServiciosPage: React.FC = () => {
   const [servicioAEditarFoto, setServicioAEditarFoto] = useState<Servicio | null>(null);
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
   const [errorForm, setErrorForm] = useState<string | null>(null);
+  const [idServicioCambiando, setIdServicioCambiando] = useState<number | null>(null);
+  const [idServicioAnimado, setIdServicioAnimado] = useState<number | null>(null);
   const { toast, showToast, hideToast } = useToast(4000);
 
-  const { data: servicios = [], isLoading, error, refetch } = useServiciosGestion({
+  const { data: todosLosServicios = [], isLoading, error, refetch } = useServiciosGestion({
     ...(filtroNombre.trim() && { nombre: filtroNombre.trim() }),
-    ...(filtroEstado && { estado: filtroEstado }),
   });
+
+  const activos = todosLosServicios.filter((s) => s.estado === 'ACTIVO').length;
+  const inactivos = todosLosServicios.filter((s) => s.estado === 'INACTIVO').length;
+
+  const servicios = filtroEstado
+    ? todosLosServicios.filter((s) => s.estado === filtroEstado)
+    : todosLosServicios;
 
   const crearMutation = useCrearServicio();
   const actualizarMutation = useActualizarServicio();
@@ -57,12 +66,24 @@ export const ServiciosPage: React.FC = () => {
   const handleCambiarEstado = async (servicio: Servicio) => {
     try {
       setErrorAccion(null);
+      setIdServicioCambiando(servicio.id);
+      const nuevoEstado = servicio.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO';
       await cambiarEstadoMutation.mutateAsync({
         id: servicio.id,
-        datos: { estado: servicio.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO' },
+        datos: { estado: nuevoEstado },
       });
+      showToast(
+        'success',
+        `Servicio "${servicio.nombre}" ${nuevoEstado === 'ACTIVO' ? 'activado' : 'desactivado'} correctamente.`
+      );
+      setIdServicioAnimado(servicio.id);
+      setTimeout(() => {
+        setIdServicioAnimado(null);
+      }, 350);
     } catch (err: unknown) {
       setErrorAccion(mapApiError(err));
+    } finally {
+      setIdServicioCambiando(null);
     }
   };
 
@@ -89,14 +110,26 @@ export const ServiciosPage: React.FC = () => {
       )}
     >
       {({ onEdit }) => (
-          <>
-            <ToastContainer toast={toast} onClose={hideToast} />
+        <>
+          <ToastContainer toast={toast} onClose={hideToast} />
 
-            {errorAccion && <ErrorMessage message={errorAccion} />}
+          {errorAccion && <ErrorMessage message={errorAccion} />}
 
-          {/* Barra de filtros */}
-          <div className="row g-2 mb-3">
-            <div className="col-12 col-sm-7">
+          {/* ── 2. Encabezado con resumen de estados ── */}
+          <div className="d-flex flex-wrap gap-2 mb-3 align-items-center">
+            <span className="badge bg-success bg-opacity-10 text-success fw-semibold px-3 py-2 d-inline-flex align-items-center">
+              <CheckCircle2 size={14} className="me-1" />
+              {activos} activos
+            </span>
+            <span className="badge bg-secondary bg-opacity-10 text-secondary fw-semibold px-3 py-2 d-inline-flex align-items-center">
+              <EyeOff size={14} className="me-1" />
+              {inactivos} inactivos
+            </span>
+          </div>
+
+          {/* ── 3. Barra de filtros con pills destacadas ── */}
+          <div className="row g-2 mb-4 align-items-center">
+            <div className="col-12 col-md-7">
               <input
                 type="text"
                 className="form-control"
@@ -105,22 +138,68 @@ export const ServiciosPage: React.FC = () => {
                 onChange={(e) => setFiltroNombre(e.target.value)}
               />
             </div>
-            <div className="col-12 col-sm-5">
-              <select
-                className="form-select"
-                value={filtroEstado}
-                onChange={(e) => setFiltroEstado(e.target.value as '' | 'ACTIVO' | 'INACTIVO')}
+            <div className="col-12 col-md-5 d-flex align-items-center justify-content-md-end">
+              <div
+                className="d-inline-flex p-1 rounded border bg-surface-card gap-1 w-100 w-md-auto justify-content-between justify-content-md-start"
+                role="tablist"
+                aria-label="Filtrar por estado del servicio"
               >
-                <option value="">Todos los estados</option>
-                <option value="ACTIVO">Activos</option>
-                <option value="INACTIVO">Inactivos</option>
-              </select>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={filtroEstado === ''}
+                  onClick={() => setFiltroEstado('')}
+                  className={`btn btn-sm px-3 py-1 fw-semibold rounded flex-fill flex-md-grow-0 ${
+                    filtroEstado === ''
+                      ? 'btn-primary text-white shadow-sm'
+                      : 'btn-link text-decoration-none text-surface-muted border-0'
+                  }`}
+                  style={{ transition: 'all 150ms ease' }}
+                >
+                  Todos
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={filtroEstado === 'ACTIVO'}
+                  onClick={() => setFiltroEstado('ACTIVO')}
+                  className={`btn btn-sm px-3 py-1 fw-semibold rounded d-inline-flex align-items-center justify-content-center gap-1 flex-fill flex-md-grow-0 ${
+                    filtroEstado === 'ACTIVO'
+                      ? 'btn-primary text-white shadow-sm'
+                      : 'btn-link text-decoration-none text-surface-muted border-0'
+                  }`}
+                  style={{ transition: 'all 150ms ease' }}
+                >
+                  <CheckCircle2 size={13} />
+                  <span>Activos</span>
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={filtroEstado === 'INACTIVO'}
+                  onClick={() => setFiltroEstado('INACTIVO')}
+                  className={`btn btn-sm px-3 py-1 fw-semibold rounded d-inline-flex align-items-center justify-content-center gap-1 flex-fill flex-md-grow-0 ${
+                    filtroEstado === 'INACTIVO'
+                      ? 'btn-primary text-white shadow-sm'
+                      : 'btn-link text-decoration-none text-surface-muted border-0'
+                  }`}
+                  style={{ transition: 'all 150ms ease' }}
+                >
+                  <EyeOff size={13} />
+                  <span>Inactivos</span>
+                </button>
+              </div>
             </div>
           </div>
 
+          {/* Grid de servicios */}
           <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
             {servicios.length === 0 && (
-              <p className="text-muted">No hay servicios registrados.</p>
+              <div className="col-12">
+                <div className="alert-surface text-center py-5 text-surface-muted border rounded">
+                  <p className="mb-0 fs-6">No se encontraron servicios con el filtro seleccionado.</p>
+                </div>
+              </div>
             )}
             {servicios.map((s) => (
               <div className="col" key={s.id}>
@@ -129,44 +208,64 @@ export const ServiciosPage: React.FC = () => {
                   title={s.nombre}
                   subtitle={`${s.duracionMinutos} min`}
                   isActive={s.estado === 'ACTIVO'}
-                  badges={[
-                    { label: s.estado === 'ACTIVO' ? 'Activo' : 'Inactivo', tone: 'dark' },
-                  ]}
+                  isStateChanging={idServicioAnimado === s.id}
                   priceLabel={`$${s.precio.toLocaleString()}`}
                   actions={
                     <div className="d-flex gap-1 w-100">
                       <button
+                        type="button"
                         className="btn btn-sm btn-light flex-fill"
                         style={{ borderRadius: '2px' }}
                         onClick={(e) => {
                           e.stopPropagation();
                           onEdit(s);
                         }}
+                        aria-label={`Editar servicio ${s.nombre}`}
                       >
                         Editar
                       </button>
                       <button
+                        type="button"
                         className="btn btn-sm btn-light flex-fill"
                         style={{ borderRadius: '2px' }}
                         onClick={(e) => {
                           e.stopPropagation();
                           setServicioAEditarFoto(s);
                         }}
+                        aria-label={`Cambiar foto de ${s.nombre}`}
                       >
                         Foto
                       </button>
                       <button
-                        className={`btn btn-sm flex-fill ${
-                          s.estado === 'ACTIVO' ? 'btn-outline-danger' : 'btn-outline-success'
+                        type="button"
+                        className={`btn btn-sm flex-fill d-inline-flex align-items-center justify-content-center gap-1 ${
+                          s.estado === 'ACTIVO' ? 'btn-outline-danger' : 'btn-success'
                         }`}
-                        style={{ borderRadius: '2px' }}
+                        style={{ borderRadius: '2px', transition: 'all 150ms ease' }}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleCambiarEstado(s);
                         }}
-                        disabled={cambiarEstadoMutation.isPending}
+                        disabled={cambiarEstadoMutation.isPending && idServicioCambiando === s.id}
+                        aria-label={s.estado === 'ACTIVO' ? `Desactivar ${s.nombre}` : `Activar ${s.nombre}`}
                       >
-                        {s.estado === 'ACTIVO' ? 'Desactivar' : 'Activar'}
+                        {cambiarEstadoMutation.isPending && idServicioCambiando === s.id ? (
+                          <span
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                            style={{ width: '13px', height: '13px' }}
+                          />
+                        ) : s.estado === 'ACTIVO' ? (
+                          <>
+                            <Lock size={13} />
+                            <span>Desactivar</span>
+                          </>
+                        ) : (
+                          <>
+                            <Unlock size={13} />
+                            <span>Activar</span>
+                          </>
+                        )}
                       </button>
                     </div>
                   }
@@ -178,7 +277,10 @@ export const ServiciosPage: React.FC = () => {
           <FotoServicioModal
             servicio={servicioAEditarFoto}
             onClose={() => setServicioAEditarFoto(null)}
-            onSuccess={(msg) => { setServicioAEditarFoto(null); showToast('success', msg); }}
+            onSuccess={(msg) => {
+              setServicioAEditarFoto(null);
+              showToast('success', msg);
+            }}
           />
         </>
       )}

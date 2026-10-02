@@ -215,30 +215,97 @@ body {
 }
 
 .catalog-card {
+  position: relative;
   background-color: var(--surface-card-bg);
   color: var(--surface-card-text);
-  border: 1px solid var(--catalog-muted-border);
-  border-radius: 4px;
-  transition: border-color 0.2s ease, background-color 200ms ease, color 200ms ease;
+  border: 1px solid var(--surface-card-border);
+  border-radius: 6px;
   overflow: hidden;
+  transition: border-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 200ms ease,
+              background-color 200ms ease,
+              color 200ms ease;
 }
-.catalog-card:hover {
-  border-color: var(--catalog-hover-border);
+
+/* Estado ACTIVO */
+.catalog-card.is-active:hover {
+  border-color: var(--brand-blue);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 113, 188, 0.12);
 }
+
+[data-theme="dark"] .catalog-card.is-active:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* Estado INACTIVO */
 .catalog-card.is-inactive {
-  border-color: var(--surface-card-border);
-  opacity: 0.6;
+  border: 1px dashed #b0b0b0 !important;
+  background-color: #f9f9f9 !important;
+  transform: none !important;
+}
+
+[data-theme="dark"] .catalog-card.is-inactive {
+  border-color: #555555 !important;
+  background-color: #161616 !important;
+}
+
+.catalog-card.is-inactive:hover {
+  border-color: #888888 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.catalog-card.is-inactive .catalog-card-image {
+  filter: grayscale(0.8) opacity(0.7) !important;
+}
+
+/* Overlay diagonal INACTIVO */
+.catalog-card-watermark {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  font-family: var(--font-brand, 'Barlow Condensed', sans-serif);
+  font-weight: 800;
+  font-size: 2.5rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.14);
+  pointer-events: none;
+  user-select: none;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .catalog-card-watermark {
+  color: rgba(255, 255, 255, 0.12);
+}
+
+/* Animación de cambio de estado (Emil Kowalski) */
+@keyframes statePulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-state-pulse {
+  animation: statePulse 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
 }
 
 .catalog-card-image {
   background: var(--catalog-image-bg);
   height: 12rem;
   object-fit: cover;
-  filter: grayscale(1);
-  transition: filter 0.5s ease;
-}
-.catalog-card:hover .catalog-card-image {
-  filter: grayscale(0);
+  transition: filter 0.3s ease;
 }
 
 .catalog-card-price {
@@ -249,10 +316,28 @@ body {
 .catalog-card-actions {
   opacity: 0;
   transition: opacity 0.2s ease;
-  background: linear-gradient(to top, rgba(0,0,0,.6), transparent);
+  background: linear-gradient(to top, rgba(0,0,0,.7), transparent);
 }
-.catalog-card:hover .catalog-card-actions {
+
+.catalog-card:hover .catalog-card-actions,
+.catalog-card:focus-within .catalog-card-actions {
   opacity: 1;
+}
+
+@media (hover: none) {
+  .catalog-card-actions {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-card,
+  .catalog-card.is-active:hover,
+  .animate-state-pulse {
+    transition: none !important;
+    transform: none !important;
+    animation: none !important;
+  }
 }
 
 /* ─── Hero image: grayscale sin estar condicionado a .catalog-card ─── */

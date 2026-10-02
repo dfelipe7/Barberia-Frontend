@@ -12,8 +12,10 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
 }) => {
   const { data: servicios = [], isLoading, error, refetch } = useServiciosCatalogo();
 
-  // El backend ya filtra a solo ACTIVOS en el catálogo público; este filtro es una
-  // salvaguarda adicional del lado del cliente.
+  // REGLA DE NEGOCIO PÚBLICA: Los servicios inactivos (estado !== 'ACTIVO') NUNCA
+  // deben mostrarse a los clientes en la HomePage pública.
+  // El backend restringe la respuesta a ACTIVOS, y esta cláusula client-side garantiza
+  // que ningún servicio inactivo sea visible o seleccionable.
   const serviciosActivos = servicios.filter((s) => s.estado === 'ACTIVO');
 
   return (
