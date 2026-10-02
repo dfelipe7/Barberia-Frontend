@@ -232,3 +232,105 @@ body {
     max-height: 24px !important;
   }
 }
+
+/* ─── Pestañas y gestión de usuarios (Segmented control & Emil Kowalski) ─── */
+.usuarios-tabs-container .btn {
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.usuarios-tab-pane {
+  animation: fadeInTab 150ms ease-out forwards;
+}
+
+@keyframes fadeInTab {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Foco visible accesible según principios Emil Kowalski (WCAG AA) */
+.btn:focus-visible,
+button:focus-visible,
+a.btn:focus-visible {
+  outline: 2px solid var(--bs-primary) !important;
+  outline-offset: 2px !important;
+}
+
+/* Hover suave en filas de tablas */
+.table-hover > tbody > tr {
+  transition: background-color 0.15s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .usuarios-tabs-container .btn,
+  .table-hover > tbody > tr {
+    transition: none !important;
+  }
+  .usuarios-tab-pane {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ─── Tablas estilizadas de la aplicación ─── */
+.custom-table-wrapper {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.custom-app-table thead th {
+  text-align: center !important;
+  vertical-align: middle !important;
+  font-family: var(--font-body);
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: #495057 !important;
+  background-color: #f8f9fa !important;
+  border-bottom: 2px solid #dee2e6 !important;
+  padding: 0.95rem 0.85rem !important;
+}
+
+.custom-app-table tbody td {
+  vertical-align: middle !important;
+  padding: 0.9rem 0.85rem !important;
+  font-size: 0.88rem;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.custom-app-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ─── Menús flotantes de acciones ─── */
+@keyframes fadeInMenu {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdown-item {
+  transition: background-color 0.12s ease, color 0.12s ease;
+  border-radius: 4px;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item.text-danger:hover {
+  background-color: #fff5f5;
+  color: #dc3545 !important;
+}

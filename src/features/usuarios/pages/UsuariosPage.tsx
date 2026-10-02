@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Shield, Scissors } from 'lucide-react';
 import { useAuth } from '../../../auth/AuthContext';
 import Spinner from '../../../shared/ui/Spinner';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
@@ -227,24 +228,25 @@ export const UsuariosPage: React.FC = () => {
 
   return (
     <div className="usuarios-page-container">
-      {/* Header */}
-      <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+      {/* Header con contexto claro */}
+      <div className="d-flex flex-wrap justify-content-between align-items-start mb-4 gap-3">
         <div>
+          <span className="text-eyebrow mb-2 d-block">Panel de control</span>
           <h1 className="h2 fw-bold mb-1">Gestión de Usuarios</h1>
           <p className="text-muted mb-0">
-            Administra los usuarios, perfiles operativos y asignación de barberos.
+            Administra administradores, barberos, roles y el estado de cada cuenta.
           </p>
         </div>
 
-        <div className="d-flex align-items-center gap-2">
+        <div className="d-flex align-items-center gap-2 pt-1">
           {esSuperAdmin && pestañaActiva === 'administradores' && (
-            <Link to="/administradores/nuevo" className="btn btn-primary">
+            <Link to="/administradores/nuevo" className="btn btn-dark btn-sm fw-semibold">
               + Nuevo Administrador
             </Link>
           )}
 
           {pestañaActiva === 'barberos' && (
-            <Link to="/barberos/nuevo" className="btn btn-primary">
+            <Link to="/barberos/nuevo" className="btn btn-dark btn-sm fw-semibold">
               + Nuevo Barbero
             </Link>
           )}
@@ -259,93 +261,125 @@ export const UsuariosPage: React.FC = () => {
 
       {errorAccion && <ErrorMessage message={errorAccion} />}
 
-      {/* Pestañas de Navegación */}
-      <ul className="nav nav-tabs mb-4">
+      {/* Pestañas de Navegación (Pill tabs / Segmented control) */}
+      <div className="d-inline-flex flex-wrap gap-2 p-1 rounded bg-light border mb-4 usuarios-tabs-container" role="tablist">
         {esSuperAdmin && (
-          <li className="nav-item">
-            <button
-              className={`nav-link fw-semibold ${
-                pestañaActiva === 'administradores' ? 'active text-primary' : 'text-muted'
-              }`}
-              onClick={() => {
-                setPestañaActiva('administradores');
-                setErrorAccion(null);
-              }}
-            >
-              Administradores ({administradores.length})
-            </button>
-          </li>
-        )}
-        <li className="nav-item">
           <button
-            className={`nav-link fw-semibold ${
-              pestañaActiva === 'barberos' ? 'active text-primary' : 'text-muted'
+            type="button"
+            role="tab"
+            aria-selected={pestañaActiva === 'administradores'}
+            className={`btn btn-sm px-3 py-2 fw-semibold rounded d-inline-flex align-items-center gap-2 ${
+              pestañaActiva === 'administradores'
+                ? 'btn-dark'
+                : 'btn-light text-muted'
             }`}
             onClick={() => {
-              setPestañaActiva('barberos');
+              setPestañaActiva('administradores');
               setErrorAccion(null);
             }}
           >
-            Barberos ({barberos.length})
+            <Shield size={16} />
+            <span>Administradores</span>
+            <span className={`badge ms-2 ${pestañaActiva === 'administradores' ? 'bg-secondary' : 'bg-secondary-subtle text-secondary-emphasis'}`}>
+              {administradores.length}
+            </span>
           </button>
-        </li>
-      </ul>
+        )}
+        <button
+          type="button"
+          role="tab"
+          aria-selected={pestañaActiva === 'barberos'}
+          className={`btn btn-sm px-3 py-2 fw-semibold rounded d-inline-flex align-items-center gap-2 ${
+            pestañaActiva === 'barberos'
+              ? 'btn-dark'
+              : 'btn-light text-muted'
+          }`}
+          onClick={() => {
+            setPestañaActiva('barberos');
+            setErrorAccion(null);
+          }}
+        >
+          <Scissors size={16} />
+          <span>Barberos</span>
+          <span className={`badge ms-2 ${pestañaActiva === 'barberos' ? 'bg-secondary' : 'bg-secondary-subtle text-secondary-emphasis'}`}>
+            {barberos.length}
+          </span>
+        </button>
+      </div>
 
-      {/* Contenido según pestaña */}
-      {pestañaActiva === 'administradores' && (
-        <>
-          {errorAdmins && (
-            <ErrorMessage
-              message={errorAdmins.message || 'Error cargando administradores'}
-              onRetry={refetchAdmins}
-            />
-          )}
+      {/* Contenido según pestaña con microinteracción de transición */}
+      <div key={pestañaActiva} className="usuarios-tab-pane">
+        {pestañaActiva === 'administradores' && (
+          <>
+            {/* Hint explicativo Administradores */}
+            <div className="alert alert-light border d-flex align-items-center gap-2 mb-3 py-2 px-3 small text-muted shadow-sm" role="note">
+              <span className="fs-5" aria-hidden="true">💡</span>
+              <span>
+                Los administradores tienen acceso a los módulos de gestión. Puedes desactivar su <strong>rol</strong> sin bloquear su cuenta global.
+              </span>
+            </div>
 
-          {cargandoAdmins ? (
-            <Spinner mensaje="Cargando administradores..." />
-          ) : (
-            <UserTable
-              administradores={administradores}
-              onSelectUsuario={handleVerDetalles}
-              onCambiarEstado={handleCambiarEstadoAdmin}
-              onCambiarEstadoGlobal={handleCambiarEstadoGlobalAdmin}
-              onConfigurarBarbero={(admin) => setAdminAConfigurar(admin)}
-              esSuperAdmin={esSuperAdmin}
-              currentUserId={usuarioDb?.id}
-              isUpdatingId={cambiarEstadoAdminMutation.isPending ? cambiarEstadoAdminMutation.variables?.id : null}
-              isUpdatingGlobalId={cambiarEstadoGlobalAdminMutation.isPending ? cambiarEstadoGlobalAdminMutation.variables?.id : null}
-            />
-          )}
-        </>
-      )}
+            {errorAdmins && (
+              <ErrorMessage
+                message={errorAdmins.message || 'Error cargando administradores'}
+                onRetry={refetchAdmins}
+              />
+            )}
 
-      {pestañaActiva === 'barberos' && (
-        <>
-          {errorBarberos && (
-            <ErrorMessage
-              message={errorBarberos.message || 'Error cargando barberos'}
-              onRetry={refetchBarberos}
-            />
-          )}
+            {cargandoAdmins ? (
+              <Spinner mensaje="Cargando administradores..." />
+            ) : (
+              <UserTable
+                administradores={administradores}
+                onSelectUsuario={handleVerDetalles}
+                onCambiarEstado={handleCambiarEstadoAdmin}
+                onCambiarEstadoGlobal={handleCambiarEstadoGlobalAdmin}
+                onConfigurarBarbero={(admin) => setAdminAConfigurar(admin)}
+                esSuperAdmin={esSuperAdmin}
+                currentUserId={usuarioDb?.id}
+                isUpdatingId={cambiarEstadoAdminMutation.isPending ? cambiarEstadoAdminMutation.variables?.id : null}
+                isUpdatingGlobalId={cambiarEstadoGlobalAdminMutation.isPending ? cambiarEstadoGlobalAdminMutation.variables?.id : null}
+              />
+            )}
+          </>
+        )}
 
-          {cargandoBarberos ? (
-            <Spinner mensaje="Cargando barberos de gestión..." />
-          ) : (
-            <BarberoTable
-              barberos={barberos}
-              onSelectBarbero={handleVerDetalles}
-              onEditarComision={(barbero) => setBarberoAEditarComision(barbero)}
-              onEditarFoto={(barbero) => setBarberoAEditarFoto(barbero)}
-              onCambiarEstado={handleCambiarEstadoBarbero}
-              onCambiarEstadoGlobal={handleCambiarEstadoGlobalBarbero}
-              rolActorPrincipal={rolActorPrincipal}
-              currentUserId={usuarioDb?.id}
-              isUpdatingId={cambiarEstadoBarberoMutation.isPending ? cambiarEstadoBarberoMutation.variables?.id : null}
-              isUpdatingGlobalId={cambiarEstadoGlobalBarberoMutation.isPending ? cambiarEstadoGlobalBarberoMutation.variables?.id : null}
-            />
-          )}
-        </>
-      )}
+        {pestañaActiva === 'barberos' && (
+          <>
+            {/* Hint explicativo Barberos */}
+            <div className="alert alert-light border d-flex align-items-center gap-2 mb-3 py-2 px-3 small text-muted shadow-sm" role="note">
+              <span className="fs-5" aria-hidden="true">💡</span>
+              <span>
+                Los barberos activos aparecen en el catálogo público. El <strong>% de comisión</strong> aplica a sus servicios. Puedes desactivar el rol sin bloquear su cuenta.
+              </span>
+            </div>
+
+            {errorBarberos && (
+              <ErrorMessage
+                message={errorBarberos.message || 'Error cargando barberos'}
+                onRetry={refetchBarberos}
+              />
+            )}
+
+            {cargandoBarberos ? (
+              <Spinner mensaje="Cargando barberos de gestión..." />
+            ) : (
+              <BarberoTable
+                barberos={barberos}
+                onSelectBarbero={handleVerDetalles}
+                onEditarComision={(barbero) => setBarberoAEditarComision(barbero)}
+                onEditarFoto={(barbero) => setBarberoAEditarFoto(barbero)}
+                onCambiarEstado={handleCambiarEstadoBarbero}
+                onCambiarEstadoGlobal={handleCambiarEstadoGlobalBarbero}
+                rolActorPrincipal={rolActorPrincipal}
+                currentUserId={usuarioDb?.id}
+                isUpdatingId={cambiarEstadoBarberoMutation.isPending ? cambiarEstadoBarberoMutation.variables?.id : null}
+                isUpdatingGlobalId={cambiarEstadoGlobalBarberoMutation.isPending ? cambiarEstadoGlobalBarberoMutation.variables?.id : null}
+              />
+            )}
+          </>
+        )}
+      </div>
 
       {/* Modales Atómicos */}
       <UserDetailModal
