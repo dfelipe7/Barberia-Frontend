@@ -151,7 +151,7 @@ export const MiPerfilPage: React.FC = () => {
   };
 
   return (
-    <div className="container py-4" style={{ maxWidth: '840px' }}>
+    <div className="container py-4" style={{ maxWidth: '960px' }}>
       <div className="mb-4">
         <h1 className="h2 fw-bold mb-1">Mi Perfil</h1>
         <p className="text-muted">
@@ -160,12 +160,16 @@ export const MiPerfilPage: React.FC = () => {
       </div>
 
       <div className="row g-4">
-        {/* Columna Izquierda: Resumen de Usuario */}
-        <div className="col-12 col-md-4">
-          <div className="card shadow-sm border-0 text-center p-4 bg-white h-50">
+        {/* Columna Izquierda: Resumen de Usuario (en tablet y móvil arriba) */}
+        <div className="col-12 col-lg-4">
+          <div className="card shadow-sm border-0 text-center p-3 p-md-4 bg-white mb-4">
             <div
               className="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex justify-content-center align-items-center mx-auto mb-3 fw-bold"
-              style={{ width: '84px', height: '84px', fontSize: '2rem' }}
+              style={{
+                width: 'clamp(84px, 15vw, 105px)',
+                height: 'clamp(84px, 15vw, 105px)',
+                fontSize: 'clamp(1.75rem, 4vw, 2.2rem)',
+              }}
             >
               {usuarioDb?.nombre?.charAt(0) || 'U'}
               {usuarioDb?.apellido?.charAt(0) || ''}
@@ -189,14 +193,14 @@ export const MiPerfilPage: React.FC = () => {
             </div>
 
             {usuarioDb?.barbero && (
-              <div className="alert alert-info py-2 px-3 small text-start">
+              <div className="alert alert-info py-2 px-3 small text-start mb-0">
                 <strong>Comisión asignada:</strong> {usuarioDb.barbero.porcentajeComision}%
               </div>
             )}
           </div>
 
           {usuarioDb?.barbero && (
-            <div className="card shadow-sm border-0 p-4 bg-white mt-4">
+            <div className="card shadow-sm border-0 p-3 p-md-4 bg-white">
               <h5 className="fw-bold mb-3">Información de Barbero</h5>
               <div className="mb-2">
                 <span className="text-muted small d-block">Teléfono</span>
@@ -222,9 +226,9 @@ export const MiPerfilPage: React.FC = () => {
         </div>
 
         {/* Columna Derecha: Formularios */}
-        <div className="col-12 col-md-8">
+        <div className="col-12 col-lg-8">
           {usuarioDb?.barbero && (
-            <div className="card shadow-sm border-0 p-4 bg-white mb-4 text-center">
+            <div className="card shadow-sm border-0 p-3 p-md-4 bg-white mb-4 text-center">
               <h5 className="fw-bold mb-3">Foto Profesional (Catálogo)</h5>
 
               {errorFoto && <div className="alert alert-danger py-2 small">{errorFoto}</div>}
@@ -235,14 +239,21 @@ export const MiPerfilPage: React.FC = () => {
                     src={obtenerUrlFoto(usuarioDb.barbero.fotoUrl)!}
                     alt="Foto de Barbero"
                     className="rounded-circle shadow-sm border border-3 border-primary"
-                    style={{ width: '110px', height: '110px', objectFit: 'cover' }}
+                    style={{
+                      width: 'clamp(84px, 15vw, 110px)',
+                      height: 'clamp(84px, 15vw, 110px)',
+                      objectFit: 'cover',
+                    }}
                   />
                 ) : (
                   <div
                     className="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto shadow-sm border border-2 border-secondary"
-                    style={{ width: '110px', height: '110px' }}
+                    style={{
+                      width: 'clamp(84px, 15vw, 110px)',
+                      height: 'clamp(84px, 15vw, 110px)',
+                    }}
                   >
-                    <span className="text-muted fw-bold" style={{ fontSize: '2rem' }}>
+                    <span className="text-muted fw-bold" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.2rem)' }}>
                       {usuarioDb.nombre.charAt(0)}{usuarioDb.apellido.charAt(0)}
                     </span>
                   </div>
@@ -295,7 +306,7 @@ export const MiPerfilPage: React.FC = () => {
           )}
 
           {/* Tarjeta de Datos Personales */}
-          <div className="card shadow-sm border-0 p-4 bg-white mb-4">
+          <div className="card shadow-sm border-0 p-3 p-md-4 bg-white mb-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="fw-bold mb-0">Datos Personales</h5>
               {!editando && (
@@ -348,7 +359,7 @@ export const MiPerfilPage: React.FC = () => {
                     )}
                   </div>
 
-                  <div className="col-12">
+                  <div className="col-12 col-sm-6">
                     <label htmlFor="emailPerfil" className="form-label small fw-semibold">
                       Correo Electrónico
                     </label>
@@ -364,7 +375,7 @@ export const MiPerfilPage: React.FC = () => {
                   </div>
 
                   {usuarioDb?.barbero && (
-                    <div className="col-12">
+                    <div className="col-12 col-sm-6">
                       <label htmlFor="telefonoPerfil" className="form-label small fw-semibold">
                         Teléfono
                       </label>
@@ -380,7 +391,7 @@ export const MiPerfilPage: React.FC = () => {
                     </div>
                   )}
 
-                  <div className="col-12 d-flex justify-content-end gap-2 mt-3">
+                  <div className="col-12 d-grid d-sm-flex justify-content-sm-end gap-2 mt-3">
                     <Button
                       type="button"
                       variant="light"
@@ -406,20 +417,20 @@ export const MiPerfilPage: React.FC = () => {
               </form>
             ) : (
               <div className="row g-3">
-                <div className="col-sm-6">
+                <div className="col-12 col-sm-6">
                   <span className="text-muted small d-block">Nombre</span>
                   <span className="fw-semibold">{usuarioDb?.nombre}</span>
                 </div>
-                <div className="col-sm-6">
+                <div className="col-12 col-sm-6">
                   <span className="text-muted small d-block">Apellido</span>
                   <span className="fw-semibold">{usuarioDb?.apellido}</span>
                 </div>
-                <div className="col-sm-6">
+                <div className="col-12 col-sm-6">
                   <span className="text-muted small d-block">Correo Electrónico</span>
                   <span className="fw-semibold">{usuarioDb?.email}</span>
                 </div>
                 {usuarioDb?.barbero && (
-                  <div className="col-sm-6">
+                  <div className="col-12 col-sm-6">
                     <span className="text-muted small d-block">Teléfono de Contacto</span>
                     <span className="fw-semibold">
                       {usuarioDb.barbero.telefono || 'Sin registrar'}
@@ -431,9 +442,8 @@ export const MiPerfilPage: React.FC = () => {
           </div>
 
           {/* Tarjeta de Cambio de Contraseña */}
-          <div className="card shadow-sm border-0 p-4 bg-white">
+          <div className="card shadow-sm border-0 p-3 p-md-4 bg-white mb-4">
             <h5 className="fw-bold mb-3">Seguridad y Contraseña</h5>
-
 
             {cambiarContrasenaMutation.error && (
               <ErrorMessage message={mapApiError(cambiarContrasenaMutation.error)} />
@@ -486,7 +496,7 @@ export const MiPerfilPage: React.FC = () => {
                   )}
                 </div>
 
-                <div className="col-12 d-flex justify-content-end mt-3">
+                <div className="col-12 d-grid d-sm-flex justify-content-sm-end mt-3">
                   <Button
                     type="submit"
                     variant="dark"

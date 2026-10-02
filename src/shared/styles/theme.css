@@ -787,3 +787,78 @@ a.btn:focus-visible {
     animation: none !important;
   }
 }
+
+/* ─── Responsive Tables & Mobile Cards ─── */
+.table-view-container,
+.mobile-cards-container {
+  animation: fadeInTableView 150ms ease-out;
+}
+
+@keyframes fadeInTableView {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.mobile-user-card {
+  background: #ffffff;
+  border: 1px solid var(--catalog-muted-border, #e5e3dc);
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  margin-bottom: 0.85rem;
+  transition: box-shadow 150ms ease;
+}
+
+@media (hover: hover) {
+  .mobile-user-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.mobile-action-btn {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 6px;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.mobile-action-btn:focus-visible {
+  outline: 2px solid #0071BC;
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .mobile-user-card {
+    background: #141414;
+    border-color: #27272a;
+    color: #FFFDFA;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+[data-bs-theme="dark"] .mobile-user-card {
+  background: #141414;
+  border-color: #27272a;
+  color: #FFFDFA;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .table-view-container,
+  .mobile-cards-container,
+  .mobile-user-card,
+  .mobile-action-btn {
+    animation: none !important;
+    transition: none !important;
+  }
+}

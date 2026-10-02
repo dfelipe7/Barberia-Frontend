@@ -49,7 +49,7 @@ export const Modal: React.FC<ModalProps> = ({
           if (e.target === e.currentTarget) onClose();
         }}
       >
-        <div className={`modal-dialog modal-dialog-centered ${sizeClass}`} role="document">
+        <div className={`modal-dialog modal-dialog-centered modal-fullscreen-sm-down ${sizeClass}`} role="document">
           <div className="modal-content shadow">
             <div className="modal-header">
               <h5 className="modal-title fw-bold">{title}</h5>

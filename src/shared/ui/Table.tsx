@@ -52,7 +52,7 @@ export function Table<T>({
               <th
                 key={col.key}
                 scope="col"
-                className="text-center align-middle py-3 px-3 fw-bold"
+                className={`text-center align-middle py-3 px-3 fw-bold ${col.className || ''}`}
               >
                 {col.header}
               </th>

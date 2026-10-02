@@ -197,7 +197,7 @@ export const UsuariosPage: React.FC = () => {
   return (
     <div className="usuarios-page-container">
       {/* Header con contexto claro */}
-      <div className="d-flex flex-wrap justify-content-between align-items-start mb-4 gap-3">
+      <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-3">
         <div>
           <span className="text-eyebrow mb-2 d-block">Panel de control</span>
           <h1 className="h2 fw-bold mb-1">Gestión de Usuarios</h1>
@@ -206,15 +206,15 @@ export const UsuariosPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="d-flex align-items-center gap-2 pt-1">
+        <div className="d-flex align-items-center gap-2 pt-1 w-100 w-sm-auto">
           {esSuperAdmin && pestañaActiva === 'administradores' && (
-            <Link to="/administradores/nuevo" className="btn btn-dark btn-sm fw-semibold">
+            <Link to="/administradores/nuevo" className="btn btn-dark btn-sm fw-semibold w-100 w-sm-auto text-center">
               + Nuevo Administrador
             </Link>
           )}
 
           {pestañaActiva === 'barberos' && (
-            <Link to="/barberos/nuevo" className="btn btn-dark btn-sm fw-semibold">
+            <Link to="/barberos/nuevo" className="btn btn-dark btn-sm fw-semibold w-100 w-sm-auto text-center">
               + Nuevo Barbero
             </Link>
           )}
@@ -224,13 +224,17 @@ export const UsuariosPage: React.FC = () => {
       <ToastContainer toast={toast} onClose={hideToast} />
 
       {/* Pestañas de Navegación (Pill tabs / Segmented control) */}
-      <div className="d-inline-flex flex-wrap gap-2 p-1 rounded bg-light border mb-4 usuarios-tabs-container" role="tablist">
+      <div
+        className="d-flex flex-nowrap gap-2 p-1 rounded bg-light border mb-4 usuarios-tabs-container overflow-x-auto"
+        role="tablist"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
         {esSuperAdmin && (
           <button
             type="button"
             role="tab"
             aria-selected={pestañaActiva === 'administradores'}
-            className={`btn btn-sm px-3 py-2 fw-semibold rounded d-inline-flex align-items-center gap-2 ${
+            className={`btn btn-sm px-3 py-2 fw-semibold rounded d-inline-flex align-items-center gap-2 text-nowrap flex-shrink-0 ${
               pestañaActiva === 'administradores'
                 ? 'btn-dark'
                 : 'btn-light text-muted'
@@ -250,7 +254,7 @@ export const UsuariosPage: React.FC = () => {
           type="button"
           role="tab"
           aria-selected={pestañaActiva === 'barberos'}
-          className={`btn btn-sm px-3 py-2 fw-semibold rounded d-inline-flex align-items-center gap-2 ${
+          className={`btn btn-sm px-3 py-2 fw-semibold rounded d-inline-flex align-items-center gap-2 text-nowrap flex-shrink-0 ${
             pestañaActiva === 'barberos'
               ? 'btn-dark'
               : 'btn-light text-muted'
