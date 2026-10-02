@@ -10,9 +10,10 @@ import type { Servicio } from '../types/servicios.types';
 interface FotoServicioModalProps {
   servicio: Servicio | null;
   onClose: () => void;
+  onSuccess?: (mensaje: string) => void;
 }
 
-export const FotoServicioModal: React.FC<FotoServicioModalProps> = ({ servicio, onClose }) => {
+export const FotoServicioModal: React.FC<FotoServicioModalProps> = ({ servicio, onClose, onSuccess }) => {
   const subirMutation = useSubirFotoServicio();
   const eliminarMutation = useEliminarFotoServicio();
   const [error, setError] = useState<string | null>(null);
@@ -31,6 +32,7 @@ export const FotoServicioModal: React.FC<FotoServicioModalProps> = ({ servicio, 
     try {
       setError(null);
       await subirMutation.mutateAsync({ id: servicio.id, file: archivoSeleccionado });
+      onSuccess?.('Foto del servicio actualizada correctamente.');
       onClose();
     } catch (err: unknown) {
       setError(mapApiError(err));
@@ -42,6 +44,7 @@ export const FotoServicioModal: React.FC<FotoServicioModalProps> = ({ servicio, 
     try {
       setError(null);
       await eliminarMutation.mutateAsync(servicio.id);
+      onSuccess?.('Foto del servicio eliminada correctamente.');
       onClose();
     } catch (err: unknown) {
       setError(mapApiError(err));

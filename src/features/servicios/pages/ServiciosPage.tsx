@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CrudPage from '../../../shared/components/CrudPage';
 import CatalogCard from '../../../shared/ui/Catalogcard';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
@@ -21,6 +21,7 @@ export const ServiciosPage: React.FC = () => {
   const [servicioAEditarFoto, setServicioAEditarFoto] = useState<Servicio | null>(null);
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
   const [errorForm, setErrorForm] = useState<string | null>(null);
+  const [mensajeExito, setMensajeExito] = useState<string | null>(null);
 
   const { data: servicios = [], isLoading, error, refetch } = useServiciosGestion({
     ...(filtroNombre.trim() && { nombre: filtroNombre.trim() }),
@@ -40,8 +41,10 @@ export const ServiciosPage: React.FC = () => {
       setErrorForm(null);
       if (servicioEnEdicion) {
         await actualizarMutation.mutateAsync({ id: servicioEnEdicion.id, datos });
+        setMensajeExito('Servicio actualizado correctamente.');
       } else {
         await crearMutation.mutateAsync(datos);
+        setMensajeExito('Servicio creado correctamente.');
       }
       cerrarModal();
     } catch (err: unknown) {
@@ -60,6 +63,12 @@ export const ServiciosPage: React.FC = () => {
       setErrorAccion(mapApiError(err));
     }
   };
+
+  useEffect(() => {
+    if (!mensajeExito) return;
+    const t = setTimeout(() => setMensajeExito(null), 4000);
+    return () => clearTimeout(t);
+  }, [mensajeExito]);
 
   return (
     <CrudPage<Servicio>
@@ -85,6 +94,18 @@ export const ServiciosPage: React.FC = () => {
     >
       {({ onEdit }) => (
         <>
+          {mensajeExito && (
+            <div className="alert alert-success alert-dismissible" role="alert">
+              {mensajeExito}
+              <button
+                type="button"
+                className="btn-close"
+                aria-label="Cerrar"
+                onClick={() => setMensajeExito(null)}
+              />
+            </div>
+          )}
+
           {errorAccion && <ErrorMessage message={errorAccion} />}
 
           {/* Barra de filtros */}
@@ -171,6 +192,7 @@ export const ServiciosPage: React.FC = () => {
           <FotoServicioModal
             servicio={servicioAEditarFoto}
             onClose={() => setServicioAEditarFoto(null)}
+            onSuccess={(msg) => { setServicioAEditarFoto(null); setMensajeExito(msg); }}
           />
         </>
       )}

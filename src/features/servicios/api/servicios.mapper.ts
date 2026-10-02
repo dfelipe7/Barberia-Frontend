@@ -35,9 +35,11 @@ export const serviciosMapper = {
     return {
       nombre: datos.nombre.trim(),
       ...(datos.descripcion && { descripcion: datos.descripcion.trim() }),
-      precio: datos.precio,
-      duracionMinutos: datos.duracionMinutos,
-      ...(datos.barberoIds && { barberoIds: datos.barberoIds }),
+      precio: Number(datos.precio),
+      duracionMinutos: Number(datos.duracionMinutos),
+      ...(datos.barberoIds !== undefined && {
+        barberoIds: datos.barberoIds.map((id) => Number(id)),
+      }),
     };
   },
 
@@ -51,9 +53,11 @@ export const serviciosMapper = {
     return {
       ...(datos.nombre !== undefined && { nombre: datos.nombre.trim() }),
       ...(datos.descripcion !== undefined && { descripcion: datos.descripcion.trim() }),
-      ...(datos.precio !== undefined && { precio: datos.precio }),
-      ...(datos.duracionMinutos !== undefined && { duracionMinutos: datos.duracionMinutos }),
-      ...(datos.barberoIds !== undefined && { barberoIds: datos.barberoIds }),
+      ...(datos.precio !== undefined && { precio: Number(datos.precio) }),
+      ...(datos.duracionMinutos !== undefined && { duracionMinutos: Number(datos.duracionMinutos) }),
+      ...(datos.barberoIds !== undefined && {
+        barberoIds: datos.barberoIds.map((id) => Number(id)),
+      }),
     };
   },
 

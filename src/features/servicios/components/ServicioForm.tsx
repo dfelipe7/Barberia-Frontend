@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '../../../shared/ui/Button';
-import { useBarberosCatalogo } from '../../barberos';
-import { servicioSchema, type ServicioFormValues } from '../schemas/servicio.schema';
+import { useBarberosGestion } from '../../barberos';
+import { servicioSchema, type ServicioFormValues, type ServicioFormInput } from '../schemas/servicio.schema';
 import type { Servicio } from '../types/servicios.types';
 
 interface ServicioFormProps {
@@ -21,7 +21,8 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
   isSubmitting = false,
   errorMensaje,
 }) => {
-  const { data: barberos = [], isLoading: cargandoBarberos } = useBarberosCatalogo();
+  const { data: barberosGestion = [], isLoading: cargandoBarberos } = useBarberosGestion();
+  const barberos = barberosGestion.filter((b) => b.estado === 'ACTIVO');
 
   const {
     register,
@@ -29,7 +30,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
     control,
     reset,
     formState: { errors },
-  } = useForm<ServicioFormValues>({
+  } = useForm<ServicioFormInput, any, ServicioFormValues>({
     resolver: zodResolver(servicioSchema),
     defaultValues: {
       nombre: '',
@@ -47,7 +48,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
         descripcion: servicioInicial.descripcion ?? '',
         precio: servicioInicial.precio,
         duracionMinutos: servicioInicial.duracionMinutos,
-        barberoIds: servicioInicial.barberos.map((b) => b.id),
+        barberoIds: servicioInicial.barberos.map((b) => Number(b.id)),
       });
     }
   }, [servicioInicial, reset]);
@@ -134,13 +135,14 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
                         type="checkbox"
                         className="form-check-input"
                         id={`barbero-${b.id}`}
-                        checked={field.value?.includes(b.id) ?? false}
+                        checked={field.value?.includes(Number(b.id)) ?? false}
                         onChange={(e) => {
                           const actuales = field.value ?? [];
+                          const idNumerico = Number(b.id);
                           field.onChange(
                             e.target.checked
-                              ? [...actuales, b.id]
-                              : actuales.filter((id) => id !== b.id)
+                              ? [...actuales, idNumerico]
+                              : actuales.filter((id) => id !== idNumerico)
                           );
                         }}
                       />

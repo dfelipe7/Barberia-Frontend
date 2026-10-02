@@ -19,7 +19,8 @@ export const servicioSchema = z.object({
     .number({ message: 'La duración debe ser un número' })
     .int('La duración debe ser un número entero.')
     .min(1, 'La duración mínima es 1 minuto.'),
-  barberoIds: z.array(z.number()).optional(),
+  barberoIds: z.array(z.number()).default([]),
 });
 
 export type ServicioFormValues = z.infer<typeof servicioSchema>;
+export type ServicioFormInput = z.input<typeof servicioSchema>;
