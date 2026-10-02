@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { CheckCircle2, EyeOff } from 'lucide-react';
 import Button from '../../../shared/ui/Button';
+import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import { useBarberosGestion } from '../../barberos';
 import { servicioSchema, type ServicioFormValues, type ServicioFormInput } from '../schemas/servicio.schema';
 import type { Servicio } from '../types/servicios.types';
@@ -55,6 +57,28 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      {/* Banner de visibilidad de servicio */}
+      {servicioInicial && (
+        <div
+          className={`alert ${
+            servicioInicial.estado === 'ACTIVO' ? 'alert-success' : 'alert-warning'
+          } py-2 px-3 small d-flex align-items-center gap-2 mb-3`}
+          role="status"
+        >
+          {servicioInicial.estado === 'ACTIVO' ? (
+            <>
+              <CheckCircle2 size={16} className="flex-shrink-0 text-success" />
+              <span>Este servicio está visible para los clientes.</span>
+            </>
+          ) : (
+            <>
+              <EyeOff size={16} className="flex-shrink-0 text-warning-emphasis" />
+              <span>Este servicio <strong>NO</strong> está visible para los clientes.</span>
+            </>
+          )}
+        </div>
+      )}
+
       {errorMensaje && <div className="alert alert-danger py-2 small">{errorMensaje}</div>}
       <div className="row g-3">
         <div className="col-12 col-sm-8">
@@ -119,7 +143,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
         <div className="col-12">
           <label className="form-label fw-semibold">Barberos que realizan este servicio</label>
           {cargandoBarberos ? (
-            <div className="text-muted small">Cargando barberos...</div>
+            <KyriosSpinner size="xs" variant="inline" mensaje="Cargando barberos..." className="my-2" />
           ) : (
             <Controller
               control={control}

@@ -1,23 +1,100 @@
 /* ─── Kyrios Studio Home Styling ────────────────────────────────────────── */
 
-/* Tokens locales para la página de Home */
+/* Tokens estáticos (marca) */
 .kyrios-home {
-  --k-bg-dark: #0C0C0C;
-  --k-bg-card-dark: #141414;
-  --k-bg-light: #FFFDFA;
-  --k-bg-card-light: #FFFFFF;
-  --k-blue: #0071BC;
-  --k-blue-hover: #005fa0;
-  --k-blue-glow: rgba(0, 113, 188, 0.2);
-  --k-text-muted: #8E8E8E;
-  --k-border-dark: #222222;
-  --k-border-light: #E7E5E0;
-  
+  --k-blue:        #0071BC;
+  --k-blue-hover:  #005fa0;
+  --k-blue-glow:   rgba(0, 113, 188, 0.2);
+
+  /* ── Tokens semánticos — modo CLARO (por defecto) ─────────────────────── */
+  --home-bg:                #FFFDFA;
+  --home-fg:                #0C0C0C;
+  --home-fg-muted:          #6b6375;
+  --home-surface:           #FFFFFF;
+  --home-surface-alt:       #F7F5F0;
+  --home-surface-border:    #E7E5E0;
+  --home-meta-border:       #f0eee8;
+
+  /* Hero */
+  --home-hero-overlay-from: rgba(255, 253, 250, 0.75);
+  --home-hero-overlay-to:   rgba(255, 253, 250, 0.95);
+  --home-hero-fg:           #0C0C0C;
+  --home-hero-title-shadow: none;
+
+  /* Nav */
+  --home-nav-bg:            rgba(255, 253, 250, 0.94);
+  --home-nav-border:        #E7E5E0;
+  --home-nav-link:          #4a4a4a;
+  --home-nav-link-hover:    #0C0C0C;
+  --home-nav-collapse-bg:   rgba(255, 253, 250, 0.98);
+
+  /* btn-outline */
+  --home-outline-color:        #0C0C0C;
+  --home-outline-border:       #0C0C0C;
+  --home-outline-hover-bg:     rgba(12, 12, 12, 0.08);
+  --home-outline-hover-border: #0C0C0C;
+
+  /* btn-dark */
+  --home-btn-dark-bg:          #0C0C0C;
+  --home-btn-dark-border:      #0C0C0C;
+  --home-btn-dark-fg:          #FFFFFF;
+
+  /* Footer */
+  --footer-bg:                 #FFFDFA;
+  --footer-fg:                 #0C0C0C;
+  --footer-fg-muted:           #6b6375;
+  --footer-border:             #e5e3dc;
+  --footer-link:               #3a3a3a;
+  --footer-link-hover:         #0071BC;
+
   font-family: var(--font-body, 'Inter', system-ui, sans-serif);
-  background-color: var(--k-bg-light);
-  color: var(--k-bg-dark);
+  background-color: var(--home-bg);
+  color: var(--home-fg);
   overflow-x: hidden;
   scroll-behavior: smooth;
+}
+
+/* ── Overrides MODO OSCURO ──────────────────────────────────────────────── */
+[data-theme="dark"] .kyrios-home {
+  --home-bg:                #0C0C0C;
+  --home-fg:                #FFFDFA;
+  --home-fg-muted:          #9ca3af;
+  --home-surface:           #1a1a1a;
+  --home-surface-alt:       #161616;
+  --home-surface-border:    #2a2a2a;
+  --home-meta-border:       #222222;
+
+  /* Hero */
+  --home-hero-overlay-from: rgba(12, 12, 12, 0.7);
+  --home-hero-overlay-to:   rgba(12, 12, 12, 0.95);
+  --home-hero-fg:           #FFFFFF;
+  --home-hero-title-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+
+  /* Nav */
+  --home-nav-bg:            rgba(12, 12, 12, 0.94);
+  --home-nav-border:        #222222;
+  --home-nav-link:          #c5c5c5;
+  --home-nav-link-hover:    #ffffff;
+  --home-nav-collapse-bg:   rgba(12, 12, 12, 0.98);
+
+  /* btn-outline */
+  --home-outline-color:        #ffffff;
+  --home-outline-border:       rgba(255, 255, 255, 0.45);
+  --home-outline-hover-bg:     rgba(255, 255, 255, 0.12);
+  --home-outline-hover-border: #ffffff;
+
+  /* btn-dark */
+  --home-btn-dark-bg:          #262626;
+  --home-btn-dark-border:      #3a3a3a;
+  --home-btn-dark-fg:          #FFFFFF;
+
+  /* Footer */
+  --footer-bg:                 #0C0C0C;
+  --footer-fg:                 #FFFDFA;
+  --footer-fg-muted:           #9ca3af;
+  --footer-border:             #222222;
+  --footer-link:               #d1d5db;
+  --footer-link-hover:         #4DA6E8;
 }
 
 /* ─── Tipografía ─── */
@@ -63,11 +140,34 @@
   right: 0;
   width: 100%;
   z-index: 1030;
-  background: rgba(12, 12, 12, 0.94);
+  background: var(--home-nav-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    backdrop-filter 200ms ease;
+}
+
+.kyrios-nav.is-scrolled {
+  background: var(--home-nav-bg-scrolled, var(--home-nav-bg));
+  border-bottom-color: var(--home-nav-border);
+  box-shadow: 0 1px 0 var(--home-nav-shadow, rgba(255, 255, 255, 0.04));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--k-border-dark);
-  transition: all 0.3s ease;
+}
+
+/* Tokens de scroll para cada tema */
+.kyrios-home {
+  --home-nav-bg-scrolled: rgba(255, 253, 250, 0.95);
+  --home-nav-shadow:      rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .kyrios-home {
+  --home-nav-bg-scrolled: rgba(12, 12, 12, 0.95);
+  --home-nav-shadow:      rgba(255, 255, 255, 0.04);
 }
 
 /* Compensa el espacio ocupado por el nav fijo */
@@ -75,8 +175,9 @@
   padding-top: 64px;
 }
 
+/* ─── Nav links con underline animado (scroll-spy) ─── */
 .kyrios-nav-link {
-  color: #c5c5c5;
+  color: var(--home-nav-link);
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -84,31 +185,133 @@
   text-decoration: none;
   padding: 0.5rem 0.85rem;
   position: relative;
-  transition: color 0.2s ease;
+  transition: color 150ms ease;
 }
 
 .kyrios-nav-link:hover,
 .kyrios-nav-link:focus-visible {
-  color: #ffffff;
+  color: var(--home-nav-link-hover);
 }
 
-.kyrios-nav-link::after {
-  content: "";
+.kyrios-nav-link.is-active {
+  color: var(--k-blue);
+}
+
+/* Subrayado scaleX — se activa en hover y en sección activa */
+.kyrios-nav-link__underline {
+  position: absolute;
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 0.2rem;
+  height: 2px;
+  background: var(--k-blue);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kyrios-nav-link:hover .kyrios-nav-link__underline,
+.kyrios-nav-link.is-active .kyrios-nav-link__underline {
+  transform: scaleX(1);
+}
+
+/* Punto activo en mobile */
+.kyrios-nav-link__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--k-blue);
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Link móvil con separador */
+.kyrios-nav-link--mobile {
+  border-bottom: 1px solid var(--home-nav-border);
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ─── Avatar de usuario ─── */
+.kyrios-nav-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(0, 113, 188, 0.18);
+  border: 1px solid rgba(0, 113, 188, 0.4);
+  color: var(--k-blue);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.kyrios-nav-avatar__dot {
   position: absolute;
   bottom: 0;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background-color: var(--k-blue);
-  transition: all 0.25s ease;
-  transform: translateX(-50%);
+  right: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 2px solid var(--home-bg);
 }
 
-.kyrios-nav-link:hover::after {
-  width: 60%;
+/* ─── CTA arrow micro-animación ─── */
+.kyrios-nav-cta-arrow {
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Botones principales de la marca */
+.btn-kyrios-outline:hover .kyrios-nav-cta-arrow,
+.btn-kyrios-outline:focus-visible .kyrios-nav-cta-arrow {
+  transform: translate(2px, -2px);
+}
+
+/* Texto de saludo en navbar */
+.kyrios-nav-greeting {
+  font-size: 0.85rem;
+  color: var(--home-nav-link);
+  transition: color 200ms ease;
+}
+
+/* Botón hamburguesa */
+.kyrios-nav-hamburger {
+  background: transparent;
+  color: var(--home-nav-link-hover);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: color 200ms ease, background-color 150ms ease;
+}
+
+.kyrios-nav-hamburger:hover {
+  color: var(--k-blue);
+  background-color: rgba(0, 113, 188, 0.08);
+}
+
+/* ─── Focus visible global para nav ─── */
+.kyrios-nav-link:focus-visible,
+.kyrios-nav-hamburger:focus-visible,
+.btn-kyrios-primary:focus-visible,
+.btn-kyrios-outline:focus-visible {
+  outline: 2px solid var(--k-blue);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 .btn-kyrios-primary {
   background-color: var(--k-blue);
   color: #ffffff !important;
@@ -138,12 +341,12 @@
 
 .btn-kyrios-outline {
   background-color: transparent;
-  color: #ffffff !important;
+  color: var(--home-outline-color) !important;
   font-weight: 700;
   font-size: 0.82rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  border: 1px solid var(--home-outline-border);
   border-radius: 3px;
   padding: 0.65rem 1.4rem;
   transition: all 0.25s ease;
@@ -156,19 +359,20 @@
 
 .btn-kyrios-outline:hover,
 .btn-kyrios-outline:focus-visible {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: #ffffff;
+  background-color: var(--home-outline-hover-bg);
+  border-color: var(--home-outline-hover-border);
+  color: var(--home-outline-color) !important;
   transform: translateY(-2px);
 }
 
 .btn-kyrios-dark {
-  background-color: var(--k-bg-dark);
-  color: #ffffff !important;
+  background-color: var(--home-btn-dark-bg);
+  color: var(--home-btn-dark-fg) !important;
   font-weight: 700;
   font-size: 0.8rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  border: 1px solid var(--k-bg-dark);
+  border: 1px solid var(--home-btn-dark-border);
   border-radius: 3px;
   padding: 0.55rem 1.1rem;
   transition: all 0.2s ease;
@@ -182,6 +386,7 @@
 .btn-kyrios-dark:focus-visible {
   background-color: var(--k-blue);
   border-color: var(--k-blue);
+  color: #FFFFFF !important;
   transform: translateY(-1px);
 }
 
@@ -191,10 +396,11 @@
   min-height: 85vh;
   display: flex;
   align-items: center;
-  background-color: var(--k-bg-dark);
-  color: #ffffff;
+  background-color: var(--home-bg);
+  color: var(--home-hero-fg);
   overflow: hidden;
   padding: 5rem 0;
+  transition: background-color 200ms ease, color 200ms ease;
 }
 
 .kyrios-hero-bg {
@@ -204,10 +410,14 @@
   height: 100%;
   object-fit: cover;
   object-position: center 35%;
-  opacity: 0.42;
+  opacity: 0.35;
   filter: grayscale(85%) contrast(115%);
   transform: scale(1.03);
-  transition: transform 12s ease-out;
+  transition: transform 12s ease-out, opacity 200ms ease;
+}
+
+[data-theme="dark"] .kyrios-hero-bg {
+  opacity: 0.42;
 }
 
 .kyrios-hero:hover .kyrios-hero-bg {
@@ -217,9 +427,10 @@
 .kyrios-hero-overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 75% 30%, rgba(0, 113, 188, 0.18) 0%, transparent 60%),
-              linear-gradient(180deg, rgba(12, 12, 12, 0.7) 0%, rgba(12, 12, 12, 0.95) 100%);
+  background: radial-gradient(circle at 75% 30%, rgba(0, 113, 188, 0.15) 0%, transparent 60%),
+              linear-gradient(180deg, var(--home-hero-overlay-from) 0%, var(--home-hero-overlay-to) 100%);
   pointer-events: none;
+  transition: background 200ms ease;
 }
 
 .kyrios-hero-content {
@@ -230,26 +441,30 @@
 
 .kyrios-hero-title {
   font-size: clamp(2.6rem, 6.5vw, 5.2rem);
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  color: var(--home-hero-fg);
+  text-shadow: var(--home-hero-title-shadow, none);
   margin-bottom: 1.25rem;
+  transition: color 200ms ease;
 }
 
 .kyrios-hero-subtitle {
   font-size: clamp(1rem, 2vw, 1.2rem);
-  color: #d6d6d6;
+  color: var(--home-fg-muted);
   line-height: 1.7;
   max-width: 600px;
   margin-bottom: 2rem;
   font-weight: 300;
+  transition: color 200ms ease;
 }
 
 /* ─── Trust Block ─── */
 .kyrios-trust-section {
-  background-color: var(--k-bg-card-dark);
-  border-top: 1px solid var(--k-border-dark);
-  border-bottom: 1px solid var(--k-border-dark);
-  color: #ffffff;
+  background-color: var(--home-surface);
+  border-top: 1px solid var(--home-surface-border);
+  border-bottom: 1px solid var(--home-surface-border);
+  color: var(--home-fg);
   padding: 3.5rem 0;
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
 }
 
 .kyrios-trust-item {
@@ -281,6 +496,12 @@
 /* ─── Secciones generales ─── */
 .kyrios-section {
   padding: 5.5rem 0;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+/* Sección con fondo alternado (Barberos) — ligeramente distinto al body */
+.kyrios-section--alt {
+  background-color: var(--home-surface-alt);
 }
 
 .kyrios-section-header {
@@ -289,27 +510,29 @@
 
 .kyrios-section-title {
   font-size: clamp(2rem, 4vw, 3.2rem);
-  color: var(--k-bg-dark);
+  color: var(--home-fg);
   margin-bottom: 0.75rem;
+  transition: color 200ms ease;
 }
 
 .kyrios-section-desc {
-  color: var(--k-text-muted);
+  color: var(--home-fg-muted);
   font-size: 1.05rem;
   max-width: 620px;
+  transition: color 200ms ease;
 }
 
 /* ─── Tarjetas de Servicios ─── */
 .kyrios-service-card {
-  background: #ffffff;
-  border: 1px solid var(--k-border-light);
+  background: var(--home-surface);
+  border: 1px solid var(--home-surface-border);
   border-radius: 4px;
   overflow: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 200ms ease, border-color 200ms ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 
 .kyrios-service-card:hover {
@@ -321,7 +544,7 @@
 .kyrios-service-img-wrap {
   position: relative;
   height: 200px;
-  background: #f1efe9;
+  background: var(--home-surface-alt);
   overflow: hidden;
 }
 
@@ -376,16 +599,18 @@
   font-family: var(--font-brand, sans-serif);
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--k-bg-dark);
+  color: var(--home-fg);
   margin-bottom: 0.5rem;
+  transition: color 200ms ease;
 }
 
 .kyrios-service-desc {
   font-size: 0.9rem;
-  color: #6c6c6c;
+  color: var(--home-fg-muted);
   line-height: 1.6;
   margin-bottom: 1.2rem;
   flex-grow: 1;
+  transition: color 200ms ease;
 }
 
 .kyrios-service-meta {
@@ -393,33 +618,36 @@
   align-items: center;
   justify-content: space-between;
   padding-top: 1rem;
-  border-top: 1px solid #f0eee8;
+  border-top: 1px solid var(--home-meta-border);
   margin-top: auto;
+  transition: border-color 200ms ease;
 }
 
 .kyrios-service-price {
   font-family: var(--font-brand, sans-serif);
   font-size: 1.35rem;
   font-weight: 800;
-  color: var(--k-bg-dark);
+  color: var(--home-fg);
+  transition: color 200ms ease;
 }
 
 .kyrios-service-duration {
   font-size: 0.78rem;
-  color: var(--k-text-muted);
+  color: var(--home-fg-muted);
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  transition: color 200ms ease;
 }
 
 /* ─── Tarjetas de Barberos ─── */
 .kyrios-barber-card {
-  background: var(--k-bg-card-dark);
-  border: 1px solid var(--k-border-dark);
+  background: var(--home-surface);
+  border: 1px solid var(--home-surface-border);
   border-radius: 4px;
   overflow: hidden;
-  color: #ffffff;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--home-fg);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 200ms ease, border-color 200ms ease;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -434,7 +662,7 @@
 .kyrios-barber-img-wrap {
   position: relative;
   aspect-ratio: 4 / 4.8;
-  background: #111111;
+  background: var(--home-surface-alt);
   overflow: hidden;
 }
 
@@ -475,8 +703,9 @@
   font-size: 1.35rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: #ffffff;
+  color: var(--home-fg);
   margin-bottom: 0.2rem;
+  transition: color 200ms ease;
 }
 
 .kyrios-barber-role {
@@ -492,7 +721,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #aaaaaa;
+  color: var(--home-fg-muted);
   font-size: 0.85rem;
   text-decoration: none;
   transition: color 0.2s ease;
@@ -500,16 +729,51 @@
 }
 
 .kyrios-barber-phone:hover {
-  color: #ffffff;
+  color: var(--home-fg);
+}
+
+.kyrios-barber-sede {
+  color: var(--home-fg-muted);
+  font-size: 0.82rem;
+  transition: color 200ms ease;
 }
 
 /* ─── Ubicación ─── */
 .kyrios-location-card {
-  background: #ffffff;
-  border: 1px solid var(--k-border-light);
+  background: var(--home-surface);
+  border: 1px solid var(--home-surface-border);
   border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.kyrios-location-desc {
+  color: var(--home-fg-muted);
+  line-height: 1.7;
+  transition: color 200ms ease;
+}
+
+.kyrios-location-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 4px;
+  background: rgba(0, 113, 188, 0.12);
+  color: var(--k-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kyrios-location-item-title {
+  color: var(--home-fg);
+  transition: color 200ms ease;
+}
+
+.kyrios-location-item-desc {
+  color: var(--home-fg-muted);
+  transition: color 200ms ease;
 }
 
 .kyrios-map-visual {
@@ -553,46 +817,85 @@
 
 /* ─── Footer ─── */
 .kyrios-footer {
-  background-color: var(--k-bg-dark);
-  border-top: 1px solid var(--k-border-dark);
-  color: #ffffff;
+  background-color: var(--footer-bg);
+  border-top: 1px solid var(--footer-border);
+  color: var(--footer-fg);
   padding: 4.5rem 0 2rem 0;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+@media (max-width: 767.98px) {
+  .kyrios-footer {
+    padding: 3rem 0 1.5rem 0;
+  }
 }
 
 .kyrios-footer-link {
-  color: #9c9c9c;
+  color: var(--footer-link);
   font-size: 0.88rem;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: color 150ms ease, transform 150ms ease;
   display: inline-block;
   margin-bottom: 0.6rem;
 }
 
 .kyrios-footer-link:hover,
 .kyrios-footer-link:focus-visible {
-  color: #ffffff;
+  color: var(--footer-link-hover);
   transform: translateX(3px);
+}
+
+.kyrios-footer-link:focus-visible {
+  outline: 2px solid var(--k-blue);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 .kyrios-social-btn {
   width: 40px;
   height: 40px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--k-border-dark);
-  color: #ffffff;
+  background: rgba(0, 113, 188, 0.08);
+  border: 1px solid var(--footer-border);
+  color: var(--footer-fg);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  transition: all 0.25s ease;
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease, transform 150ms ease;
 }
 
-.kyrios-social-btn:hover {
+.kyrios-social-btn:hover,
+.kyrios-social-btn:focus-visible {
   background: var(--k-blue);
   border-color: var(--k-blue);
-  color: #ffffff;
+  color: #FFFFFF;
   transform: translateY(-2px);
+}
+
+.kyrios-social-btn:focus-visible {
+  outline: 2px solid var(--k-blue);
+  outline-offset: 2px;
+}
+
+.kyrios-footer-muted {
+  color: var(--footer-fg-muted);
+  transition: color 200ms ease;
+}
+
+.kyrios-footer-heading {
+  color: var(--footer-fg);
+  transition: color 200ms ease;
+}
+
+.kyrios-footer-icon {
+  color: var(--footer-fg);
+  transition: color 200ms ease;
+}
+
+.kyrios-footer-bottom {
+  border-top: 1px solid var(--footer-border);
+  transition: border-color 200ms ease;
 }
 
 /* ─── Animaciones y Accesibilidad ─── */
@@ -628,10 +931,22 @@
 /* ─── Responsive adjustments ─── */
 @media (max-width: 991.98px) {
   .kyrios-nav-collapse {
-    background-color: var(--k-bg-dark);
-    padding: 1.5rem;
-    border-top: 1px solid var(--k-border-dark);
-    margin-top: 0.75rem;
+    background-color: var(--home-nav-collapse-bg);
+    border-top: 1px solid var(--home-nav-border);
+    animation: slideDown 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    transition: background-color 200ms ease, border-color 200ms ease;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .kyrios-nav-link-mobile {
+    border-bottom: 1px solid var(--home-nav-border);
+  }
+  .kyrios-nav-mobile-divider {
+    border-top: 1px solid var(--home-nav-border);
   }
   .kyrios-hero {
     min-height: 75vh;
@@ -639,6 +954,33 @@
   }
   .kyrios-section {
     padding: 4rem 0;
+  }
+}
+
+/* 768–991px: links compactos */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .kyrios-nav-link {
+    font-size: 0.78rem;
+    padding: 0.45rem 0.6rem;
+  }
+}
+
+/* ─── prefers-reduced-motion nav overrides ─── */
+@media (prefers-reduced-motion: reduce) {
+  .kyrios-nav,
+  .kyrios-nav-link,
+  .kyrios-nav-link__underline,
+  .kyrios-nav-collapse,
+  .kyrios-nav-hamburger,
+  .kyrios-nav-cta-arrow {
+    transition: none !important;
+    animation: none !important;
+  }
+  .kyrios-nav-link__underline {
+    transform: scaleX(0) !important;
+  }
+  .kyrios-nav-link.is-active .kyrios-nav-link__underline {
+    transform: scaleX(1) !important;
   }
 }
 
@@ -650,3 +992,107 @@
     padding: 0.75rem 0;
   }
 }
+
+/* ─── Animaciones de ReservaEnProcesoAlert (Emil Kowalski) ─── */
+@keyframes slideDownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOutAlert {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.reserva-alert-animating {
+  animation: slideDownIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.reserva-alert-exiting {
+  animation: fadeOutAlert 150ms ease-out forwards;
+  will-change: transform, opacity;
+}
+
+/* Compensación de desplazamiento para evitar que la barra fija (64px) tape las secciones */
+#notificacion-reserva,
+#inicio,
+#servicios,
+#barberos,
+#ubicacion {
+  scroll-margin-top: 80px;
+}
+
+.reserva-en-proceso-card {
+  box-shadow: 0 4px 20px rgba(0, 113, 188, 0.12), 0 1px 4px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes slideDownIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOutAlert {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  .reserva-alert-animating {
+    animation: slideDownIn 150ms ease-out forwards;
+    will-change: opacity;
+  }
+
+  .reserva-alert-exiting {
+    animation: fadeOutAlert 150ms ease-out forwards;
+    will-change: opacity;
+  }
+}
+
+/* ─── Transiciones globales al alternar tema (Emil Kowalski) ─── */
+.kyrios-home,
+.kyrios-section,
+.kyrios-service-card,
+.kyrios-barber-card,
+.kyrios-nav,
+.kyrios-footer,
+.kyrios-location-card,
+.kyrios-trust-section {
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kyrios-home,
+  .kyrios-section,
+  .kyrios-service-card,
+  .kyrios-barber-card,
+  .kyrios-nav,
+  .kyrios-footer,
+  .kyrios-location-card,
+  .kyrios-trust-section {
+    transition: none !important;
+  }
+}
+
+

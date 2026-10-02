@@ -16,6 +16,7 @@ export const crearBarberoSchema = z.object({
 export type CrearBarberoFormValues = z.infer<typeof crearBarberoSchema>;
 
 export const actualizarComisionSchema = z.object({
+  // porcentajeComisionSchema ya incluye .int() desde comunes.schema.ts
   porcentajeComision: porcentajeComisionSchema,
 });
 

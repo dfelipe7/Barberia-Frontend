@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Lock, Unlock, UserMinus, UserCheck } from 'lucide-react';
+import { UserCog, Shield, Eye, Pencil, UserMinus, UserCheck, Lock, Unlock, Scissors } from 'lucide-react';
 import Table, { type Column } from '../../../shared/ui/Table';
-import Button from '../../../shared/ui/Button';
+import AccionesDropdown from '../../../shared/ui/AccionesDropdown';
+import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
+import { useMediaQuery } from '../../../shared/lib/useMediaQuery';
 import type { AdministradorGestion } from '../types/usuarios.types';
 
 interface UserTableProps {
@@ -28,6 +30,8 @@ export const UserTable: React.FC<UserTableProps> = ({
   isUpdatingId,
   isUpdatingGlobalId,
 }) => {
+  const isMobile = useMediaQuery('(max-width: 767.98px)');
+
   const columns: Column<AdministradorGestion>[] = [
     {
       key: 'usuario',
@@ -35,7 +39,7 @@ export const UserTable: React.FC<UserTableProps> = ({
       render: (admin) => (
         <div className="d-flex align-items-center gap-2">
           <div
-            className="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex justify-content-center align-items-center fw-bold"
+            className="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex justify-content-center align-items-center fw-bold flex-shrink-0"
             style={{ width: '36px', height: '36px' }}
           >
             {admin.nombre.charAt(0)}
@@ -45,7 +49,7 @@ export const UserTable: React.FC<UserTableProps> = ({
             <span className="fw-semibold d-block">
               {admin.nombre} {admin.apellido}
             </span>
-            <span className="text-muted small">{admin.email}</span>
+            <span className="text-muted small d-none d-sm-block">{admin.email}</span>
           </div>
         </div>
       ),
@@ -53,8 +57,9 @@ export const UserTable: React.FC<UserTableProps> = ({
     {
       key: 'roles',
       header: 'Perfiles Habilitados',
+      className: 'text-center',
       render: (admin) => (
-        <div className="d-flex flex-wrap gap-1">
+        <div className="d-flex flex-wrap justify-content-center gap-1">
           <span className="badge bg-warning text-dark">ADMINISTRADOR</span>
           {admin.esBarbero && (
             <span className="badge bg-info text-dark">BARBERO</span>
@@ -65,6 +70,7 @@ export const UserTable: React.FC<UserTableProps> = ({
     {
       key: 'estadoGlobal',
       header: 'Estado Global',
+      className: 'text-center',
       render: (admin) => (
         <span
           className={`badge ${
@@ -78,6 +84,7 @@ export const UserTable: React.FC<UserTableProps> = ({
     {
       key: 'estadoAdmin',
       header: 'Rol Admin',
+      className: 'text-center d-none d-lg-table-cell',
       render: (admin) => (
         <span
           className={`badge ${
@@ -91,97 +98,108 @@ export const UserTable: React.FC<UserTableProps> = ({
     {
       key: 'acciones',
       header: 'Acciones',
-      className: 'text-end',
+      className: 'text-center',
       render: (admin) => {
         const esMismoUsuario = currentUserId === admin.id;
         const puedeEditar = esSuperAdmin || esMismoUsuario;
         const isCurrentUpdating = isUpdatingId === admin.id;
         const isCurrentUpdatingGlobal = isUpdatingGlobalId === admin.id;
 
-        return (
-          <div className="d-inline-flex align-items-center justify-content-end gap-1">
-            <Button
-              variant="outline-secondary"
-              size="sm"
-              onClick={() => onSelectUsuario(admin)}
-              title="Ver detalles"
-            >
-              Ficha
-            </Button>
+        const itemsPerfil = [
+          {
+            key: 'ficha',
+            label: 'Ver ficha completa',
+            icon: <Eye size={15} className="text-secondary" />,
+            onClick: () => onSelectUsuario(admin),
+            title: 'Ver ficha completa del administrador',
+          },
+          puedeEditar && {
+            key: 'editar',
+            label: 'Editar datos del perfil',
+            icon: <Pencil size={15} className="text-primary" />,
+            to: `/usuarios/${admin.id}/editar`,
+            title: 'Editar datos del perfil',
+          },
+          !admin.esBarbero &&
+            esSuperAdmin && {
+              key: 'barbero',
+              label: 'Habilitar rol de barbero',
+              icon: <Scissors size={15} className="text-info" />,
+              onClick: () => onConfigurarBarbero(admin),
+              title: 'Convertir también en barbero',
+            },
+        ];
 
-            {!admin.esBarbero && esSuperAdmin && (
-              <Button
-                variant="outline-info"
-                size="sm"
-                onClick={() => onConfigurarBarbero(admin)}
-                title="Convertir también en Barbero"
-              >
-                + Barbero
-              </Button>
-            )}
-
-            {esSuperAdmin && !esMismoUsuario && (
-              <Button
-                variant={admin.estadoAdmin === 'ACTIVO' ? 'outline-warning' : 'outline-success'}
-                size="sm"
-                isLoading={isCurrentUpdating}
-                onClick={() =>
-                  onCambiarEstado(
-                    admin.id,
-                    admin.estadoAdmin === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
-                  )
-                }
-                title={
-                  admin.estadoAdmin === 'ACTIVO'
-                    ? 'Inactivar rol administrador'
-                    : 'Activar rol administrador'
-                }
-              >
-                {admin.estadoAdmin === 'ACTIVO' ? (
-                  <>
-                    <UserMinus size={16} className="me-1" />
-                    Inactivar Rol
-                  </>
+        const itemsRolCuenta = [
+          esSuperAdmin &&
+            !esMismoUsuario && {
+              key: 'rol',
+              label:
+                admin.estadoAdmin === 'ACTIVO'
+                  ? 'Desactivar rol (sigue activo)'
+                  : 'Activar rol de administrador',
+              icon:
+                admin.estadoAdmin === 'ACTIVO' ? (
+                  <UserMinus size={15} className="text-warning-emphasis" />
                 ) : (
-                  <>
-                    <UserCheck size={16} className="me-1" />
-                    Activar Rol
-                  </>
-                )}
-              </Button>
-            )}
+                  <UserCheck size={15} className="text-success" />
+                ),
+              isLoading: isCurrentUpdating,
+              onClick: () =>
+                onCambiarEstado(
+                  admin.id,
+                  admin.estadoAdmin === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
+                ),
+              title:
+                admin.estadoAdmin === 'ACTIVO'
+                  ? 'Desactivar rol (el usuario sigue activo)'
+                  : 'Activar rol de administrador',
+            },
+          esSuperAdmin && {
+            key: 'global',
+            label:
+              admin.estado === 'ACTIVO'
+                ? 'Bloquear cuenta completa'
+                : 'Desbloquear cuenta global',
+            icon:
+              admin.estado === 'ACTIVO' ? (
+                <Lock size={15} className="text-danger" />
+              ) : (
+                <Unlock size={15} className="text-success" />
+              ),
+            variant:
+              admin.estado === 'ACTIVO' ? ('danger' as const) : ('success' as const),
+            disabled: esMismoUsuario,
+            isLoading: isCurrentUpdatingGlobal,
+            onClick: () =>
+              onCambiarEstadoGlobal(
+                admin.id,
+                admin.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
+              ),
+            title: esMismoUsuario
+              ? 'No puedes bloquear tu propia cuenta'
+              : admin.estado === 'ACTIVO'
+              ? 'Bloquear cuenta completa (no podrá iniciar sesión)'
+              : 'Desbloquear cuenta global',
+          },
+        ];
+
+        return (
+          <div className="d-inline-flex align-items-center justify-content-center gap-2">
+            <AccionesDropdown
+              label="Gestión de Perfil"
+              icon={<UserCog size={15} />}
+              buttonVariant="btn-outline-primary"
+              items={itemsPerfil}
+            />
 
             {esSuperAdmin && (
-              <Button
-                variant={admin.estado === 'ACTIVO' ? 'outline-danger' : 'outline-success'}
-                size="sm"
-                disabled={esMismoUsuario}
-                isLoading={isCurrentUpdatingGlobal}
-                onClick={() =>
-                  onCambiarEstadoGlobal(
-                    admin.id,
-                    admin.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
-                  )
-                }
-                title={
-                  esMismoUsuario
-                    ? 'No puedes bloquear tu propia cuenta'
-                    : admin.estado === 'ACTIVO'
-                    ? 'Bloquear cuenta global'
-                    : 'Desbloquear cuenta global'
-                }
-              >
-                {admin.estado === 'ACTIVO' ? <Lock size={16} /> : <Unlock size={16} />}
-              </Button>
-            )}
-
-            {puedeEditar && (
-              <Link
-                to={`/usuarios/${admin.id}/editar`}
-                className="btn btn-outline-primary btn-sm"
-              >
-                Editar
-              </Link>
+              <AccionesDropdown
+                label="Rol y Cuenta"
+                icon={<Shield size={15} />}
+                buttonVariant="btn-outline-dark"
+                items={itemsRolCuenta}
+              />
             )}
           </div>
         );
@@ -189,13 +207,207 @@ export const UserTable: React.FC<UserTableProps> = ({
     },
   ];
 
+  // Vista en móvil: lista de cards apiladas
+  if (isMobile) {
+    if (administradores.length === 0) {
+      return (
+        <div className="text-center py-5 border rounded card-surface">
+          <div className="mb-3 text-muted" style={{ opacity: 0.4 }}>
+            <Shield size={48} />
+          </div>
+          <h5 className="fw-semibold text-muted mb-2">Sin administradores registrados</h5>
+          <p className="text-muted small mb-3">Empieza registrando al primer administrador del sistema.</p>
+          {esSuperAdmin && (
+            <Link to="/administradores/nuevo" className="btn btn-dark btn-sm">
+              + Crear primer administrador
+            </Link>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="mobile-cards-container d-flex flex-column gap-3">
+        {administradores.map((admin) => {
+          const esMismoUsuario = currentUserId === admin.id;
+          const puedeEditar = esSuperAdmin || esMismoUsuario;
+          const isCurrentUpdating = isUpdatingId === admin.id;
+          const isCurrentUpdatingGlobal = isUpdatingGlobalId === admin.id;
+          const isActivo = admin.estado === 'ACTIVO';
+          const borderColor = isActivo ? '#10B981' : '#EF4444';
+
+          return (
+            <div
+              key={admin.id}
+              className="mobile-user-card border-start border-4 shadow-sm"
+              style={{ borderLeftColor: borderColor }}
+            >
+              {/* 1. Avatar + Nombre + Email */}
+              <div className="d-flex align-items-center gap-3 mb-2">
+                <div
+                  className="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex justify-content-center align-items-center fw-bold flex-shrink-0"
+                  style={{ width: '42px', height: '42px', fontSize: '0.95rem' }}
+                >
+                  {admin.nombre.charAt(0)}
+                  {admin.apellido.charAt(0)}
+                </div>
+                <div className="text-truncate">
+                  <span className="fw-bold d-block text-truncate" style={{ fontSize: '0.95rem' }}>
+                    {admin.nombre} {admin.apellido}
+                  </span>
+                  <span className="text-muted small d-block text-truncate">
+                    {admin.email}
+                  </span>
+                </div>
+              </div>
+
+              {/* 2. Badges de Rol */}
+              <div className="d-flex flex-wrap align-items-center gap-1 mb-2">
+                <span className="badge bg-warning text-dark" style={{ fontSize: '0.7rem' }}>
+                  ADMINISTRADOR
+                </span>
+                {admin.esBarbero && (
+                  <span className="badge bg-info text-dark" style={{ fontSize: '0.7rem' }}>
+                    BARBERO
+                  </span>
+                )}
+              </div>
+
+              {/* 3. Estado Global + Estado de Rol */}
+              <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 py-2 border-top border-bottom my-2 bg-surface-app px-2 rounded">
+                <div className="d-flex align-items-center gap-1">
+                  <span className="text-muted small">Cuenta:</span>
+                  <span className={`badge ${isActivo ? 'bg-success' : 'bg-danger'}`}>
+                    {isActivo ? 'Habilitada' : 'Bloqueada'}
+                  </span>
+                </div>
+                <div className="d-flex align-items-center gap-1">
+                  <span className="text-muted small">Rol:</span>
+                  <span className={`badge ${admin.estadoAdmin === 'ACTIVO' ? 'bg-success' : 'bg-secondary'}`}>
+                    {admin.estadoAdmin ?? 'INACTIVO'}
+                  </span>
+                </div>
+              </div>
+
+              {/* 4. Fila de acciones (iconos táctiles ≥ 44x44px) */}
+              <div className="d-flex flex-wrap gap-2 pt-2 justify-content-end">
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary mobile-action-btn"
+                  onClick={() => onSelectUsuario(admin)}
+                  title="Ver ficha completa"
+                  aria-label="Ver ficha completa"
+                >
+                  <Eye size={18} />
+                </button>
+
+                {puedeEditar && (
+                  <Link
+                    to={`/usuarios/${admin.id}/editar`}
+                    className="btn btn-outline-primary mobile-action-btn"
+                    title="Editar datos del perfil"
+                    aria-label="Editar datos del perfil"
+                  >
+                    <Pencil size={18} />
+                  </Link>
+                )}
+
+                {!admin.esBarbero && esSuperAdmin && (
+                  <button
+                    type="button"
+                    className="btn btn-outline-info mobile-action-btn"
+                    onClick={() => onConfigurarBarbero(admin)}
+                    title="Habilitar rol de barbero"
+                    aria-label="Habilitar rol de barbero"
+                  >
+                    <Scissors size={18} />
+                  </button>
+                )}
+
+                {esSuperAdmin && !esMismoUsuario && (
+                  <button
+                    type="button"
+                    className="btn btn-outline-warning mobile-action-btn"
+                    disabled={isCurrentUpdating}
+                    onClick={() =>
+                      onCambiarEstado(
+                        admin.id,
+                        admin.estadoAdmin === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
+                      )
+                    }
+                    title={admin.estadoAdmin === 'ACTIVO' ? 'Desactivar rol' : 'Activar rol de administrador'}
+                    aria-label={admin.estadoAdmin === 'ACTIVO' ? 'Desactivar rol de administrador' : 'Activar rol de administrador'}
+                  >
+                    {isCurrentUpdating ? (
+                      <KyriosSpinner size="xs" aria-hidden="true" />
+                    ) : admin.estadoAdmin === 'ACTIVO' ? (
+                      <UserMinus size={18} />
+                    ) : (
+                      <UserCheck size={18} />
+                    )}
+                  </button>
+                )}
+
+                {esSuperAdmin && (
+                  <button
+                    type="button"
+                    className={`btn ${isActivo ? 'btn-outline-danger' : 'btn-outline-success'} mobile-action-btn`}
+                    disabled={esMismoUsuario || isCurrentUpdatingGlobal}
+                    onClick={() =>
+                      onCambiarEstadoGlobal(
+                        admin.id,
+                        isActivo ? 'INACTIVO' : 'ACTIVO'
+                      )
+                    }
+                    title={
+                      esMismoUsuario
+                        ? 'No puedes bloquear tu propia cuenta'
+                        : isActivo
+                        ? 'Bloquear cuenta completa'
+                        : 'Desbloquear cuenta global'
+                    }
+                    aria-label={isActivo ? 'Bloquear cuenta completa' : 'Desbloquear cuenta global'}
+                  >
+                    {isCurrentUpdatingGlobal ? (
+                      <KyriosSpinner size="xs" aria-hidden="true" />
+                    ) : isActivo ? (
+                      <Lock size={18} />
+                    ) : (
+                      <Unlock size={18} />
+                    )}
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Vista en desktop / tablet
   return (
-    <Table
-      columns={columns}
-      data={administradores}
-      keyExtractor={(item) => item.id}
-      emptyMessage="No hay administradores registrados en el sistema."
-    />
+    <div className="table-view-container">
+      <Table
+        columns={columns}
+        data={administradores}
+        keyExtractor={(item) => item.id}
+        emptyContent={
+          <div className="text-center py-5 border rounded card-surface">
+            <div className="mb-3 text-muted" style={{ opacity: 0.4 }}>
+              <Shield size={48} />
+            </div>
+            <h5 className="fw-semibold text-muted mb-2">Sin administradores registrados</h5>
+            <p className="text-muted small mb-3">Empieza registrando al primer administrador del sistema.</p>
+            {esSuperAdmin && (
+              <Link to="/administradores/nuevo" className="btn btn-dark btn-sm">
+                + Crear primer administrador
+              </Link>
+            )}
+          </div>
+        }
+      />
+    </div>
   );
 };
 

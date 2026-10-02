@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useToast } from '../../../shared/lib/useToast';
+import { ToastContainer } from '../../../shared/ui/ToastContainer';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../../auth/AuthContext';
@@ -27,10 +29,8 @@ export const MiPerfilPage: React.FC = () => {
   const { usuarioDb, refrescarPerfil, roles } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [editando, setEditando] = useState(false);
-  const [exitoDatos, setExitoDatos] = useState('');
-  const [exitoClave, setExitoClave] = useState('');
+  const { toast, showToast, hideToast } = useToast(4000);
   const [errorFoto, setErrorFoto] = useState('');
-  const [exitoFoto, setExitoFoto] = useState('');
 
   const actualizarUsuarioMutation = useActualizarUsuario();
   const cambiarContrasenaMutation = useCambiarContrasena();
@@ -85,7 +85,6 @@ export const MiPerfilPage: React.FC = () => {
   const onGuardarDatos = async (data: MiPerfilFormValues) => {
     if (!usuarioDb) return;
     try {
-      setExitoDatos('');
       await actualizarUsuarioMutation.mutateAsync({
         id: usuarioDb.id,
         datos: {
@@ -96,7 +95,7 @@ export const MiPerfilPage: React.FC = () => {
         },
       });
       await refrescarPerfil();
-      setExitoDatos('¡Información actualizada correctamente!');
+      showToast('success', '¡Información actualizada correctamente!');
       setEditando(false);
     } catch (err: unknown) {
       console.error(err);
@@ -105,12 +104,11 @@ export const MiPerfilPage: React.FC = () => {
 
   const onCambiarClave = async (data: CambiarContrasenaFormValues) => {
     try {
-      setExitoClave('');
       await cambiarContrasenaMutation.mutateAsync({
         contrasenaActual: data.contrasenaActual,
         nuevaContrasena: data.nuevaContrasena,
       });
-      setExitoClave('¡Contraseña actualizada exitosamente!');
+      showToast('success', '¡Contraseña actualizada exitosamente!');
       resetClave();
     } catch (err: unknown) {
       console.error(err);
@@ -121,7 +119,6 @@ export const MiPerfilPage: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     setErrorFoto('');
-    setExitoFoto('');
     if (file.size > 5 * 1024 * 1024) {
       setErrorFoto('La imagen supera el límite permitido de 5 MB.');
       return;
@@ -133,7 +130,7 @@ export const MiPerfilPage: React.FC = () => {
     try {
       await subirFotoMutation.mutateAsync(file);
       await refrescarPerfil();
-      setExitoFoto('¡Foto de perfil actualizada correctamente!');
+      showToast('success', '¡Foto de perfil actualizada correctamente!');
     } catch (err: unknown) {
       setErrorFoto(mapApiError(err));
     } finally {
@@ -144,18 +141,17 @@ export const MiPerfilPage: React.FC = () => {
   const handleEliminarFoto = async () => {
     if (!window.confirm('¿Seguro que deseas eliminar tu foto de perfil del catálogo?')) return;
     setErrorFoto('');
-    setExitoFoto('');
     try {
       await eliminarFotoMutation.mutateAsync();
       await refrescarPerfil();
-      setExitoFoto('Foto de perfil eliminada correctamente.');
+      showToast('success', 'Foto de perfil eliminada correctamente.');
     } catch (err: unknown) {
       setErrorFoto(mapApiError(err));
     }
   };
 
   return (
-    <div className="container py-4" style={{ maxWidth: '840px' }}>
+    <div className="container py-4" style={{ maxWidth: '960px' }}>
       <div className="mb-4">
         <h1 className="h2 fw-bold mb-1">Mi Perfil</h1>
         <p className="text-muted">
@@ -164,12 +160,16 @@ export const MiPerfilPage: React.FC = () => {
       </div>
 
       <div className="row g-4">
-        {/* Columna Izquierda: Resumen de Usuario */}
-        <div className="col-12 col-md-4">
-          <div className="card shadow-sm border-0 text-center p-4 bg-white h-50">
+        {/* Columna Izquierda: Resumen de Usuario (en tablet y móvil arriba) */}
+        <div className="col-12 col-lg-4">
+          <div className="card shadow-sm border-0 text-center p-3 p-md-4 card-surface mb-4">
             <div
               className="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex justify-content-center align-items-center mx-auto mb-3 fw-bold"
-              style={{ width: '84px', height: '84px', fontSize: '2rem' }}
+              style={{
+                width: 'clamp(84px, 15vw, 105px)',
+                height: 'clamp(84px, 15vw, 105px)',
+                fontSize: 'clamp(1.75rem, 4vw, 2.2rem)',
+              }}
             >
               {usuarioDb?.nombre?.charAt(0) || 'U'}
               {usuarioDb?.apellido?.charAt(0) || ''}
@@ -193,14 +193,14 @@ export const MiPerfilPage: React.FC = () => {
             </div>
 
             {usuarioDb?.barbero && (
-              <div className="alert alert-info py-2 px-3 small text-start">
+              <div className="alert alert-info py-2 px-3 small text-start mb-0">
                 <strong>Comisión asignada:</strong> {usuarioDb.barbero.porcentajeComision}%
               </div>
             )}
           </div>
 
           {usuarioDb?.barbero && (
-            <div className="card shadow-sm border-0 p-4 bg-white mt-4">
+            <div className="card shadow-sm border-0 p-3 p-md-4 card-surface">
               <h5 className="fw-bold mb-3">Información de Barbero</h5>
               <div className="mb-2">
                 <span className="text-muted small d-block">Teléfono</span>
@@ -226,13 +226,12 @@ export const MiPerfilPage: React.FC = () => {
         </div>
 
         {/* Columna Derecha: Formularios */}
-        <div className="col-12 col-md-8">
+        <div className="col-12 col-lg-8">
           {usuarioDb?.barbero && (
-            <div className="card shadow-sm border-0 p-4 bg-white mb-4 text-center">
+            <div className="card shadow-sm border-0 p-3 p-md-4 card-surface mb-4 text-center">
               <h5 className="fw-bold mb-3">Foto Profesional (Catálogo)</h5>
 
               {errorFoto && <div className="alert alert-danger py-2 small">{errorFoto}</div>}
-              {exitoFoto && <div className="alert alert-success py-2 small">{exitoFoto}</div>}
 
               <div className="d-inline-block position-relative mb-3 mx-auto">
                 {obtenerUrlFoto(usuarioDb.barbero.fotoUrl) ? (
@@ -240,21 +239,28 @@ export const MiPerfilPage: React.FC = () => {
                     src={obtenerUrlFoto(usuarioDb.barbero.fotoUrl)!}
                     alt="Foto de Barbero"
                     className="rounded-circle shadow-sm border border-3 border-primary"
-                    style={{ width: '110px', height: '110px', objectFit: 'cover' }}
+                    style={{
+                      width: 'clamp(84px, 15vw, 110px)',
+                      height: 'clamp(84px, 15vw, 110px)',
+                      objectFit: 'cover',
+                    }}
                   />
                 ) : (
                   <div
-                    className="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto shadow-sm border border-2 border-secondary"
-                    style={{ width: '110px', height: '110px' }}
+                    className="rounded-circle bg-surface-app d-flex align-items-center justify-content-center mx-auto shadow-sm border border-2 border-secondary"
+                    style={{
+                      width: 'clamp(84px, 15vw, 110px)',
+                      height: 'clamp(84px, 15vw, 110px)',
+                    }}
                   >
-                    <span className="text-muted fw-bold" style={{ fontSize: '2rem' }}>
+                    <span className="text-surface-muted fw-bold" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.2rem)' }}>
                       {usuarioDb.nombre.charAt(0)}{usuarioDb.apellido.charAt(0)}
                     </span>
                   </div>
                 )}
               </div>
 
-              <p className="text-muted small mb-3">
+              <p className="text-surface-muted small mb-3">
                 Esta es la imagen visible para los clientes en el catálogo.
               </p>
 
@@ -300,7 +306,7 @@ export const MiPerfilPage: React.FC = () => {
           )}
 
           {/* Tarjeta de Datos Personales */}
-          <div className="card shadow-sm border-0 p-4 bg-white mb-4">
+          <div className="card shadow-sm border-0 p-3 p-md-4 card-surface mb-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="fw-bold mb-0">Datos Personales</h5>
               {!editando && (
@@ -314,9 +320,7 @@ export const MiPerfilPage: React.FC = () => {
               )}
             </div>
 
-            {exitoDatos && (
-              <div className="alert alert-success py-2 small">{exitoDatos}</div>
-            )}
+            <ToastContainer toast={toast} onClose={hideToast} />
 
             {actualizarUsuarioMutation.error && (
               <ErrorMessage message={mapApiError(actualizarUsuarioMutation.error)} />
@@ -355,7 +359,7 @@ export const MiPerfilPage: React.FC = () => {
                     )}
                   </div>
 
-                  <div className="col-12">
+                  <div className="col-12 col-sm-6">
                     <label htmlFor="emailPerfil" className="form-label small fw-semibold">
                       Correo Electrónico
                     </label>
@@ -371,7 +375,7 @@ export const MiPerfilPage: React.FC = () => {
                   </div>
 
                   {usuarioDb?.barbero && (
-                    <div className="col-12">
+                    <div className="col-12 col-sm-6">
                       <label htmlFor="telefonoPerfil" className="form-label small fw-semibold">
                         Teléfono
                       </label>
@@ -387,7 +391,7 @@ export const MiPerfilPage: React.FC = () => {
                     </div>
                   )}
 
-                  <div className="col-12 d-flex justify-content-end gap-2 mt-3">
+                  <div className="col-12 d-grid d-sm-flex justify-content-sm-end gap-2 mt-3">
                     <Button
                       type="button"
                       variant="light"
@@ -413,20 +417,20 @@ export const MiPerfilPage: React.FC = () => {
               </form>
             ) : (
               <div className="row g-3">
-                <div className="col-sm-6">
+                <div className="col-12 col-sm-6">
                   <span className="text-muted small d-block">Nombre</span>
                   <span className="fw-semibold">{usuarioDb?.nombre}</span>
                 </div>
-                <div className="col-sm-6">
+                <div className="col-12 col-sm-6">
                   <span className="text-muted small d-block">Apellido</span>
                   <span className="fw-semibold">{usuarioDb?.apellido}</span>
                 </div>
-                <div className="col-sm-6">
+                <div className="col-12 col-sm-6">
                   <span className="text-muted small d-block">Correo Electrónico</span>
                   <span className="fw-semibold">{usuarioDb?.email}</span>
                 </div>
                 {usuarioDb?.barbero && (
-                  <div className="col-sm-6">
+                  <div className="col-12 col-sm-6">
                     <span className="text-muted small d-block">Teléfono de Contacto</span>
                     <span className="fw-semibold">
                       {usuarioDb.barbero.telefono || 'Sin registrar'}
@@ -438,12 +442,8 @@ export const MiPerfilPage: React.FC = () => {
           </div>
 
           {/* Tarjeta de Cambio de Contraseña */}
-          <div className="card shadow-sm border-0 p-4 bg-white">
+          <div className="card shadow-sm border-0 p-3 p-md-4 card-surface mb-4">
             <h5 className="fw-bold mb-3">Seguridad y Contraseña</h5>
-
-            {exitoClave && (
-              <div className="alert alert-success py-2 small">{exitoClave}</div>
-            )}
 
             {cambiarContrasenaMutation.error && (
               <ErrorMessage message={mapApiError(cambiarContrasenaMutation.error)} />
@@ -496,7 +496,7 @@ export const MiPerfilPage: React.FC = () => {
                   )}
                 </div>
 
-                <div className="col-12 d-flex justify-content-end mt-3">
+                <div className="col-12 d-grid d-sm-flex justify-content-sm-end mt-3">
                   <Button
                     type="submit"
                     variant="dark"
@@ -512,10 +512,10 @@ export const MiPerfilPage: React.FC = () => {
           </div>
 
           {usuarioDb?.rol === 'SUPERADMIN' && (
-            <div className="card shadow-sm border-danger mt-4">
+            <div className="card shadow-sm border-danger card-surface mt-4">
               <div className="card-body text-center">
                 <h5 className="card-title text-danger mb-3">Gestión Avanzada</h5>
-                <p className="card-text text-muted small mb-4">
+                <p className="card-text text-surface-muted small mb-4">
                   Como Superadmin, puedes modificar tus propios roles y privilegios en el sistema.
                 </p>
                 <Link to={`/usuarios/${usuarioDb.id}/editar`} className="btn btn-outline-danger w-100">

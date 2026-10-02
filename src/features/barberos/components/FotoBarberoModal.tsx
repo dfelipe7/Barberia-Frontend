@@ -96,10 +96,10 @@ export const FotoBarberoModal: React.FC<FotoBarberoModalProps> = ({
           />
         ) : (
           <div
-            className="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto border"
+            className="rounded-circle bg-surface-app d-flex align-items-center justify-content-center mx-auto border"
             style={{ width: '110px', height: '110px' }}
           >
-            <span className="text-muted fw-bold" style={{ fontSize: '2rem' }}>
+            <span className="text-surface-muted fw-bold" style={{ fontSize: '2rem' }}>
               {barbero.nombre.charAt(0)}{barbero.apellido.charAt(0)}
             </span>
           </div>

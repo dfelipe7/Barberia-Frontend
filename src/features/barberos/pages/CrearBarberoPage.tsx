@@ -68,7 +68,7 @@ export const CrearBarberoPage: React.FC = () => {
 
       {errorMessage && <ErrorMessage message={errorMessage} />}
 
-      <div className="card shadow-sm border-0 p-4 bg-white rounded">
+      <div className="card shadow-sm border-0 p-4 card-surface rounded">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="row g-3">
             <div className="col-12 col-sm-6">

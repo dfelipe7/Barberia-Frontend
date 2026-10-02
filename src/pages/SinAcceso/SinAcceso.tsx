@@ -17,12 +17,12 @@ export default function SinAcceso() {
 
     return (
         <div
-            className="d-flex flex-column align-items-center justify-content-center text-center p-3"
-            style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}
+            className="d-flex flex-column align-items-center justify-content-center text-center p-3 bg-surface-app"
+            style={{ minHeight: '100vh' }}
         >
-            <div className="card shadow p-4 p-md-5" style={{ maxWidth: 500, width: '100%' }}>
+            <div className="card-surface card shadow p-4 p-md-5" style={{ maxWidth: 500, width: '100%' }}>
                 <div className="mb-4">
-                    <BrandLogo variant="black" height={36} />
+                    <BrandLogo variant="auto" height={36} />
                 </div>
 
                 <div className="mb-3" style={{ fontSize: '2.5rem' }}>
@@ -35,37 +35,37 @@ export default function SinAcceso() {
 
                 {cuentaBloqueada ? (
                     <>
-                        <p className="text-muted mb-1">
+                        <p className="text-surface-muted mb-1">
                             Tu cuenta <strong>{email}</strong> ha sido bloqueada globalmente por un administrador.
                         </p>
-                        <p className="text-muted mb-4">
+                        <p className="text-surface-muted mb-4">
                             No tienes acceso al sistema mientras tu cuenta permanezca inactiva. Comunícate con la administración para más información.
                         </p>
                     </>
                 ) : sinRolesAsignados ? (
                     <>
-                        <p className="text-muted mb-1">
+                        <p className="text-surface-muted mb-1">
                             Tu cuenta <strong>{email}</strong> está activa pero no tiene ningún rol
                             habilitado en el sistema.
                         </p>
-                        <p className="text-muted mb-4">
+                        <p className="text-surface-muted mb-4">
                             Contacta al administrador para que te asigne o reactive tu rol de
                             <strong> Administrador</strong> o <strong>Barbero</strong>.
                         </p>
                     </>
                 ) : (
                     <>
-                        <p className="text-muted mb-1">
+                        <p className="text-surface-muted mb-1">
                             Tu cuenta <strong>{email}</strong> no tiene permisos para acceder a esta aplicación.
                         </p>
-                        <p className="text-muted mb-4">
+                        <p className="text-surface-muted mb-4">
                             Contacta al administrador para que te asigne un rol.
                         </p>
                     </>
                 )}
 
                 <button
-                    className="btn btn-dark"
+                    className="btn btn-primary"
                     onClick={cerrarSesion}
                 >
                     Cerrar sesión

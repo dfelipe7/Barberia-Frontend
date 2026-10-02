@@ -17,6 +17,8 @@ export function useBarberosCatalogo(enabled = true) {
       return dtos.map(barberosMapper.toCatalogoDomain);
     },
     enabled,
+    placeholderData: (prev) => prev,
+    staleTime: 30_000,
   });
 }
 
@@ -28,6 +30,8 @@ export function useBarberosGestion(enabled = true) {
       return dtos.map(barberosMapper.toGestionDomain);
     },
     enabled,
+    placeholderData: (prev) => prev,
+    staleTime: 30_000,
   });
 }
 

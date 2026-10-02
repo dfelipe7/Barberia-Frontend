@@ -19,7 +19,7 @@ export const LocationSection: React.FC = () => {
                 Encuéntranos
               </h2>
 
-              <p className="text-muted mb-4" style={{ lineHeight: 1.7 }}>
+              <p className="kyrios-location-desc mb-4">
                 Ubicados en un sector estratégico de Popayán, ofrecemos instalaciones
                 modernas, cómodas y diseñadas para que tu momento de barbería sea una experiencia
                 de relajación y estilo.
@@ -27,34 +27,22 @@ export const LocationSection: React.FC = () => {
 
               <div className="d-flex flex-column gap-3 mb-4">
                 <div className="d-flex align-items-start gap-3">
-                  <div
-                    className="p-2 rounded"
-                    style={{
-                      background: 'rgba(0, 113, 188, 0.1)',
-                      color: 'var(--brand-blue, #0071BC)',
-                    }}
-                  >
+                  <div className="kyrios-location-icon-box">
                     <MapPinIcon size={20} />
                   </div>
                   <div>
-                    <h3 className="fs-6 fw-bold mb-1">Dirección oficial</h3>
-                    <p className="text-muted small mb-0">{BRAND.contact.address}</p>
+                    <h3 className="kyrios-location-item-title fs-6 fw-bold mb-1">Dirección oficial</h3>
+                    <p className="kyrios-location-item-desc small mb-0">{BRAND.contact.address}</p>
                   </div>
                 </div>
 
                 <div className="d-flex align-items-start gap-3">
-                  <div
-                    className="p-2 rounded"
-                    style={{
-                      background: 'rgba(0, 113, 188, 0.1)',
-                      color: 'var(--brand-blue, #0071BC)',
-                    }}
-                  >
+                  <div className="kyrios-location-icon-box">
                     <ClockIcon size={20} />
                   </div>
                   <div>
-                    <h3 className="fs-6 fw-bold mb-1">Horario de atención</h3>
-                    <p className="text-muted small mb-0">
+                    <h3 className="kyrios-location-item-title fs-6 fw-bold mb-1">Horario de atención</h3>
+                    <p className="kyrios-location-item-desc small mb-0">
                       Lunes a Sábado: 8:00 AM – 8:00 PM <br />
                       Domingos y Festivos: 9:00 AM – 3:00 PM
                     </p>

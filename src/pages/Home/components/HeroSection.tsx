@@ -33,7 +33,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReservar }) => {
 
           <h1 className="kyrios-hero-title kyrios-title-display">
             Tu estilo. <br />
-            <span style={{ color: 'var(--brand-white, #FFFDFA)' }}>Nuestra precisión.</span>
+            <span>Nuestra precisión.</span>
           </h1>
 
           <p className="kyrios-hero-subtitle">

@@ -7,6 +7,7 @@
 import logoBlack from '../assets/brand/logo-black.svg';
 import logoWhite from '../assets/brand/logo-white.svg';
 import favicon from '../assets/brand/favicon.svg';
+import iconKyrios from '../assets/brand/icon-kyrios.svg';
 import banner from '../assets/brand/banner.png';
 
 export const BRAND = {
@@ -41,6 +42,8 @@ export const BRAND = {
     logoWhite,
     /** Ícono/favicon de la marca */
     favicon,
+    /** Ícono oficial de Kyrios */
+    iconKyrios,
     /** Banner principal */
     banner,
   },

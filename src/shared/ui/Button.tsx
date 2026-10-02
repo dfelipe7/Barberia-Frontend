@@ -1,4 +1,5 @@
 import React from 'react';
+import KyriosSpinner from './KyriosSpinner';
 
 export type ButtonVariant =
   | 'primary'
@@ -47,7 +48,7 @@ export const Button: React.FC<ButtonProps> = ({
     >
       {isLoading ? (
         <>
-          <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+          <KyriosSpinner size="xs" aria-hidden="true" />
           <span>{loadingText}</span>
         </>
       ) : (

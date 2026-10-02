@@ -14,6 +14,8 @@ export function useServiciosGestion(filtro?: FiltroServicios) {
       );
       return dtos.map(serviciosMapper.toDomain);
     },
+    placeholderData: (prev) => prev,
+    staleTime: 30_000,
   });
 }
 
@@ -85,5 +87,7 @@ export function useServiciosCatalogo(filtro?: FiltroServicios) {
       );
       return dtos.map(serviciosMapper.toDomain);
     },
+    placeholderData: (prev) => prev,
+    staleTime: 30_000,
   });
 }

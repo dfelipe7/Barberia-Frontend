@@ -5,7 +5,7 @@ export default function NotFound() {
 
             <h2>Página no encontrada</h2>
 
-            <p className="text-muted">
+            <p className="text-surface-muted">
                 La página que buscas no existe.
             </p>
         </div>

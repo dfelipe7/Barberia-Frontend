@@ -1,6 +1,7 @@
 import React from 'react';
 import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
 import type { Servicio } from '../../../features/servicios/types/servicios.types';
+import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import ServiceCard from './ServiceCard';
 
 interface ServicesSectionProps {
@@ -12,8 +13,10 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
 }) => {
   const { data: servicios = [], isLoading, error, refetch } = useServiciosCatalogo();
 
-  // El backend ya filtra a solo ACTIVOS en el catálogo público; este filtro es una
-  // salvaguarda adicional del lado del cliente.
+  // REGLA DE NEGOCIO PÚBLICA: Los servicios inactivos (estado !== 'ACTIVO') NUNCA
+  // deben mostrarse a los clientes en la HomePage pública.
+  // El backend restringe la respuesta a ACTIVOS, y esta cláusula client-side garantiza
+  // que ningún servicio inactivo sea visible o seleccionable.
   const serviciosActivos = servicios.filter((s) => s.estado === 'ACTIVO');
 
   return (
@@ -44,22 +47,22 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
                 >
                   <div
                     className="kyrios-service-img-wrap d-flex align-items-center justify-content-center"
-                    style={{ background: '#f5f5f5' }}
+                    style={{ background: 'var(--home-surface-alt)' }}
                   >
-                    <div className="spinner-border spinner-border-sm text-secondary" role="status" />
+                    <KyriosSpinner size="sm" aria-hidden="true" />
                   </div>
                   <div className="p-4">
                     <div
                       className="placeholder-glow mb-2"
-                      style={{ height: '22px', width: '60%', background: '#eaeaea' }}
+                      style={{ height: '22px', width: '60%', background: 'var(--home-surface-border)' }}
                     />
                     <div
                       className="placeholder-glow mb-1"
-                      style={{ height: '14px', width: '90%', background: '#f0f0f0' }}
+                      style={{ height: '14px', width: '90%', background: 'var(--home-meta-border)' }}
                     />
                     <div
                       className="placeholder-glow"
-                      style={{ height: '14px', width: '75%', background: '#f0f0f0' }}
+                      style={{ height: '14px', width: '75%', background: 'var(--home-meta-border)' }}
                     />
                   </div>
                 </div>
@@ -71,12 +74,12 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
         {/* Estado: Error */}
         {!isLoading && error && (
           <div className="text-center py-5">
-            <p className="text-muted mb-3">
+            <p className="kyrios-section-desc mb-3 mx-auto">
               No se pudo sincronizar el catálogo de servicios en este momento.
             </p>
             <button
               type="button"
-              className="btn btn-sm btn-outline-dark px-3"
+              className="btn-kyrios-dark px-3 py-1"
               onClick={() => refetch()}
             >
               Reintentar
@@ -86,8 +89,8 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
 
         {/* Estado: Vacío */}
         {!isLoading && !error && serviciosActivos.length === 0 && (
-          <div className="text-center py-5 border border-dashed rounded p-4" style={{ borderColor: '#e2dfd8' }}>
-            <p className="text-muted mb-0">
+          <div className="text-center py-5 border border-dashed rounded p-4" style={{ borderColor: 'var(--home-surface-border)' }}>
+            <p className="kyrios-section-desc mb-0 mx-auto">
               Pronto publicaremos nuestros nuevos servicios y tarifas actualizadas.
             </p>
           </div>

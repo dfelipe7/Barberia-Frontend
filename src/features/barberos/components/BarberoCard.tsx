@@ -10,7 +10,7 @@ export const BarberoCard: React.FC<BarberoCardProps> = ({ barbero }) => {
   return (
     <div className="col-12 col-md-6 col-lg-4">
       <div
-        className="card shadow-sm h-100 border-0 bg-white"
+        className="card shadow-sm h-100 border-0 card-surface"
         style={{ transition: 'transform 0.2s', cursor: 'pointer' }}
         onMouseOver={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
         onMouseOut={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
@@ -37,7 +37,7 @@ export const BarberoCard: React.FC<BarberoCardProps> = ({ barbero }) => {
           <p className="card-text text-muted small mb-3">Barbero Profesional</p>
           <div className="mt-auto w-100 pt-3 border-top d-flex justify-content-between align-items-center">
             <span className="text-muted small">Contacto:</span>
-            <span className="fw-semibold text-dark">{barbero.telefono}</span>
+            <span className="fw-semibold">{barbero.telefono}</span>
           </div>
         </div>
       </div>
