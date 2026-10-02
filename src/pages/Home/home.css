@@ -141,10 +141,33 @@
   width: 100%;
   z-index: 1030;
   background: var(--home-nav-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    backdrop-filter 200ms ease;
+}
+
+.kyrios-nav.is-scrolled {
+  background: var(--home-nav-bg-scrolled, var(--home-nav-bg));
+  border-bottom-color: var(--home-nav-border);
+  box-shadow: 0 1px 0 var(--home-nav-shadow, rgba(255, 255, 255, 0.04));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--home-nav-border);
-  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+/* Tokens de scroll para cada tema */
+.kyrios-home {
+  --home-nav-bg-scrolled: rgba(255, 253, 250, 0.95);
+  --home-nav-shadow:      rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .kyrios-home {
+  --home-nav-bg-scrolled: rgba(12, 12, 12, 0.95);
+  --home-nav-shadow:      rgba(255, 255, 255, 0.04);
 }
 
 /* Compensa el espacio ocupado por el nav fijo */
@@ -152,6 +175,7 @@
   padding-top: 64px;
 }
 
+/* ─── Nav links con underline animado (scroll-spy) ─── */
 .kyrios-nav-link {
   color: var(--home-nav-link);
   font-size: 0.85rem;
@@ -161,7 +185,7 @@
   text-decoration: none;
   padding: 0.5rem 0.85rem;
   position: relative;
-  transition: color 0.2s ease;
+  transition: color 150ms ease;
 }
 
 .kyrios-nav-link:hover,
@@ -169,20 +193,87 @@
   color: var(--home-nav-link-hover);
 }
 
-.kyrios-nav-link::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background-color: var(--k-blue);
-  transition: all 0.25s ease;
-  transform: translateX(-50%);
+.kyrios-nav-link.is-active {
+  color: var(--k-blue);
 }
 
-.kyrios-nav-link:hover::after {
-  width: 60%;
+/* Subrayado scaleX — se activa en hover y en sección activa */
+.kyrios-nav-link__underline {
+  position: absolute;
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 0.2rem;
+  height: 2px;
+  background: var(--k-blue);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kyrios-nav-link:hover .kyrios-nav-link__underline,
+.kyrios-nav-link.is-active .kyrios-nav-link__underline {
+  transform: scaleX(1);
+}
+
+/* Punto activo en mobile */
+.kyrios-nav-link__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--k-blue);
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Link móvil con separador */
+.kyrios-nav-link--mobile {
+  border-bottom: 1px solid var(--home-nav-border);
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ─── Avatar de usuario ─── */
+.kyrios-nav-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(0, 113, 188, 0.18);
+  border: 1px solid rgba(0, 113, 188, 0.4);
+  color: var(--k-blue);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.kyrios-nav-avatar__dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 2px solid var(--home-bg);
+}
+
+/* ─── CTA arrow micro-animación ─── */
+.kyrios-nav-cta-arrow {
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-kyrios-outline:hover .kyrios-nav-cta-arrow,
+.btn-kyrios-outline:focus-visible .kyrios-nav-cta-arrow {
+  transform: translate(2px, -2px);
 }
 
 /* Texto de saludo en navbar */
@@ -192,7 +283,7 @@
   transition: color 200ms ease;
 }
 
-/* Botón hamburguesa — heredado del nav para evitar btn text-white hardcoded */
+/* Botón hamburguesa */
 .kyrios-nav-hamburger {
   background: transparent;
   color: var(--home-nav-link-hover);
@@ -202,11 +293,23 @@
   align-items: center;
   justify-content: center;
   padding: 0.5rem;
-  transition: color 200ms ease;
+  border-radius: 4px;
+  transition: color 200ms ease, background-color 150ms ease;
 }
 
 .kyrios-nav-hamburger:hover {
   color: var(--k-blue);
+  background-color: rgba(0, 113, 188, 0.08);
+}
+
+/* ─── Focus visible global para nav ─── */
+.kyrios-nav-link:focus-visible,
+.kyrios-nav-hamburger:focus-visible,
+.btn-kyrios-primary:focus-visible,
+.btn-kyrios-outline:focus-visible {
+  outline: 2px solid var(--k-blue);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 .btn-kyrios-primary {
@@ -829,11 +932,16 @@
 @media (max-width: 991.98px) {
   .kyrios-nav-collapse {
     background-color: var(--home-nav-collapse-bg);
-    padding: 1.5rem;
     border-top: 1px solid var(--home-nav-border);
-    margin-top: 0.75rem;
+    animation: slideDown 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
     transition: background-color 200ms ease, border-color 200ms ease;
   }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   .kyrios-nav-link-mobile {
     border-bottom: 1px solid var(--home-nav-border);
   }
@@ -846,6 +954,33 @@
   }
   .kyrios-section {
     padding: 4rem 0;
+  }
+}
+
+/* 768–991px: links compactos */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .kyrios-nav-link {
+    font-size: 0.78rem;
+    padding: 0.45rem 0.6rem;
+  }
+}
+
+/* ─── prefers-reduced-motion nav overrides ─── */
+@media (prefers-reduced-motion: reduce) {
+  .kyrios-nav,
+  .kyrios-nav-link,
+  .kyrios-nav-link__underline,
+  .kyrios-nav-collapse,
+  .kyrios-nav-hamburger,
+  .kyrios-nav-cta-arrow {
+    transition: none !important;
+    animation: none !important;
+  }
+  .kyrios-nav-link__underline {
+    transform: scaleX(0) !important;
+  }
+  .kyrios-nav-link.is-active .kyrios-nav-link__underline {
+    transform: scaleX(1) !important;
   }
 }
 
