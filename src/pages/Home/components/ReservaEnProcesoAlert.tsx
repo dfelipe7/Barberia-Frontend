@@ -98,14 +98,14 @@ export const ReservaEnProcesoAlert: React.FC<ReservaEnProcesoAlertProps> = ({
             </span>
           </div>
 
-          <p className="mb-2 text-dark small" style={{ lineHeight: 1.55 }}>
+          <p className="mb-2 text-surface-card small" style={{ lineHeight: 1.55 }}>
             Tu selección fue registrada. El sistema de reservas en línea estará disponible muy pronto. Mientras tanto, contáctanos para confirmar tu cita.
           </p>
 
           {/* Resumen de selección */}
           {(servicioNombre || barberoNombre) && (
-            <div className="d-flex flex-wrap align-items-center gap-2 mb-3 py-1 px-2 rounded bg-white bg-opacity-75 border border-light-subtle">
-              <span className="small text-muted fw-semibold">Selección actual:</span>
+            <div className="d-flex flex-wrap align-items-center gap-2 mb-3 py-1 px-2 rounded bg-surface-card border border-light-subtle">
+              <span className="small text-surface-muted fw-semibold">Selección actual:</span>
               {servicioNombre && (
                 <span className="badge bg-dark text-white fw-medium">
                   Servicio: {servicioNombre}

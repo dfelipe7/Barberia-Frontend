@@ -79,11 +79,10 @@ export const AccionesDropdown: React.FC<AccionesDropdownProps> = ({
 
       {isOpen && (
         <div
-          className="position-absolute end-0 mt-1 py-1 bg-white border rounded shadow-lg"
+          className="position-absolute end-0 mt-1 py-1 card-surface border rounded shadow-lg"
           style={{
             zIndex: 1060,
             minWidth: '210px',
-            borderColor: '#e5e7eb',
             animation: 'fadeInMenu 120ms ease-out',
           }}
         >
@@ -114,7 +113,7 @@ export const AccionesDropdown: React.FC<AccionesDropdownProps> = ({
               if (item.variant === 'warning') return 'text-warning-emphasis';
               if (item.variant === 'primary') return 'text-primary';
               if (item.variant === 'success') return 'text-success';
-              return 'text-dark';
+              return 'text-surface-card';
             };
 
             const className = `dropdown-item d-flex align-items-center gap-2 py-2 px-3 border-0 bg-transparent text-start w-100 ${getTextColor()} ${

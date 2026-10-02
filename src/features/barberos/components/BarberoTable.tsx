@@ -229,7 +229,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
   if (isMobile) {
     if (barberos.length === 0) {
       return (
-        <div className="text-center py-5 border rounded bg-white">
+        <div className="text-center py-5 border rounded card-surface">
           <div className="mb-3 text-muted" style={{ opacity: 0.4 }}>
             <Scissors size={48} />
           </div>
@@ -295,7 +295,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
               </div>
 
               {/* 3. Estados: Global + Rol */}
-              <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 py-2 border-top border-bottom my-2 bg-light bg-opacity-50 px-2 rounded">
+              <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 py-2 border-top border-bottom my-2 bg-surface-app px-2 rounded">
                 <div className="d-flex align-items-center gap-1">
                   <span className="text-muted small">Cuenta:</span>
                   <span className={`badge ${isActivo ? 'bg-success' : 'bg-danger'}`}>
@@ -424,7 +424,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
         data={barberos}
         keyExtractor={(item) => item.id}
         emptyContent={
-          <div className="text-center py-5 border rounded bg-white">
+          <div className="text-center py-5 border rounded card-surface">
             <div className="mb-3 text-muted" style={{ opacity: 0.4 }}>
               <Scissors size={48} />
             </div>

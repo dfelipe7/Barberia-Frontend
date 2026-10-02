@@ -254,12 +254,12 @@ export default function Dashboard() {
                                         Conectado como {nombre} {apellido}
                                     </span>
                                     {email && (
-                                        <span className="text-muted small">
+                                        <span className="text-surface-muted small">
                                             ({email})
                                         </span>
                                     )}
                                 </div>
-                                <p className="text-muted small mb-0">
+                                <p className="text-surface-muted small mb-0">
                                     Sesión activa mediante autenticación Keycloak SSO. Roles asignados:{' '}
                                     <span className="fw-semibold">{rolesMostrados.join(', ') || 'Sin rol asignado'}</span>
                                 </p>

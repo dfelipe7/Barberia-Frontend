@@ -61,12 +61,12 @@ export const FileUploadField: React.FC<FileUploadFieldProps> = ({
           />
         ) : (
           <div
-            className={`bg-light d-flex align-items-center justify-content-center mx-auto border ${
+            className={`bg-surface-app d-flex align-items-center justify-content-center mx-auto border ${
               shape === 'circle' ? 'rounded-circle' : 'rounded'
             }`}
             style={{ width: size, height: size }}
           >
-            <span className="text-muted small">{placeholderTexto}</span>
+            <span className="text-surface-muted small">{placeholderTexto}</span>
           </div>
         )}
       </div>

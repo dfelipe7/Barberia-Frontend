@@ -24,7 +24,7 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({ usuario, onClo
     >
       <div className="text-center mb-4">
         <div
-          className="bg-light rounded-circle d-inline-flex justify-content-center align-items-center mb-3 border shadow-sm"
+          className="bg-surface-app rounded-circle d-inline-flex justify-content-center align-items-center mb-3 border shadow-sm"
           style={{ width: '80px', height: '80px' }}
         >
           <span className="fs-1 text-primary fw-bold">
@@ -47,20 +47,20 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({ usuario, onClo
       <hr />
 
       <div className="mb-3">
-        <strong className="text-muted small d-block">Correo Electrónico:</strong>
+        <strong className="text-surface-muted small d-block">Correo Electrónico:</strong>
         <span className="fs-6">{usuario.email}</span>
       </div>
 
       {usuario.telefono && (
         <div className="mb-3">
-          <strong className="text-muted small d-block">Teléfono:</strong>
+          <strong className="text-surface-muted small d-block">Teléfono:</strong>
           <span className="fs-6">{usuario.telefono}</span>
         </div>
       )}
 
       {usuario.porcentajeComision !== undefined && (
         <div className="mb-3">
-          <strong className="text-muted small d-block">Comisión de Barbero:</strong>
+          <strong className="text-surface-muted small d-block">Comisión de Barbero:</strong>
           <span className="fs-6 fw-bold text-success">
             {usuario.porcentajeComision}%
           </span>
@@ -68,7 +68,7 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({ usuario, onClo
       )}
 
       <div className="mb-2">
-        <strong className="text-muted small d-block">Tipo de Perfil:</strong>
+        <strong className="text-surface-muted small d-block">Tipo de Perfil:</strong>
         <span className="badge bg-primary fs-6">{usuario.tipoPerfil}</span>
       </div>
     </Modal>

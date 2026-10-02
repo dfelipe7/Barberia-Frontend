@@ -225,7 +225,7 @@ export const UsuariosPage: React.FC = () => {
 
       {/* Pestañas de Navegación (Pill tabs / Segmented control) */}
       <div
-        className="d-flex flex-nowrap gap-2 p-1 rounded bg-light border mb-4 usuarios-tabs-container overflow-x-auto"
+        className="d-flex flex-nowrap gap-2 p-1 rounded bg-surface-app border mb-4 usuarios-tabs-container overflow-x-auto"
         role="tablist"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >

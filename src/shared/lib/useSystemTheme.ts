@@ -1,37 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 export type SystemTheme = 'light' | 'dark';
 
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 
 /**
- * Hook que detecta el tema preferido del sistema operativo/navegador.
- * Reacciona automáticamente si el usuario cambia el tema mientras la
- * pestaña está abierta.
+ * Hook que detecta el tema activo (claro u oscuro).
+ * Lee del ThemeContext si está disponible, o del sistema operativo como fallback.
  *
  * @returns 'light' | 'dark'
- *
- * @example
- * const theme = useSystemTheme();
- * // theme === 'dark'  → fondo oscuro → usar logo-white
- * // theme === 'light' → fondo claro  → usar logo-black
  */
 export function useSystemTheme(): SystemTheme {
-  const [theme, setTheme] = useState<SystemTheme>(() =>
-    window.matchMedia(DARK_QUERY).matches ? 'dark' : 'light'
-  );
-
-  useEffect(() => {
-    const mq = window.matchMedia(DARK_QUERY);
-
-    const handleChange = (e: MediaQueryListEvent) => {
-      setTheme(e.matches ? 'dark' : 'light');
-    };
-
-    // Uso addEventListener con { passive: true } para mayor compatibilidad
-    mq.addEventListener('change', handleChange);
-    return () => mq.removeEventListener('change', handleChange);
-  }, []);
-
-  return theme;
+  try {
+    const { resolvedTheme } = useTheme();
+    return resolvedTheme;
+  } catch {
+    if (typeof window !== 'undefined' && window.matchMedia(DARK_QUERY).matches) {
+      return 'dark';
+    }
+    return 'light';
+  }
 }
+

@@ -17,6 +17,20 @@
     <meta property="og:title" content="Kyrios Studio | Barbería" />
     <meta property="og:description" content="Barbería de alto estándar en Popayán. Cortes, barba y estilo con los mejores profesionales." />
     <meta property="og:locale" content="es_CO" />
+
+    <!-- Inicialización inmediata de tema para prevenir parpadeo (FOUC) -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('app-theme');
+          var theme = (saved === 'dark' || saved === 'light')
+            ? saved
+            : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.setAttribute('data-bs-theme', theme);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

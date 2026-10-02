@@ -162,7 +162,7 @@ export const EditarUsuarioPage: React.FC = () => {
 
       {errorMessage && <ErrorMessage message={errorMessage} />}
 
-      <div className="card shadow-sm border-0 p-4 bg-white rounded">
+      <div className="card shadow-sm border-0 p-4 card-surface rounded">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="row g-3">
             <div className="col-12 col-sm-6">
@@ -248,7 +248,7 @@ export const EditarUsuarioPage: React.FC = () => {
 
             {/* Campos condicionales de Barbero */}
             {esBarberoWatch && (
-              <div className="col-12 p-3 bg-light rounded border">
+              <div className="col-12 p-3 bg-surface-card rounded border border-surface-card">
                 <h6 className="fw-bold text-info mb-3">Datos del Perfil de Barbero</h6>
                 <div className="row g-3">
                   <div className="col-12 col-sm-6">

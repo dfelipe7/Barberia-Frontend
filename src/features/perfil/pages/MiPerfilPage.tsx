@@ -162,7 +162,7 @@ export const MiPerfilPage: React.FC = () => {
       <div className="row g-4">
         {/* Columna Izquierda: Resumen de Usuario (en tablet y móvil arriba) */}
         <div className="col-12 col-lg-4">
-          <div className="card shadow-sm border-0 text-center p-3 p-md-4 bg-white mb-4">
+          <div className="card shadow-sm border-0 text-center p-3 p-md-4 card-surface mb-4">
             <div
               className="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex justify-content-center align-items-center mx-auto mb-3 fw-bold"
               style={{
@@ -200,7 +200,7 @@ export const MiPerfilPage: React.FC = () => {
           </div>
 
           {usuarioDb?.barbero && (
-            <div className="card shadow-sm border-0 p-3 p-md-4 bg-white">
+            <div className="card shadow-sm border-0 p-3 p-md-4 card-surface">
               <h5 className="fw-bold mb-3">Información de Barbero</h5>
               <div className="mb-2">
                 <span className="text-muted small d-block">Teléfono</span>
@@ -228,7 +228,7 @@ export const MiPerfilPage: React.FC = () => {
         {/* Columna Derecha: Formularios */}
         <div className="col-12 col-lg-8">
           {usuarioDb?.barbero && (
-            <div className="card shadow-sm border-0 p-3 p-md-4 bg-white mb-4 text-center">
+            <div className="card shadow-sm border-0 p-3 p-md-4 card-surface mb-4 text-center">
               <h5 className="fw-bold mb-3">Foto Profesional (Catálogo)</h5>
 
               {errorFoto && <div className="alert alert-danger py-2 small">{errorFoto}</div>}
@@ -247,20 +247,20 @@ export const MiPerfilPage: React.FC = () => {
                   />
                 ) : (
                   <div
-                    className="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto shadow-sm border border-2 border-secondary"
+                    className="rounded-circle bg-surface-app d-flex align-items-center justify-content-center mx-auto shadow-sm border border-2 border-secondary"
                     style={{
                       width: 'clamp(84px, 15vw, 110px)',
                       height: 'clamp(84px, 15vw, 110px)',
                     }}
                   >
-                    <span className="text-muted fw-bold" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.2rem)' }}>
+                    <span className="text-surface-muted fw-bold" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.2rem)' }}>
                       {usuarioDb.nombre.charAt(0)}{usuarioDb.apellido.charAt(0)}
                     </span>
                   </div>
                 )}
               </div>
 
-              <p className="text-muted small mb-3">
+              <p className="text-surface-muted small mb-3">
                 Esta es la imagen visible para los clientes en el catálogo.
               </p>
 
@@ -306,7 +306,7 @@ export const MiPerfilPage: React.FC = () => {
           )}
 
           {/* Tarjeta de Datos Personales */}
-          <div className="card shadow-sm border-0 p-3 p-md-4 bg-white mb-4">
+          <div className="card shadow-sm border-0 p-3 p-md-4 card-surface mb-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="fw-bold mb-0">Datos Personales</h5>
               {!editando && (
@@ -442,7 +442,7 @@ export const MiPerfilPage: React.FC = () => {
           </div>
 
           {/* Tarjeta de Cambio de Contraseña */}
-          <div className="card shadow-sm border-0 p-3 p-md-4 bg-white mb-4">
+          <div className="card shadow-sm border-0 p-3 p-md-4 card-surface mb-4">
             <h5 className="fw-bold mb-3">Seguridad y Contraseña</h5>
 
             {cambiarContrasenaMutation.error && (
@@ -512,10 +512,10 @@ export const MiPerfilPage: React.FC = () => {
           </div>
 
           {usuarioDb?.rol === 'SUPERADMIN' && (
-            <div className="card shadow-sm border-danger mt-4">
+            <div className="card shadow-sm border-danger card-surface mt-4">
               <div className="card-body text-center">
                 <h5 className="card-title text-danger mb-3">Gestión Avanzada</h5>
-                <p className="card-text text-muted small mb-4">
+                <p className="card-text text-surface-muted small mb-4">
                   Como Superadmin, puedes modificar tus propios roles y privilegios en el sistema.
                 </p>
                 <Link to={`/usuarios/${usuarioDb.id}/editar`} className="btn btn-outline-danger w-100">

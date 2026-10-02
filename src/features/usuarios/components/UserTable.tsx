@@ -210,7 +210,7 @@ export const UserTable: React.FC<UserTableProps> = ({
   if (isMobile) {
     if (administradores.length === 0) {
       return (
-        <div className="text-center py-5 border rounded bg-white">
+        <div className="text-center py-5 border rounded card-surface">
           <div className="mb-3 text-muted" style={{ opacity: 0.4 }}>
             <Shield size={48} />
           </div>
@@ -273,7 +273,7 @@ export const UserTable: React.FC<UserTableProps> = ({
               </div>
 
               {/* 3. Estado Global + Estado de Rol */}
-              <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 py-2 border-top border-bottom my-2 bg-light bg-opacity-50 px-2 rounded">
+              <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 py-2 border-top border-bottom my-2 bg-surface-app px-2 rounded">
                 <div className="d-flex align-items-center gap-1">
                   <span className="text-muted small">Cuenta:</span>
                   <span className={`badge ${isActivo ? 'bg-success' : 'bg-danger'}`}>
@@ -392,7 +392,7 @@ export const UserTable: React.FC<UserTableProps> = ({
         data={administradores}
         keyExtractor={(item) => item.id}
         emptyContent={
-          <div className="text-center py-5 border rounded bg-white">
+          <div className="text-center py-5 border rounded card-surface">
             <div className="mb-3 text-muted" style={{ opacity: 0.4 }}>
               <Shield size={48} />
             </div>

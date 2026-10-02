@@ -11,7 +11,7 @@ export default function MainLayout() {
     return (
         <ToastProvider>
             <SidebarProvider>
-                <div className="d-flex flex-column min-vh-100">
+                <div className="d-flex flex-column min-vh-100 bg-surface-app">
                     <Header />
 
                     {/* Contenedor global de toasts, posicionado sobre el header */}
@@ -20,7 +20,7 @@ export default function MainLayout() {
                     <div className="d-flex flex-grow-1 position-relative">
                         <Sidebar />
 
-                        <main className="flex-grow-1 p-3 p-md-4 bg-light overflow-x-hidden">
+                        <main className="flex-grow-1 p-3 p-md-4 bg-surface-app overflow-x-hidden">
                             <Outlet />
                         </main>
                     </div>

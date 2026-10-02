@@ -31,7 +31,7 @@ export function Table<T>({
       return <>{emptyContent}</>;
     }
     return (
-      <div className="alert alert-light text-center py-4 text-muted border">
+      <div className="alert-surface text-center py-4 text-surface-muted border">
         {emptyMessage}
       </div>
     );
@@ -39,7 +39,7 @@ export function Table<T>({
 
   return (
     <div
-      className="table-responsive custom-table-wrapper bg-white rounded-3 shadow-sm border"
+      className="table-responsive custom-table-wrapper rounded-3 shadow-sm"
       style={{
         overflow: 'visible',
         minHeight: data.length > 0 && data.length <= 2 ? '220px' : 'auto',

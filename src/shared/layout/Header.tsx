@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import { Globe, User, Menu } from 'lucide-react';
+import { Globe, User, Menu, Moon, Sun, Monitor } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import { obtenerUrlFoto } from '../lib/obtenerUrlFoto';
 import BrandLogo from '../ui/BrandLogo';
-import { useSystemTheme } from '../lib/useSystemTheme';
+import { useTheme } from '../context/ThemeContext';
 import { BRAND } from '../../config/brand';
 import UserDropdown from './UserDropdown';
 import { useSidebar } from './SidebarContext';
@@ -25,9 +25,19 @@ export default function Header() {
         roles,
         usuarioDb,
     } = useAuth();
-    const systemTheme = useSystemTheme();
-    const isDark = systemTheme === 'dark';
+    const { theme, setTheme, isDark } = useTheme();
     const { toggleMobile, isMobileOpen } = useSidebar();
+
+    const cycleTheme = () => {
+        if (theme === 'system') setTheme('light');
+        else if (theme === 'light') setTheme('dark');
+        else setTheme('system');
+    };
+
+    const ThemeIcon = theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor;
+    const themeLabel = theme === 'dark' ? 'Modo oscuro (clic para cambiar)'
+        : theme === 'light' ? 'Modo claro (clic para cambiar)'
+        : 'Seguir sistema (clic para cambiar)';
 
     const rolesApp = roles.filter((r) => ROLES_APP.includes(r));
     const rolPrincipal = [...rolesApp].sort(
@@ -89,9 +99,9 @@ export default function Header() {
             <nav
                 className={`navbar ${isDark ? 'navbar-dark' : 'navbar-light'} border-bottom`}
                 style={{
-                    backgroundColor: isDark ? '#0C0C0C' : '#FFFDFA',
-                    borderColor: isDark ? '#222222' : '#e5e3dc',
-                    color: isDark ? '#FFFDFA' : '#0C0C0C',
+                    backgroundColor: 'var(--surface-chrome-bg)',
+                    borderColor: 'var(--surface-chrome-border)',
+                    color: 'var(--surface-chrome-text)',
                     transition: 'background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease',
                 }}
             >
@@ -167,6 +177,16 @@ export default function Header() {
 
                     {/* ── Zona derecha — Acciones ── */}
                     <div className="d-flex align-items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={cycleTheme}
+                            className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-inline-flex align-items-center gap-1 header-action-btn`}
+                            title={themeLabel}
+                            aria-label={themeLabel}
+                        >
+                            <ThemeIcon size={15} strokeWidth={2} />
+                        </button>
+
                         <Link
                             to="/mi-perfil"
                             className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-inline-flex align-items-center gap-1 header-action-btn`}
