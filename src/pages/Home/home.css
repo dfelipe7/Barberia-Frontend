@@ -39,6 +39,14 @@
   --home-btn-dark-border:      #0C0C0C;
   --home-btn-dark-fg:          #FFFFFF;
 
+  /* Footer */
+  --footer-bg:                 #FFFDFA;
+  --footer-fg:                 #0C0C0C;
+  --footer-fg-muted:           #6b6375;
+  --footer-border:             #e5e3dc;
+  --footer-link:               #3a3a3a;
+  --footer-link-hover:         #0071BC;
+
   font-family: var(--font-body, 'Inter', system-ui, sans-serif);
   background-color: var(--home-bg);
   color: var(--home-fg);
@@ -79,6 +87,14 @@
   --home-btn-dark-bg:          #262626;
   --home-btn-dark-border:      #3a3a3a;
   --home-btn-dark-fg:          #FFFFFF;
+
+  /* Footer */
+  --footer-bg:                 #0C0C0C;
+  --footer-fg:                 #FFFDFA;
+  --footer-fg-muted:           #9ca3af;
+  --footer-border:             #222222;
+  --footer-link:               #d1d5db;
+  --footer-link-hover:         #4DA6E8;
 }
 
 /* ─── Tipografía ─── */
@@ -697,55 +713,86 @@
 }
 
 /* ─── Footer ─── */
-/* El footer actúa como "sello de marca": siempre oscuro en ambos temas.
-   En dark usa un negro más puro para separarse del body. */
 .kyrios-footer {
-  background-color: #0C0C0C;
-  border-top: 1px solid #222222;
-  color: #ffffff;
+  background-color: var(--footer-bg);
+  border-top: 1px solid var(--footer-border);
+  color: var(--footer-fg);
   padding: 4.5rem 0 2rem 0;
-  transition: background-color 200ms ease;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
 }
 
-[data-theme="dark"] .kyrios-footer {
-  background-color: #000000;
-  border-top-color: #1a1a1a;
+@media (max-width: 767.98px) {
+  .kyrios-footer {
+    padding: 3rem 0 1.5rem 0;
+  }
 }
 
 .kyrios-footer-link {
-  color: #9c9c9c;
+  color: var(--footer-link);
   font-size: 0.88rem;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: color 150ms ease, transform 150ms ease;
   display: inline-block;
   margin-bottom: 0.6rem;
 }
 
 .kyrios-footer-link:hover,
 .kyrios-footer-link:focus-visible {
-  color: #ffffff;
+  color: var(--footer-link-hover);
   transform: translateX(3px);
+}
+
+.kyrios-footer-link:focus-visible {
+  outline: 2px solid var(--k-blue);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 .kyrios-social-btn {
   width: 40px;
   height: 40px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--k-border-dark);
-  color: #ffffff;
+  background: rgba(0, 113, 188, 0.08);
+  border: 1px solid var(--footer-border);
+  color: var(--footer-fg);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  transition: all 0.25s ease;
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease, transform 150ms ease;
 }
 
-.kyrios-social-btn:hover {
+.kyrios-social-btn:hover,
+.kyrios-social-btn:focus-visible {
   background: var(--k-blue);
   border-color: var(--k-blue);
-  color: #ffffff;
+  color: #FFFFFF;
   transform: translateY(-2px);
+}
+
+.kyrios-social-btn:focus-visible {
+  outline: 2px solid var(--k-blue);
+  outline-offset: 2px;
+}
+
+.kyrios-footer-muted {
+  color: var(--footer-fg-muted);
+  transition: color 200ms ease;
+}
+
+.kyrios-footer-heading {
+  color: var(--footer-fg);
+  transition: color 200ms ease;
+}
+
+.kyrios-footer-icon {
+  color: var(--footer-fg);
+  transition: color 200ms ease;
+}
+
+.kyrios-footer-bottom {
+  border-top: 1px solid var(--footer-border);
+  transition: border-color 200ms ease;
 }
 
 /* ─── Animaciones y Accesibilidad ─── */

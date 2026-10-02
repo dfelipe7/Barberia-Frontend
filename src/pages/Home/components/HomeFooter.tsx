@@ -7,15 +7,15 @@ export const HomeFooter: React.FC = () => {
   const anioActual = new Date().getFullYear();
 
   return (
-    <footer className="kyrios-footer">
+    <footer className="kyrios-footer" role="contentinfo">
       <div className="container">
         <div className="row g-4 g-lg-5 mb-5">
           {/* Columna Marca & Identidad */}
           <div className="col-12 col-md-5">
             <div className="mb-3">
-              <BrandLogo variant="white" height={36} alt={BRAND.name} />
+              <BrandLogo variant="auto" height={36} alt={BRAND.name} />
             </div>
-            <p className="text-white-50 small mb-4" style={{ maxWidth: '340px', lineHeight: 1.7 }}>
+            <p className="kyrios-footer-muted small mb-4" style={{ maxWidth: '340px', lineHeight: 1.7 }}>
               {BRAND.name} es un concepto de barbería contemporánea en Popayán, 
               enfocado en la precisión, la técnica y una experiencia de alto nivel para el caballero actual.
             </p>
@@ -44,7 +44,7 @@ export const HomeFooter: React.FC = () => {
           {/* Columna Enlaces Rápidos */}
           <div className="col-6 col-md-3">
             <h4
-              className="kyrios-subtitle-display text-white fs-6 mb-3"
+              className="kyrios-subtitle-display kyrios-footer-heading fs-6 mb-3"
               style={{ letterSpacing: '0.08em' }}
             >
               Navegación
@@ -76,27 +76,27 @@ export const HomeFooter: React.FC = () => {
           {/* Columna Sede & Contacto */}
           <div className="col-6 col-md-4">
             <h4
-              className="kyrios-subtitle-display text-white fs-6 mb-3"
+              className="kyrios-subtitle-display kyrios-footer-heading fs-6 mb-3"
               style={{ letterSpacing: '0.08em' }}
             >
               Nuestra Sede
             </h4>
-            <div className="d-flex align-items-start gap-2 text-white-50 small mb-2">
-              <MapPinIcon size={16} className="mt-1 flex-shrink-0 text-white" />
+            <div className="d-flex align-items-start gap-2 kyrios-footer-muted small mb-2">
+              <MapPinIcon size={16} className="mt-1 flex-shrink-0 kyrios-footer-icon" />
               <span>{BRAND.contact.address}</span>
             </div>
-            <p className="text-white-50 small mb-0">
+            <p className="kyrios-footer-muted small mb-0">
               Popayán, Cauca · Colombia
             </p>
           </div>
         </div>
 
         {/* Separador y Copyright */}
-        <div className="pt-4 border-top border-dark d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
-          <p className="text-white-50 small mb-0">
+        <div className="pt-4 kyrios-footer-bottom d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
+          <p className="kyrios-footer-muted small mb-0">
             &copy; {anioActual} {BRAND.name}. Todos los derechos reservados.
           </p>
-          <span className="text-white-50 small">
+          <span className="kyrios-footer-muted small">
             {BRAND.tagline}
           </span>
         </div>

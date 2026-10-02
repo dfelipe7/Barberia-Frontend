@@ -64,6 +64,14 @@
   --surface-chrome-text: #0C0C0C;
   --surface-chrome-border: #e5e3dc;
 
+  /* ─── Footer ─── */
+  --footer-bg: #FFFDFA;
+  --footer-fg: #0C0C0C;
+  --footer-fg-muted: #6b6375;
+  --footer-border: #e5e3dc;
+  --footer-link: #3a3a3a;
+  --footer-link-hover: #0071BC;
+
   /* ─── Sobrescribe variables de Bootstrap 5 ─── */
   --bs-primary: #0071BC;
   --bs-primary-rgb: 0, 113, 188;
@@ -104,6 +112,14 @@
   --surface-chrome-bg: #0C0C0C;
   --surface-chrome-text: #FFFDFA;
   --surface-chrome-border: #222222;
+
+  /* ─── Footer ─── */
+  --footer-bg: #0C0C0C;
+  --footer-fg: #FFFDFA;
+  --footer-fg-muted: #9ca3af;
+  --footer-border: #222222;
+  --footer-link: #d1d5db;
+  --footer-link-hover: #4DA6E8;
 
   /* ─── Bootstrap 5 en modo oscuro ─── */
   --bs-body-bg: #0C0C0C;
@@ -156,12 +172,55 @@
   border-radius: 4px;
 }
 
+/* ─── Footer Administrativo (.app-footer) ─────────────────────────────────── */
+.app-footer {
+  background-color: var(--footer-bg);
+  color: var(--footer-fg);
+  border-color: var(--footer-border) !important;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+.app-footer__text {
+  color: var(--footer-fg);
+  font-weight: 500;
+}
+
+.app-footer__muted {
+  color: var(--footer-fg-muted);
+}
+
+.app-footer__link {
+  color: var(--footer-link);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.app-footer__link:hover,
+.app-footer__link:focus-visible {
+  color: var(--footer-link-hover);
+  text-decoration: underline;
+}
+
+.app-footer__link:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-footer,
+  .app-footer__link {
+    transition: none;
+  }
+}
+
 /* ─── Transición suave al cambiar de tema ─────────────────────────────────── */
 body,
 .bg-surface-app,
 .bg-surface-card,
 .card-surface,
 .app-header,
+.app-footer,
 .app-sidebar--desktop,
 .sidebar-mobile-drawer,
 .custom-table-wrapper,
