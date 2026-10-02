@@ -3,7 +3,8 @@ import { z } from 'zod';
 export const porcentajeComisionSchema = z
   .number({ message: 'La comisión debe ser un número' })
   .min(0, 'La comisión mínima es 0%')
-  .max(100, 'La comisión máxima es 100%');
+  .max(100, 'La comisión máxima es 100%')
+  .int('La comisión debe ser un número entero.');
 
 export const passwordSchema = z.string().min(8, 'La contraseña debe tener al menos 8 caracteres.');
 
