@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import CrudPage from '../../../shared/components/CrudPage';
 import CatalogCard from '../../../shared/ui/Catalogcard';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { mapApiError } from '../../../shared/lib/mapApiError';
+import { useToast } from '../../../shared/lib/useToast';
+import { ToastContainer } from '../../../shared/ui/ToastContainer';
 import {
   useServiciosGestion,
   useCrearServicio,
@@ -21,7 +23,7 @@ export const ServiciosPage: React.FC = () => {
   const [servicioAEditarFoto, setServicioAEditarFoto] = useState<Servicio | null>(null);
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
   const [errorForm, setErrorForm] = useState<string | null>(null);
-  const [mensajeExito, setMensajeExito] = useState<string | null>(null);
+  const { toast, showToast, hideToast } = useToast(4000);
 
   const { data: servicios = [], isLoading, error, refetch } = useServiciosGestion({
     ...(filtroNombre.trim() && { nombre: filtroNombre.trim() }),
@@ -41,10 +43,10 @@ export const ServiciosPage: React.FC = () => {
       setErrorForm(null);
       if (servicioEnEdicion) {
         await actualizarMutation.mutateAsync({ id: servicioEnEdicion.id, datos });
-        setMensajeExito('Servicio actualizado correctamente.');
+        showToast('success', 'Servicio actualizado correctamente.');
       } else {
         await crearMutation.mutateAsync(datos);
-        setMensajeExito('Servicio creado correctamente.');
+        showToast('success', 'Servicio creado correctamente.');
       }
       cerrarModal();
     } catch (err: unknown) {
@@ -63,12 +65,6 @@ export const ServiciosPage: React.FC = () => {
       setErrorAccion(mapApiError(err));
     }
   };
-
-  useEffect(() => {
-    if (!mensajeExito) return;
-    const t = setTimeout(() => setMensajeExito(null), 4000);
-    return () => clearTimeout(t);
-  }, [mensajeExito]);
 
   return (
     <CrudPage<Servicio>
@@ -93,20 +89,10 @@ export const ServiciosPage: React.FC = () => {
       )}
     >
       {({ onEdit }) => (
-        <>
-          {mensajeExito && (
-            <div className="alert alert-success alert-dismissible" role="alert">
-              {mensajeExito}
-              <button
-                type="button"
-                className="btn-close"
-                aria-label="Cerrar"
-                onClick={() => setMensajeExito(null)}
-              />
-            </div>
-          )}
+          <>
+            <ToastContainer toast={toast} onClose={hideToast} />
 
-          {errorAccion && <ErrorMessage message={errorAccion} />}
+            {errorAccion && <ErrorMessage message={errorAccion} />}
 
           {/* Barra de filtros */}
           <div className="row g-2 mb-3">
@@ -192,7 +178,7 @@ export const ServiciosPage: React.FC = () => {
           <FotoServicioModal
             servicio={servicioAEditarFoto}
             onClose={() => setServicioAEditarFoto(null)}
-            onSuccess={(msg) => { setServicioAEditarFoto(null); setMensajeExito(msg); }}
+            onSuccess={(msg) => { setServicioAEditarFoto(null); showToast('success', msg); }}
           />
         </>
       )}

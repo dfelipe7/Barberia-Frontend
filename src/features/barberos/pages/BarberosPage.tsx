@@ -1,14 +1,17 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../auth/AuthContext';
 import Spinner from '../../../shared/ui/Spinner';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useBarberosCatalogo } from '../api/barberos.facade';
 import BarberoCard from '../components/BarberoCard';
+import { useToast } from '../../../shared/lib/useToast';
+import { ToastContainer } from '../../../shared/ui/ToastContainer';
 
 export const BarberosPage: React.FC = () => {
   const { roles } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const esSuperAdmin = roles.includes('SUPERADMIN');
   const esAdministrador = roles.includes('ADMINISTRADOR');
@@ -21,10 +24,19 @@ export const BarberosPage: React.FC = () => {
     refetch,
   } = useBarberosCatalogo();
 
-  const mensajeExito = location.state?.mensaje as string | undefined;
+  const { toast, showToast, hideToast } = useToast(4000);
+
+  useEffect(() => {
+    const mensaje = location.state?.mensaje as string | undefined;
+    if (!mensaje) return;
+    showToast('success', mensaje);
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.state?.mensaje, location.pathname, navigate, showToast]);
 
   return (
     <div className="container-fluid py-2">
+      <ToastContainer toast={toast} onClose={hideToast} />
+
       <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
         <div>
           <h1 className="h2 fw-bold mb-1">Equipo de Barberos</h1>
@@ -39,12 +51,6 @@ export const BarberosPage: React.FC = () => {
           </Link>
         )}
       </div>
-
-      {mensajeExito && (
-        <div className="alert alert-success alert-dismissible fade show mb-4" role="alert">
-          {mensajeExito}
-        </div>
-      )}
 
       {error && (
         <ErrorMessage

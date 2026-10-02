@@ -5,6 +5,8 @@ import { useAuth } from '../../../auth/AuthContext';
 import Spinner from '../../../shared/ui/Spinner';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { mapApiError } from '../../../shared/lib/mapApiError';
+import { useToast } from '../../../shared/lib/useToast';
+import { ToastContainer } from '../../../shared/ui/ToastContainer';
 
 // Facades
 import {
@@ -84,32 +86,15 @@ export const UsuariosPage: React.FC = () => {
   const [adminAConfigurar, setAdminAConfigurar] = useState<AdministradorGestion | null>(null);
   const [barberoAEditarComision, setBarberoAEditarComision] = useState<BarberoGestion | null>(null);
   const [barberoAEditarFoto, setBarberoAEditarFoto] = useState<BarberoGestion | null>(null);
-  const [errorAccion, setErrorAccion] = useState<string | null>(null);
-  const [mensajeExito, setMensajeExito] = useState<string | null>(null);
+  const { toast, showToast, hideToast } = useToast(4000);
 
   useEffect(() => {
     const mensaje = location.state?.mensaje as string | undefined;
-
     if (!mensaje) return;
+    showToast('success', mensaje);
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.state?.mensaje, location.pathname, navigate, showToast]);
 
-    setMensajeExito(mensaje);
-
-    navigate(location.pathname, {
-      replace: true,
-      state: null,
-    });
-  }, [location.state?.mensaje, location.pathname, navigate]);
-  useEffect(() => {
-    if (!mensajeExito) return;
-
-    const timer = window.setTimeout(() => {
-      setMensajeExito(null);
-    }, 3000);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [mensajeExito]);
   // Handlers
   const handleVerDetalles = (entity: AdministradorGestion | BarberoGestion) => {
     setUsuarioDetalle(usuariosMapper.toDetalleDomain(entity));
@@ -117,12 +102,10 @@ export const UsuariosPage: React.FC = () => {
 
   const handleCambiarEstadoAdmin = async (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => {
     try {
-      setMensajeExito(null);
-      setErrorAccion(null);
       await cambiarEstadoAdminMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
-      setMensajeExito('El estado del usuario se actualizó correctamente.');
+      showToast('success', 'El estado del usuario se actualizó correctamente.');
     } catch (err: unknown) {
-      setErrorAccion(mapApiError(err));
+      showToast('danger', mapApiError(err));
     }
   };
 
@@ -131,27 +114,24 @@ export const UsuariosPage: React.FC = () => {
     nuevoEstado: 'ACTIVO' | 'INACTIVO'
   ) => {
     try {
-      setMensajeExito(null);
-      setErrorAccion(null);
       await cambiarEstadoGlobalAdminMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
-      setMensajeExito(
+      showToast(
+        'success',
         nuevoEstado === 'ACTIVO'
           ? 'Cuenta desbloqueada correctamente.'
           : 'Cuenta bloqueada globalmente.'
       );
     } catch (err) {
-      setErrorAccion(mapApiError(err));
+      showToast('danger', mapApiError(err));
     }
   };
 
   const handleCambiarEstadoBarbero = async (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => {
     try {
-      setMensajeExito(null);
-      setErrorAccion(null);
       await cambiarEstadoBarberoMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
-      setMensajeExito('El estado del usuario se actualizó correctamente.');
+      showToast('success', 'El estado del usuario se actualizó correctamente.');
     } catch (err: unknown) {
-      setErrorAccion(mapApiError(err));
+      showToast('danger', mapApiError(err));
     }
   };
 
@@ -160,68 +140,56 @@ export const UsuariosPage: React.FC = () => {
     nuevoEstado: 'ACTIVO' | 'INACTIVO'
   ) => {
     try {
-      setMensajeExito(null);
-      setErrorAccion(null);
       await cambiarEstadoGlobalBarberoMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
-      setMensajeExito(
+      showToast(
+        'success',
         nuevoEstado === 'ACTIVO'
           ? 'Cuenta desbloqueada correctamente.'
           : 'Cuenta bloqueada globalmente.'
       );
     } catch (err) {
-      setErrorAccion(mapApiError(err));
+      showToast('danger', mapApiError(err));
     }
   };
 
   const handleGuardarComision = async (barberoId: number, porcentaje: number) => {
     try {
-    setMensajeExito(null);
-    setErrorAccion(null);
-
-    await actualizarComisionMutation.mutateAsync({
-      id: barberoId,
-      datos: { porcentajeComision: porcentaje },
-    });
-
-    setBarberoAEditarComision(null);
-    setMensajeExito('La comisión del barbero se actualizó correctamente.');
+      await actualizarComisionMutation.mutateAsync({
+        id: barberoId,
+        datos: { porcentajeComision: porcentaje },
+      });
+      setBarberoAEditarComision(null);
+      showToast('success', 'La comisión del barbero se actualizó correctamente.');
     } catch (err: unknown) {
-      setErrorAccion(mapApiError(err));
+      showToast('danger', mapApiError(err));
     }
   };
 
   const handleGuardarFoto = async (barberoId: number, file: File) => {
     try {
-      setMensajeExito(null);
-      setErrorAccion(null);
-
-      await subirFotoAdminMutation.mutateAsync({
-        id: barberoId,
-        file,
-      });
-
+      await subirFotoAdminMutation.mutateAsync({ id: barberoId, file });
       setBarberoAEditarFoto(null);
-      setMensajeExito('La foto del barbero se actualizó correctamente.');
+      showToast('success', 'La foto del barbero se actualizó correctamente.');
     } catch (err: unknown) {
-      setErrorAccion(mapApiError(err));
+      showToast('danger', mapApiError(err));
     }
   };
 
   const handleGuardarPerfilBarbero = async (datos: ConfigurarBarberoFormValues) => {
     try {
-      setErrorAccion(null);
       if (adminAConfigurar) {
         await configurarBarberoMutation.mutateAsync({
           id: adminAConfigurar.id,
           datos: { telefono: datos.telefono, porcentajeComision: datos.porcentajeComision },
         });
         setAdminAConfigurar(null);
+        showToast('success', 'Perfil de barbero configurado correctamente.');
       } else {
         await configurarMeMutation.mutateAsync(datos);
         window.location.reload();
       }
     } catch (err: unknown) {
-      setErrorAccion(mapApiError(err));
+      showToast('danger', mapApiError(err));
     }
   };
 
@@ -253,13 +221,7 @@ export const UsuariosPage: React.FC = () => {
         </div>
       </div>
 
-      {mensajeExito && (
-        <div className="alert alert-success py-2 mb-4" role="alert">
-          {mensajeExito}
-        </div>
-      )}
-
-      {errorAccion && <ErrorMessage message={errorAccion} />}
+      <ToastContainer toast={toast} onClose={hideToast} />
 
       {/* Pestañas de Navegación (Pill tabs / Segmented control) */}
       <div className="d-inline-flex flex-wrap gap-2 p-1 rounded bg-light border mb-4 usuarios-tabs-container" role="tablist">
@@ -275,7 +237,6 @@ export const UsuariosPage: React.FC = () => {
             }`}
             onClick={() => {
               setPestañaActiva('administradores');
-              setErrorAccion(null);
             }}
           >
             <Shield size={16} />
@@ -296,7 +257,6 @@ export const UsuariosPage: React.FC = () => {
           }`}
           onClick={() => {
             setPestañaActiva('barberos');
-            setErrorAccion(null);
           }}
         >
           <Scissors size={16} />
@@ -393,7 +353,7 @@ export const UsuariosPage: React.FC = () => {
         onClose={() => setAdminAConfigurar(null)}
         onSubmit={handleGuardarPerfilBarbero}
         isLoading={configurarBarberoMutation.isPending || configurarMeMutation.isPending}
-        error={errorAccion}
+        error={null}
       />
 
       <CommissionModal
@@ -402,7 +362,7 @@ export const UsuariosPage: React.FC = () => {
         onClose={() => setBarberoAEditarComision(null)}
         onSubmit={handleGuardarComision}
         isLoading={actualizarComisionMutation.isPending}
-        error={errorAccion}
+        error={null}
       />
 
       <FotoBarberoModal
@@ -411,7 +371,7 @@ export const UsuariosPage: React.FC = () => {
         onClose={() => setBarberoAEditarFoto(null)}
         onSubmit={handleGuardarFoto}
         isLoading={subirFotoAdminMutation.isPending}
-        error={errorAccion}
+        error={null}
       />
     </div>
   );

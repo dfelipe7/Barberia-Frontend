@@ -650,3 +650,81 @@
     padding: 0.75rem 0;
   }
 }
+
+/* ─── Animaciones de ReservaEnProcesoAlert (Emil Kowalski) ─── */
+@keyframes slideDownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOutAlert {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.reserva-alert-animating {
+  animation: slideDownIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.reserva-alert-exiting {
+  animation: fadeOutAlert 150ms ease-out forwards;
+  will-change: transform, opacity;
+}
+
+/* Compensación de desplazamiento para evitar que la barra fija (64px) tape las secciones */
+#notificacion-reserva,
+#inicio,
+#servicios,
+#barberos,
+#ubicacion {
+  scroll-margin-top: 80px;
+}
+
+.reserva-en-proceso-card {
+  box-shadow: 0 4px 20px rgba(0, 113, 188, 0.12), 0 1px 4px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes slideDownIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOutAlert {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  .reserva-alert-animating {
+    animation: slideDownIn 150ms ease-out forwards;
+    will-change: opacity;
+  }
+
+  .reserva-alert-exiting {
+    animation: fadeOutAlert 150ms ease-out forwards;
+    will-change: opacity;
+  }
+}
+

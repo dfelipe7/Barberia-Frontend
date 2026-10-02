@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useToast } from '../../../shared/lib/useToast';
+import { ToastContainer } from '../../../shared/ui/ToastContainer';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../../auth/AuthContext';
@@ -27,10 +29,8 @@ export const MiPerfilPage: React.FC = () => {
   const { usuarioDb, refrescarPerfil, roles } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [editando, setEditando] = useState(false);
-  const [exitoDatos, setExitoDatos] = useState('');
-  const [exitoClave, setExitoClave] = useState('');
+  const { toast, showToast, hideToast } = useToast(4000);
   const [errorFoto, setErrorFoto] = useState('');
-  const [exitoFoto, setExitoFoto] = useState('');
 
   const actualizarUsuarioMutation = useActualizarUsuario();
   const cambiarContrasenaMutation = useCambiarContrasena();
@@ -85,7 +85,6 @@ export const MiPerfilPage: React.FC = () => {
   const onGuardarDatos = async (data: MiPerfilFormValues) => {
     if (!usuarioDb) return;
     try {
-      setExitoDatos('');
       await actualizarUsuarioMutation.mutateAsync({
         id: usuarioDb.id,
         datos: {
@@ -96,7 +95,7 @@ export const MiPerfilPage: React.FC = () => {
         },
       });
       await refrescarPerfil();
-      setExitoDatos('¡Información actualizada correctamente!');
+      showToast('success', '¡Información actualizada correctamente!');
       setEditando(false);
     } catch (err: unknown) {
       console.error(err);
@@ -105,12 +104,11 @@ export const MiPerfilPage: React.FC = () => {
 
   const onCambiarClave = async (data: CambiarContrasenaFormValues) => {
     try {
-      setExitoClave('');
       await cambiarContrasenaMutation.mutateAsync({
         contrasenaActual: data.contrasenaActual,
         nuevaContrasena: data.nuevaContrasena,
       });
-      setExitoClave('¡Contraseña actualizada exitosamente!');
+      showToast('success', '¡Contraseña actualizada exitosamente!');
       resetClave();
     } catch (err: unknown) {
       console.error(err);
@@ -121,7 +119,6 @@ export const MiPerfilPage: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     setErrorFoto('');
-    setExitoFoto('');
     if (file.size > 5 * 1024 * 1024) {
       setErrorFoto('La imagen supera el límite permitido de 5 MB.');
       return;
@@ -133,7 +130,7 @@ export const MiPerfilPage: React.FC = () => {
     try {
       await subirFotoMutation.mutateAsync(file);
       await refrescarPerfil();
-      setExitoFoto('¡Foto de perfil actualizada correctamente!');
+      showToast('success', '¡Foto de perfil actualizada correctamente!');
     } catch (err: unknown) {
       setErrorFoto(mapApiError(err));
     } finally {
@@ -144,11 +141,10 @@ export const MiPerfilPage: React.FC = () => {
   const handleEliminarFoto = async () => {
     if (!window.confirm('¿Seguro que deseas eliminar tu foto de perfil del catálogo?')) return;
     setErrorFoto('');
-    setExitoFoto('');
     try {
       await eliminarFotoMutation.mutateAsync();
       await refrescarPerfil();
-      setExitoFoto('Foto de perfil eliminada correctamente.');
+      showToast('success', 'Foto de perfil eliminada correctamente.');
     } catch (err: unknown) {
       setErrorFoto(mapApiError(err));
     }
@@ -232,7 +228,6 @@ export const MiPerfilPage: React.FC = () => {
               <h5 className="fw-bold mb-3">Foto Profesional (Catálogo)</h5>
 
               {errorFoto && <div className="alert alert-danger py-2 small">{errorFoto}</div>}
-              {exitoFoto && <div className="alert alert-success py-2 small">{exitoFoto}</div>}
 
               <div className="d-inline-block position-relative mb-3 mx-auto">
                 {obtenerUrlFoto(usuarioDb.barbero.fotoUrl) ? (
@@ -314,9 +309,7 @@ export const MiPerfilPage: React.FC = () => {
               )}
             </div>
 
-            {exitoDatos && (
-              <div className="alert alert-success py-2 small">{exitoDatos}</div>
-            )}
+            <ToastContainer toast={toast} onClose={hideToast} />
 
             {actualizarUsuarioMutation.error && (
               <ErrorMessage message={mapApiError(actualizarUsuarioMutation.error)} />
@@ -441,9 +434,6 @@ export const MiPerfilPage: React.FC = () => {
           <div className="card shadow-sm border-0 p-4 bg-white">
             <h5 className="fw-bold mb-3">Seguridad y Contraseña</h5>
 
-            {exitoClave && (
-              <div className="alert alert-success py-2 small">{exitoClave}</div>
-            )}
 
             {cambiarContrasenaMutation.error && (
               <ErrorMessage message={mapApiError(cambiarContrasenaMutation.error)} />
