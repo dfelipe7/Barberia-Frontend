@@ -27,8 +27,14 @@ export default function AuthProvider({
                 await keycloak.init({
                     onLoad: 'check-sso',
                     pkceMethod: 'S256', // Medida de seguridad recomendada para Single Page Apps (React)
-                    checkLoginIframe: false,
+                    checkLoginIframe: true,
+                    checkLoginIframeInterval: 5, // Revisa cada 5 segundos
                 });
+
+                // Si detecta que la sesión se cerró en otra pestaña o en Keycloak
+                keycloak.onAuthLogout = () => {
+                    window.location.reload();
+                };
             } catch (error) {
                 console.error('Error iniciando Keycloak:', error);
             } finally {
