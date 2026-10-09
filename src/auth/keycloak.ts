@@ -16,16 +16,18 @@ const keycloak = new Keycloak({
 /**
  * CIERRE DE SESIÓN GLOBAL Y MULTI-PESTAÑA
  * Notifica de inmediato a todas las demás pestañas abiertas para que cierren sesión sincrónicamente (en 0s)
- * evitando depender de los iframes de terceros que bloquea el escudo de privacidad de Brave / Safari.
+ * limpiando el estado local para ser 100% compatible con Brave, Safari, Firefox y Chrome.
  */
 export const cerrarSesionGlobal = (redirectUri?: string) => {
   try {
+    localStorage.setItem('barberia_logout_timestamp', Date.now().toString());
+    localStorage.setItem('barberia_logged_out', 'true');
+
     if (typeof BroadcastChannel !== 'undefined') {
       const channel = new BroadcastChannel('barberia_auth_channel');
       channel.postMessage('LOGOUT');
       channel.close();
     }
-    localStorage.setItem('barberia_logout_timestamp', Date.now().toString());
   } catch (err) {
     console.error('Error notificando cierre de sesión multi-pestaña:', err);
   }
