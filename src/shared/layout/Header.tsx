@@ -18,12 +18,12 @@ const NIVEL_ROL: Record<string, number> = {
 
 export default function Header() {
     const {
+        keycloak,
         nombre,
         apellido,
         email,
         roles,
         usuarioDb,
-        cerrarSesion,
     } = useAuth();
     const { theme, setTheme, isDark } = useTheme();
     const { toggleSidebar, isSidebarOpen } = useUi();
@@ -46,7 +46,11 @@ export default function Header() {
 
     const fotoUrl = obtenerUrlFoto(usuarioDb?.barbero?.fotoUrl);
 
-
+    const cerrarSesion = () => {
+        keycloak.logout({
+            redirectUri: window.location.origin,
+        });
+    };
 
     const renderCentralAvatar = () => {
         if (fotoUrl) {

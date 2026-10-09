@@ -15,83 +15,25 @@ export default function AuthProvider({
     const isRun = useRef(false);
 
     useEffect(() => {
-        const procesarLogoutMultiPestana = () => {
-            try {
-                keycloak.clearToken();
-                keycloak.token = undefined;
-                keycloak.refreshToken = undefined;
-                keycloak.idToken = undefined;
-                keycloak.tokenParsed = undefined;
-                keycloak.authenticated = false;
-            } catch {
-                // Ignore
-            }
-            sessionStorage.clear();
-            localStorage.clear();
-            localStorage.setItem('barberia_logged_out', 'true');
-
-            // Limpieza de cookies locales
-            try {
-                document.cookie.split(';').forEach((c) => {
-                    document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
-                });
-            } catch {
-                // Ignore
-            }
-
-            window.location.href = window.location.origin;
-        };
-
-        // 1. Canal BroadcastChannel para navegadores modernos (Brave, Chrome, Edge, Firefox)
-        const authChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('barberia_auth_channel') : null;
-
-        if (authChannel) {
-            authChannel.onmessage = (event) => {
-                if (event.data === 'LOGOUT') {
-                    procesarLogoutMultiPestana();
-                }
-            };
-        }
-
-        // 2. Listener de Storage Events (respaldo universal para sincronización entre pestañas)
-        const handleStorageChange = (e: StorageEvent) => {
-            if (e.key === 'barberia_logout_timestamp' || e.key === 'barberia_logged_out') {
-                procesarLogoutMultiPestana();
-            }
-        };
-        window.addEventListener('storage', handleStorageChange);
-
         if (isRun.current) return;
         isRun.current = true;
-
         const iniciarKeycloak = async () => {
             try {
-                // Si la sesión fue cerrada desde otra pestaña, forzamos el estado desautenticado de inmediato
-                if (localStorage.getItem('barberia_logged_out') === 'true') {
-                    localStorage.removeItem('barberia_logged_out');
-                    try {
-                        keycloak.clearToken();
-                    } catch {
-                        // Ignore
-                    }
-                    keycloak.token = undefined;
-                    keycloak.refreshToken = undefined;
-                    keycloak.idToken = undefined;
-                    keycloak.tokenParsed = undefined;
-                    keycloak.authenticated = false;
-                    setLoading(false);
-                    return;
-                }
-
                 // INICIALIZACIÓN DE KEYCLOAK
+                // 'check-sso' es una opción mágica que le dice a Keycloak:
+                // "Por favor, mira silenciosamente si el usuario ya tiene sesión en el navegador. 
+                // Si la tiene, inícialo sin pedir contraseña. Si no, déjalo como invitado".
+                // Esto evita que la página de login brinque de la nada.
                 await keycloak.init({
                     onLoad: 'check-sso',
-                    pkceMethod: 'S256',
-                    checkLoginIframe: false, // Desactivado para compatibilidad total con Brave y Safari (evita bucles de recargas)
+                    pkceMethod: 'S256', // Medida de seguridad recomendada para Single Page Apps (React)
+                    checkLoginIframe: true,
+                    checkLoginIframeInterval: 5, // Revisa cada 5 segundos
                 });
 
+                // Si detecta que la sesión se cerró en otra pestaña o en Keycloak
                 keycloak.onAuthLogout = () => {
-                    procesarLogoutMultiPestana();
+                    window.location.reload();
                 };
             } catch (error) {
                 console.error('Error iniciando Keycloak:', error);
@@ -101,11 +43,6 @@ export default function AuthProvider({
         };
 
         iniciarKeycloak();
-
-        return () => {
-            authChannel?.close();
-            window.removeEventListener('storage', handleStorageChange);
-        };
     }, []);
 
     if (loading) {

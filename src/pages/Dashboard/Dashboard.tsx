@@ -74,11 +74,11 @@ const ROLES_APP = ['SUPERADMIN', 'ADMINISTRADOR', 'BARBERO'];
 
 export default function Dashboard() {
     const {
+        keycloak,
         nombre,
         apellido,
         email,
         roles,
-        cerrarSesion,
     } = useAuth();
 
     const esSuperAdmin = roles.includes('SUPERADMIN');
@@ -87,6 +87,14 @@ export default function Dashboard() {
 
     const rolesApp = roles.filter((r) => ROLES_APP.includes(r));
     const rolesMostrados = rolesApp.length > 0 ? rolesApp : roles;
+
+    const cerrarSesion = () => {
+        if (keycloak) {
+            keycloak.logout({
+                redirectUri: window.location.origin,
+            });
+        }
+    };
 
     const renderCard = ({ label, descripcion, to, icon: Icon, color, badge }: ShortcutItem) => {
         const isDarkAccent = color === '#0C0C0C';
@@ -261,7 +269,7 @@ export default function Dashboard() {
                         <div className="d-flex align-items-center gap-2 flex-shrink-0">
                             <button
                                 type="button"
-                                onClick={() => cerrarSesion()}
+                                onClick={cerrarSesion}
                                 className="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold"
                                 style={{
                                     borderRadius: '4px',

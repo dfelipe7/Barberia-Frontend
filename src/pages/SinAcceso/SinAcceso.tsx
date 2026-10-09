@@ -3,7 +3,13 @@ import { esRolApp } from '../../shared/lib/autorizacion/roles';
 import BrandLogo from '../../shared/ui/BrandLogo';
 
 export default function SinAcceso() {
-    const { email, roles, usuarioDb, cerrarSesion } = useAuth();
+    const { keycloak, email, roles, usuarioDb } = useAuth();
+
+    const cerrarSesion = () => {
+        keycloak.logout({
+            redirectUri: window.location.origin,
+        });
+    };
 
     const cuentaBloqueada = usuarioDb?.estado === 'INACTIVO';
     // ¿El usuario está autenticado pero sin ningún rol reconocido del sistema?
@@ -60,7 +66,7 @@ export default function SinAcceso() {
 
                 <button
                     className="btn btn-primary"
-                    onClick={() => cerrarSesion()}
+                    onClick={cerrarSesion}
                 >
                     Cerrar sesión
                 </button>
