@@ -15,24 +15,34 @@ export default function AuthProvider({
     const isRun = useRef(false);
 
     useEffect(() => {
+        // Canal de comunicación entre pestañas para sincronizar el Cierre de Sesión (compatible con Brave/Safari)
+        const authChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('barberia_auth_channel') : null;
+
+        if (authChannel) {
+            authChannel.onmessage = (event) => {
+                if (event.data === 'LOGOUT') {
+                    window.location.reload();
+                }
+            };
+        }
+
         if (isRun.current) return;
         isRun.current = true;
+
         const iniciarKeycloak = async () => {
             try {
                 // INICIALIZACIÓN DE KEYCLOAK
-                // 'check-sso' es una opción mágica que le dice a Keycloak:
-                // "Por favor, mira silenciosamente si el usuario ya tiene sesión en el navegador. 
-                // Si la tiene, inícialo sin pedir contraseña. Si no, déjalo como invitado".
-                // Esto evita que la página de login brinque de la nada.
+                // 'check-sso' le dice a Keycloak que verifique sesión existente sin pedir contraseña.
+                // 'checkLoginIframe: false' evita el bucle de recargas infinitas en Brave y Safari (causado por bloqueo de cookies de 3ros).
                 await keycloak.init({
                     onLoad: 'check-sso',
                     pkceMethod: 'S256', // Medida de seguridad recomendada para Single Page Apps (React)
-                    checkLoginIframe: true,
-                    checkLoginIframeInterval: 5, // Revisa cada 5 segundos
+                    checkLoginIframe: false,
                 });
 
-                // Si detecta que la sesión se cerró en otra pestaña o en Keycloak
+                // Notifica a las demás pestañas para que también cierren sesión al instante
                 keycloak.onAuthLogout = () => {
+                    authChannel?.postMessage('LOGOUT');
                     window.location.reload();
                 };
             } catch (error) {
@@ -43,6 +53,10 @@ export default function AuthProvider({
         };
 
         iniciarKeycloak();
+
+        return () => {
+            authChannel?.close();
+        };
     }, []);
 
     if (loading) {
