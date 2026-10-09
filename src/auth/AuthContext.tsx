@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import keycloak from './keycloak';
+import keycloak, { cerrarSesionGlobal } from './keycloak';
 import { usuariosService } from '../features/usuarios/api/usuarios.service';
 import { usuariosMapper } from '../features/usuarios/api/usuarios.mapper';
 import type { Usuario } from '../features/usuarios/types/usuarios.types';
@@ -13,7 +13,7 @@ import type { Usuario } from '../features/usuarios/types/usuarios.types';
  * Además, cruza esa información con nuestra Base de Datos para tener el perfil completo.
  */
 interface AuthContextType {
-    keycloak: typeof keycloak; // La instancia original de Keycloak por si necesitamos cerrar sesión o hacer cosas avanzadas.
+    keycloak: typeof keycloak; // La instancia original de Keycloak por si necesitamos realizar operaciones avanzadas.
     isAuthenticated: boolean; // ¿Está logueado el usuario?
     nombre?: string; // Extraído del token
     apellido?: string; // Extraído del token
@@ -21,6 +21,7 @@ interface AuthContextType {
     roles: string[]; // Qué poderes tiene este usuario (SUPERADMIN, BARBERO, etc.)
     usuarioDb: Usuario | null; // El registro completo de este usuario que vive en nuestra Base de Datos (MySQL)
     refrescarPerfil: () => Promise<void>; // Recarga los datos del perfil desde la BD
+    cerrarSesion: (redirectUri?: string) => void; // Cierra sesión de forma sincronizada en todas las pestañas al instante (0s)
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(
@@ -81,6 +82,7 @@ export function AuthContextProvider({
                 roles,
                 usuarioDb,
                 refrescarPerfil,
+                cerrarSesion: cerrarSesionGlobal,
             }}
         >
             {children}
