@@ -18,15 +18,31 @@ export default function AuthProvider({
         const procesarLogoutMultiPestana = () => {
             try {
                 keycloak.clearToken();
+                keycloak.token = undefined;
+                keycloak.refreshToken = undefined;
+                keycloak.idToken = undefined;
+                keycloak.tokenParsed = undefined;
+                keycloak.authenticated = false;
             } catch {
-                // Ignore if token is already cleared
+                // Ignore
             }
             sessionStorage.clear();
+            localStorage.clear();
             localStorage.setItem('barberia_logged_out', 'true');
+
+            // Limpieza de cookies locales
+            try {
+                document.cookie.split(';').forEach((c) => {
+                    document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
+                });
+            } catch {
+                // Ignore
+            }
+
             window.location.href = window.location.origin;
         };
 
-        // 1. Canal BroadcastChannel para navegadores modernos
+        // 1. Canal BroadcastChannel para navegadores modernos (Brave, Chrome, Edge, Firefox)
         const authChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('barberia_auth_channel') : null;
 
         if (authChannel) {
@@ -37,9 +53,9 @@ export default function AuthProvider({
             };
         }
 
-        // 2. Listener de Storage Events (respaldo universal para todas las pestañas)
+        // 2. Listener de Storage Events (respaldo universal para sincronización entre pestañas)
         const handleStorageChange = (e: StorageEvent) => {
-            if (e.key === 'barberia_logout_timestamp') {
+            if (e.key === 'barberia_logout_timestamp' || e.key === 'barberia_logged_out') {
                 procesarLogoutMultiPestana();
             }
         };
@@ -50,7 +66,7 @@ export default function AuthProvider({
 
         const iniciarKeycloak = async () => {
             try {
-                // Si venimos de un evento de logout de otra pestaña, asegurarnos de que la sesión no reaparezca
+                // Si la sesión fue cerrada desde otra pestaña, forzamos el estado desautenticado de inmediato
                 if (localStorage.getItem('barberia_logged_out') === 'true') {
                     localStorage.removeItem('barberia_logged_out');
                     try {
@@ -58,7 +74,13 @@ export default function AuthProvider({
                     } catch {
                         // Ignore
                     }
-                    sessionStorage.clear();
+                    keycloak.token = undefined;
+                    keycloak.refreshToken = undefined;
+                    keycloak.idToken = undefined;
+                    keycloak.tokenParsed = undefined;
+                    keycloak.authenticated = false;
+                    setLoading(false);
+                    return;
                 }
 
                 // INICIALIZACIÓN DE KEYCLOAK
