@@ -15,34 +15,39 @@ export default function AuthProvider({
     const isRun = useRef(false);
 
     useEffect(() => {
-        if (isRun.current) return;
-        isRun.current = true;
-        const iniciarKeycloak = async () => {
-            try {
-                // INICIALIZACIÓN DE KEYCLOAK
-                // 'check-sso' es una opción mágica que le dice a Keycloak:
-                // "Por favor, mira silenciosamente si el usuario ya tiene sesión en el navegador. 
-                // Si la tiene, inícialo sin pedir contraseña. Si no, déjalo como invitado".
-                // Esto evita que la página de login brinque de la nada.
-                await keycloak.init({
-                    onLoad: 'check-sso',
-                    pkceMethod: 'S256', // Medida de seguridad recomendada para Single Page Apps (React)
-                    checkLoginIframe: true,
-                    checkLoginIframeInterval: 5, // Revisa cada 5 segundos
-                });
-
-                // Si detecta que la sesión se cerró en otra pestaña o en Keycloak
-                keycloak.onAuthLogout = () => {
-                    window.location.reload();
-                };
-            } catch (error) {
-                console.error('Error iniciando Keycloak:', error);
-            } finally {
-                setLoading(false);
+        // Escucha eventos de localStorage enviados desde otras pestañas (soporte multi-pestaña para Brave, Safari, etc.)
+        const handleStorageChange = (event: StorageEvent) => {
+            if (event.key === 'barberia_logout_event') {
+                window.location.reload();
             }
         };
+        window.addEventListener('storage', handleStorageChange);
 
-        iniciarKeycloak();
+        if (!isRun.current) {
+            isRun.current = true;
+            const iniciarKeycloak = async () => {
+                try {
+                    // INICIALIZACIÓN DE KEYCLOAK
+                    // 'check-sso' revisa si el usuario ya tiene sesión en el navegador.
+                    await keycloak.init({
+                        onLoad: 'check-sso',
+                        silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
+                        pkceMethod: 'S256', // Medida de seguridad recomendada para Single Page Apps (React)
+                        checkLoginIframe: false, // Desactivado para evitar bucles infinitos por bloqueo de cookies de 3ros
+                    });
+                } catch (error) {
+                    console.error('Error iniciando Keycloak:', error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            iniciarKeycloak();
+        }
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
 
     if (loading) {

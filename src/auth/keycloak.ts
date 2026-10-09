@@ -13,4 +13,15 @@ const keycloak = new Keycloak({
   clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
 });
 
+export const cerrarSesion = () => {
+    try {
+        localStorage.setItem('barberia_logout_event', Date.now().toString());
+    } catch (e) {
+        console.error('Error al notificar cierre de sesión a otras pestañas:', e);
+    }
+    keycloak.logout({
+        redirectUri: window.location.origin,
+    });
+};
+
 export default keycloak;
