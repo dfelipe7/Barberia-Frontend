@@ -9,6 +9,7 @@ import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useToast } from '../../../shared/lib/useToast';
 import { ToastContainer } from '../../../shared/ui/ToastContainer';
 import { useDebounce } from '../../../shared/lib/useDebounce';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import {
   useServiciosGestion,
   useCrearServicio,
@@ -35,6 +36,7 @@ export const ServiciosPage: React.FC = () => {
   const [idServicioCambiando, setIdServicioCambiando] = useState<number | null>(null);
   const [idServicioAnimado, setIdServicioAnimado] = useState<number | null>(null);
   const { toast, showToast, hideToast } = useToast(4000);
+  const confirm = useConfirm();
 
   // Memorizar objeto de filtro para queryKey estable
   const filtroGestion = useMemo(() => ({
@@ -93,6 +95,17 @@ export const ServiciosPage: React.FC = () => {
   };
 
   const handleCambiarEstado = async (servicio: Servicio) => {
+    const desactivando = servicio.estado === 'ACTIVO';
+    const ok = await confirm({
+      title: desactivando ? '¿Desactivar servicio?' : '¿Activar servicio?',
+      message: desactivando
+        ? `¿Desactivar el servicio "${servicio.nombre}"? No aparecerá en el catálogo para los clientes.`
+        : `¿Activar el servicio "${servicio.nombre}" para que esté disponible en el catálogo?`,
+      variant: desactivando ? 'warning' : 'primary',
+      confirmLabel: desactivando ? 'Desactivar' : 'Activar',
+    });
+    if (!ok) return;
+
     try {
       setErrorAccion(null);
       setIdServicioCambiando(servicio.id);

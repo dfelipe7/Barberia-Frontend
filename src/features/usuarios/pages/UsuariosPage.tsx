@@ -9,6 +9,7 @@ import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useToast } from '../../../shared/lib/useToast';
 import { ToastContainer } from '../../../shared/ui/ToastContainer';
 import { useDebounce } from '../../../shared/lib/useDebounce';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 
 // Facades
 import {
@@ -109,6 +110,7 @@ export const UsuariosPage: React.FC = () => {
   const [barberoAEditarComision, setBarberoAEditarComision] = useState<BarberoGestion | null>(null);
   const [barberoAEditarFoto, setBarberoAEditarFoto] = useState<BarberoGestion | null>(null);
   const { toast, showToast, hideToast } = useToast(4000);
+  const confirm = useConfirm();
 
   useEffect(() => {
     const mensaje = location.state?.mensaje as string | undefined;
@@ -123,6 +125,19 @@ export const UsuariosPage: React.FC = () => {
   };
 
   const handleCambiarEstadoAdmin = async (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => {
+    const admin = administradores.find((a) => a.id === id);
+    const nombre = admin ? `${admin.nombre} ${admin.apellido}` : 'este usuario';
+
+    if (nuevoEstado === 'INACTIVO') {
+      const ok = await confirm({
+        title: '¿Desactivar rol de administrador?',
+        message: `¿Desactivar rol de administrador de ${nombre}?`,
+        variant: 'warning',
+        confirmLabel: 'Desactivar',
+      });
+      if (!ok) return;
+    }
+
     try {
       await cambiarEstadoAdminMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
       showToast('success', 'El estado del usuario se actualizó correctamente.');
@@ -135,6 +150,19 @@ export const UsuariosPage: React.FC = () => {
     id: number,
     nuevoEstado: 'ACTIVO' | 'INACTIVO'
   ) => {
+    const admin = administradores.find((a) => a.id === id);
+    const nombre = admin ? `${admin.nombre} ${admin.apellido}` : 'este usuario';
+
+    if (nuevoEstado === 'INACTIVO') {
+      const ok = await confirm({
+        title: '¿Bloquear cuenta?',
+        message: `¿Bloquear cuenta completa de ${nombre}? No podrá iniciar sesión.`,
+        variant: 'danger',
+        confirmLabel: 'Bloquear',
+      });
+      if (!ok) return;
+    }
+
     try {
       await cambiarEstadoGlobalAdminMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
       showToast(
@@ -149,6 +177,19 @@ export const UsuariosPage: React.FC = () => {
   };
 
   const handleCambiarEstadoBarbero = async (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => {
+    const barbero = barberos.find((b) => b.id === id);
+    const nombre = barbero ? `${barbero.nombre} ${barbero.apellido}` : 'este usuario';
+
+    if (nuevoEstado === 'INACTIVO') {
+      const ok = await confirm({
+        title: '¿Desactivar rol de barbero?',
+        message: `¿Desactivar rol de barbero de ${nombre}?`,
+        variant: 'warning',
+        confirmLabel: 'Desactivar',
+      });
+      if (!ok) return;
+    }
+
     try {
       await cambiarEstadoBarberoMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
       showToast('success', 'El estado del usuario se actualizó correctamente.');
@@ -161,6 +202,19 @@ export const UsuariosPage: React.FC = () => {
     id: number,
     nuevoEstado: 'ACTIVO' | 'INACTIVO'
   ) => {
+    const barbero = barberos.find((b) => b.id === id);
+    const nombre = barbero ? `${barbero.nombre} ${barbero.apellido}` : 'este usuario';
+
+    if (nuevoEstado === 'INACTIVO') {
+      const ok = await confirm({
+        title: '¿Bloquear cuenta?',
+        message: `¿Bloquear cuenta completa de ${nombre}?`,
+        variant: 'danger',
+        confirmLabel: 'Bloquear',
+      });
+      if (!ok) return;
+    }
+
     try {
       await cambiarEstadoGlobalBarberoMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
       showToast(

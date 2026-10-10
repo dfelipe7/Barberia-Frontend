@@ -8,6 +8,8 @@ import AuthProvider from './auth/AuthProvider';
 import { queryClient } from './shared/lib/queryClient';
 import { ThemeProvider } from './shared/context/ThemeContext';
 import { UiProvider } from './shared/contexts/UiContext';
+import { ToastProvider } from './shared/ui/ToastContext';
+import { ConfirmProvider } from './shared/contexts/ConfirmContext';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
@@ -18,11 +20,15 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <UiProvider>
-          <BrowserRouter>
-            <AuthProvider>
-              <App />
-            </AuthProvider>
-          </BrowserRouter>
+          <ToastProvider>
+            <ConfirmProvider>
+              <BrowserRouter>
+                <AuthProvider>
+                  <App />
+                </AuthProvider>
+              </BrowserRouter>
+            </ConfirmProvider>
+          </ToastProvider>
         </UiProvider>
       </ThemeProvider>
     </QueryClientProvider>

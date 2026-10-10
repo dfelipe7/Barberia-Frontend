@@ -5,6 +5,7 @@ import FileUploadField from '../../../shared/ui/molecules/FileUploadField';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { useSubirFotoServicio, useEliminarFotoServicio } from '../api/servicios.facade';
 import { mapApiError } from '../../../shared/lib/mapApiError';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import type { Servicio } from '../types/servicios.types';
 
 interface FotoServicioModalProps {
@@ -14,6 +15,7 @@ interface FotoServicioModalProps {
 }
 
 export const FotoServicioModal: React.FC<FotoServicioModalProps> = ({ servicio, onClose, onSuccess }) => {
+  const confirm = useConfirm();
   const subirMutation = useSubirFotoServicio();
   const eliminarMutation = useEliminarFotoServicio();
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +42,14 @@ export const FotoServicioModal: React.FC<FotoServicioModalProps> = ({ servicio, 
   };
 
   const handleEliminar = async () => {
-    if (!window.confirm('¿Eliminar la foto de este servicio?')) return;
+    const ok = await confirm({
+      title: '¿Eliminar foto?',
+      message: '¿Eliminar la foto de este servicio?',
+      variant: 'danger',
+      confirmLabel: 'Eliminar',
+    });
+    if (!ok) return;
+
     try {
       setError(null);
       await eliminarMutation.mutateAsync(servicio.id);

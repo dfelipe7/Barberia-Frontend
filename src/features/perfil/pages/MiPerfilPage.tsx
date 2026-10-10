@@ -12,6 +12,7 @@ import { useCambiarContrasena } from '../api/perfil.facade';
 import { useSubirFotoPropia, useEliminarFotoPropia } from '../../barberos';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { mapApiError } from '../../../shared/lib/mapApiError';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import {
   miPerfilSchema,
   type MiPerfilFormValues,
@@ -30,6 +31,7 @@ export const MiPerfilPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [editando, setEditando] = useState(false);
   const { toast, showToast, hideToast } = useToast(4000);
+  const confirm = useConfirm();
   const [errorFoto, setErrorFoto] = useState('');
 
   const actualizarUsuarioMutation = useActualizarUsuario();
@@ -139,7 +141,14 @@ export const MiPerfilPage: React.FC = () => {
   };
 
   const handleEliminarFoto = async () => {
-    if (!window.confirm('¿Seguro que deseas eliminar tu foto de perfil del catálogo?')) return;
+    const ok = await confirm({
+      title: '¿Eliminar foto de perfil?',
+      message: '¿Seguro que deseas eliminar tu foto de perfil del catálogo?',
+      variant: 'danger',
+      confirmLabel: 'Eliminar',
+    });
+    if (!ok) return;
+
     setErrorFoto('');
     try {
       await eliminarFotoMutation.mutateAsync();
