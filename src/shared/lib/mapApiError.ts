@@ -5,6 +5,11 @@ import type { AxiosError } from 'axios';
  * Centraliza la interpretación de códigos de estado documentados por el backend.
  */
 export const mapApiError = (error: unknown): string => {
+  // Fast-path: el interceptor de Axios ya normalizó message / mensaje del backend.
+  const userMessage = (error as any)?.userMessage;
+  if (typeof userMessage === 'string' && userMessage.trim()) return userMessage;
+
+  // Fallback retrocompatible para errores no interceptados (tests, mocks, etc.)
   const axiosError = error as AxiosError<{ mensaje?: string }>;
   const status = axiosError?.response?.status;
   const mensajeBackend = axiosError?.response?.data?.mensaje;

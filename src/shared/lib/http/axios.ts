@@ -39,13 +39,23 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Normaliza el campo de mensaje del backend (NestJS ValidationPipe devuelve
+    // message como array; otras rutas lo devuelven como string en message o mensaje).
+    const rawMensaje =
+      error?.response?.data?.message ?? error?.response?.data?.mensaje;
+    if (Array.isArray(rawMensaje)) {
+      error.userMessage = rawMensaje.join(' ');
+    } else if (typeof rawMensaje === 'string') {
+      error.userMessage = rawMensaje;
+    }
+
     if (error.response && error.response.status === 401) {
       console.warn('Sesión expirada detectada (401). Redirigiendo a login...');
       keycloak.clearToken();
       keycloak.login();
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;
