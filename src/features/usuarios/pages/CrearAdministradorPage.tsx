@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,6 +6,7 @@ import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useCrearAdministrador } from '../api/usuarios.facade';
 import { mapApiError } from '../../../shared/lib/mapApiError';
+import { PasswordRequirementsChecklist } from '../../../shared/components/PasswordRequirementsChecklist';
 import {
   crearAdministradorSchema,
   type CrearAdministradorFormValues,
@@ -14,10 +15,12 @@ import {
 export const CrearAdministradorPage: React.FC = () => {
   const navigate = useNavigate();
   const crearAdminMutation = useCrearAdministrador();
+  const [showPasswordPopover, setShowPasswordPopover] = useState(false);
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<CrearAdministradorFormValues>({
     resolver: zodResolver(crearAdministradorSchema),
@@ -28,6 +31,8 @@ export const CrearAdministradorPage: React.FC = () => {
       password: '',
     },
   });
+
+  const passwordValue = watch('password');
 
   const onSubmit = async (data: CrearAdministradorFormValues) => {
     try {
@@ -113,7 +118,7 @@ export const CrearAdministradorPage: React.FC = () => {
               )}
             </div>
 
-            <div className="col-12">
+            <div className="col-12 position-relative">
               <label htmlFor="password" className="form-label fw-semibold">
                 Contraseña Temporal <span className="text-danger">*</span>
               </label>
@@ -121,15 +126,18 @@ export const CrearAdministradorPage: React.FC = () => {
                 id="password"
                 type="password"
                 className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-                placeholder="Mínimo 8 caracteres"
+                placeholder="Ej. AdminBarberia2026*"
                 {...register('password')}
+                onFocus={() => setShowPasswordPopover(true)}
+                onBlur={() => setShowPasswordPopover(false)}
               />
               {errors.password && (
                 <div className="invalid-feedback">{errors.password.message}</div>
               )}
-              <div className="form-text small">
-                El usuario podrá actualizar esta contraseña posteriormente en su perfil.
-              </div>
+              <PasswordRequirementsChecklist
+                password={passwordValue}
+                isVisible={showPasswordPopover}
+              />
             </div>
 
             <div className="col-12 mt-4 d-flex justify-content-end gap-2">

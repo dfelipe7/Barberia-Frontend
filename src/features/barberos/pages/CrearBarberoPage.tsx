@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,6 +6,7 @@ import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useCrearBarbero } from '../api/barberos.facade';
 import { mapApiError } from '../../../shared/lib/mapApiError';
+import { PasswordRequirementsChecklist } from '../../../shared/components/PasswordRequirementsChecklist';
 import {
   crearBarberoSchema,
   type CrearBarberoFormValues,
@@ -14,10 +15,12 @@ import {
 export const CrearBarberoPage: React.FC = () => {
   const navigate = useNavigate();
   const crearBarberoMutation = useCrearBarbero();
+  const [showPasswordPopover, setShowPasswordPopover] = useState(false);
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<CrearBarberoFormValues>({
     resolver: zodResolver(crearBarberoSchema),
@@ -30,6 +33,8 @@ export const CrearBarberoPage: React.FC = () => {
       porcentajeComision: 50,
     },
   });
+
+  const passwordValue = watch('password');
 
   const onSubmit = async (data: CrearBarberoFormValues) => {
     try {
@@ -135,7 +140,7 @@ export const CrearBarberoPage: React.FC = () => {
               )}
             </div>
 
-            <div className="col-12 col-sm-6">
+            <div className="col-12 col-sm-6 position-relative">
               <label htmlFor="password" className="form-label fw-semibold">
                 Contraseña Temporal <span className="text-danger">*</span>
               </label>
@@ -143,12 +148,18 @@ export const CrearBarberoPage: React.FC = () => {
                 id="password"
                 type="password"
                 className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-                placeholder="Mínimo 8 caracteres"
+                placeholder="Ej. Barberia2026*"
                 {...register('password')}
+                onFocus={() => setShowPasswordPopover(true)}
+                onBlur={() => setShowPasswordPopover(false)}
               />
               {errors.password && (
                 <div className="invalid-feedback">{errors.password.message}</div>
               )}
+              <PasswordRequirementsChecklist
+                password={passwordValue}
+                isVisible={showPasswordPopover}
+              />
             </div>
 
             <div className="col-12 col-sm-6">
