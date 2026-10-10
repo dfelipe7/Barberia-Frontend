@@ -7,14 +7,7 @@ import { useTheme } from '../context/ThemeContext';
 import { BRAND } from '../../config/brand';
 import UserDropdown from './UserDropdown';
 import { useUi } from '../contexts/UiContext';
-
-const ROLES_APP = ['SUPERADMIN', 'ADMINISTRADOR', 'BARBERO'];
-
-const NIVEL_ROL: Record<string, number> = {
-    SUPERADMIN: 3,
-    ADMINISTRADOR: 2,
-    BARBERO: 1,
-};
+import { ROLES_APP, ROL_HIERARCHY } from '../constants/roles';
 
 export default function Header() {
     const {
@@ -39,9 +32,9 @@ export default function Header() {
         : theme === 'light' ? 'Modo claro (clic para cambiar)'
         : 'Seguir sistema (clic para cambiar)';
 
-    const rolesApp = roles.filter((r) => ROLES_APP.includes(r));
+    const rolesApp = roles.filter((r) => (ROLES_APP as readonly string[]).includes(r));
     const rolPrincipal = [...rolesApp].sort(
-        (a, b) => (NIVEL_ROL[b] || 0) - (NIVEL_ROL[a] || 0)
+        (a, b) => (ROL_HIERARCHY[b as keyof typeof ROL_HIERARCHY] || 0) - (ROL_HIERARCHY[a as keyof typeof ROL_HIERARCHY] || 0)
     )[0] || roles[0] || 'USUARIO';
 
     const fotoUrl = obtenerUrlFoto(usuarioDb?.barbero?.fotoUrl);

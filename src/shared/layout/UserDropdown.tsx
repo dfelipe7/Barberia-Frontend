@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, User, Globe, LogOut } from 'lucide-react';
+import { ROLES_APP } from '../constants/roles';
+
 
 export interface UserDropdownProps {
   nombre?: string;
@@ -12,7 +14,6 @@ export interface UserDropdownProps {
   onCerrarSesion: () => void;
 }
 
-const ROLES_APP = ['SUPERADMIN', 'ADMINISTRADOR', 'BARBERO'];
 
 export const UserDropdown: React.FC<UserDropdownProps> = ({
   nombre,
@@ -30,7 +31,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
   const menuRef = useRef<HTMLDivElement | null>(null);
   const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const rolesApp = roles.filter((r) => ROLES_APP.includes(r));
+  const rolesApp = roles.filter((r) => (ROLES_APP as readonly string[]).includes(r));
   const rolesAMostrar = rolesApp.length > 0 ? rolesApp : roles;
 
   const closeDropdown = () => {

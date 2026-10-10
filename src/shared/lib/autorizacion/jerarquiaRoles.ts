@@ -1,10 +1,5 @@
-import type { Rol } from './roles';
-
-const NIVEL: Record<Rol, number> = {
-  SUPERADMIN: 3,
-  ADMINISTRADOR: 2,
-  BARBERO: 1,
-};
+import { ROL_HIERARCHY } from '../../constants/roles';
+import type { Rol } from '../../constants/roles';
 
 /**
  * PATRÓN SPECIFICATION:
@@ -12,4 +7,4 @@ const NIVEL: Record<Rol, number> = {
  * (cambiar estado, editar) a roles de nivel estrictamente inferior al suyo.
  */
 export const puedeGestionarEstado = (rolActor: Rol, rolObjetivo: Rol): boolean =>
-  NIVEL[rolActor] > NIVEL[rolObjetivo];
+  ROL_HIERARCHY[rolActor] > ROL_HIERARCHY[rolObjetivo];

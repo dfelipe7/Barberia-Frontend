@@ -11,6 +11,7 @@ import {
     LogOut,
 } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
+import { ROLES_APP } from '../../shared/constants/roles';
 
 interface ShortcutItem {
     label: string;
@@ -70,7 +71,7 @@ const SHORTCUTS_GESTION: ShortcutItem[] = [
     },
 ];
 
-const ROLES_APP = ['SUPERADMIN', 'ADMINISTRADOR', 'BARBERO'];
+
 
 export default function Dashboard() {
     const {
@@ -85,7 +86,7 @@ export default function Dashboard() {
     const esAdministrador = roles.includes('ADMINISTRADOR');
     const esAdmin = esSuperAdmin || esAdministrador;
 
-    const rolesApp = roles.filter((r) => ROLES_APP.includes(r));
+    const rolesApp = roles.filter((r) => (ROLES_APP as readonly string[]).includes(r));
     const rolesMostrados = rolesApp.length > 0 ? rolesApp : roles;
 
     const renderCard = ({ label, descripcion, to, icon: Icon, color, badge }: ShortcutItem) => {

@@ -13,6 +13,7 @@ import { useSubirFotoPropia, useEliminarFotoPropia } from '../../barberos';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
+import { ROL_COLORS } from '../../../shared/constants/roles';
 import { PasswordRequirementsChecklist } from '../../../shared/components/PasswordRequirementsChecklist';
 import {
   miPerfilSchema,
@@ -21,11 +22,6 @@ import {
   type CambiarContrasenaFormValues,
 } from '../schemas/perfil.schema';
 
-const COLORES_ROL: Record<string, string> = {
-  SUPERADMIN: 'danger',
-  ADMINISTRADOR: 'warning',
-  BARBERO: 'info',
-};
 
 export const MiPerfilPage: React.FC = () => {
   const { usuarioDb, refrescarPerfil, roles } = useAuth();
@@ -199,7 +195,7 @@ export const MiPerfilPage: React.FC = () => {
                 .map((rol) => (
                   <span
                     key={rol}
-                    className={`badge bg-${COLORES_ROL[rol] || 'secondary'} px-2 py-1`}
+                    className={`badge bg-${ROL_COLORS[rol as keyof typeof ROL_COLORS] || 'secondary'} px-2 py-1`}
                   >
                     {rol}
                   </span>
