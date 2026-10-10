@@ -74,7 +74,7 @@ const ROLES_APP = ['SUPERADMIN', 'ADMINISTRADOR', 'BARBERO'];
 
 export default function Dashboard() {
     const {
-        keycloak,
+        cerrarSesion,
         nombre,
         apellido,
         email,
@@ -87,14 +87,6 @@ export default function Dashboard() {
 
     const rolesApp = roles.filter((r) => ROLES_APP.includes(r));
     const rolesMostrados = rolesApp.length > 0 ? rolesApp : roles;
-
-    const cerrarSesion = () => {
-        if (keycloak) {
-            keycloak.logout({
-                redirectUri: window.location.origin,
-            });
-        }
-    };
 
     const renderCard = ({ label, descripcion, to, icon: Icon, color, badge }: ShortcutItem) => {
         const isDarkAccent = color === '#0C0C0C';

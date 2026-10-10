@@ -25,6 +25,8 @@ apiClient.interceptors.request.use(
           'No se pudo actualizar el token de Keycloak (la sesión probablemente expiró):',
           error,
         );
+        keycloak.clearToken();
+        keycloak.login();
       }
     }
     return config;
@@ -32,6 +34,18 @@ apiClient.interceptors.request.use(
   (error) => {
     return Promise.reject(error);
   },
+);
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      console.warn('Sesión expirada detectada (401). Redirigiendo a login...');
+      keycloak.clearToken();
+      keycloak.login();
+    }
+    return Promise.reject(error);
+  }
 );
 
 export default apiClient;

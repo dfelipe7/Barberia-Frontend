@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import keycloak from './keycloak';
+import keycloak, { cerrarSesion } from './keycloak';
 import { usuariosService } from '../features/usuarios/api/usuarios.service';
 import { usuariosMapper } from '../features/usuarios/api/usuarios.mapper';
 import type { Usuario } from '../features/usuarios/types/usuarios.types';
@@ -14,6 +14,7 @@ import type { Usuario } from '../features/usuarios/types/usuarios.types';
  */
 interface AuthContextType {
     keycloak: typeof keycloak; // La instancia original de Keycloak por si necesitamos cerrar sesión o hacer cosas avanzadas.
+    cerrarSesion: () => void; // Función centralizada para cerrar sesión sincronizando todas las pestañas abiertas
     isAuthenticated: boolean; // ¿Está logueado el usuario?
     nombre?: string; // Extraído del token
     apellido?: string; // Extraído del token
@@ -74,6 +75,7 @@ export function AuthContextProvider({
         <AuthContext.Provider
             value={{
                 keycloak,
+                cerrarSesion,
                 isAuthenticated: !!keycloak.authenticated,
                 nombre,
                 apellido,

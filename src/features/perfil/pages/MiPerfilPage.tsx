@@ -13,6 +13,7 @@ import { useSubirFotoPropia, useEliminarFotoPropia } from '../../barberos';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
+import { PasswordRequirementsChecklist } from '../../../shared/components/PasswordRequirementsChecklist';
 import {
   miPerfilSchema,
   type MiPerfilFormValues,
@@ -33,6 +34,7 @@ export const MiPerfilPage: React.FC = () => {
   const { toast, showToast, hideToast } = useToast(4000);
   const confirm = useConfirm();
   const [errorFoto, setErrorFoto] = useState('');
+  const [showPasswordPopover, setShowPasswordPopover] = useState(false);
 
   const actualizarUsuarioMutation = useActualizarUsuario();
   const cambiarContrasenaMutation = useCambiarContrasena();
@@ -60,6 +62,7 @@ export const MiPerfilPage: React.FC = () => {
   const {
     register: registerClave,
     handleSubmit: handleSubmitClave,
+    watch: watchClave,
     reset: resetClave,
     formState: { errors: errorsClave },
   } = useForm<CambiarContrasenaFormValues>({
@@ -70,6 +73,8 @@ export const MiPerfilPage: React.FC = () => {
       confirmarContrasena: '',
     },
   });
+
+  const nuevaContrasenaVal = watchClave('nuevaContrasena');
 
   useEffect(() => {
     refrescarPerfil();
@@ -475,7 +480,7 @@ export const MiPerfilPage: React.FC = () => {
                   )}
                 </div>
 
-                <div className="col-12 col-sm-6">
+                <div className="col-12 col-sm-6 position-relative">
                   <label htmlFor="nuevaContrasena" className="form-label small fw-semibold">
                     Nueva Contraseña <span className="text-danger">*</span>
                   </label>
@@ -483,11 +488,18 @@ export const MiPerfilPage: React.FC = () => {
                     id="nuevaContrasena"
                     type="password"
                     className={`form-control ${errorsClave.nuevaContrasena ? 'is-invalid' : ''}`}
+                    placeholder="Ej. MiClave2026*"
                     {...registerClave('nuevaContrasena')}
+                    onFocus={() => setShowPasswordPopover(true)}
+                    onBlur={() => setShowPasswordPopover(false)}
                   />
                   {errorsClave.nuevaContrasena && (
                     <div className="invalid-feedback">{errorsClave.nuevaContrasena.message}</div>
                   )}
+                  <PasswordRequirementsChecklist
+                    password={nuevaContrasenaVal}
+                    isVisible={showPasswordPopover}
+                  />
                 </div>
 
                 <div className="col-12 col-sm-6">
