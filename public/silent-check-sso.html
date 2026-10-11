@@ -2,13 +2,10 @@
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; frame-ancestors 'self';" />
-    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; form-action 'self';" />
     <title>Silent Check SSO</title>
 </head>
 <body>
-    <script>
-        parent.postMessage(location.href, location.origin);
-    </script>
+    <script src="/silent-check-sso.js"></script>
 </body>
 </html>
