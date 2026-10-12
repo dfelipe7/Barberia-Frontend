@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut } from 'lucide-react';
+import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut, User } from 'lucide-react';
 import BrandLogo from '../../../shared/ui/BrandLogo';
 import { BRAND } from '../../../config/brand';
 import { MenuIcon, CloseIcon } from './HomeIcons';
 import { useTheme } from '../../../shared/context/ThemeContext';
 import { useAuth } from '../../../auth/AuthContext';
 import { useBodyScrollLock } from '../../../shared/lib/useBodyScrollLock';
+import { esRolApp } from '../../../shared/lib/autorizacion/roles';
 
 /* ─── Hook: detecta si el usuario hizo scroll más allá de un umbral ─────── */
 function useScrolled(threshold = 40): boolean {
@@ -76,7 +77,8 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { theme, setTheme, isDark } = useTheme();
-  const { cerrarSesion } = useAuth();
+  const { cerrarSesion, roles, usuarioDb } = useAuth();
+  const tieneAcceso = roles.some(esRolApp) && usuarioDb?.estado === 'ACTIVO';
 
   const scrolled = useScrolled(40);
   const activeSection = useActiveSection(NAV_LINKS.map((l) => l.id));
@@ -168,6 +170,17 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                 <LayoutDashboard size={14} strokeWidth={2} />
                 Mi panel
               </button>
+              {tieneAcceso && (
+                <button
+                  type="button"
+                  className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
+                  onClick={() => navigate('/mi-perfil')}
+                  aria-label="Ir a mi perfil"
+                >
+                  <User size={14} strokeWidth={2} />
+                  Mi Perfil
+                </button>
+              )}
               <button
                 type="button"
                 className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
@@ -277,6 +290,16 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                     <LayoutDashboard size={15} strokeWidth={2} />
                     Ir a mi panel
                   </button>
+                  {tieneAcceso && (
+                    <button
+                      type="button"
+                      className="btn-kyrios-outline w-100 d-inline-flex align-items-center justify-content-center gap-2"
+                      onClick={() => { closeMobileMenu(); navigate('/mi-perfil'); }}
+                    >
+                      <User size={15} strokeWidth={2} />
+                      Mi Perfil
+                    </button>
+                  )}
                   <button
                     type="button"
                     className="btn-kyrios-outline w-100 d-inline-flex align-items-center justify-content-center gap-2"
