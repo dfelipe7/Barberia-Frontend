@@ -12,7 +12,7 @@ import { useSubirFotoPropia, useEliminarFotoPropia } from '../../barberos';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
-import { ROL_COLORS } from '../../../shared/constants/roles';
+import RoleBadge from '../../../shared/ui/atoms/RoleBadge';
 import { PasswordRequirementsChecklist } from '../../../shared/components/PasswordRequirementsChecklist';
 import {
   miPerfilSchema,
@@ -192,12 +192,7 @@ export const MiPerfilPage: React.FC = () => {
               {roles
                 .filter((r) => ['SUPERADMIN', 'ADMINISTRADOR', 'BARBERO'].includes(r))
                 .map((rol) => (
-                  <span
-                    key={rol}
-                    className={`badge bg-${ROL_COLORS[rol as keyof typeof ROL_COLORS] || 'secondary'} px-2 py-1`}
-                  >
-                    {rol}
-                  </span>
+                  <RoleBadge key={rol} rol={rol} className="px-2 py-1" />
                 ))}
             </div>
 
