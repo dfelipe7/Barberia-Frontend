@@ -427,7 +427,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .search-results-fade {
+  .search-results-fade,
+  .search-input-status {
     animation: none !important;
   }
 }
