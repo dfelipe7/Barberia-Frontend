@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, User, Globe, LogOut } from 'lucide-react';
 import { ROLES_APP } from '../constants/roles';
+import UserAvatar from '../ui/atoms/UserAvatar';
+import RoleBadge from '../ui/atoms/RoleBadge';
 
 
 export interface UserDropdownProps {
@@ -139,47 +141,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
     };
   }, [isOpen, isExiting]);
 
-  const renderAvatar = (size = 32) => {
-    if (fotoUrl) {
-      return (
-        <img
-          src={fotoUrl}
-          alt={`Foto de ${nombre || 'usuario'}`}
-          className="rounded-circle border"
-          style={{
-            width: `${size}px`,
-            height: `${size}px`,
-            objectFit: 'cover',
-            borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(12,12,12,0.15)',
-            flexShrink: 0,
-          }}
-        />
-      );
-    }
 
-    const iniN = (nombre || '').trim()[0] || '';
-    const iniA = (apellido || '').trim()[0] || '';
-    const iniciales = (iniN + iniA).toUpperCase() || 'U';
-
-    return (
-      <div
-        className="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold"
-        style={{
-          width: `${size}px`,
-          height: `${size}px`,
-          fontSize: size <= 32 ? '0.72rem' : '0.85rem',
-          backgroundColor: '#0071BC',
-          color: '#FFFDFA',
-          flexShrink: 0,
-          letterSpacing: '0.04em',
-          border: `1px solid ${isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,113,188,0.3)'}`,
-        }}
-        aria-hidden="true"
-      >
-        {iniciales}
-      </div>
-    );
-  };
 
   return (
     <div className="position-relative d-inline-block">
@@ -195,7 +157,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
         aria-label="Abrir menú de usuario"
         className={`user-dropdown-trigger ${isDark ? 'user-dropdown-trigger--dark' : ''} d-inline-flex align-items-center gap-1`}
       >
-        {renderAvatar(32)}
+        <UserAvatar nombre={nombre} apellido={apellido} fotoUrl={fotoUrl} size={32} />
         <ChevronDown
           size={14}
           className={`user-dropdown-chevron ${isDark ? 'text-white-50' : 'text-muted'}`}
@@ -215,7 +177,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
           {/* Identidad del usuario */}
           <div className="p-2 mb-1">
             <div className="d-flex align-items-center gap-2 mb-2">
-              {renderAvatar(38)}
+              <UserAvatar nombre={nombre} apellido={apellido} fotoUrl={fotoUrl} size={38} />
               <div style={{ minWidth: 0, flex: 1 }}>
                 <div
                   className="fw-bold text-truncate"
@@ -235,13 +197,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
             </div>
             <div className="d-flex flex-wrap gap-1 mt-1">
               {rolesAMostrar.map((rol) => (
-                <span
-                  key={rol}
-                  className="dash-role-badge"
-                  style={{ fontSize: '0.62rem', padding: '0.15rem 0.45rem' }}
-                >
-                  {rol}
-                </span>
+                <RoleBadge key={rol} rol={rol} />
               ))}
             </div>
           </div>

@@ -8,6 +8,8 @@ import { BRAND } from '../../config/brand';
 import UserDropdown from './UserDropdown';
 import { useUi } from '../contexts/UiContext';
 import { ROLES_APP, ROL_HIERARCHY } from '../constants/roles';
+import UserAvatar from '../ui/atoms/UserAvatar';
+import RoleBadge from '../ui/atoms/RoleBadge';
 
 export default function Header() {
     const {
@@ -39,47 +41,7 @@ export default function Header() {
 
     const fotoUrl = obtenerUrlFoto(usuarioDb?.barbero?.fotoUrl);
 
-    const renderCentralAvatar = () => {
-        if (fotoUrl) {
-            return (
-                <img
-                    src={fotoUrl}
-                    alt={`Foto de ${nombre || 'usuario'}`}
-                    className="rounded-circle border"
-                    style={{
-                        width: '32px',
-                        height: '32px',
-                        objectFit: 'cover',
-                        borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(12,12,12,0.15)',
-                        flexShrink: 0,
-                    }}
-                />
-            );
-        }
 
-        const iniN = (nombre || '').trim()[0] || '';
-        const iniA = (apellido || '').trim()[0] || '';
-        const iniciales = (iniN + iniA).toUpperCase() || 'U';
-
-        return (
-            <div
-                className="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold"
-                style={{
-                    width: '32px',
-                    height: '32px',
-                    fontSize: '0.75rem',
-                    backgroundColor: '#0071BC',
-                    color: '#FFFDFA',
-                    flexShrink: 0,
-                    letterSpacing: '0.04em',
-                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,113,188,0.3)'}`,
-                }}
-                aria-hidden="true"
-            >
-                {iniciales}
-            </div>
-        );
-    };
 
     return (
         <header style={{ position: 'sticky', top: 0, zIndex: 1030 }}>
@@ -135,7 +97,7 @@ export default function Header() {
 
                     {/* ── Zona central — Identidad del usuario (oculta en móvil y tablets < 992px) ── */}
                     <div className="d-none d-lg-flex align-items-center gap-2">
-                        {renderCentralAvatar()}
+                        <UserAvatar nombre={nombre} apellido={apellido} fotoUrl={fotoUrl} size={32} />
                         <span
                             className="fw-semibold text-truncate"
                             style={{
@@ -146,21 +108,7 @@ export default function Header() {
                         >
                             {nombre} {apellido}
                         </span>
-                        <span
-                            className="badge font-display"
-                            style={{
-                                backgroundColor: isDark ? 'rgba(0, 113, 188, 0.2)' : 'rgba(0, 113, 188, 0.1)',
-                                color: isDark ? '#38bdf8' : '#0071BC',
-                                border: `1px solid ${isDark ? 'rgba(56, 189, 248, 0.3)' : 'rgba(0, 113, 188, 0.25)'}`,
-                                fontSize: '0.68rem',
-                                letterSpacing: '0.06em',
-                                fontWeight: 700,
-                                padding: '0.25rem 0.55rem',
-                                borderRadius: '3px',
-                            }}
-                        >
-                            {rolPrincipal}
-                        </span>
+                        <RoleBadge rol={rolPrincipal} />
                     </div>
 
                     {/* ── Zona derecha — Acciones ── */}
