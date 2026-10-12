@@ -9,6 +9,7 @@ import './home.css';
 import HomeNavbar from './components/HomeNavbar';
 import HeroSection from './components/HeroSection';
 import TrustSection from './components/TrustSection';
+import VisionSection from './components/VisionSection';
 import ServicesSection from './components/ServicesSection';
 import BarbersSection from './components/BarbersSection';
 import LocationSection from './components/LocationSection';
@@ -122,6 +123,9 @@ export const HomePage: React.FC = () => {
 
         {/* Bloque de confianza con atributos de calidad no cuantitativos */}
         <TrustSection />
+
+        {/* Sección narrativa de visión y filosofía con layout editorial */}
+        <VisionSection />
 
         {/* Sección de servicios reales conectados a GET /servicios */}
         <ServicesSection onReservarServicio={handleReservarServicio} />
