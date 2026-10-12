@@ -6,8 +6,7 @@ import CatalogCard from '../../../shared/ui/Catalogcard';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { mapApiError } from '../../../shared/lib/mapApiError';
-import { useToast } from '../../../shared/lib/useToast';
-import { ToastContainer } from '../../../shared/ui/ToastContainer';
+import { useToastContext } from '../../../shared/ui/ToastContext';
 import { useDebounce } from '../../../shared/lib/useDebounce';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import {
@@ -35,7 +34,7 @@ export const ServiciosPage: React.FC = () => {
   const [errorForm, setErrorForm] = useState<string | null>(null);
   const [idServicioCambiando, setIdServicioCambiando] = useState<number | null>(null);
   const [idServicioAnimado, setIdServicioAnimado] = useState<number | null>(null);
-  const { toast, showToast, hideToast } = useToast(4000);
+  const { showToast } = useToastContext();
   const confirm = useConfirm();
 
   // Memorizar objeto de filtro para queryKey estable
@@ -158,8 +157,6 @@ export const ServiciosPage: React.FC = () => {
     >
       {({ onEdit }) => (
         <>
-          <ToastContainer toast={toast} onClose={hideToast} />
-
           {errorAccion && <ErrorMessage message={errorAccion} />}
 
           {/* ── 2. Encabezado con resumen de estados ── */}

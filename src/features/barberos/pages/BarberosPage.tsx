@@ -6,8 +6,7 @@ import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useBarberosCatalogo } from '../api/barberos.facade';
 import BarberoCard from '../components/BarberoCard';
-import { useToast } from '../../../shared/lib/useToast';
-import { ToastContainer } from '../../../shared/ui/ToastContainer';
+import { useToastContext } from '../../../shared/ui/ToastContext';
 import { useDebounce } from '../../../shared/lib/useDebounce';
 
 export const BarberosPage: React.FC = () => {
@@ -31,7 +30,7 @@ export const BarberosPage: React.FC = () => {
     refetch,
   } = useBarberosCatalogo();
 
-  const { toast, showToast, hideToast } = useToast(4000);
+  const { showToast } = useToastContext();
 
   useEffect(() => {
     const mensaje = location.state?.mensaje as string | undefined;
@@ -50,7 +49,6 @@ export const BarberosPage: React.FC = () => {
 
   return (
     <div className="container-fluid py-2">
-      <ToastContainer toast={toast} onClose={hideToast} />
 
       <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
         <div>

@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useToast } from '../../../shared/lib/useToast';
-import { ToastContainer } from '../../../shared/ui/ToastContainer';
+import { useToastContext } from '../../../shared/ui/ToastContext';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../../auth/AuthContext';
@@ -27,7 +26,7 @@ export const MiPerfilPage: React.FC = () => {
   const { usuarioDb, refrescarPerfil, roles } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [editando, setEditando] = useState(false);
-  const { toast, showToast, hideToast } = useToast(4000);
+  const { showToast } = useToastContext();
   const confirm = useConfirm();
   const [errorFoto, setErrorFoto] = useState('');
   const [showPasswordPopover, setShowPasswordPopover] = useState(false);
@@ -329,8 +328,6 @@ export const MiPerfilPage: React.FC = () => {
                 </Button>
               )}
             </div>
-
-            <ToastContainer toast={toast} onClose={hideToast} />
 
             {actualizarUsuarioMutation.error && (
               <ErrorMessage message={mapApiError(actualizarUsuarioMutation.error)} />

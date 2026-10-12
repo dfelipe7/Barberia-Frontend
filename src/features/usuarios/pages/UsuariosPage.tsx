@@ -6,8 +6,7 @@ import Spinner from '../../../shared/ui/Spinner';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { mapApiError } from '../../../shared/lib/mapApiError';
-import { useToast } from '../../../shared/lib/useToast';
-import { ToastContainer } from '../../../shared/ui/ToastContainer';
+import { useToastContext } from '../../../shared/ui/ToastContext';
 import { useDebounce } from '../../../shared/lib/useDebounce';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 
@@ -109,7 +108,7 @@ export const UsuariosPage: React.FC = () => {
   const [adminAConfigurar, setAdminAConfigurar] = useState<AdministradorGestion | null>(null);
   const [barberoAEditarComision, setBarberoAEditarComision] = useState<BarberoGestion | null>(null);
   const [barberoAEditarFoto, setBarberoAEditarFoto] = useState<BarberoGestion | null>(null);
-  const { toast, showToast, hideToast } = useToast(4000);
+  const { showToast } = useToastContext();
   const confirm = useConfirm();
 
   useEffect(() => {
@@ -297,9 +296,6 @@ export const UsuariosPage: React.FC = () => {
         </div>
       </div>
 
-      <ToastContainer toast={toast} onClose={hideToast} />
-
-      {/* Pestañas de Navegación (Pill tabs / Segmented control) */}
       <div
         className="d-flex flex-nowrap gap-2 p-1 rounded bg-surface-app border mb-4 usuarios-tabs-container overflow-x-auto"
         role="tablist"
