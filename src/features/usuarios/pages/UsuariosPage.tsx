@@ -3,8 +3,10 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Shield, Scissors } from 'lucide-react';
 import { useAuth } from '../../../auth/AuthContext';
 import Spinner from '../../../shared/ui/Spinner';
-import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
+import SearchInput from '../../../shared/ui/molecules/SearchInput';
+import EmptyState from '../../../shared/ui/molecules/EmptyState';
+import InfoHint from '../../../shared/ui/molecules/InfoHint';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useToastContext } from '../../../shared/ui/ToastContext';
 import { useDebounce } from '../../../shared/lib/useDebounce';
@@ -345,38 +347,13 @@ export const UsuariosPage: React.FC = () => {
 
       {/* ── Barra de búsqueda debounced para usuarios ── */}
       <div className="mb-4" style={{ maxWidth: '440px' }}>
-        <div className="position-relative">
-          <input
-            type="text"
-            className="form-control pe-5"
-            placeholder={`Buscar en ${pestañaActiva === 'administradores' ? 'administradores' : 'barberos'} por nombre o correo...`}
-            value={filtroBusqueda}
-            onChange={(e) => setFiltroBusqueda(e.target.value)}
-            style={{
-              transition: 'border-color 150ms ease, box-shadow 150ms ease',
-            }}
-            aria-label="Buscar usuarios"
-          />
-
-          {filtroBusqueda !== debouncedBusqueda && (
-            <div
-              className="position-absolute end-0 top-50 translate-middle-y me-3 d-flex align-items-center"
-              style={{ pointerEvents: 'none' }}
-              title="Filtrando..."
-            >
-              <KyriosSpinner size="xs" aria-hidden="true" />
-            </div>
-          )}
-        </div>
-
-        {filtroBusqueda !== debouncedBusqueda && (
-          <div
-            className="text-surface-muted small mt-1 ms-1"
-            style={{ fontSize: '0.75rem', animation: 'fadeInSpinner 120ms ease-out' }}
-          >
-            Buscando...
-          </div>
-        )}
+        <SearchInput
+          placeholder={`Buscar en ${pestañaActiva === 'administradores' ? 'administradores' : 'barberos'} por nombre o correo...`}
+          value={filtroBusqueda}
+          onChange={setFiltroBusqueda}
+          isSearching={filtroBusqueda !== debouncedBusqueda}
+          ariaLabel="Buscar usuarios"
+        />
       </div>
 
       {/* Contenido según pestaña con microinteracción de transición */}
@@ -384,12 +361,9 @@ export const UsuariosPage: React.FC = () => {
         {pestañaActiva === 'administradores' && (
           <>
             {/* Hint explicativo Administradores */}
-            <div className="alert alert-light border d-flex align-items-center gap-2 mb-3 py-2 px-3 small text-muted shadow-sm" role="note">
-              <span className="fs-5" aria-hidden="true">💡</span>
-              <span>
-                Los administradores tienen acceso a los módulos de gestión. Puedes desactivar su <strong>rol</strong> sin bloquear su cuenta global.
-              </span>
-            </div>
+            <InfoHint className="mb-3 py-2 px-3 text-muted">
+              Los administradores tienen acceso a los módulos de gestión. Puedes desactivar su <strong>rol</strong> sin bloquear su cuenta global.
+            </InfoHint>
 
             {errorAdmins && (
               <ErrorMessage
@@ -401,18 +375,11 @@ export const UsuariosPage: React.FC = () => {
             {cargandoAdmins ? (
               <Spinner mensaje="Cargando administradores..." />
             ) : administradoresFiltrados.length === 0 && debouncedBusqueda ? (
-              <div className="alert-surface text-center py-5 px-3 text-surface-muted border rounded">
-                <p className="mb-2 fs-6 fw-semibold text-surface-card">
-                  No se encontraron administradores que coincidan con "{debouncedBusqueda}".
-                </p>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-primary"
-                  onClick={() => setFiltroBusqueda('')}
-                >
-                  Limpiar búsqueda
-                </button>
-              </div>
+              <EmptyState
+                title={`No se encontraron administradores que coincidan con "${debouncedBusqueda}".`}
+                actionLabel="Limpiar búsqueda"
+                onAction={() => setFiltroBusqueda('')}
+              />
             ) : (
               <UserTable
                 administradores={administradoresFiltrados}
@@ -432,12 +399,9 @@ export const UsuariosPage: React.FC = () => {
         {pestañaActiva === 'barberos' && (
           <>
             {/* Hint explicativo Barberos */}
-            <div className="alert alert-light border d-flex align-items-center gap-2 mb-3 py-2 px-3 small text-muted shadow-sm" role="note">
-              <span className="fs-5" aria-hidden="true">💡</span>
-              <span>
-                Los barberos activos aparecen en el catálogo público. El <strong>% de comisión</strong> aplica a sus servicios. Puedes desactivar el rol sin bloquear su cuenta.
-              </span>
-            </div>
+            <InfoHint className="mb-3 py-2 px-3 text-muted">
+              Los barberos activos aparecen en el catálogo público. El <strong>% de comisión</strong> aplica a sus servicios. Puedes desactivar el rol sin bloquear su cuenta.
+            </InfoHint>
 
             {errorBarberos && (
               <ErrorMessage
@@ -449,18 +413,11 @@ export const UsuariosPage: React.FC = () => {
             {cargandoBarberos ? (
               <Spinner mensaje="Cargando barberos de gestión..." />
             ) : barberosFiltrados.length === 0 && debouncedBusqueda ? (
-              <div className="alert-surface text-center py-5 px-3 text-surface-muted border rounded">
-                <p className="mb-2 fs-6 fw-semibold text-surface-card">
-                  No se encontraron barberos que coincidan con "{debouncedBusqueda}".
-                </p>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-primary"
-                  onClick={() => setFiltroBusqueda('')}
-                >
-                  Limpiar búsqueda
-                </button>
-              </div>
+              <EmptyState
+                title={`No se encontraron barberos que coincidan con "${debouncedBusqueda}".`}
+                actionLabel="Limpiar búsqueda"
+                onAction={() => setFiltroBusqueda('')}
+              />
             ) : (
               <BarberoTable
                 barberos={barberosFiltrados}

@@ -4,6 +4,8 @@ import CrudPage from '../../../shared/components/CrudPage';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import CatalogCard from '../../../shared/ui/Catalogcard';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
+import SearchInput from '../../../shared/ui/molecules/SearchInput';
+import EmptyState from '../../../shared/ui/molecules/EmptyState';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useToastContext } from '../../../shared/ui/ToastContext';
@@ -174,40 +176,13 @@ export const ServiciosPage: React.FC = () => {
           {/* ── 3. Barra de filtros con búsqueda debounced y pills destacadas ── */}
           <div className="row g-2 mb-4 align-items-center">
             <div className="col-12 col-md-7">
-              <div className="position-relative">
-                <input
-                  type="text"
-                  className="form-control pe-5"
-                  placeholder="Buscar por nombre o descripción..."
-                  value={filtroNombre}
-                  onChange={(e) => setFiltroNombre(e.target.value)}
-                  style={{
-                    transition: 'border-color 150ms ease, box-shadow 150ms ease',
-                  }}
-                  aria-label="Buscar servicios"
-                />
-
-                {/* Spinner inline discreto (14px) dentro del input */}
-                {estaBuscando && (
-                  <div
-                    className="position-absolute end-0 top-50 translate-middle-y me-3 d-flex align-items-center"
-                    style={{ pointerEvents: 'none' }}
-                    title="Buscando..."
-                  >
-                    <KyriosSpinner size="xs" aria-hidden="true" />
-                  </div>
-                )}
-              </div>
-
-              {estaBuscando && (
-                <div
-                  className="text-surface-muted small mt-1 ms-1"
-                  style={{ fontSize: '0.75rem', animation: 'fadeInSpinner 120ms ease-out' }}
-                  aria-live="polite"
-                >
-                  Buscando...
-                </div>
-              )}
+              <SearchInput
+                placeholder="Buscar por nombre o descripción..."
+                value={filtroNombre}
+                onChange={setFiltroNombre}
+                isSearching={estaBuscando}
+                ariaLabel="Buscar servicios"
+              />
             </div>
 
             <div className="col-12 col-md-5 d-flex align-items-center justify-content-md-end">
@@ -273,27 +248,20 @@ export const ServiciosPage: React.FC = () => {
           >
             {servicios.length === 0 && !isLoading && (
               <div className="col-12">
-                <div className="alert-surface text-center py-5 px-3 text-surface-muted border rounded">
-                  <p className="mb-2 fs-6 fw-semibold text-surface-card">
-                    {filtroNombre || filtroEstado
+                <EmptyState
+                  title={
+                    filtroNombre || filtroEstado
                       ? 'No encontramos servicios con ese criterio de búsqueda.'
-                      : 'No hay servicios registrados en este momento.'}
-                  </p>
-                  <p className="mb-3 small">
-                    {filtroNombre || filtroEstado
+                      : 'No hay servicios registrados en este momento.'
+                  }
+                  description={
+                    filtroNombre || filtroEstado
                       ? 'Intenta con otro término o restablece los filtros.'
-                      : 'Comienza creando un nuevo servicio para tu catálogo.'}
-                  </p>
-                  {(filtroNombre || filtroEstado) && (
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary"
-                      onClick={handleLimpiarFiltros}
-                    >
-                      Limpiar búsqueda
-                    </button>
-                  )}
-                </div>
+                      : 'Comienza creando un nuevo servicio para tu catálogo.'
+                  }
+                  actionLabel={filtroNombre || filtroEstado ? 'Limpiar búsqueda' : undefined}
+                  onAction={filtroNombre || filtroEstado ? handleLimpiarFiltros : undefined}
+                />
               </div>
             )}
 
