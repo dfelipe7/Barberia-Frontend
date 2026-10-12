@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import Modal from '../../../shared/ui/Modal';
 import Button from '../../../shared/ui/Button';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import type { BarberoGestion } from '../types/barberos.types';
 
 interface FotoBarberoModalProps {
@@ -21,6 +22,7 @@ export const FotoBarberoModal: React.FC<FotoBarberoModalProps> = ({
   isLoading = false,
   error,
 }) => {
+  const confirm = useConfirm();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [archivoSeleccionado, setArchivoSeleccionado] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -51,6 +53,17 @@ export const FotoBarberoModal: React.FC<FotoBarberoModalProps> = ({
 
   const handleGuardar = async () => {
     if (!barbero || !archivoSeleccionado) return;
+
+    if (barbero.fotoUrl) {
+      const ok = await confirm({
+        title: '¿Reemplazar foto actual?',
+        message: `¿Deseas reemplazar la foto actual de ${barbero.nombre} ${barbero.apellido}?`,
+        variant: 'warning',
+        confirmLabel: 'Reemplazar',
+      });
+      if (!ok) return;
+    }
+
     await onSubmit(barbero.id, archivoSeleccionado);
     handleModalClose();
   };

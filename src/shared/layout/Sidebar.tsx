@@ -24,7 +24,11 @@ import { useUi } from '../contexts/UiContext';
 interface NavItem {
   to: string;
   label: string;
-  icon: ComponentType<{ size?: number | string; strokeWidth?: number | string; className?: string }>;
+  icon: ComponentType<{
+    size?: number | string;
+    strokeWidth?: number | string;
+    className?: string;
+  }>;
   permiso: boolean;
 }
 
@@ -103,7 +107,7 @@ export default function Sidebar() {
     const trapFocus = (e: KeyboardEvent) => {
       if (e.key !== 'Tab' || !drawerRef.current) return;
       const focusable = drawerRef.current.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
       );
       if (focusable.length === 0) return;
       const first = focusable[0];
@@ -242,16 +246,10 @@ export default function Sidebar() {
                   to={to}
                   onClick={onItemClick}
                   title={collapsed ? label : undefined}
-                  className={({ isActive }) =>
-                    `sidebar-nav-link ${isActive ? 'active' : ''}`
-                  }
+                  className={({ isActive }) => `sidebar-nav-link ${isActive ? 'active' : ''}`}
                 >
                   <Icon size={19} strokeWidth={2} className="sidebar-nav-icon" />
-                  {!collapsed && (
-                    <span className="sidebar-nav-label text-truncate">
-                      {label}
-                    </span>
-                  )}
+                  {!collapsed && <span className="sidebar-nav-label text-truncate">{label}</span>}
                 </NavLink>
               ))}
             </div>
@@ -273,9 +271,7 @@ export default function Sidebar() {
         }}
         aria-label="Menú principal de escritorio"
       >
-        <div className="p-3 flex-grow-1 overflow-y-auto">
-          {renderNavContent()}
-        </div>
+        <div className="p-3 flex-grow-1 overflow-y-auto">{renderNavContent()}</div>
 
         {/* Botón inferior para colapsar / expandir */}
         <div className="p-2 border-top sidebar-footer-wrapper">
@@ -300,11 +296,7 @@ export default function Sidebar() {
 
       {/* ── 2. Drawer móvil con Overlay (< 992px) ── */}
       {isSidebarOpen && (
-        <div
-          className="sidebar-overlay d-lg-none"
-          onClick={closeSidebar}
-          aria-hidden="true"
-        />
+        <div className="sidebar-overlay d-lg-none" onClick={closeSidebar} aria-hidden="true" />
       )}
 
       <aside
@@ -319,18 +311,13 @@ export default function Sidebar() {
       >
         {/* Cabecera del Drawer */}
         <div className="p-3 d-flex align-items-center justify-content-between border-bottom">
-          <BrandLogo
-            variant={isDark ? 'white' : 'black'}
-            height={26}
-            alt={BRAND.name}
-          />
+          <BrandLogo variant={isDark ? 'white' : 'black'} height={26} alt={BRAND.name} />
           <button
             ref={closeBtnRef}
             type="button"
-            className="btn-close-drawer"
+            className="btn-close-drawer text-surface-app"
             onClick={closeSidebar}
             aria-label="Cerrar menú"
-            style={{ color: isDark ? '#FFFDFA' : '#0C0C0C' }}
           >
             <X size={20} strokeWidth={2} />
           </button>

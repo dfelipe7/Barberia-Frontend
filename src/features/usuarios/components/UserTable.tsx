@@ -4,6 +4,8 @@ import { UserCog, Shield, Eye, Pencil, UserMinus, UserCheck, Lock, Unlock, Sciss
 import Table, { type Column } from '../../../shared/ui/Table';
 import AccionesDropdown from '../../../shared/ui/AccionesDropdown';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
+import StatusBadge from '../../../shared/ui/atoms/StatusBadge';
+import UserAvatar from '../../../shared/ui/atoms/UserAvatar';
 import { useMediaQuery } from '../../../shared/lib/useMediaQuery';
 import type { AdministradorGestion } from '../types/usuarios.types';
 
@@ -38,13 +40,7 @@ export const UserTable: React.FC<UserTableProps> = ({
       header: 'Administrador',
       render: (admin) => (
         <div className="d-flex align-items-center gap-2">
-          <div
-            className="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex justify-content-center align-items-center fw-bold flex-shrink-0"
-            style={{ width: '36px', height: '36px' }}
-          >
-            {admin.nombre.charAt(0)}
-            {admin.apellido.charAt(0)}
-          </div>
+          <UserAvatar nombre={admin.nombre} apellido={admin.apellido} size={36} />
           <div>
             <span className="fw-semibold d-block">
               {admin.nombre} {admin.apellido}
@@ -72,13 +68,7 @@ export const UserTable: React.FC<UserTableProps> = ({
       header: 'Estado Global',
       className: 'text-center',
       render: (admin) => (
-        <span
-          className={`badge ${
-            admin.estado === 'ACTIVO' ? 'bg-success' : 'bg-danger'
-          }`}
-        >
-          {admin.estado === 'ACTIVO' ? 'Habilitada' : 'Bloqueada'}
-        </span>
+        <StatusBadge estado={admin.estado} tone="global" />
       ),
     },
     {
@@ -86,13 +76,7 @@ export const UserTable: React.FC<UserTableProps> = ({
       header: 'Rol Admin',
       className: 'text-center d-none d-lg-table-cell',
       render: (admin) => (
-        <span
-          className={`badge ${
-            admin.estadoAdmin === 'ACTIVO' ? 'bg-success' : 'bg-secondary'
-          }`}
-        >
-          {admin.estadoAdmin ?? 'INACTIVO'}
-        </span>
+        <StatusBadge estado={admin.estadoAdmin ?? 'INACTIVO'} tone="role" />
       ),
     },
     {
@@ -118,6 +102,7 @@ export const UserTable: React.FC<UserTableProps> = ({
             label: 'Editar datos del perfil',
             icon: <Pencil size={15} className="text-primary" />,
             to: `/usuarios/${admin.id}/editar`,
+            linkState: { from: '/usuarios' },
             title: 'Editar datos del perfil',
           },
           !admin.esBarbero &&
@@ -244,13 +229,7 @@ export const UserTable: React.FC<UserTableProps> = ({
             >
               {/* 1. Avatar + Nombre + Email */}
               <div className="d-flex align-items-center gap-3 mb-2">
-                <div
-                  className="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex justify-content-center align-items-center fw-bold flex-shrink-0"
-                  style={{ width: '42px', height: '42px', fontSize: '0.95rem' }}
-                >
-                  {admin.nombre.charAt(0)}
-                  {admin.apellido.charAt(0)}
-                </div>
+                <UserAvatar nombre={admin.nombre} apellido={admin.apellido} size={42} />
                 <div className="text-truncate">
                   <span className="fw-bold d-block text-truncate" style={{ fontSize: '0.95rem' }}>
                     {admin.nombre} {admin.apellido}
@@ -277,15 +256,11 @@ export const UserTable: React.FC<UserTableProps> = ({
               <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 py-2 border-top border-bottom my-2 bg-surface-app px-2 rounded">
                 <div className="d-flex align-items-center gap-1">
                   <span className="text-muted small">Cuenta:</span>
-                  <span className={`badge ${isActivo ? 'bg-success' : 'bg-danger'}`}>
-                    {isActivo ? 'Habilitada' : 'Bloqueada'}
-                  </span>
+                  <StatusBadge estado={admin.estado} tone="global" />
                 </div>
                 <div className="d-flex align-items-center gap-1">
                   <span className="text-muted small">Rol:</span>
-                  <span className={`badge ${admin.estadoAdmin === 'ACTIVO' ? 'bg-success' : 'bg-secondary'}`}>
-                    {admin.estadoAdmin ?? 'INACTIVO'}
-                  </span>
+                  <StatusBadge estado={admin.estadoAdmin ?? 'INACTIVO'} tone="role" />
                 </div>
               </div>
 
@@ -304,6 +279,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                 {puedeEditar && (
                   <Link
                     to={`/usuarios/${admin.id}/editar`}
+                    state={{ from: '/usuarios' }}
                     className="btn btn-outline-primary mobile-action-btn"
                     title="Editar datos del perfil"
                     aria-label="Editar datos del perfil"

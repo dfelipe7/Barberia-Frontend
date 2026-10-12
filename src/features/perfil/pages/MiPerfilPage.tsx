@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useToast } from '../../../shared/lib/useToast';
-import { ToastContainer } from '../../../shared/ui/ToastContainer';
+import { useToastContext } from '../../../shared/ui/ToastContext';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../../auth/AuthContext';
@@ -12,6 +11,8 @@ import { useCambiarContrasena } from '../api/perfil.facade';
 import { useSubirFotoPropia, useEliminarFotoPropia } from '../../barberos';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { mapApiError } from '../../../shared/lib/mapApiError';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
+import RoleBadge from '../../../shared/ui/atoms/RoleBadge';
 import { PasswordRequirementsChecklist } from '../../../shared/components/PasswordRequirementsChecklist';
 import {
   miPerfilSchema,
@@ -20,17 +21,13 @@ import {
   type CambiarContrasenaFormValues,
 } from '../schemas/perfil.schema';
 
-const COLORES_ROL: Record<string, string> = {
-  SUPERADMIN: 'danger',
-  ADMINISTRADOR: 'warning',
-  BARBERO: 'info',
-};
 
 export const MiPerfilPage: React.FC = () => {
   const { usuarioDb, refrescarPerfil, roles } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [editando, setEditando] = useState(false);
-  const { toast, showToast, hideToast } = useToast(4000);
+  const { showToast } = useToastContext();
+  const confirm = useConfirm();
   const [errorFoto, setErrorFoto] = useState('');
   const [showPasswordPopover, setShowPasswordPopover] = useState(false);
 
@@ -144,7 +141,14 @@ export const MiPerfilPage: React.FC = () => {
   };
 
   const handleEliminarFoto = async () => {
-    if (!window.confirm('¿Seguro que deseas eliminar tu foto de perfil del catálogo?')) return;
+    const ok = await confirm({
+      title: '¿Eliminar foto de perfil?',
+      message: '¿Seguro que deseas eliminar tu foto de perfil del catálogo?',
+      variant: 'danger',
+      confirmLabel: 'Eliminar',
+    });
+    if (!ok) return;
+
     setErrorFoto('');
     try {
       await eliminarFotoMutation.mutateAsync();
@@ -188,12 +192,7 @@ export const MiPerfilPage: React.FC = () => {
               {roles
                 .filter((r) => ['SUPERADMIN', 'ADMINISTRADOR', 'BARBERO'].includes(r))
                 .map((rol) => (
-                  <span
-                    key={rol}
-                    className={`badge bg-${COLORES_ROL[rol] || 'secondary'} px-2 py-1`}
-                  >
-                    {rol}
-                  </span>
+                  <RoleBadge key={rol} rol={rol} className="px-2 py-1" />
                 ))}
             </div>
 
@@ -324,8 +323,6 @@ export const MiPerfilPage: React.FC = () => {
                 </Button>
               )}
             </div>
-
-            <ToastContainer toast={toast} onClose={hideToast} />
 
             {actualizarUsuarioMutation.error && (
               <ErrorMessage message={mapApiError(actualizarUsuarioMutation.error)} />
@@ -530,7 +527,7 @@ export const MiPerfilPage: React.FC = () => {
                 <p className="card-text text-surface-muted small mb-4">
                   Como Superadmin, puedes modificar tus propios roles y privilegios en el sistema.
                 </p>
-                <Link to={`/usuarios/${usuarioDb.id}/editar`} className="btn btn-outline-danger w-100">
+                <Link to={`/usuarios/${usuarioDb.id}/editar`} state={{ from: '/mi-perfil' }} className="btn btn-outline-danger w-100">
                   Gestionar mis roles
                 </Link>
               </div>

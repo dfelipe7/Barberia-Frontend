@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import Spinner from '../ui/Spinner';
 import ErrorMessage from '../ui/ErrorMessage';
 import Button from '../ui/Button';
 import Modal from '../ui/Modal';
+import PageHeader from '../ui/organisms/PageHeader';
+import { useConfirm } from '../contexts/ConfirmContext';
 
 export interface CrudPageProps<T> {
+  eyebrow?: string;
   title: string;
   subtitle?: string;
   createButtonText?: string;
@@ -16,7 +19,12 @@ export interface CrudPageProps<T> {
   modalTitle?: string;
   editModalTitle?: string;
   // T se usa aquí: el form recibe el registro cuando se está editando (undefined = modo creación)
-  renderModalForm?: (props: { onClose: () => void; record?: T }) => React.ReactNode;
+  renderModalForm?: (props: {
+    onClose: () => void;
+    onDirectClose?: () => void;
+    record?: T;
+    setFormDirty?: (isDirty: boolean) => void;
+  }) => React.ReactNode;
   onModalClose?: () => void;
   // Contenido de la vista
   children: React.ReactNode | ((ctx: { onEdit: (record: T) => void }) => React.ReactNode);
@@ -31,6 +39,7 @@ export interface CrudPageProps<T> {
  * loading/error, tabla/grid de resultados y modal de formulario (creación y edición).
  */
 export function CrudPage<T>({
+  eyebrow,
   title,
   subtitle,
   createButtonText = '+ Nuevo',
@@ -48,18 +57,47 @@ export function CrudPage<T>({
 }: CrudPageProps<T>) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<T | undefined>(undefined);
+  const isDirtyRef = useRef(false);
+  const confirm = useConfirm();
 
   const handleOpenCreateModal = () => {
+    isDirtyRef.current = false;
     setEditingRecord(undefined);
     setIsModalOpen(true);
   };
 
   const handleOpenEditModal = (record: T) => {
+    isDirtyRef.current = false;
     setEditingRecord(record);
     setIsModalOpen(true);
   };
 
-  const handleCloseModal = () => {
+  const setFormDirty = useCallback((dirty: boolean) => {
+    isDirtyRef.current = dirty;
+  }, []);
+
+  const handleCloseModal = async () => {
+    if (isDirtyRef.current) {
+      const ok = await confirm({
+        title: '¿Descartar cambios?',
+        message: 'Los cambios sin guardar se perderán.',
+        variant: 'warning',
+        confirmLabel: 'Descartar',
+        cancelLabel: 'Continuar editando',
+      });
+      if (!ok) return;
+    }
+
+    isDirtyRef.current = false;
+    if (onModalClose) {
+      onModalClose();
+    }
+    setIsModalOpen(false);
+    setEditingRecord(undefined);
+  };
+
+  const handleDirectClose = () => {
+    isDirtyRef.current = false;
     if (onModalClose) {
       onModalClose();
     }
@@ -70,21 +108,23 @@ export function CrudPage<T>({
   return (
     <div className="crud-page-container">
       {/* Header & Acciones */}
-      <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-        <div>
-          <h1 className="h2 fw-bold mb-1">{title}</h1>
-          {subtitle && <p className="text-muted mb-0">{subtitle}</p>}
-        </div>
-
-        <div className="d-flex align-items-center gap-2">
-          {actions}
-          {canCreate && renderModalForm && (
-            <Button variant="primary" onClick={handleOpenCreateModal}>
-              {createButtonText}
-            </Button>
-          )}
-        </div>
-      </div>
+      <PageHeader
+        eyebrow={eyebrow}
+        title={title}
+        subtitle={subtitle}
+        actions={
+          actions || (canCreate && renderModalForm) ? (
+            <>
+              {actions}
+              {canCreate && renderModalForm && (
+                <Button variant="primary" onClick={handleOpenCreateModal}>
+                  {createButtonText}
+                </Button>
+              )}
+            </>
+          ) : undefined
+        }
+      />
 
       {/* Filtros opcionales */}
       {filters && <div className="mb-4">{filters}</div>}
@@ -97,9 +137,7 @@ export function CrudPage<T>({
         <Spinner mensaje="Cargando información..." />
       ) : (
         <div className="crud-content">
-          {typeof children === 'function'
-            ? children({ onEdit: handleOpenEditModal })
-            : children}
+          {typeof children === 'function' ? children({ onEdit: handleOpenEditModal }) : children}
         </div>
       )}
 
@@ -111,7 +149,12 @@ export function CrudPage<T>({
           title={editingRecord ? editModalTitle : modalTitle}
           size="lg"
         >
-          {renderModalForm({ onClose: handleCloseModal, record: editingRecord })}
+          {renderModalForm({
+            onClose: handleCloseModal,
+            onDirectClose: handleDirectClose,
+            record: editingRecord,
+            setFormDirty,
+          })}
         </Modal>
       )}
     </div>

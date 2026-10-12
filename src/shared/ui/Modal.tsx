@@ -7,6 +7,9 @@ export interface ModalProps {
   children: React.ReactNode;
   footer?: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  role?: 'dialog' | 'alertdialog';
+  ariaLabelledBy?: string;
+  ariaDescribedBy?: string;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -16,6 +19,9 @@ export const Modal: React.FC<ModalProps> = ({
   children,
   footer,
   size = 'md',
+  role = 'dialog',
+  ariaLabelledBy,
+  ariaDescribedBy,
 }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -42,8 +48,10 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         className="modal fade show d-block"
         tabIndex={-1}
-        role="dialog"
+        role={role}
         aria-modal="true"
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={ariaDescribedBy}
         style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
         onClick={(e) => {
           if (e.target === e.currentTarget) onClose();
@@ -52,7 +60,7 @@ export const Modal: React.FC<ModalProps> = ({
         <div className={`modal-dialog modal-dialog-centered modal-fullscreen-sm-down ${sizeClass}`} role="document">
           <div className="modal-content shadow">
             <div className="modal-header">
-              <h5 className="modal-title fw-bold">{title}</h5>
+              <h5 id={ariaLabelledBy} className="modal-title fw-bold">{title}</h5>
               <button
                 type="button"
                 className="btn-close"

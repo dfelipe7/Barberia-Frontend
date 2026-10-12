@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Spinner from '../../../shared/ui/Spinner';
@@ -15,12 +15,16 @@ import {
   type EditarUsuarioFormValues,
 } from '../schemas/usuario.schema';
 import { mapApiError } from '../../../shared/lib/mapApiError';
+import { useReturnToPrevious } from '../../../shared/lib/useReturnToPrevious';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 
 export const EditarUsuarioPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const usuarioId = Number(id);
-  const navigate = useNavigate();
+  const goBack = useReturnToPrevious();
+  const confirm = useConfirm();
   const { roles, usuarioDb } = useAuth();
+  const editandoPropioPerfil = usuarioDb?.id === usuarioId;
   const rolActorPrincipal = (roles.includes('SUPERADMIN')
     ? 'SUPERADMIN'
     : roles.includes('ADMINISTRADOR')
@@ -93,9 +97,13 @@ export const EditarUsuarioPage: React.FC = () => {
         <div className="alert alert-warning">
           No tienes permisos para editar el perfil de otro administrador.
         </div>
-        <Link to="/usuarios" className="btn btn-outline-secondary">
-          &larr; Volver a Usuarios
-        </Link>
+        <button
+          type="button"
+          className="btn btn-outline-secondary"
+          onClick={() => goBack({ fallbackTo: '/usuarios' })}
+        >
+          &larr; Volver
+        </button>
       </div>
     );
   }
@@ -110,15 +118,48 @@ export const EditarUsuarioPage: React.FC = () => {
         <ErrorMessage
           message={errorUsuario ? mapApiError(errorUsuario) : 'No fue posible encontrar el usuario solicitado.'}
         />
-        <Link to="/usuarios" className="btn btn-outline-secondary">
+        <button
+          type="button"
+          className="btn btn-outline-secondary"
+          onClick={() => goBack({ fallbackTo: '/usuarios' })}
+        >
           &larr; Volver
-        </Link>
+        </button>
       </div>
     );
   }
 
   const onSubmit = async (data: EditarUsuarioFormValues) => {
     try {
+      const teniaAdmin = Boolean(
+        usuario?.administrador?.estado === 'ACTIVO' ||
+          usuario?.rol === 'ADMINISTRADOR' ||
+          usuario?.rol === 'SUPERADMIN'
+      );
+      const teniaBarbero = Boolean(usuario?.barbero && usuario.barbero.estado === 'ACTIVO');
+
+      // Si desmarca rol de administrador (SUPERADMIN editando a otro admin) -> peligroso
+      if (teniaAdmin && !data.esAdministrador) {
+        const ok = await confirm({
+          title: `¿Revocar rol de Administrador de ${usuario?.nombre}?`,
+          message: `El usuario perderá el acceso a las funciones de administración y configuración del sistema.`,
+          variant: 'danger',
+          confirmLabel: 'Revocar Rol',
+        });
+        if (!ok) return;
+      }
+
+      // Si desmarca perfil de barbero -> advertencia
+      if (teniaBarbero && !data.esBarbero) {
+        const ok = await confirm({
+          title: `¿Desactivar perfil de Barbero de ${usuario?.nombre}?`,
+          message: `El perfil de barbero será desactivado y no estará disponible para agendamiento de turnos.`,
+          variant: 'warning',
+          confirmLabel: 'Desactivar Perfil',
+        });
+        if (!ok) return;
+      }
+
       await actualizarUsuarioMutation.mutateAsync({
         id: usuarioId,
         datos: {
@@ -134,7 +175,8 @@ export const EditarUsuarioPage: React.FC = () => {
         },
       });
 
-      navigate('/usuarios', {
+      goBack({
+        fallbackTo: editandoPropioPerfil ? '/mi-perfil' : '/usuarios',
         state: { mensaje: `Usuario ${data.nombre} actualizado correctamente.` },
       });
     } catch (err: unknown) {
@@ -149,9 +191,13 @@ export const EditarUsuarioPage: React.FC = () => {
   return (
     <div className="container py-4" style={{ maxWidth: '680px' }}>
       <div className="mb-4">
-        <Link to="/usuarios" className="btn btn-outline-secondary btn-sm mb-3">
-          &larr; Volver a Usuarios
-        </Link>
+        <button
+          type="button"
+          className="btn btn-outline-secondary btn-sm mb-3"
+          onClick={() => goBack({ fallbackTo: editandoPropioPerfil ? '/mi-perfil' : '/usuarios' })}
+        >
+          &larr; Volver
+        </button>
         <h1 className="h2 fw-bold mb-1">
           Editar Usuario: {usuario.nombre} {usuario.apellido}
         </h1>
@@ -282,9 +328,13 @@ export const EditarUsuarioPage: React.FC = () => {
             )}
 
             <div className="col-12 mt-4 d-flex justify-content-end gap-2">
-              <Link to="/usuarios" className="btn btn-light">
+              <button
+                type="button"
+                className="btn btn-light"
+                onClick={() => goBack({ fallbackTo: editandoPropioPerfil ? '/mi-perfil' : '/usuarios' })}
+              >
                 Cancelar
-              </Link>
+              </button>
               <Button
                 type="submit"
                 variant="primary"

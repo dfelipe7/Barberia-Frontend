@@ -7,6 +7,7 @@ import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import { useBarberosGestion } from '../../barberos';
 import { servicioSchema, type ServicioFormValues, type ServicioFormInput } from '../schemas/servicio.schema';
 import type { Servicio } from '../types/servicios.types';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 
 interface ServicioFormProps {
   servicioInicial?: Servicio | null;
@@ -14,6 +15,7 @@ interface ServicioFormProps {
   onCancel: () => void;
   isSubmitting?: boolean;
   errorMensaje?: string | null;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
 export const ServicioForm: React.FC<ServicioFormProps> = ({
@@ -22,7 +24,9 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
   onCancel,
   isSubmitting = false,
   errorMensaje,
+  onDirtyChange,
 }) => {
+  const confirm = useConfirm();
   const { data: barberosGestion = [], isLoading: cargandoBarberos } = useBarberosGestion();
   const barberos = barberosGestion.filter((b) => b.estado === 'ACTIVO');
 
@@ -31,7 +35,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
     handleSubmit,
     control,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<ServicioFormInput, any, ServicioFormValues>({
     resolver: zodResolver(servicioSchema),
     defaultValues: {
@@ -42,6 +46,24 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
       barberoIds: [],
     },
   });
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
+
+  const handleCancel = async () => {
+    if (isDirty) {
+      const ok = await confirm({
+        title: '¿Descartar cambios?',
+        message: 'Los cambios sin guardar se perderán.',
+        variant: 'warning',
+        confirmLabel: 'Descartar',
+        cancelLabel: 'Continuar editando',
+      });
+      if (!ok) return;
+    }
+    onCancel();
+  };
 
   useEffect(() => {
     if (servicioInicial) {
@@ -182,7 +204,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
         </div>
 
         <div className="col-12 d-flex justify-content-end gap-2 mt-3">
-          <Button type="button" variant="light" onClick={onCancel} disabled={isSubmitting}>
+          <Button type="button" variant="light" onClick={handleCancel} disabled={isSubmitting}>
             Cancelar
           </Button>
           <Button type="submit" variant="primary" isLoading={isSubmitting} loadingText="Guardando...">

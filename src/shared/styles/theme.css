@@ -427,7 +427,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .search-results-fade {
+  .search-results-fade,
+  .search-input-status,
+  .table-view-container,
+  .mobile-cards-container {
     animation: none !important;
   }
 }

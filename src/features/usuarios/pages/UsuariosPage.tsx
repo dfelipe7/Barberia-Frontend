@@ -3,12 +3,15 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Shield, Scissors } from 'lucide-react';
 import { useAuth } from '../../../auth/AuthContext';
 import Spinner from '../../../shared/ui/Spinner';
-import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
+import SearchInput from '../../../shared/ui/molecules/SearchInput';
+import EmptyState from '../../../shared/ui/molecules/EmptyState';
+import InfoHint from '../../../shared/ui/molecules/InfoHint';
+import PageHeader from '../../../shared/ui/organisms/PageHeader';
 import { mapApiError } from '../../../shared/lib/mapApiError';
-import { useToast } from '../../../shared/lib/useToast';
-import { ToastContainer } from '../../../shared/ui/ToastContainer';
+import { useToastContext } from '../../../shared/ui/ToastContext';
 import { useDebounce } from '../../../shared/lib/useDebounce';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 
 // Facades
 import {
@@ -50,12 +53,12 @@ export const UsuariosPage: React.FC = () => {
   const esSuperAdmin = roles.includes('SUPERADMIN');
   const esAdministrador = roles.includes('ADMINISTRADOR');
   const rolActorPrincipal: Rol = esSuperAdmin
-  ? 'SUPERADMIN'
-  : esAdministrador
-    ? 'ADMINISTRADOR'
-    : 'BARBERO';
+    ? 'SUPERADMIN'
+    : esAdministrador
+      ? 'ADMINISTRADOR'
+      : 'BARBERO';
   const [pestañaActiva, setPestañaActiva] = useState<Pestaña>(
-    esSuperAdmin ? 'administradores' : 'barberos'
+    esSuperAdmin ? 'administradores' : 'barberos',
   );
 
   // Consultas asíncronas con TanStack Query
@@ -81,16 +84,14 @@ export const UsuariosPage: React.FC = () => {
     if (!debouncedBusqueda.trim()) return administradores;
     const q = debouncedBusqueda.toLowerCase().trim();
     return administradores.filter((a) =>
-      `${a.nombre} ${a.apellido} ${a.email}`.toLowerCase().includes(q)
+      `${a.nombre} ${a.apellido} ${a.email}`.toLowerCase().includes(q),
     );
   }, [administradores, debouncedBusqueda]);
 
   const barberosFiltrados = useMemo(() => {
     if (!debouncedBusqueda.trim()) return barberos;
     const q = debouncedBusqueda.toLowerCase().trim();
-    return barberos.filter((b) =>
-      `${b.nombre} ${b.apellido} ${b.email}`.toLowerCase().includes(q)
-    );
+    return barberos.filter((b) => `${b.nombre} ${b.apellido} ${b.email}`.toLowerCase().includes(q));
   }, [barberos, debouncedBusqueda]);
 
   // Mutaciones
@@ -108,7 +109,8 @@ export const UsuariosPage: React.FC = () => {
   const [adminAConfigurar, setAdminAConfigurar] = useState<AdministradorGestion | null>(null);
   const [barberoAEditarComision, setBarberoAEditarComision] = useState<BarberoGestion | null>(null);
   const [barberoAEditarFoto, setBarberoAEditarFoto] = useState<BarberoGestion | null>(null);
-  const { toast, showToast, hideToast } = useToast(4000);
+  const { showToast } = useToastContext();
+  const confirm = useConfirm();
 
   useEffect(() => {
     const mensaje = location.state?.mensaje as string | undefined;
@@ -123,6 +125,19 @@ export const UsuariosPage: React.FC = () => {
   };
 
   const handleCambiarEstadoAdmin = async (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => {
+    const admin = administradores.find((a) => a.id === id);
+    const nombre = admin ? `${admin.nombre} ${admin.apellido}` : 'este usuario';
+
+    if (nuevoEstado === 'INACTIVO') {
+      const ok = await confirm({
+        title: '¿Desactivar rol de administrador?',
+        message: `¿Desactivar rol de administrador de ${nombre}?`,
+        variant: 'warning',
+        confirmLabel: 'Desactivar',
+      });
+      if (!ok) return;
+    }
+
     try {
       await cambiarEstadoAdminMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
       showToast('success', 'El estado del usuario se actualizó correctamente.');
@@ -131,17 +146,27 @@ export const UsuariosPage: React.FC = () => {
     }
   };
 
-  const handleCambiarEstadoGlobalAdmin = async (
-    id: number,
-    nuevoEstado: 'ACTIVO' | 'INACTIVO'
-  ) => {
+  const handleCambiarEstadoGlobalAdmin = async (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => {
+    const admin = administradores.find((a) => a.id === id);
+    const nombre = admin ? `${admin.nombre} ${admin.apellido}` : 'este usuario';
+
+    if (nuevoEstado === 'INACTIVO') {
+      const ok = await confirm({
+        title: '¿Bloquear cuenta?',
+        message: `¿Bloquear cuenta completa de ${nombre}? No podrá iniciar sesión.`,
+        variant: 'danger',
+        confirmLabel: 'Bloquear',
+      });
+      if (!ok) return;
+    }
+
     try {
       await cambiarEstadoGlobalAdminMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
       showToast(
         'success',
         nuevoEstado === 'ACTIVO'
           ? 'Cuenta desbloqueada correctamente.'
-          : 'Cuenta bloqueada globalmente.'
+          : 'Cuenta bloqueada globalmente.',
       );
     } catch (err) {
       showToast('danger', mapApiError(err));
@@ -149,6 +174,19 @@ export const UsuariosPage: React.FC = () => {
   };
 
   const handleCambiarEstadoBarbero = async (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => {
+    const barbero = barberos.find((b) => b.id === id);
+    const nombre = barbero ? `${barbero.nombre} ${barbero.apellido}` : 'este usuario';
+
+    if (nuevoEstado === 'INACTIVO') {
+      const ok = await confirm({
+        title: '¿Desactivar rol de barbero?',
+        message: `¿Desactivar rol de barbero de ${nombre}?`,
+        variant: 'warning',
+        confirmLabel: 'Desactivar',
+      });
+      if (!ok) return;
+    }
+
     try {
       await cambiarEstadoBarberoMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
       showToast('success', 'El estado del usuario se actualizó correctamente.');
@@ -159,15 +197,28 @@ export const UsuariosPage: React.FC = () => {
 
   const handleCambiarEstadoGlobalBarbero = async (
     id: number,
-    nuevoEstado: 'ACTIVO' | 'INACTIVO'
+    nuevoEstado: 'ACTIVO' | 'INACTIVO',
   ) => {
+    const barbero = barberos.find((b) => b.id === id);
+    const nombre = barbero ? `${barbero.nombre} ${barbero.apellido}` : 'este usuario';
+
+    if (nuevoEstado === 'INACTIVO') {
+      const ok = await confirm({
+        title: '¿Bloquear cuenta?',
+        message: `¿Bloquear cuenta completa de ${nombre}?`,
+        variant: 'danger',
+        confirmLabel: 'Bloquear',
+      });
+      if (!ok) return;
+    }
+
     try {
       await cambiarEstadoGlobalBarberoMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
       showToast(
         'success',
         nuevoEstado === 'ACTIVO'
           ? 'Cuenta desbloqueada correctamente.'
-          : 'Cuenta bloqueada globalmente.'
+          : 'Cuenta bloqueada globalmente.',
       );
     } catch (err) {
       showToast('danger', mapApiError(err));
@@ -215,37 +266,36 @@ export const UsuariosPage: React.FC = () => {
     }
   };
 
-
   return (
     <div className="usuarios-page-container">
       {/* Header con contexto claro */}
-      <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-3">
-        <div>
-          <span className="text-eyebrow mb-2 d-block">Panel de control</span>
-          <h1 className="h2 fw-bold mb-1">Gestión de Usuarios</h1>
-          <p className="text-muted mb-0">
-            Administra administradores, barberos, roles y el estado de cada cuenta.
-          </p>
-        </div>
+      <PageHeader
+        eyebrow="Panel de control"
+        title="Gestión de Usuarios"
+        subtitle="Administra administradores, barberos, roles y el estado de cada cuenta."
+        actions={
+          <>
+            {esSuperAdmin && pestañaActiva === 'administradores' && (
+              <Link
+                to="/administradores/nuevo"
+                className="btn btn-dark btn-sm fw-semibold w-100 w-sm-auto text-center"
+              >
+                + Nuevo Administrador
+              </Link>
+            )}
 
-        <div className="d-flex align-items-center gap-2 pt-1 w-100 w-sm-auto">
-          {esSuperAdmin && pestañaActiva === 'administradores' && (
-            <Link to="/administradores/nuevo" className="btn btn-dark btn-sm fw-semibold w-100 w-sm-auto text-center">
-              + Nuevo Administrador
-            </Link>
-          )}
+            {pestañaActiva === 'barberos' && (
+              <Link
+                to="/barberos/nuevo"
+                className="btn btn-dark btn-sm fw-semibold w-100 w-sm-auto text-center"
+              >
+                + Nuevo Barbero
+              </Link>
+            )}
+          </>
+        }
+      />
 
-          {pestañaActiva === 'barberos' && (
-            <Link to="/barberos/nuevo" className="btn btn-dark btn-sm fw-semibold w-100 w-sm-auto text-center">
-              + Nuevo Barbero
-            </Link>
-          )}
-        </div>
-      </div>
-
-      <ToastContainer toast={toast} onClose={hideToast} />
-
-      {/* Pestañas de Navegación (Pill tabs / Segmented control) */}
       <div
         className="d-flex flex-nowrap gap-2 p-1 rounded bg-surface-app border mb-4 usuarios-tabs-container overflow-x-auto"
         role="tablist"
@@ -257,9 +307,7 @@ export const UsuariosPage: React.FC = () => {
             role="tab"
             aria-selected={pestañaActiva === 'administradores'}
             className={`btn btn-sm px-3 py-2 fw-semibold rounded d-inline-flex align-items-center gap-2 text-nowrap flex-shrink-0 ${
-              pestañaActiva === 'administradores'
-                ? 'btn-dark'
-                : 'btn-light text-muted'
+              pestañaActiva === 'administradores' ? 'btn-dark' : 'btn-light text-muted'
             }`}
             onClick={() => {
               setPestañaActiva('administradores');
@@ -267,7 +315,9 @@ export const UsuariosPage: React.FC = () => {
           >
             <Shield size={16} />
             <span>Administradores</span>
-            <span className={`badge ms-2 ${pestañaActiva === 'administradores' ? 'bg-secondary' : 'bg-secondary-subtle text-secondary-emphasis'}`}>
+            <span
+              className={`badge ms-2 ${pestañaActiva === 'administradores' ? 'bg-secondary' : 'bg-secondary-subtle text-secondary-emphasis'}`}
+            >
               {administradores.length}
             </span>
           </button>
@@ -277,9 +327,7 @@ export const UsuariosPage: React.FC = () => {
           role="tab"
           aria-selected={pestañaActiva === 'barberos'}
           className={`btn btn-sm px-3 py-2 fw-semibold rounded d-inline-flex align-items-center gap-2 text-nowrap flex-shrink-0 ${
-            pestañaActiva === 'barberos'
-              ? 'btn-dark'
-              : 'btn-light text-muted'
+            pestañaActiva === 'barberos' ? 'btn-dark' : 'btn-light text-muted'
           }`}
           onClick={() => {
             setPestañaActiva('barberos');
@@ -287,7 +335,9 @@ export const UsuariosPage: React.FC = () => {
         >
           <Scissors size={16} />
           <span>Barberos</span>
-          <span className={`badge ms-2 ${pestañaActiva === 'barberos' ? 'bg-secondary' : 'bg-secondary-subtle text-secondary-emphasis'}`}>
+          <span
+            className={`badge ms-2 ${pestañaActiva === 'barberos' ? 'bg-secondary' : 'bg-secondary-subtle text-secondary-emphasis'}`}
+          >
             {barberos.length}
           </span>
         </button>
@@ -295,38 +345,13 @@ export const UsuariosPage: React.FC = () => {
 
       {/* ── Barra de búsqueda debounced para usuarios ── */}
       <div className="mb-4" style={{ maxWidth: '440px' }}>
-        <div className="position-relative">
-          <input
-            type="text"
-            className="form-control pe-5"
-            placeholder={`Buscar en ${pestañaActiva === 'administradores' ? 'administradores' : 'barberos'} por nombre o correo...`}
-            value={filtroBusqueda}
-            onChange={(e) => setFiltroBusqueda(e.target.value)}
-            style={{
-              transition: 'border-color 150ms ease, box-shadow 150ms ease',
-            }}
-            aria-label="Buscar usuarios"
-          />
-
-          {filtroBusqueda !== debouncedBusqueda && (
-            <div
-              className="position-absolute end-0 top-50 translate-middle-y me-3 d-flex align-items-center"
-              style={{ pointerEvents: 'none' }}
-              title="Filtrando..."
-            >
-              <KyriosSpinner size="xs" aria-hidden="true" />
-            </div>
-          )}
-        </div>
-
-        {filtroBusqueda !== debouncedBusqueda && (
-          <div
-            className="text-surface-muted small mt-1 ms-1"
-            style={{ fontSize: '0.75rem', animation: 'fadeInSpinner 120ms ease-out' }}
-          >
-            Buscando...
-          </div>
-        )}
+        <SearchInput
+          placeholder={`Buscar en ${pestañaActiva === 'administradores' ? 'administradores' : 'barberos'} por nombre o correo...`}
+          value={filtroBusqueda}
+          onChange={setFiltroBusqueda}
+          isSearching={filtroBusqueda !== debouncedBusqueda}
+          ariaLabel="Buscar usuarios"
+        />
       </div>
 
       {/* Contenido según pestaña con microinteracción de transición */}
@@ -334,12 +359,10 @@ export const UsuariosPage: React.FC = () => {
         {pestañaActiva === 'administradores' && (
           <>
             {/* Hint explicativo Administradores */}
-            <div className="alert alert-light border d-flex align-items-center gap-2 mb-3 py-2 px-3 small text-muted shadow-sm" role="note">
-              <span className="fs-5" aria-hidden="true">💡</span>
-              <span>
-                Los administradores tienen acceso a los módulos de gestión. Puedes desactivar su <strong>rol</strong> sin bloquear su cuenta global.
-              </span>
-            </div>
+            <InfoHint className="mb-3 py-2 px-3 text-muted">
+              Los administradores tienen acceso a los módulos de gestión. Puedes desactivar su{' '}
+              <strong>rol</strong> sin bloquear su cuenta global.
+            </InfoHint>
 
             {errorAdmins && (
               <ErrorMessage
@@ -351,18 +374,11 @@ export const UsuariosPage: React.FC = () => {
             {cargandoAdmins ? (
               <Spinner mensaje="Cargando administradores..." />
             ) : administradoresFiltrados.length === 0 && debouncedBusqueda ? (
-              <div className="alert-surface text-center py-5 px-3 text-surface-muted border rounded">
-                <p className="mb-2 fs-6 fw-semibold text-surface-card">
-                  No se encontraron administradores que coincidan con "{debouncedBusqueda}".
-                </p>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-primary"
-                  onClick={() => setFiltroBusqueda('')}
-                >
-                  Limpiar búsqueda
-                </button>
-              </div>
+              <EmptyState
+                title={`No se encontraron administradores que coincidan con "${debouncedBusqueda}".`}
+                actionLabel="Limpiar búsqueda"
+                onAction={() => setFiltroBusqueda('')}
+              />
             ) : (
               <UserTable
                 administradores={administradoresFiltrados}
@@ -372,8 +388,16 @@ export const UsuariosPage: React.FC = () => {
                 onConfigurarBarbero={(admin) => setAdminAConfigurar(admin)}
                 esSuperAdmin={esSuperAdmin}
                 currentUserId={usuarioDb?.id}
-                isUpdatingId={cambiarEstadoAdminMutation.isPending ? cambiarEstadoAdminMutation.variables?.id : null}
-                isUpdatingGlobalId={cambiarEstadoGlobalAdminMutation.isPending ? cambiarEstadoGlobalAdminMutation.variables?.id : null}
+                isUpdatingId={
+                  cambiarEstadoAdminMutation.isPending
+                    ? cambiarEstadoAdminMutation.variables?.id
+                    : null
+                }
+                isUpdatingGlobalId={
+                  cambiarEstadoGlobalAdminMutation.isPending
+                    ? cambiarEstadoGlobalAdminMutation.variables?.id
+                    : null
+                }
               />
             )}
           </>
@@ -382,12 +406,11 @@ export const UsuariosPage: React.FC = () => {
         {pestañaActiva === 'barberos' && (
           <>
             {/* Hint explicativo Barberos */}
-            <div className="alert alert-light border d-flex align-items-center gap-2 mb-3 py-2 px-3 small text-muted shadow-sm" role="note">
-              <span className="fs-5" aria-hidden="true">💡</span>
-              <span>
-                Los barberos activos aparecen en el catálogo público. El <strong>% de comisión</strong> aplica a sus servicios. Puedes desactivar el rol sin bloquear su cuenta.
-              </span>
-            </div>
+            <InfoHint className="mb-3 py-2 px-3 text-muted">
+              Los barberos activos aparecen en el catálogo público. El{' '}
+              <strong>% de comisión</strong> aplica a sus servicios. Puedes desactivar el rol sin
+              bloquear su cuenta.
+            </InfoHint>
 
             {errorBarberos && (
               <ErrorMessage
@@ -399,18 +422,11 @@ export const UsuariosPage: React.FC = () => {
             {cargandoBarberos ? (
               <Spinner mensaje="Cargando barberos de gestión..." />
             ) : barberosFiltrados.length === 0 && debouncedBusqueda ? (
-              <div className="alert-surface text-center py-5 px-3 text-surface-muted border rounded">
-                <p className="mb-2 fs-6 fw-semibold text-surface-card">
-                  No se encontraron barberos que coincidan con "{debouncedBusqueda}".
-                </p>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-primary"
-                  onClick={() => setFiltroBusqueda('')}
-                >
-                  Limpiar búsqueda
-                </button>
-              </div>
+              <EmptyState
+                title={`No se encontraron barberos que coincidan con "${debouncedBusqueda}".`}
+                actionLabel="Limpiar búsqueda"
+                onAction={() => setFiltroBusqueda('')}
+              />
             ) : (
               <BarberoTable
                 barberos={barberosFiltrados}
@@ -421,8 +437,16 @@ export const UsuariosPage: React.FC = () => {
                 onCambiarEstadoGlobal={handleCambiarEstadoGlobalBarbero}
                 rolActorPrincipal={rolActorPrincipal}
                 currentUserId={usuarioDb?.id}
-                isUpdatingId={cambiarEstadoBarberoMutation.isPending ? cambiarEstadoBarberoMutation.variables?.id : null}
-                isUpdatingGlobalId={cambiarEstadoGlobalBarberoMutation.isPending ? cambiarEstadoGlobalBarberoMutation.variables?.id : null}
+                isUpdatingId={
+                  cambiarEstadoBarberoMutation.isPending
+                    ? cambiarEstadoBarberoMutation.variables?.id
+                    : null
+                }
+                isUpdatingGlobalId={
+                  cambiarEstadoGlobalBarberoMutation.isPending
+                    ? cambiarEstadoGlobalBarberoMutation.variables?.id
+                    : null
+                }
               />
             )}
           </>
@@ -430,10 +454,7 @@ export const UsuariosPage: React.FC = () => {
       </div>
 
       {/* Modales Atómicos */}
-      <UserDetailModal
-        usuario={usuarioDetalle}
-        onClose={() => setUsuarioDetalle(null)}
-      />
+      <UserDetailModal usuario={usuarioDetalle} onClose={() => setUsuarioDetalle(null)} />
 
       <BarberoConfigModal
         isOpen={Boolean(adminAConfigurar)}

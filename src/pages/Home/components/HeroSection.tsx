@@ -32,8 +32,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReservar }) => {
           </div>
 
           <h1 className="kyrios-hero-title kyrios-title-display">
-            Tu estilo. <br />
-            <span>Nuestra precisión.</span>
+            Cada cliente. <br />
+            <span>Una obra maestra.</span>
           </h1>
 
           <p className="kyrios-hero-subtitle">

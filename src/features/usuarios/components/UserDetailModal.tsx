@@ -1,6 +1,8 @@
 import React from 'react';
 import Modal from '../../../shared/ui/Modal';
 import Button from '../../../shared/ui/Button';
+import StatusBadge from '../../../shared/ui/atoms/StatusBadge';
+import UserAvatar from '../../../shared/ui/atoms/UserAvatar';
 import type { UsuarioDetalle } from '../types/usuarios.types';
 
 interface UserDetailModalProps {
@@ -23,25 +25,16 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({ usuario, onClo
       }
     >
       <div className="text-center mb-4">
-        <div
-          className="bg-surface-app rounded-circle d-inline-flex justify-content-center align-items-center mb-3 border shadow-sm"
-          style={{ width: '80px', height: '80px' }}
-        >
-          <span className="fs-1 text-primary fw-bold">
-            {usuario.nombre.charAt(0)}
-            {usuario.apellido.charAt(0)}
-          </span>
-        </div>
+        <UserAvatar
+          nombre={usuario.nombre}
+          apellido={usuario.apellido}
+          size={80}
+          className="mb-3 shadow-sm"
+        />
         <h4 className="fw-bold mb-1">
           {usuario.nombre} {usuario.apellido}
         </h4>
-        <span
-          className={`badge ${
-            usuario.estado === 'ACTIVO' ? 'bg-success' : 'bg-secondary'
-          }`}
-        >
-          {usuario.estado}
-        </span>
+        <StatusBadge estado={usuario.estado} tone="role" />
       </div>
 
       <hr />
