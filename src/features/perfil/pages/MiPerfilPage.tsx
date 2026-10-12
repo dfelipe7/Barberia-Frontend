@@ -527,7 +527,7 @@ export const MiPerfilPage: React.FC = () => {
                 <p className="card-text text-surface-muted small mb-4">
                   Como Superadmin, puedes modificar tus propios roles y privilegios en el sistema.
                 </p>
-                <Link to={`/usuarios/${usuarioDb.id}/editar`} className="btn btn-outline-danger w-100">
+                <Link to={`/usuarios/${usuarioDb.id}/editar`} state={{ from: '/mi-perfil' }} className="btn btn-outline-danger w-100">
                   Gestionar mis roles
                 </Link>
               </div>

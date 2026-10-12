@@ -116,6 +116,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
             label: 'Editar datos del perfil',
             icon: <Pencil size={15} className="text-primary" />,
             to: `/usuarios/${barbero.id}/editar`,
+            linkState: { from: '/barberos' },
             title: 'Editar datos del perfil',
           },
           {
@@ -300,6 +301,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
                 {puedeEditar && (
                   <Link
                     to={`/usuarios/${barbero.id}/editar`}
+                    state={{ from: '/barberos' }}
                     className="btn btn-outline-primary mobile-action-btn"
                     title="Editar datos del perfil"
                     aria-label="Editar datos del perfil"

@@ -9,6 +9,7 @@ export interface AccionItem {
   icon: React.ReactNode;
   onClick?: () => void;
   to?: string;
+  linkState?: Record<string, unknown>;
   variant?: 'normal' | 'danger' | 'warning' | 'primary' | 'success';
   disabled?: boolean;
   isLoading?: boolean;
@@ -122,6 +123,7 @@ export const AccionesDropdown: React.FC<AccionesDropdownProps> = ({
                 <Link
                   key={item.key}
                   to={item.to}
+                  state={item.linkState}
                   className={className}
                   onClick={() => setIsOpen(false)}
                   title={item.title || item.label}
