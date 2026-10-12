@@ -66,22 +66,42 @@ const UserAvatar: React.FC<{ nombre: string; online?: boolean }> = ({ nombre, on
 
 /* ─── Props ─────────────────────────────────────────────────────────────── */
 interface HomeNavbarProps {
-  isAuthenticated: boolean;
+  isAuthenticated?: boolean;
   nombre?: string | null;
-  onLogin: () => void;
+  onLogin?: () => void;
 }
 
 /* ─── Componente principal ──────────────────────────────────────────────── */
 export const HomeNavbar: React.FC<HomeNavbarProps> = ({
-  isAuthenticated,
-  nombre,
-  onLogin,
+  isAuthenticated: propIsAuthenticated,
+  nombre: propNombre,
+  onLogin: propOnLogin,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { theme, setTheme, isDark } = useTheme();
-  const { cerrarSesion, roles, usuarioDb } = useAuth();
+  const {
+    isAuthenticated: authIsAuthenticated,
+    isInitializing,
+    nombre: authNombre,
+    cerrarSesion,
+    roles,
+    usuarioDb,
+    keycloak,
+  } = useAuth();
+
+  const isAuthenticated = propIsAuthenticated !== undefined ? propIsAuthenticated : authIsAuthenticated;
+  const nombre = propNombre !== undefined ? propNombre : authNombre;
+  const onLogin = propOnLogin || (() => keycloak.login());
   const tieneAcceso = roles.some(esRolApp) && usuarioDb?.estado === 'ACTIVO';
+
+  // Reduce parpadeo: muestra skeleton solo si la inicialización de Keycloak toma más de 150ms
+  const [showPending, setShowPending] = useState(false);
+  useEffect(() => {
+    if (!isInitializing) return;
+    const t = setTimeout(() => setShowPending(true), 150);
+    return () => clearTimeout(t);
+  }, [isInitializing]);
 
   const scrolled = useScrolled(40);
   const activeSection = useActiveSection(NAV_LINKS.map((l) => l.id));
@@ -173,7 +193,15 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
             <ThemeIcon size={18} strokeWidth={2} />
           </button>
 
-          {isAuthenticated ? (
+          {isInitializing ? (
+            showPending ? (
+              <div
+                className="kyrios-nav-avatar"
+                aria-hidden="true"
+                style={{ opacity: 0.5 }}
+              />
+            ) : null
+          ) : isAuthenticated ? (
             <div className="d-flex align-items-center gap-2">
               <UserAvatar nombre={displayName} online />
               <span className="kyrios-nav-greeting">{displayName}</span>
@@ -232,7 +260,15 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
             <ThemeIcon size={18} strokeWidth={2} />
           </button>
 
-          {isAuthenticated ? (
+          {isInitializing ? (
+            showPending ? (
+              <div
+                className="kyrios-nav-avatar"
+                aria-hidden="true"
+                style={{ opacity: 0.5 }}
+              />
+            ) : null
+          ) : isAuthenticated ? (
             <button
               type="button"
               className="btn-kyrios-primary p-2 d-inline-flex align-items-center"
@@ -304,7 +340,16 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 
             {/* CTA al fondo del drawer */}
             <div className="kyrios-nav-mobile-divider pt-4 mt-2 d-flex flex-column gap-2">
-              {isAuthenticated ? (
+              {isInitializing ? (
+                showPending ? (
+                  <div className="py-2 text-center" aria-hidden="true">
+                    <div
+                      className="kyrios-nav-avatar mx-auto"
+                      style={{ opacity: 0.5 }}
+                    />
+                  </div>
+                ) : null
+              ) : isAuthenticated ? (
                 <>
                   <div className="kyrios-nav-greeting d-flex align-items-center gap-2 mb-1">
                     <UserAvatar nombre={displayName} online />
