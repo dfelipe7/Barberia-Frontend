@@ -5,39 +5,41 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const isDev = mode !== 'production'
 
-  const keycloakUrl = (env.VITE_KEYCLOAK_URL || 'http://localhost:8080').trim()
-  const apiUrl = (env.VITE_API_URL || 'http://localhost:3000').trim()
+  // ─── Orígenes de desarrollo (SIEMPRE presentes en dev, ignoran .env) ───
+  const DEV_API = 'http://localhost:3000'
+  const DEV_KEYCLOAK = 'http://localhost:8080'
 
-  const csp = [
+  // ─── Orígenes de producción ───
+  const PROD_API = 'https://barberia-backend-production.up.railway.app'
+  const PROD_KEYCLOAK = 'https://keycloak-production-4cdb.up.railway.app'
+
+  // En dev: localhost + prod (para poder probar contra prod si hace falta)
+  // En prod: solo producción
+  const apiOrigins = isDev ? `${DEV_API} ${PROD_API}` : PROD_API
+  const keycloakOrigins = isDev ? `${DEV_KEYCLOAK} ${PROD_KEYCLOAK}` : PROD_KEYCLOAK
+
+  const cspDirectives = [
     `default-src 'self'`,
     `script-src 'self'`,
     `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
     `font-src 'self' data: https://fonts.gstatic.com`,
-    `img-src 'self' data: blob: https: ${apiUrl}`,
-    [
-      `connect-src 'self'`,
-      apiUrl,
-      keycloakUrl,
-      `https://barberia-backend-production.up.railway.app`,
-      `https://keycloak-production-4cdb.up.railway.app`,
-    ].join(' '),
-    [
-      `frame-src 'self'`,
-      `https://www.google.com`,
-      keycloakUrl,
-      `https://keycloak-production-4cdb.up.railway.app`,
-    ].join(' '),
-    [
-      `form-action 'self'`,
-      keycloakUrl,
-      `https://keycloak-production-4cdb.up.railway.app`,
-    ].join(' '),
-  ].join('; ')
+    `img-src 'self' data: blob: https:${isDev ? ` ${DEV_API}` : ''}`,
+    `connect-src 'self' ${apiOrigins} ${keycloakOrigins}`,
+    `frame-src 'self' https://www.google.com ${keycloakOrigins}`,
+    `form-action 'self' ${keycloakOrigins}`,
+    `frame-ancestors 'self'`,
+  ]
+
+  const csp = cspDirectives.join('; ')
 
   return {
     plugins: [react()],
     server: isDev
-      ? { headers: { 'Content-Security-Policy': csp } }
+      ? {
+          headers: {
+            'Content-Security-Policy': csp,
+          },
+        }
       : undefined,
   }
 })
