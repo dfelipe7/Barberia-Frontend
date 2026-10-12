@@ -247,27 +247,56 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: rgba(0, 113, 188, 0.18);
   border: 1px solid rgba(0, 113, 188, 0.4);
   color: var(--k-blue);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  text-align: center;
   flex-shrink: 0;
+  overflow: hidden;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-theme="dark"] .kyrios-nav-avatar {
+  background: rgba(0, 113, 188, 0.28);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #38bdf8;
 }
 
 .kyrios-nav-avatar__dot {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 8px;
-  height: 8px;
+  bottom: -1px;
+  right: -1px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: #22c55e;
   border: 2px solid var(--home-bg);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 767.98px) {
+  .kyrios-nav-avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 0.72rem;
+  }
+}
+
+/* ─── CTA compacto para navbar móvil / tablet ─── */
+.kyrios-nav-cta-compact {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  min-width: auto;
+  white-space: nowrap;
 }
 
 /* ─── CTA arrow micro-animación ─── */
@@ -280,11 +309,20 @@
   transform: translate(2px, -2px);
 }
 
-/* Texto de saludo en navbar */
+/* Texto de saludo en navbar con truncado elástico */
 .kyrios-nav-greeting {
   font-size: 0.85rem;
   color: var(--home-nav-link);
   transition: color 200ms ease;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kyrios-nav-collapse .kyrios-nav-greeting {
+  max-width: 100%;
+  white-space: normal;
 }
 
 /* Botón hamburguesa */
@@ -932,8 +970,12 @@
   }
 }
 
-/* ─── Responsive adjustments ─── */
-@media (max-width: 991.98px) {
+/* ─── Responsive adjustments (Mobile & Tablet <1200px) ─── */
+@media (max-width: 1199.98px) {
+  .kyrios-nav .container {
+    padding-inline: 0.75rem;
+  }
+
   .kyrios-nav-collapse {
     background-color: var(--home-nav-collapse-bg);
     border-top: 1px solid var(--home-nav-border);
@@ -946,26 +988,28 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
+  .kyrios-nav-collapse .btn-kyrios-primary,
+  .kyrios-nav-collapse .btn-kyrios-outline {
+    padding-inline: 1rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
   .kyrios-nav-link-mobile {
     border-bottom: 1px solid var(--home-nav-border);
   }
   .kyrios-nav-mobile-divider {
     border-top: 1px solid var(--home-nav-border);
   }
+}
+
+@media (max-width: 991.98px) {
   .kyrios-hero {
     min-height: 75vh;
     padding: 4rem 0;
   }
   .kyrios-section {
     padding: 4rem 0;
-  }
-}
-
-/* 768–991px: links compactos */
-@media (min-width: 768px) and (max-width: 991.98px) {
-  .kyrios-nav-link {
-    font-size: 0.78rem;
-    padding: 0.45rem 0.6rem;
   }
 }
 

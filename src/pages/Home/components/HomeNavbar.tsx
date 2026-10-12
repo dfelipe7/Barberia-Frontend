@@ -32,7 +32,8 @@ const NAV_LINKS = [
 
 /* ─── Avatar con iniciales + indicador online ───────────────────────────── */
 const UserAvatar: React.FC<{ nombre: string; online?: boolean }> = ({ nombre, online }) => {
-  const initials = nombre.trim().slice(0, 2).toUpperCase();
+  const cleanName = (nombre || '').trim();
+  const initials = (cleanName ? cleanName.slice(0, 2) : 'US').toUpperCase();
   return (
     <span className="kyrios-nav-avatar" aria-hidden="true">
       {initials}
@@ -132,7 +133,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 
         {/* ── Navegación Desktop ── */}
         <nav
-          className="d-none d-lg-flex align-items-center gap-1 flex-grow-1 justify-content-center"
+          className="d-none d-xl-flex align-items-center gap-1 flex-grow-1 justify-content-center"
           aria-label="Navegación principal"
         >
           {NAV_LINKS.map((item) =>
@@ -167,7 +168,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
         </nav>
 
         {/* ── CTA Desktop ── */}
-        <div className="d-none d-lg-flex align-items-center gap-2 flex-shrink-0">
+        <div className="d-none d-xl-flex align-items-center gap-2 flex-shrink-0">
           {/* Botón Inicio visible solo fuera de la página principal */}
           {!enHome && (
             <Link
@@ -245,9 +246,9 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           )}
         </div>
 
-        {/* ── Zona derecha Móvil: toggle tema + CTA compacto + hamburguesa ── */}
-        <div className="d-flex d-lg-none align-items-center gap-2 flex-shrink-0">
-          {/* Toggle de tema (móvil, solo icono) */}
+        {/* ── Zona derecha Móvil / Tablet: toggle tema + CTA compacto + hamburguesa ── */}
+        <div className="d-flex d-xl-none align-items-center gap-2 flex-shrink-0">
+          {/* Toggle de tema (móvil/tablet, solo icono) */}
           <button
             type="button"
             className="kyrios-nav-hamburger"
@@ -269,7 +270,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           ) : isAuthenticated ? (
             <button
               type="button"
-              className="btn-kyrios-primary p-2 d-inline-flex align-items-center"
+              className="p-0 border-0 bg-transparent d-inline-flex align-items-center rounded-circle"
               onClick={() => navigate('/dashboard')}
               aria-label="Ir a mi panel administrativo"
               title="Mi panel"
@@ -279,8 +280,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           ) : (
             <button
               type="button"
-              className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
-              style={{ fontSize: '0.75rem', padding: '0.45rem 0.85rem' }}
+              className="btn-kyrios-outline kyrios-nav-cta-compact d-inline-flex align-items-center gap-1"
               onClick={onLogin}
             >
               Ingresar
@@ -300,11 +300,11 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
         </div>
       </div>
 
-      {/* ── Menú Desplegable Móvil ── */}
+      {/* ── Menú Desplegable Móvil / Tablet ── */}
       {mobileMenuOpen && (
         <div
           id={mobileMenuId}
-          className="kyrios-nav-collapse d-lg-none"
+          className="kyrios-nav-collapse d-xl-none"
           role="menu"
           aria-label="Menú de navegación móvil"
         >
