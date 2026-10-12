@@ -9,6 +9,7 @@ import { useBarberosCatalogo } from '../api/barberos.facade';
 import BarberoCard from '../components/BarberoCard';
 import { useToastContext } from '../../../shared/ui/ToastContext';
 import { useDebounce } from '../../../shared/lib/useDebounce';
+import PageHeader from '../../../shared/ui/organisms/PageHeader';
 
 export const BarberosPage: React.FC = () => {
   const { roles } = useAuth();
@@ -23,13 +24,7 @@ export const BarberosPage: React.FC = () => {
   const [filtroNombre, setFiltroNombre] = useState('');
   const debouncedNombre = useDebounce(filtroNombre, 350);
 
-  const {
-    data: barberos = [],
-    isLoading,
-    isFetching,
-    error,
-    refetch,
-  } = useBarberosCatalogo();
+  const { data: barberos = [], isLoading, isFetching, error, refetch } = useBarberosCatalogo();
 
   const { showToast } = useToastContext();
 
@@ -43,28 +38,22 @@ export const BarberosPage: React.FC = () => {
   const barberosFiltrados = useMemo(() => {
     if (!debouncedNombre.trim()) return barberos;
     const q = debouncedNombre.toLowerCase().trim();
-    return barberos.filter((b) =>
-      `${b.nombre} ${b.apellido}`.toLowerCase().includes(q)
-    );
+    return barberos.filter((b) => `${b.nombre} ${b.apellido}`.toLowerCase().includes(q));
   }, [barberos, debouncedNombre]);
 
   return (
     <div className="container-fluid py-2">
-
-      <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-        <div>
-          <h1 className="h2 fw-bold mb-1">Equipo de Barberos</h1>
-          <p className="text-surface-muted mb-0">
-            Conoce a nuestros profesionales especializados y agenda tu corte o servicio.
-          </p>
-        </div>
-
-        {puedeCrearBarbero && (
-          <Link to="/barberos/nuevo" className="btn btn-primary">
-            + Nuevo Barbero
-          </Link>
-        )}
-      </div>
+      <PageHeader
+        title="Equipo de Barberos"
+        subtitle="Conoce a nuestros profesionales especializados y agenda tu corte o servicio."
+        actions={
+          puedeCrearBarbero ? (
+            <Link to="/barberos/nuevo" className="btn btn-primary">
+              + Nuevo Barbero
+            </Link>
+          ) : undefined
+        }
+      />
 
       {/* Barra de búsqueda debounced */}
       <div className="mb-4" style={{ maxWidth: '440px' }}>
