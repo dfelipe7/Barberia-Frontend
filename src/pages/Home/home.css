@@ -175,7 +175,7 @@
   padding-top: 64px;
 }
 
-/* ─── Nav links con underline animado (scroll-spy) ─── */
+/* ─── Nav links con underline animado (navegación por rutas) ─── */
 .kyrios-nav-link {
   color: var(--home-nav-link);
   font-size: 0.85rem;
@@ -186,6 +186,10 @@
   padding: 0.5rem 0.85rem;
   position: relative;
   transition: color 150ms ease;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .kyrios-nav-link:hover,

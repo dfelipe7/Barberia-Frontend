@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut, User } from 'lucide-react';
+import { useNavigate, Link, NavLink, useLocation } from 'react-router-dom';
+import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut, User, Home } from 'lucide-react';
 import BrandLogo from '../../../shared/ui/BrandLogo';
 import { BRAND } from '../../../config/brand';
 import { MenuIcon, CloseIcon } from './HomeIcons';
@@ -8,6 +8,7 @@ import { useTheme } from '../../../shared/context/ThemeContext';
 import { useAuth } from '../../../auth/AuthContext';
 import { useBodyScrollLock } from '../../../shared/lib/useBodyScrollLock';
 import { esRolApp } from '../../../shared/lib/autorizacion/roles';
+import { ProductosEnDesarrolloModal } from './ProductosEnDesarrolloModal';
 
 /* ─── Hook: detecta si el usuario hizo scroll más allá de un umbral ─────── */
 function useScrolled(threshold = 40): boolean {
@@ -21,36 +22,12 @@ function useScrolled(threshold = 40): boolean {
   return scrolled;
 }
 
-/* ─── Hook: scroll-spy con IntersectionObserver ─────────────────────────── */
-function useActiveSection(ids: string[]): string {
-  const [active, setActive] = useState(ids[0] ?? '');
-  useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-    ids.forEach((id) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActive(id); },
-        { rootMargin: '-30% 0px -60% 0px', threshold: 0 }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach((o) => o.disconnect());
-  }, [ids]);
-  return active;
-}
-
-
 /* ─── Datos de navegación ───────────────────────────────────────────────── */
-// Los href que empiezan con '#' son anclas de sección; los que empiezan con '/'
-// son rutas internas y se renderizan con <Link> en lugar de <a>.
+// Navegación real por rutas y modal para secciones en desarrollo
 const NAV_LINKS = [
-  { id: 'inicio',    href: '#inicio',             label: 'Inicio' },
-  { id: 'servicios', href: '#servicios',           label: 'Servicios' },
-  { id: 'barberos',  href: '#barberos',            label: 'Barberos' },
-  { id: 'catalogo',  href: '/catalogo/servicios',  label: 'Catálogo' },
-  { id: 'ubicacion', href: '#ubicacion',           label: 'Ubicación' },
+  { id: 'servicios', to: '/catalogo/servicios', label: 'Servicios' },
+  { id: 'barberos',  to: '/catalogo/barberos',  label: 'Barberos'  },
+  { id: 'productos', to: null,                  label: 'Productos' }, // abre modal
 ] as const;
 
 /* ─── Avatar con iniciales + indicador online ───────────────────────────── */
@@ -78,7 +55,11 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
   onLogin: propOnLogin,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [productosModalOpen, setProductosModalOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const enHome = location.pathname === '/';
+
   const { theme, setTheme, isDark } = useTheme();
   const {
     isAuthenticated: authIsAuthenticated,
@@ -104,7 +85,6 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
   }, [isInitializing]);
 
   const scrolled = useScrolled(40);
-  const activeSection = useActiveSection(NAV_LINKS.map((l) => l.id));
 
   useBodyScrollLock(mobileMenuOpen);
 
@@ -141,47 +121,65 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
       <div className="container py-2 d-flex align-items-center justify-content-between gap-3">
 
         {/* ── Logo ── */}
-        <a
-          href="#inicio"
+        <Link
+          to="/"
           className="d-flex align-items-center gap-2 text-decoration-none flex-shrink-0"
           onClick={closeMobileMenu}
           aria-label={`Ir al inicio de ${BRAND.name}`}
         >
           <BrandLogo variant={isDark ? 'white' : 'black'} height={34} alt={BRAND.name} />
-        </a>
+        </Link>
 
         {/* ── Navegación Desktop ── */}
         <nav
           className="d-none d-lg-flex align-items-center gap-1 flex-grow-1 justify-content-center"
           aria-label="Navegación principal"
         >
-          {NAV_LINKS.map(({ id, href, label }) =>
-            href.startsWith('/') ? (
-              // Ruta interna → Link de React Router
-              <Link
-                key={id}
-                to={href}
-                className={`kyrios-nav-link${activeSection === id ? ' is-active' : ''}`}
+          {NAV_LINKS.map((item) =>
+            item.to ? (
+              <NavLink
+                key={item.id}
+                to={item.to}
+                end
+                className={({ isActive }) =>
+                  `kyrios-nav-link${isActive ? ' is-active' : ''}`
+                }
+                onClick={closeMobileMenu}
               >
-                <span className="kyrios-nav-link__label">{label}</span>
+                <span className="kyrios-nav-link__label">{item.label}</span>
                 <span className="kyrios-nav-link__underline" aria-hidden="true" />
-              </Link>
+              </NavLink>
             ) : (
-              // Ancla de sección → <a> nativo
-              <a
-                key={id}
-                href={href}
-                className={`kyrios-nav-link${activeSection === id ? ' is-active' : ''}`}
+              <button
+                key={item.id}
+                type="button"
+                className="kyrios-nav-link"
+                onClick={() => {
+                  closeMobileMenu();
+                  setProductosModalOpen(true);
+                }}
               >
-                <span className="kyrios-nav-link__label">{label}</span>
+                <span className="kyrios-nav-link__label">{item.label}</span>
                 <span className="kyrios-nav-link__underline" aria-hidden="true" />
-              </a>
+              </button>
             )
           )}
         </nav>
 
         {/* ── CTA Desktop ── */}
         <div className="d-none d-lg-flex align-items-center gap-2 flex-shrink-0">
+          {/* Botón Inicio visible solo fuera de la página principal */}
+          {!enHome && (
+            <Link
+              to="/"
+              className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
+              aria-label="Volver al inicio"
+            >
+              <Home size={15} />
+              Inicio
+            </Link>
+          )}
+
           {/* Toggle de tema */}
           <button
             type="button"
@@ -311,30 +309,33 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           aria-label="Menú de navegación móvil"
         >
           <div className="container pb-4 pt-2 d-flex flex-column">
-            {NAV_LINKS.map(({ id, href, label }) =>
-              href.startsWith('/') ? (
-                <Link
-                  key={id}
-                  to={href}
-                  className={`kyrios-nav-link kyrios-nav-link--mobile${activeSection === id ? ' is-active' : ''}`}
+            {NAV_LINKS.map((item) =>
+              item.to ? (
+                <NavLink
+                  key={item.id}
+                  to={item.to}
+                  end
+                  className={({ isActive }) =>
+                    `kyrios-nav-link kyrios-nav-link--mobile${isActive ? ' is-active' : ''}`
+                  }
                   onClick={closeMobileMenu}
                   role="menuitem"
                 >
-                  <span className="kyrios-nav-link__label">{label}</span>
-                </Link>
+                  <span className="kyrios-nav-link__label">{item.label}</span>
+                </NavLink>
               ) : (
-                <a
-                  key={id}
-                  href={href}
-                  className={`kyrios-nav-link kyrios-nav-link--mobile${activeSection === id ? ' is-active' : ''}`}
-                  onClick={closeMobileMenu}
+                <button
+                  key={item.id}
+                  type="button"
+                  className="kyrios-nav-link kyrios-nav-link--mobile text-start w-100"
+                  onClick={() => {
+                    closeMobileMenu();
+                    setProductosModalOpen(true);
+                  }}
                   role="menuitem"
                 >
-                  <span className="kyrios-nav-link__label">{label}</span>
-                  {activeSection === id && (
-                    <span className="kyrios-nav-link__dot" aria-hidden="true" />
-                  )}
-                </a>
+                  <span className="kyrios-nav-link__label">{item.label}</span>
+                </button>
               )
             )}
 
@@ -397,6 +398,12 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           </div>
         </div>
       )}
+
+      {/* Modal de Productos en Desarrollo */}
+      <ProductosEnDesarrolloModal
+        isOpen={productosModalOpen}
+        onClose={() => setProductosModalOpen(false)}
+      />
     </header>
   );
 };

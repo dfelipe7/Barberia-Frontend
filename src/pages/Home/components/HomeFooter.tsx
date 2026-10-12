@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import BrandLogo from '../../../shared/ui/BrandLogo';
 import { BRAND } from '../../../config/brand';
 import { InstagramIcon, FacebookIcon, MapPinIcon } from './HomeIcons';
+import { ProductosEnDesarrolloModal } from './ProductosEnDesarrolloModal';
 
 export const HomeFooter: React.FC = () => {
   const anioActual = new Date().getFullYear();
+  const [productosModalOpen, setProductosModalOpen] = useState(false);
 
   return (
     <footer className="kyrios-footer" role="contentinfo">
@@ -52,23 +54,28 @@ export const HomeFooter: React.FC = () => {
             </h4>
             <ul className="list-unstyled mb-0">
               <li>
-                <a href="#inicio" className="kyrios-footer-link">
-                  Inicio
-                </a>
-              </li>
-              <li>
                 <Link to="/catalogo/servicios" className="kyrios-footer-link">
-                  Servicios y Tarifas
+                  Servicios
                 </Link>
               </li>
               <li>
                 <Link to="/catalogo/barberos" className="kyrios-footer-link">
-                  Equipo de Barberos
+                  Barberos
                 </Link>
               </li>
               <li>
+                <button
+                  type="button"
+                  className="kyrios-footer-link bg-transparent border-0 p-0 text-start"
+                  onClick={() => setProductosModalOpen(true)}
+                  style={{ font: 'inherit', cursor: 'pointer' }}
+                >
+                  Productos
+                </button>
+              </li>
+              <li>
                 <a href="#ubicacion" className="kyrios-footer-link">
-                  Ubicación &amp; Contacto
+                  Ubicación
                 </a>
               </li>
             </ul>
@@ -102,6 +109,12 @@ export const HomeFooter: React.FC = () => {
           </span>
         </div>
       </div>
+
+      {/* Modal de Productos en Desarrollo */}
+      <ProductosEnDesarrolloModal
+        isOpen={productosModalOpen}
+        onClose={() => setProductosModalOpen(false)}
+      />
     </footer>
   );
 };
