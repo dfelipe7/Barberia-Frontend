@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUpRight, LayoutDashboard } from 'lucide-react';
+import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut } from 'lucide-react';
 import BrandLogo from '../../../shared/ui/BrandLogo';
 import { BRAND } from '../../../config/brand';
 import { MenuIcon, CloseIcon } from './HomeIcons';
 import { useTheme } from '../../../shared/context/ThemeContext';
+import { useAuth } from '../../../auth/AuthContext';
 import { useBodyScrollLock } from '../../../shared/lib/useBodyScrollLock';
 
 /* ─── Hook: detecta si el usuario hizo scroll más allá de un umbral ─────── */
@@ -74,7 +75,8 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const { isDark } = useTheme();
+  const { theme, setTheme, isDark } = useTheme();
+  const { cerrarSesion } = useAuth();
 
   const scrolled = useScrolled(40);
   const activeSection = useActiveSection(NAV_LINKS.map((l) => l.id));
@@ -83,6 +85,25 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 
   const toggleMobileMenu = useCallback(() => setMobileMenuOpen((p) => !p), []);
   const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
+
+  // Cicla: system → light → dark → system (igual que Header.tsx)
+  const cycleTheme = useCallback(() => {
+    if (theme === 'system') setTheme('light');
+    else if (theme === 'light') setTheme('dark');
+    else setTheme('system');
+  }, [theme, setTheme]);
+
+  const ThemeIcon = theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor;
+  const themeLabel =
+    theme === 'dark'   ? 'Modo oscuro (clic para cambiar)' :
+    theme === 'light'  ? 'Modo claro (clic para cambiar)'  :
+                         'Seguir sistema (clic para cambiar)';
+
+  // Cierra el drawer antes de cerrar sesión para evitar estado zombie en móvil
+  const handleLogout = useCallback(() => {
+    closeMobileMenu();
+    cerrarSesion();
+  }, [closeMobileMenu, cerrarSesion]);
 
   const displayName = nombre || 'Usuario';
   const mobileMenuId = 'home-mobile-menu';
@@ -123,6 +144,17 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 
         {/* ── CTA Desktop ── */}
         <div className="d-none d-lg-flex align-items-center gap-2 flex-shrink-0">
+          {/* Toggle de tema */}
+          <button
+            type="button"
+            className="kyrios-nav-hamburger"
+            onClick={cycleTheme}
+            aria-label={themeLabel}
+            title={themeLabel}
+          >
+            <ThemeIcon size={18} strokeWidth={2} />
+          </button>
+
           {isAuthenticated ? (
             <div className="d-flex align-items-center gap-2">
               <UserAvatar nombre={displayName} online />
@@ -135,6 +167,15 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
               >
                 <LayoutDashboard size={14} strokeWidth={2} />
                 Mi panel
+              </button>
+              <button
+                type="button"
+                className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
+                onClick={handleLogout}
+                aria-label="Cerrar sesión"
+              >
+                <LogOut size={14} strokeWidth={2} />
+                Salir
               </button>
             </div>
           ) : (
@@ -149,8 +190,19 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           )}
         </div>
 
-        {/* ── Zona derecha Móvil: CTA compacto + hamburguesa ── */}
+        {/* ── Zona derecha Móvil: toggle tema + CTA compacto + hamburguesa ── */}
         <div className="d-flex d-lg-none align-items-center gap-2 flex-shrink-0">
+          {/* Toggle de tema (móvil, solo icono) */}
+          <button
+            type="button"
+            className="kyrios-nav-hamburger"
+            onClick={cycleTheme}
+            aria-label={themeLabel}
+            title={themeLabel}
+          >
+            <ThemeIcon size={18} strokeWidth={2} />
+          </button>
+
           {isAuthenticated ? (
             <button
               type="button"
@@ -224,6 +276,15 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                   >
                     <LayoutDashboard size={15} strokeWidth={2} />
                     Ir a mi panel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-kyrios-outline w-100 d-inline-flex align-items-center justify-content-center gap-2"
+                    onClick={handleLogout}
+                    aria-label="Cerrar sesión"
+                  >
+                    <LogOut size={15} strokeWidth={2} />
+                    Cerrar sesión
                   </button>
                 </>
               ) : (
