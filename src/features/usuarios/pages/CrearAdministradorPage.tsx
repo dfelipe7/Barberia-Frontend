@@ -6,6 +6,8 @@ import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useCrearAdministrador } from '../api/usuarios.facade';
 import { mapApiError } from '../../../shared/lib/mapApiError';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
+import { useToastContext } from '../../../shared/ui/ToastContext';
 import { PasswordRequirementsChecklist } from '../../../shared/components/PasswordRequirementsChecklist';
 import {
   crearAdministradorSchema,
@@ -14,6 +16,8 @@ import {
 
 export const CrearAdministradorPage: React.FC = () => {
   const navigate = useNavigate();
+  const confirm = useConfirm();
+  const { showToast } = useToastContext();
   const crearAdminMutation = useCrearAdministrador();
   const [showPasswordPopover, setShowPasswordPopover] = useState(false);
 
@@ -35,6 +39,25 @@ export const CrearAdministradorPage: React.FC = () => {
   const passwordValue = watch('password');
 
   const onSubmit = async (data: CrearAdministradorFormValues) => {
+    const resumen = (
+      <div className="d-flex flex-column gap-2 small">
+        <div><strong>Nombre:</strong> {data.nombre} {data.apellido || ''}</div>
+        <div><strong>Email:</strong> {data.email}</div>
+        <div className="text-warning-emphasis mt-2">
+          Se creará una cuenta con privilegios de administración.
+        </div>
+      </div>
+    );
+
+    const ok = await confirm({
+      title: 'Confirmar creación',
+      message: resumen,
+      variant: 'primary',
+      confirmLabel: 'Crear Administrador',
+      cancelLabel: 'Revisar datos',
+    });
+    if (!ok) return;
+
     try {
       await crearAdminMutation.mutateAsync({
         nombre: data.nombre,
@@ -43,11 +66,12 @@ export const CrearAdministradorPage: React.FC = () => {
         password: data.password,
       });
 
+      showToast('success', `Administrador ${data.nombre} creado correctamente.`);
       navigate('/usuarios', {
         state: { mensaje: `¡Administrador ${data.nombre} creado con éxito!` },
       });
     } catch (err: unknown) {
-      console.error('Error al crear administrador:', err);
+      showToast('danger', mapApiError(err));
     }
   };
 

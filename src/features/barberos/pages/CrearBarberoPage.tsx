@@ -6,6 +6,8 @@ import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useCrearBarbero } from '../api/barberos.facade';
 import { mapApiError } from '../../../shared/lib/mapApiError';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
+import { useToastContext } from '../../../shared/ui/ToastContext';
 import { PasswordRequirementsChecklist } from '../../../shared/components/PasswordRequirementsChecklist';
 import {
   crearBarberoSchema,
@@ -14,6 +16,8 @@ import {
 
 export const CrearBarberoPage: React.FC = () => {
   const navigate = useNavigate();
+  const confirm = useConfirm();
+  const { showToast } = useToastContext();
   const crearBarberoMutation = useCrearBarbero();
   const [showPasswordPopover, setShowPasswordPopover] = useState(false);
 
@@ -37,6 +41,27 @@ export const CrearBarberoPage: React.FC = () => {
   const passwordValue = watch('password');
 
   const onSubmit = async (data: CrearBarberoFormValues) => {
+    const resumen = (
+      <div className="d-flex flex-column gap-2 small">
+        <div><strong>Nombre:</strong> {data.nombre} {data.apellido}</div>
+        <div><strong>Email:</strong> {data.email}</div>
+        <div><strong>Teléfono:</strong> {data.telefono}</div>
+        <div><strong>Comisión:</strong> {data.porcentajeComision}%</div>
+        <div className="text-warning-emphasis mt-2">
+          Se creará la cuenta en Keycloak y su perfil en la base de datos.
+        </div>
+      </div>
+    );
+
+    const ok = await confirm({
+      title: 'Confirmar creación',
+      message: resumen,
+      variant: 'primary',
+      confirmLabel: 'Crear Barbero',
+      cancelLabel: 'Revisar datos',
+    });
+    if (!ok) return;
+
     try {
       await crearBarberoMutation.mutateAsync({
         nombre: data.nombre,
@@ -47,11 +72,12 @@ export const CrearBarberoPage: React.FC = () => {
         porcentajeComision: data.porcentajeComision,
       });
 
+      showToast('success', `Barbero ${data.nombre} creado correctamente.`);
       navigate('/barberos', {
         state: { mensaje: `¡Barbero ${data.nombre} creado y registrado con éxito!` },
       });
     } catch (err: unknown) {
-      console.error('Error al crear barbero:', err);
+      showToast('danger', mapApiError(err));
     }
   };
 
