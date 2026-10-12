@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useId } from 'react';
 import Modal from '../Modal';
 import Button from '../Button';
-import { AlertTriangle, AlertCircle, Info } from 'lucide-react';
+import { AlertTriangle, Info, Trash2, Check } from 'lucide-react';
+import './ConfirmDialog.css';
 
 export interface ConfirmDialogProps {
   isOpen: boolean;
@@ -71,23 +72,33 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     if (icon !== undefined) return icon;
     if (variant === 'danger') {
       return (
-        <div className="p-2 rounded-circle bg-danger bg-opacity-10 text-danger flex-shrink-0 d-flex align-items-center justify-content-center">
-          <AlertTriangle size={22} aria-hidden="true" />
+        <div className="confirm-dialog__icon confirm-dialog__icon--danger">
+          <Trash2 size={26} aria-hidden="true" />
         </div>
       );
     }
     if (variant === 'warning') {
       return (
-        <div className="p-2 rounded-circle bg-warning bg-opacity-10 text-warning flex-shrink-0 d-flex align-items-center justify-content-center">
-          <AlertCircle size={22} aria-hidden="true" />
+        <div className="confirm-dialog__icon confirm-dialog__icon--warning">
+          <AlertTriangle size={26} aria-hidden="true" />
         </div>
       );
     }
     return (
-      <div className="p-2 rounded-circle bg-primary bg-opacity-10 text-primary flex-shrink-0 d-flex align-items-center justify-content-center">
-        <Info size={22} aria-hidden="true" />
+      <div className="confirm-dialog__icon confirm-dialog__icon--primary">
+        <Info size={26} aria-hidden="true" />
       </div>
     );
+  };
+
+  const renderConfirmIcon = () => {
+    if (variant === 'danger') {
+      return <Trash2 size={16} aria-hidden="true" className="me-1" />;
+    }
+    if (variant === 'warning') {
+      return <AlertTriangle size={16} aria-hidden="true" className="me-1" />;
+    }
+    return <Check size={16} aria-hidden="true" className="me-1" />;
   };
 
   return (
@@ -100,7 +111,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       ariaLabelledBy={titleId}
       ariaDescribedBy={descId}
       footer={
-        <div className="d-flex justify-content-end gap-2 w-100">
+        <div className="confirm-dialog__footer d-flex justify-content-end gap-2">
           <Button
             ref={cancelButtonRef}
             type="button"
@@ -117,14 +128,20 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             onClick={onConfirm}
             isLoading={isLoading}
           >
+            {renderConfirmIcon()}
             {confirmLabel}
           </Button>
         </div>
       }
     >
+      <div className={`confirm-dialog__stripe confirm-dialog__stripe--${variant}`} />
       <div className="d-flex align-items-start gap-3 py-1">
         {renderIcon()}
-        <div id={descId} className="flex-grow-1 text-secondary" style={{ fontSize: '0.925rem', lineHeight: '1.45' }}>
+        <div
+          id={descId}
+          className="flex-grow-1 text-secondary"
+          style={{ fontSize: '0.95rem', lineHeight: '1.55' }}
+        >
           {typeof message === 'string' ? <p className="mb-0">{message}</p> : message}
         </div>
       </div>

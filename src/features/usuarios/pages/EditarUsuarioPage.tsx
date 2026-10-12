@@ -16,11 +16,13 @@ import {
 } from '../schemas/usuario.schema';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useReturnToPrevious } from '../../../shared/lib/useReturnToPrevious';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 
 export const EditarUsuarioPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const usuarioId = Number(id);
   const goBack = useReturnToPrevious();
+  const confirm = useConfirm();
   const { roles, usuarioDb } = useAuth();
   const editandoPropioPerfil = usuarioDb?.id === usuarioId;
   const rolActorPrincipal = (roles.includes('SUPERADMIN')
@@ -129,6 +131,35 @@ export const EditarUsuarioPage: React.FC = () => {
 
   const onSubmit = async (data: EditarUsuarioFormValues) => {
     try {
+      const teniaAdmin = Boolean(
+        usuario?.administrador?.estado === 'ACTIVO' ||
+          usuario?.rol === 'ADMINISTRADOR' ||
+          usuario?.rol === 'SUPERADMIN'
+      );
+      const teniaBarbero = Boolean(usuario?.barbero && usuario.barbero.estado === 'ACTIVO');
+
+      // Si desmarca rol de administrador (SUPERADMIN editando a otro admin) -> peligroso
+      if (teniaAdmin && !data.esAdministrador) {
+        const ok = await confirm({
+          title: `¿Revocar rol de Administrador de ${usuario?.nombre}?`,
+          message: `El usuario perderá el acceso a las funciones de administración y configuración del sistema.`,
+          variant: 'danger',
+          confirmLabel: 'Revocar Rol',
+        });
+        if (!ok) return;
+      }
+
+      // Si desmarca perfil de barbero -> advertencia
+      if (teniaBarbero && !data.esBarbero) {
+        const ok = await confirm({
+          title: `¿Desactivar perfil de Barbero de ${usuario?.nombre}?`,
+          message: `El perfil de barbero será desactivado y no estará disponible para agendamiento de turnos.`,
+          variant: 'warning',
+          confirmLabel: 'Desactivar Perfil',
+        });
+        if (!ok) return;
+      }
+
       await actualizarUsuarioMutation.mutateAsync({
         id: usuarioId,
         datos: {

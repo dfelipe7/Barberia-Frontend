@@ -147,13 +147,14 @@ export const ServiciosPage: React.FC = () => {
       modalTitle="Registrar Nuevo Servicio"
       editModalTitle="Editar Servicio"
       onModalClose={() => setErrorForm(null)}
-      renderModalForm={({ onClose, record }) => (
+      renderModalForm={({ onClose, onDirectClose, record, setFormDirty }) => (
         <ServicioForm
           servicioInicial={record ?? null}
-          onSubmit={(datos) => handleGuardar(datos, record ?? null, onClose)}
+          onSubmit={(datos) => handleGuardar(datos, record ?? null, onDirectClose || onClose)}
           onCancel={onClose}
           isSubmitting={crearMutation.isPending || actualizarMutation.isPending}
           errorMensaje={errorForm}
+          onDirtyChange={setFormDirty}
         />
       )}
     >
