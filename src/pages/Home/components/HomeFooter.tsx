@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import BrandLogo from '../../../shared/ui/BrandLogo';
 import { BRAND } from '../../../config/brand';
 import { InstagramIcon, FacebookIcon, MapPinIcon } from './HomeIcons';
@@ -56,18 +57,18 @@ export const HomeFooter: React.FC = () => {
                 </a>
               </li>
               <li>
-                <a href="#servicios" className="kyrios-footer-link">
+                <Link to="/catalogo/servicios" className="kyrios-footer-link">
                   Servicios y Tarifas
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#barberos" className="kyrios-footer-link">
+                <Link to="/catalogo/barberos" className="kyrios-footer-link">
                   Equipo de Barberos
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#ubicacion" className="kyrios-footer-link">
-                  Ubicación & Contacto
+                  Ubicación &amp; Contacto
                 </a>
               </li>
             </ul>

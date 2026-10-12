@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut, User } from 'lucide-react';
 import BrandLogo from '../../../shared/ui/BrandLogo';
 import { BRAND } from '../../../config/brand';
@@ -43,11 +43,14 @@ function useActiveSection(ids: string[]): string {
 
 
 /* ─── Datos de navegación ───────────────────────────────────────────────── */
+// Los href que empiezan con '#' son anclas de sección; los que empiezan con '/'
+// son rutas internas y se renderizan con <Link> en lugar de <a>.
 const NAV_LINKS = [
-  { id: 'inicio',    href: '#inicio',    label: 'Inicio' },
-  { id: 'servicios', href: '#servicios', label: 'Servicios' },
-  { id: 'barberos',  href: '#barberos',  label: 'Barberos' },
-  { id: 'ubicacion', href: '#ubicacion', label: 'Ubicación' },
+  { id: 'inicio',    href: '#inicio',             label: 'Inicio' },
+  { id: 'servicios', href: '#servicios',           label: 'Servicios' },
+  { id: 'barberos',  href: '#barberos',            label: 'Barberos' },
+  { id: 'catalogo',  href: '/catalogo/servicios',  label: 'Catálogo' },
+  { id: 'ubicacion', href: '#ubicacion',           label: 'Ubicación' },
 ] as const;
 
 /* ─── Avatar con iniciales + indicador online ───────────────────────────── */
@@ -132,16 +135,29 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           className="d-none d-lg-flex align-items-center gap-1 flex-grow-1 justify-content-center"
           aria-label="Navegación principal"
         >
-          {NAV_LINKS.map(({ id, href, label }) => (
-            <a
-              key={id}
-              href={href}
-              className={`kyrios-nav-link${activeSection === id ? ' is-active' : ''}`}
-            >
-              <span className="kyrios-nav-link__label">{label}</span>
-              <span className="kyrios-nav-link__underline" aria-hidden="true" />
-            </a>
-          ))}
+          {NAV_LINKS.map(({ id, href, label }) =>
+            href.startsWith('/') ? (
+              // Ruta interna → Link de React Router
+              <Link
+                key={id}
+                to={href}
+                className={`kyrios-nav-link${activeSection === id ? ' is-active' : ''}`}
+              >
+                <span className="kyrios-nav-link__label">{label}</span>
+                <span className="kyrios-nav-link__underline" aria-hidden="true" />
+              </Link>
+            ) : (
+              // Ancla de sección → <a> nativo
+              <a
+                key={id}
+                href={href}
+                className={`kyrios-nav-link${activeSection === id ? ' is-active' : ''}`}
+              >
+                <span className="kyrios-nav-link__label">{label}</span>
+                <span className="kyrios-nav-link__underline" aria-hidden="true" />
+              </a>
+            )
+          )}
         </nav>
 
         {/* ── CTA Desktop ── */}
@@ -259,20 +275,32 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           aria-label="Menú de navegación móvil"
         >
           <div className="container pb-4 pt-2 d-flex flex-column">
-            {NAV_LINKS.map(({ id, href, label }) => (
-              <a
-                key={id}
-                href={href}
-                className={`kyrios-nav-link kyrios-nav-link--mobile${activeSection === id ? ' is-active' : ''}`}
-                onClick={closeMobileMenu}
-                role="menuitem"
-              >
-                <span className="kyrios-nav-link__label">{label}</span>
-                {activeSection === id && (
-                  <span className="kyrios-nav-link__dot" aria-hidden="true" />
-                )}
-              </a>
-            ))}
+            {NAV_LINKS.map(({ id, href, label }) =>
+              href.startsWith('/') ? (
+                <Link
+                  key={id}
+                  to={href}
+                  className={`kyrios-nav-link kyrios-nav-link--mobile${activeSection === id ? ' is-active' : ''}`}
+                  onClick={closeMobileMenu}
+                  role="menuitem"
+                >
+                  <span className="kyrios-nav-link__label">{label}</span>
+                </Link>
+              ) : (
+                <a
+                  key={id}
+                  href={href}
+                  className={`kyrios-nav-link kyrios-nav-link--mobile${activeSection === id ? ' is-active' : ''}`}
+                  onClick={closeMobileMenu}
+                  role="menuitem"
+                >
+                  <span className="kyrios-nav-link__label">{label}</span>
+                  {activeSection === id && (
+                    <span className="kyrios-nav-link__dot" aria-hidden="true" />
+                  )}
+                </a>
+              )
+            )}
 
             {/* CTA al fondo del drawer */}
             <div className="kyrios-nav-mobile-divider pt-4 mt-2 d-flex flex-column gap-2">

@@ -1,8 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useBarberosCatalogo } from '../../../features/barberos/api/barberos.facade';
 import type { BarberoCatalogo } from '../../../features/barberos/types/barberos.types';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import BarberCard from './BarberCard';
+import { ArrowUpRightIcon } from './HomeIcons';
 
 interface BarbersSectionProps {
   onReservarBarbero: (barbero: BarberoCatalogo) => void;
@@ -96,18 +98,33 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
           </div>
         )}
 
-        {/* Estado: Lista de Barberos */}
+        {/* Estado: Lista de Barberos — máx. 3 en Home */}
         {!isLoading && !error && barberos.length > 0 && (
-          <div className="row g-4 justify-content-center">
-            {barberos.map((barbero) => (
-              <div key={barbero.id} className="col-12 col-sm-6 col-lg-4">
-                <BarberCard
-                  barbero={barbero}
-                  onReservar={onReservarBarbero}
-                />
+          <>
+            <div className="row g-4 justify-content-center">
+              {barberos.slice(0, 3).map((barbero) => (
+                <div key={barbero.id} className="col-12 col-sm-6 col-lg-4">
+                  <BarberCard
+                    barbero={barbero}
+                    onReservar={onReservarBarbero}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* CTA: solo visible si hay más de 3 barberos */}
+            {barberos.length > 3 && (
+              <div className="text-center mt-5">
+                <Link
+                  to="/catalogo/barberos"
+                  className="btn-kyrios-outline d-inline-flex align-items-center gap-2"
+                >
+                  Ver catálogo completo
+                  <ArrowUpRightIcon size={16} />
+                </Link>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </section>
