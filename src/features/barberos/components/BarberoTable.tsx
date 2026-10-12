@@ -4,6 +4,8 @@ import { UserCog, Shield, Eye, Percent, Camera, Pencil, Scissors, UserMinus, Use
 import Table, { type Column } from '../../../shared/ui/Table';
 import AccionesDropdown from '../../../shared/ui/AccionesDropdown';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
+import StatusBadge from '../../../shared/ui/atoms/StatusBadge';
+import UserAvatar from '../../../shared/ui/atoms/UserAvatar';
 import { useMediaQuery } from '../../../shared/lib/useMediaQuery';
 import type { BarberoGestion } from '../types/barberos.types';
 import { puedeGestionarEstado } from '../../../shared/lib/autorizacion/jerarquiaRoles';
@@ -42,13 +44,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
       header: 'Barbero',
       render: (barbero) => (
         <div className="d-flex align-items-center gap-2">
-          <div
-            className="rounded-circle bg-info bg-opacity-10 text-dark d-inline-flex justify-content-center align-items-center fw-bold flex-shrink-0"
-            style={{ width: '36px', height: '36px' }}
-          >
-            {barbero.nombre.charAt(0)}
-            {barbero.apellido.charAt(0)}
-          </div>
+          <UserAvatar nombre={barbero.nombre} apellido={barbero.apellido} fotoUrl={barbero.fotoUrl} size={36} />
           <div>
             <span className="fw-semibold d-block">
               {barbero.nombre} {barbero.apellido}
@@ -86,13 +82,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
       header: 'Estado Global',
       className: 'text-center',
       render: (barbero) => (
-        <span
-          className={`badge ${
-            barbero.estadoGlobal === 'ACTIVO' ? 'bg-success' : 'bg-danger'
-          }`}
-        >
-          {barbero.estadoGlobal === 'ACTIVO' ? 'Habilitada' : 'Bloqueada'}
-        </span>
+        <StatusBadge estado={barbero.estadoGlobal} tone="global" />
       ),
     },
     {
@@ -100,13 +90,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
       header: 'Rol Barbero',
       className: 'text-center d-none d-lg-table-cell',
       render: (barbero) => (
-        <span
-          className={`badge ${
-            barbero.estado === 'ACTIVO' ? 'bg-success' : 'bg-secondary'
-          }`}
-        >
-          {barbero.estado}
-        </span>
+        <StatusBadge estado={barbero.estado} tone="role" />
       ),
     },
     {
@@ -261,13 +245,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
             >
               {/* 1. Avatar + Nombre + Email */}
               <div className="d-flex align-items-center gap-3 mb-2">
-                <div
-                  className="rounded-circle bg-info bg-opacity-10 text-dark d-inline-flex justify-content-center align-items-center fw-bold flex-shrink-0"
-                  style={{ width: '42px', height: '42px', fontSize: '0.95rem' }}
-                >
-                  {barbero.nombre.charAt(0)}
-                  {barbero.apellido.charAt(0)}
-                </div>
+                <UserAvatar nombre={barbero.nombre} apellido={barbero.apellido} fotoUrl={barbero.fotoUrl} size={42} />
                 <div className="text-truncate">
                   <span className="fw-bold d-block text-truncate" style={{ fontSize: '0.95rem' }}>
                     {barbero.nombre} {barbero.apellido}
@@ -299,15 +277,11 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
               <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 py-2 border-top border-bottom my-2 bg-surface-app px-2 rounded">
                 <div className="d-flex align-items-center gap-1">
                   <span className="text-muted small">Cuenta:</span>
-                  <span className={`badge ${isActivo ? 'bg-success' : 'bg-danger'}`}>
-                    {isActivo ? 'Habilitada' : 'Bloqueada'}
-                  </span>
+                  <StatusBadge estado={barbero.estadoGlobal} tone="global" />
                 </div>
                 <div className="d-flex align-items-center gap-1">
                   <span className="text-muted small">Rol:</span>
-                  <span className={`badge ${barbero.estado === 'ACTIVO' ? 'bg-success' : 'bg-secondary'}`}>
-                    {barbero.estado}
-                  </span>
+                  <StatusBadge estado={barbero.estado} tone="role" />
                 </div>
               </div>
 
