@@ -5,6 +5,7 @@ import BrandLogo from '../../../shared/ui/BrandLogo';
 import { BRAND } from '../../../config/brand';
 import { MenuIcon, CloseIcon } from './HomeIcons';
 import { useTheme } from '../../../shared/context/ThemeContext';
+import { useBodyScrollLock } from '../../../shared/lib/useBodyScrollLock';
 
 /* ─── Hook: detecta si el usuario hizo scroll más allá de un umbral ─────── */
 function useScrolled(threshold = 40): boolean {
@@ -38,15 +39,6 @@ function useActiveSection(ids: string[]): string {
   return active;
 }
 
-/* ─── Hook: bloquea scroll del body mientras el menú móvil está abierto ── */
-function useBodyScrollLock(locked: boolean) {
-  useEffect(() => {
-    if (!locked) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, [locked]);
-}
 
 /* ─── Datos de navegación ───────────────────────────────────────────────── */
 const NAV_LINKS = [
