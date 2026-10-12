@@ -5,7 +5,6 @@ import { ROLES_APP } from '../constants/roles';
 import UserAvatar from '../ui/atoms/UserAvatar';
 import RoleBadge from '../ui/atoms/RoleBadge';
 
-
 export interface UserDropdownProps {
   nombre?: string;
   apellido?: string;
@@ -15,7 +14,6 @@ export interface UserDropdownProps {
   isDark: boolean;
   onCerrarSesion: () => void;
 }
-
 
 export const UserDropdown: React.FC<UserDropdownProps> = ({
   nombre,
@@ -71,7 +69,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
       const menuEl = menuRef.current;
       if (menuEl) {
         const focusable = menuEl.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
         );
         if (focusable.length > 0) {
           focusable[0].focus();
@@ -97,8 +95,8 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
 
         const focusables = Array.from(
           menuEl.querySelectorAll<HTMLElement>(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-          )
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+          ),
         );
 
         if (focusables.length === 0) return;
@@ -141,8 +139,6 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
     };
   }, [isOpen, isExiting]);
 
-
-
   return (
     <div className="position-relative d-inline-block">
       {/* Botón Trigger */}
@@ -180,16 +176,18 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
               <UserAvatar nombre={nombre} apellido={apellido} fotoUrl={fotoUrl} size={38} />
               <div style={{ minWidth: 0, flex: 1 }}>
                 <div
-                  className="fw-bold text-truncate"
+                  className="fw-bold text-truncate text-surface-card"
                   style={{
                     fontSize: '0.925rem',
-                    color: isDark ? '#FFFDFA' : '#0C0C0C',
                   }}
                 >
                   {nombre} {apellido}
                 </div>
                 {email && (
-                  <div className="text-muted small text-truncate" style={{ fontSize: '0.78rem' }}>
+                  <div
+                    className="text-surface-card-muted small text-truncate"
+                    style={{ fontSize: '0.78rem' }}
+                  >
                     {email}
                   </div>
                 )}
