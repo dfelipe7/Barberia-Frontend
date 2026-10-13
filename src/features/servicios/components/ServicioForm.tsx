@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckCircle2, EyeOff } from 'lucide-react';
+import { Check, CheckCircle2, EyeOff } from 'lucide-react';
 import Button from '../../../shared/ui/Button';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import FileUploadField from '../../../shared/ui/molecules/FileUploadField';
+import SearchInput from '../../../shared/ui/molecules/SearchInput';
+import EmptyState from '../../../shared/ui/molecules/EmptyState';
+import UserAvatar from '../../../shared/ui/atoms/UserAvatar';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { useBarberosGestion } from '../../barberos';
 import { servicioSchema, type ServicioFormValues, type ServicioFormInput } from '../schemas/servicio.schema';
 import type { Servicio } from '../types/servicios.types';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
+import './servicios.css';
 
 interface ServicioFormProps {
   servicioInicial?: Servicio | null;
@@ -30,10 +34,22 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
 }) => {
   const confirm = useConfirm();
   const { data: barberosGestion = [], isLoading: cargandoBarberos } = useBarberosGestion();
-  const barberos = barberosGestion.filter((b) => b.estado === 'ACTIVO');
+  const barberos = useMemo(
+    () => barberosGestion.filter((b) => b.estado === 'ACTIVO'),
+    [barberosGestion],
+  );
 
   const [previewLocal, setPreviewLocal] = useState<string | null>(null);
   const [eliminarFotoExistente, setEliminarFotoExistente] = useState(false);
+  const [busquedaBarbero, setBusquedaBarbero] = useState('');
+
+  const barberosFiltrados = useMemo(() => {
+    const q = busquedaBarbero.trim().toLowerCase();
+    if (!q) return barberos;
+    return barberos.filter((b) =>
+      `${b.nombre} ${b.apellido}`.toLowerCase().includes(q),
+    );
+  }, [barberos, busquedaBarbero]);
 
   const {
     register,
@@ -71,6 +87,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
     setPrevServicioId(servicioInicial?.id);
     setPreviewLocal(null);
     setEliminarFotoExistente(false);
+    setBusquedaBarbero('');
   }
 
   // Resetear formulario de react-hook-form al cambiar de servicio inicial
@@ -274,44 +291,122 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
           <hr className="my-2" />
         </div>
 
-        {/* BLOQUE 3: Barberos asignados (conservado para 9B) */}
+        {/* BLOQUE 3: Barberos asignados */}
         <div className="col-12">
           <label className="form-label fw-semibold">Barberos que realizan este servicio</label>
           {cargandoBarberos ? (
             <KyriosSpinner size="xs" variant="inline" mensaje="Cargando barberos..." className="my-2" />
+          ) : barberos.length === 0 ? (
+            <EmptyState
+              title="Sin barberos activos"
+              description="No hay barberos con estado ACTIVO disponibles en el sistema."
+            />
           ) : (
             <Controller
               control={control}
               name="barberoIds"
-              render={({ field }) => (
-                <div className="border rounded p-2" style={{ maxHeight: '160px', overflowY: 'auto' }}>
-                  {barberos.length === 0 && (
-                    <div className="text-muted small">No hay barberos activos disponibles.</div>
-                  )}
-                  {barberos.map((b) => (
-                    <div className="form-check" key={b.id}>
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id={`barbero-${b.id}`}
-                        checked={field.value?.includes(Number(b.id)) ?? false}
-                        onChange={(e) => {
-                          const actuales = field.value ?? [];
-                          const idNumerico = Number(b.id);
-                          field.onChange(
-                            e.target.checked
-                              ? [...actuales, idNumerico]
-                              : actuales.filter((id) => id !== idNumerico)
-                          );
-                        }}
-                      />
-                      <label className="form-check-label" htmlFor={`barbero-${b.id}`}>
-                        {b.nombre} {b.apellido}
-                      </label>
+              render={({ field }) => {
+                const seleccionados = field.value ?? [];
+                const total = barberos.length;
+                const count = seleccionados.length;
+
+                return (
+                  <div className="border rounded-3 p-3 bg-surface-card">
+                    {/* Header: contador + acciones masivas */}
+                    <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                      <span
+                        className="text-surface-muted small fw-semibold"
+                        aria-live="polite"
+                      >
+                        {count} de {total} seleccionados
+                      </span>
+
+                      <div className="d-flex gap-2">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={() =>
+                            field.onChange(barberos.map((b) => Number(b.id)))
+                          }
+                          disabled={total === 0 || count === total}
+                        >
+                          Seleccionar todos
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => field.onChange([])}
+                          disabled={count === 0}
+                        >
+                          Limpiar
+                        </button>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              )}
+
+                    {/* Búsqueda */}
+                    <SearchInput
+                      placeholder="Buscar barbero por nombre..."
+                      value={busquedaBarbero}
+                      onChange={setBusquedaBarbero}
+                      ariaLabel="Buscar barbero"
+                      className="mb-3"
+                    />
+
+                    {/* Grid de chips o EmptyState */}
+                    {barberosFiltrados.length === 0 ? (
+                      <EmptyState
+                        title="Sin coincidencias"
+                        description={`No se encontraron barberos que coincidan con "${busquedaBarbero}".`}
+                        actionLabel="Limpiar búsqueda"
+                        onAction={() => setBusquedaBarbero('')}
+                      />
+                    ) : (
+                      <div
+                        className="d-flex flex-wrap gap-2"
+                        role="group"
+                        aria-label="Selección de barberos"
+                      >
+                        {barberosFiltrados.map((b) => {
+                          const id = Number(b.id);
+                          const seleccionado = seleccionados.includes(id);
+
+                          return (
+                            <button
+                              key={id}
+                              type="button"
+                              onClick={() => {
+                                field.onChange(
+                                  seleccionado
+                                    ? seleccionados.filter((x) => x !== id)
+                                    : [...seleccionados, id],
+                                );
+                              }}
+                              aria-pressed={seleccionado}
+                              title={`${seleccionado ? 'Quitar' : 'Añadir'} ${b.nombre} ${b.apellido}`}
+                              className={`barbero-chip d-inline-flex align-items-center gap-2 ${
+                                seleccionado ? 'barbero-chip--active' : ''
+                              }`}
+                            >
+                              <UserAvatar
+                                nombre={b.nombre}
+                                apellido={b.apellido}
+                                fotoUrl={b.fotoUrl}
+                                size={28}
+                              />
+                              <span className="small fw-semibold text-nowrap">
+                                {b.nombre} {b.apellido}
+                              </span>
+                              {seleccionado && (
+                                <Check size={14} aria-hidden="true" />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }}
             />
           )}
         </div>
