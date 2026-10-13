@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Info } from 'lucide-react';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useCrearAdministrador } from '../api/usuarios.facade';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import { useToastContext } from '../../../shared/ui/ToastContext';
-import { PasswordRequirementsChecklist } from '../../../shared/components/PasswordRequirementsChecklist';
 import {
   crearAdministradorSchema,
   type CrearAdministradorFormValues,
@@ -19,7 +19,6 @@ export const CrearAdministradorPage: React.FC = () => {
   const confirm = useConfirm();
   const { showToast } = useToastContext();
   const crearAdminMutation = useCrearAdministrador();
-  const [showPasswordPopover, setShowPasswordPopover] = useState(false);
 
   const {
     register,
@@ -32,11 +31,10 @@ export const CrearAdministradorPage: React.FC = () => {
       nombre: '',
       apellido: '',
       email: '',
-      password: '',
     },
   });
 
-  const passwordValue = watch('password');
+  const emailValue = watch('email');
 
   const onSubmit = async (data: CrearAdministradorFormValues) => {
     const resumen = (
@@ -44,7 +42,7 @@ export const CrearAdministradorPage: React.FC = () => {
         <div><strong>Nombre:</strong> {data.nombre} {data.apellido || ''}</div>
         <div><strong>Email:</strong> {data.email}</div>
         <div className="text-warning-emphasis mt-2">
-          Se creará una cuenta con privilegios de administración.
+          Se creará una cuenta con privilegios de administración. El acceso se realizará mediante Google con este correo.
         </div>
       </div>
     );
@@ -63,7 +61,6 @@ export const CrearAdministradorPage: React.FC = () => {
         nombre: data.nombre,
         apellido: data.apellido,
         email: data.email,
-        password: data.password,
       });
 
       showToast('success', `Administrador ${data.nombre} creado correctamente.`);
@@ -142,26 +139,13 @@ export const CrearAdministradorPage: React.FC = () => {
               )}
             </div>
 
-            <div className="col-12 position-relative">
-              <label htmlFor="password" className="form-label fw-semibold">
-                Contraseña Temporal <span className="text-danger">*</span>
-              </label>
-              <input
-                id="password"
-                type="password"
-                className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-                placeholder="Ej. AdminBarberia2026*"
-                {...register('password')}
-                onFocus={() => setShowPasswordPopover(true)}
-                onBlur={() => setShowPasswordPopover(false)}
-              />
-              {errors.password && (
-                <div className="invalid-feedback">{errors.password.message}</div>
-              )}
-              <PasswordRequirementsChecklist
-                password={passwordValue}
-                isVisible={showPasswordPopover}
-              />
+            <div className="col-12">
+              <div className="alert alert-info d-flex align-items-center gap-2 py-2 px-3 rounded-3 small mb-0">
+                <Info size={18} className="flex-shrink-0" />
+                <span>
+                  <strong>Autenticación con Google:</strong> El administrador no requiere contraseña. Podrá iniciar sesión directamente usando su cuenta de Google ({emailValue || 'correo ingresado'}).
+                </span>
+              </div>
             </div>
 
             <div className="col-12 mt-4 d-flex justify-content-end gap-2">

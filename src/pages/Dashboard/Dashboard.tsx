@@ -253,7 +253,7 @@ export default function Dashboard() {
                                     )}
                                 </div>
                                 <p className="text-surface-muted small mb-0">
-                                    Sesión activa mediante autenticación Keycloak SSO. Roles asignados:{' '}
+                                    Sesión activa mediante autenticación Google OAuth 2.0. Roles asignados:{' '}
                                     <span className="fw-semibold">{rolesMostrados.join(', ') || 'Sin rol asignado'}</span>
                                 </p>
                             </div>

@@ -34,7 +34,7 @@ export interface AdministradorGestionDTO {
 
 export interface CrearAdministradorDTO {
   email: string;
-  password: string;
+  password?: string;
   nombre: string;
   apellido?: string;
 }

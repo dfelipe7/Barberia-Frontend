@@ -6,6 +6,7 @@ import { ErrorBoundary } from './shared/components/ErrorBoundary';
 import NotFound from './pages/NotFound/NotFound';
 import HomePage from './pages/Home/HomePage';
 import SinAcceso from './pages/SinAcceso/SinAcceso';
+import LoginPage from './pages/Login/LoginPage';
 import { routeConfig } from './shared/routes/routeConfig';
 import KyriosSpinner from './shared/ui/KyriosSpinner';
 
@@ -32,6 +33,7 @@ function App() {
 
         {/* Rutas públicas fuera de MainLayout (sin sidebar, con HomeNavbar) */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/sin-acceso" element={<SinAcceso />} />
         <Route
           path="/catalogo/servicios"

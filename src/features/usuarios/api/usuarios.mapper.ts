@@ -101,7 +101,7 @@ export const usuariosMapper = {
     nombre: string;
     apellido?: string;
     email: string;
-    password: string;
+    password?: string;
   }): CrearAdministradorDTO {
     return {
       nombre: values.nombre.trim(),

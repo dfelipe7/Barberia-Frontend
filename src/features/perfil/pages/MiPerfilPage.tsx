@@ -7,18 +7,15 @@ import { useAuth } from '../../../auth/AuthContext';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useActualizarUsuario } from '../../usuarios/api/usuarios.facade';
-import { useCambiarContrasena } from '../api/perfil.facade';
 import { useSubirFotoPropia, useEliminarFotoPropia } from '../../barberos';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
+import { ShieldCheck, ExternalLink } from 'lucide-react';
 import RoleBadge from '../../../shared/ui/atoms/RoleBadge';
-import { PasswordRequirementsChecklist } from '../../../shared/components/PasswordRequirementsChecklist';
 import {
   miPerfilSchema,
   type MiPerfilFormValues,
-  cambiarContrasenaSchema,
-  type CambiarContrasenaFormValues,
 } from '../schemas/perfil.schema';
 
 
@@ -30,10 +27,8 @@ export const MiPerfilPage: React.FC = () => {
   const { showToast } = useToastContext();
   const confirm = useConfirm();
   const [errorFoto, setErrorFoto] = useState('');
-  const [showPasswordPopover, setShowPasswordPopover] = useState(false);
 
   const actualizarUsuarioMutation = useActualizarUsuario();
-  const cambiarContrasenaMutation = useCambiarContrasena();
   const subirFotoMutation = useSubirFotoPropia();
   const eliminarFotoMutation = useEliminarFotoPropia();
 
@@ -53,24 +48,6 @@ export const MiPerfilPage: React.FC = () => {
       telefono: '',
     },
   });
-
-  // Formulario de Contraseña
-  const {
-    register: registerClave,
-    handleSubmit: handleSubmitClave,
-    watch: watchClave,
-    reset: resetClave,
-    formState: { errors: errorsClave },
-  } = useForm<CambiarContrasenaFormValues>({
-    resolver: zodResolver(cambiarContrasenaSchema),
-    defaultValues: {
-      contrasenaActual: '',
-      nuevaContrasena: '',
-      confirmarContrasena: '',
-    },
-  });
-
-  const nuevaContrasenaVal = watchClave('nuevaContrasena');
 
   useEffect(() => {
     refrescarPerfil();
@@ -100,19 +77,6 @@ export const MiPerfilPage: React.FC = () => {
       await refrescarPerfil();
       showToast('success', '¡Información actualizada correctamente!');
       setEditando(false);
-    } catch (err: unknown) {
-      console.error(err);
-    }
-  };
-
-  const onCambiarClave = async (data: CambiarContrasenaFormValues) => {
-    try {
-      await cambiarContrasenaMutation.mutateAsync({
-        contrasenaActual: data.contrasenaActual,
-        nuevaContrasena: data.nuevaContrasena,
-      });
-      showToast('success', '¡Contraseña actualizada exitosamente!');
-      resetClave();
     } catch (err: unknown) {
       console.error(err);
     }
@@ -458,81 +422,26 @@ export const MiPerfilPage: React.FC = () => {
             )}
           </div>
 
-          {/* Tarjeta de Cambio de Contraseña */}
+          {/* Tarjeta de Seguridad y Autenticación con Google */}
           <div className="card shadow-sm border-0 p-3 p-md-4 card-surface mb-4">
-            <h5 className="fw-bold mb-3">Seguridad y Contraseña</h5>
-
-            {cambiarContrasenaMutation.error && (
-              <ErrorMessage message={mapApiError(cambiarContrasenaMutation.error)} />
-            )}
-
-            <form onSubmit={handleSubmitClave(onCambiarClave)}>
-              <div className="row g-3">
-                <div className="col-12">
-                  <label htmlFor="contrasenaActual" className="form-label small fw-semibold">
-                    Contraseña Actual <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    id="contrasenaActual"
-                    type="password"
-                    className={`form-control ${errorsClave.contrasenaActual ? 'is-invalid' : ''}`}
-                    {...registerClave('contrasenaActual')}
-                  />
-                  {errorsClave.contrasenaActual && (
-                    <div className="invalid-feedback">{errorsClave.contrasenaActual.message}</div>
-                  )}
-                </div>
-
-                <div className="col-12 col-sm-6 position-relative">
-                  <label htmlFor="nuevaContrasena" className="form-label small fw-semibold">
-                    Nueva Contraseña <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    id="nuevaContrasena"
-                    type="password"
-                    className={`form-control ${errorsClave.nuevaContrasena ? 'is-invalid' : ''}`}
-                    placeholder="Ej. MiClave2026*"
-                    {...registerClave('nuevaContrasena')}
-                    onFocus={() => setShowPasswordPopover(true)}
-                    onBlur={() => setShowPasswordPopover(false)}
-                  />
-                  {errorsClave.nuevaContrasena && (
-                    <div className="invalid-feedback">{errorsClave.nuevaContrasena.message}</div>
-                  )}
-                  <PasswordRequirementsChecklist
-                    password={nuevaContrasenaVal}
-                    isVisible={showPasswordPopover}
-                  />
-                </div>
-
-                <div className="col-12 col-sm-6">
-                  <label htmlFor="confirmarContrasena" className="form-label small fw-semibold">
-                    Confirmar Nueva Contraseña <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    id="confirmarContrasena"
-                    type="password"
-                    className={`form-control ${errorsClave.confirmarContrasena ? 'is-invalid' : ''}`}
-                    {...registerClave('confirmarContrasena')}
-                  />
-                  {errorsClave.confirmarContrasena && (
-                    <div className="invalid-feedback">{errorsClave.confirmarContrasena.message}</div>
-                  )}
-                </div>
-
-                <div className="col-12 d-grid d-sm-flex justify-content-sm-end mt-3">
-                  <Button
-                    type="submit"
-                    variant="dark"
-                    size="sm"
-                    isLoading={cambiarContrasenaMutation.isPending}
-                    loadingText="Actualizando..."
-                  >
-                    Actualizar Contraseña
-                  </Button>
-                </div>
-              </div>
-            </form>
+            <h5 className="fw-bold mb-3 d-flex align-items-center gap-2">
+              <ShieldCheck size={20} className="text-success" />
+              Seguridad y Autenticación
+            </h5>
+            <div className="p-3 rounded-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <h6 className="fw-semibold mb-1">Cuenta protegida con Google OAuth 2.0</h6>
+              <p className="text-surface-muted small mb-3">
+                Tu sesión y acceso a la plataforma están vinculados directamente a tu cuenta de Google (<strong>{usuarioDb?.email}</strong>). La contraseña, los métodos de recuperación y la verificación en dos pasos (2FA) están administrados de forma centralizada por Google.
+              </p>
+              <a
+                href="https://myaccount.google.com/security"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-outline-secondary btn-sm rounded-pill d-inline-flex align-items-center gap-1"
+              >
+                Administrar seguridad en Google <ExternalLink size={14} />
+              </a>
+            </div>
           </div>
 
           {usuarioDb?.rol === 'SUPERADMIN' && (
