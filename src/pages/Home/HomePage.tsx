@@ -17,7 +17,7 @@ import HomeFooter from './components/HomeFooter';
 import ReservaEnProcesoAlert from './components/ReservaEnProcesoAlert';
 
 export const HomePage: React.FC = () => {
-  const { keycloak, isAuthenticated, nombre, roles, usuarioDb } = useAuth();
+  const { keycloak, isAuthenticated, isInitializing, nombre, roles, usuarioDb } = useAuth();
   const navigate = useNavigate();
 
   const tienePermiso = roles.some((r) => esRolApp(r));
@@ -32,11 +32,12 @@ export const HomePage: React.FC = () => {
   } | null>(null);
 
   useEffect(() => {
+    if (isInitializing) return;
     // Si inicia sesión pero no posee ningún rol en la aplicación o está bloqueado globalmente, redirigir a "Sin Acceso"
     if (isAuthenticated && (!tienePermiso || usuarioDb?.estado === 'INACTIVO')) {
       navigate('/sin-acceso');
     }
-  }, [isAuthenticated, tienePermiso, usuarioDb, navigate]);
+  }, [isInitializing, isAuthenticated, tienePermiso, usuarioDb, navigate]);
 
   // Desplaza suavemente la ventana hasta donde aparece la notificación de reserva en proceso
   const scrollHaciaNotificacion = useCallback(() => {

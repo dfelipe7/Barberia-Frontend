@@ -40,7 +40,8 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 
   const iniN = (nombre || '').trim()[0] || '';
   const iniA = (apellido || '').trim()[0] || '';
-  const iniciales = (iniN + iniA).toUpperCase() || 'U';
+  if (!url && !iniN && !iniA) return null;
+  const iniciales = (iniN + iniA).toUpperCase();
   const fontSize = `${Math.max(11, Math.round(size * 0.38))}px`;
 
   return (

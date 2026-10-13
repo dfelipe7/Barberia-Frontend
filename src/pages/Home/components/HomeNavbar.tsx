@@ -25,9 +25,11 @@ function useScrolled(threshold = 40): boolean {
 
 
 /* ─── Avatar con iniciales + indicador online ───────────────────────────── */
-const UserAvatar: React.FC<{ nombre: string; online?: boolean }> = ({ nombre, online }) => {
-  const cleanName = (nombre || '').trim();
-  const initials = (cleanName ? cleanName.slice(0, 2) : 'US').toUpperCase();
+const UserAvatar: React.FC<{ nombre?: string | null; apellido?: string | null; online?: boolean }> = ({ nombre, apellido, online }) => {
+  const iniN = (nombre || '').trim()[0] || '';
+  const iniA = (apellido || '').trim()[0] || '';
+  const initials = (iniN + iniA).toUpperCase() || (nombre || '').trim().slice(0, 2).toUpperCase();
+  if (!initials) return null;
   return (
     <span className="kyrios-nav-avatar" aria-hidden="true">
       {initials}
@@ -71,6 +73,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
     isAuthenticated: authIsAuthenticated,
     isInitializing,
     nombre: authNombre,
+    apellido: authApellido,
     cerrarSesion,
     roles,
     usuarioDb,
@@ -79,16 +82,19 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 
   const isAuthenticated = propIsAuthenticated !== undefined ? propIsAuthenticated : authIsAuthenticated;
   const nombre = propNombre !== undefined ? propNombre : authNombre;
+  const apellido = authApellido;
   const onLogin = propOnLogin || (() => keycloak.login());
   const tieneAcceso = roles.some(esRolApp) && usuarioDb?.estado === 'ACTIVO';
 
-  // Reduce parpadeo: muestra skeleton solo si la inicialización de Keycloak toma más de 150ms
-  const [showPending, setShowPending] = useState(false);
-  useEffect(() => {
-    if (!isInitializing) return;
-    const t = setTimeout(() => setShowPending(true), 150);
-    return () => clearTimeout(t);
-  }, [isInitializing]);
+  // Solo mostramos avatar si la sesión está resuelta Y autenticada Y el
+  // usuario existe en la BD local (evita parpadeos con estado parcial).
+  const mostrarAvatar =
+    !isInitializing &&
+    isAuthenticated === true &&
+    Boolean(usuarioDb);
+
+  const displayName =
+    nombre && apellido ? `${nombre} ${apellido}` : (nombre ?? '');
 
   const scrolled = useScrolled(40);
 
@@ -116,7 +122,6 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
     cerrarSesion();
   }, [closeMobileMenu, cerrarSesion]);
 
-  const displayName = nombre || 'Usuario';
   const mobileMenuId = 'home-mobile-menu';
 
   return (
@@ -186,16 +191,11 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           </button>
 
           {isInitializing ? (
-            showPending ? (
-              <div
-                className="kyrios-nav-avatar"
-                aria-hidden="true"
-                style={{ opacity: 0.5 }}
-              />
-            ) : null
-          ) : isAuthenticated ? (
+            // Espacio reservado para evitar layout shift (sin spinner, sin círculo)
+            <div style={{ width: 32, height: 32 }} aria-hidden="true" />
+          ) : mostrarAvatar ? (
             <div className="d-flex align-items-center gap-2">
-              <UserAvatar nombre={displayName} online />
+              <UserAvatar nombre={nombre} apellido={apellido} online />
               <span className="kyrios-nav-greeting">{displayName}</span>
               <button
                 type="button"
@@ -253,14 +253,9 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           </button>
 
           {isInitializing ? (
-            showPending ? (
-              <div
-                className="kyrios-nav-avatar"
-                aria-hidden="true"
-                style={{ opacity: 0.5 }}
-              />
-            ) : null
-          ) : isAuthenticated ? (
+            // Espacio reservado para evitar layout shift (sin spinner, sin círculo)
+            <div style={{ width: 32, height: 32 }} aria-hidden="true" />
+          ) : mostrarAvatar ? (
             <button
               type="button"
               className="p-0 border-0 bg-transparent d-inline-flex align-items-center rounded-circle"
@@ -268,7 +263,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
               aria-label="Ir a mi panel administrativo"
               title="Mi panel"
             >
-              <UserAvatar nombre={displayName} online />
+              <UserAvatar nombre={nombre} apellido={apellido} online />
             </button>
           ) : (
             <button
@@ -335,18 +330,12 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
             {/* CTA al fondo del drawer */}
             <div className="kyrios-nav-mobile-divider pt-4 mt-2 d-flex flex-column gap-2">
               {isInitializing ? (
-                showPending ? (
-                  <div className="py-2 text-center" aria-hidden="true">
-                    <div
-                      className="kyrios-nav-avatar mx-auto"
-                      style={{ opacity: 0.5 }}
-                    />
-                  </div>
-                ) : null
-              ) : isAuthenticated ? (
+                // Espacio reservado para evitar layout shift
+                <div style={{ height: 40 }} aria-hidden="true" />
+              ) : mostrarAvatar ? (
                 <>
                   <div className="kyrios-nav-greeting d-flex align-items-center gap-2 mb-1">
-                    <UserAvatar nombre={displayName} online />
+                    <UserAvatar nombre={nombre} apellido={apellido} online />
                     <span>Conectado como <strong>{displayName}</strong></span>
                   </div>
                   <button
