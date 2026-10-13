@@ -20,6 +20,7 @@ interface ServicioFormProps {
   onSubmit: (datos: ServicioFormValues) => Promise<void>;
   onCancel: () => void;
   isSubmitting?: boolean;
+  loadingText?: string;
   errorMensaje?: string | null;
   onDirtyChange?: (isDirty: boolean) => void;
 }
@@ -29,6 +30,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
   onSubmit,
   onCancel,
   isSubmitting = false,
+  loadingText = 'Guardando...',
   errorMensaje,
   onDirtyChange,
 }) => {
@@ -415,7 +417,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
           <Button type="button" variant="light" onClick={handleCancel} disabled={isSubmitting}>
             Cancelar
           </Button>
-          <Button type="submit" variant="primary" isLoading={isSubmitting} loadingText="Guardando...">
+          <Button type="submit" variant="primary" isLoading={isSubmitting} loadingText={loadingText}>
             {servicioInicial ? 'Guardar Cambios' : 'Registrar Servicio'}
           </Button>
         </div>
