@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, Link, NavLink, useLocation } from 'react-router-dom';
-import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut, User, Home } from 'lucide-react';
+import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut, User } from 'lucide-react';
 import BrandLogo from '../../../shared/ui/BrandLogo';
 import { BRAND } from '../../../config/brand';
 import { MenuIcon, CloseIcon } from './HomeIcons';
@@ -22,13 +22,7 @@ function useScrolled(threshold = 40): boolean {
   return scrolled;
 }
 
-/* ─── Datos de navegación ───────────────────────────────────────────────── */
-// Navegación real por rutas y modal para secciones en desarrollo
-const NAV_LINKS = [
-  { id: 'servicios', to: '/catalogo/servicios', label: 'Servicios' },
-  { id: 'barberos',  to: '/catalogo/barberos',  label: 'Barberos'  },
-  { id: 'productos', to: null,                  label: 'Productos' }, // abre modal
-] as const;
+
 
 /* ─── Avatar con iniciales + indicador online ───────────────────────────── */
 const UserAvatar: React.FC<{ nombre: string; online?: boolean }> = ({ nombre, online }) => {
@@ -60,6 +54,17 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const enHome = location.pathname === '/';
+
+  const navLinks = useMemo(() => {
+    const base = [
+      { id: 'servicios', to: '/catalogo/servicios', label: 'Servicios' },
+      { id: 'barberos',  to: '/catalogo/barberos',  label: 'Barberos'  },
+      { id: 'productos', to: null,                  label: 'Productos' },
+    ];
+    return enHome
+      ? base
+      : [{ id: 'inicio', to: '/', label: 'Inicio' }, ...base];
+  }, [enHome]);
 
   const { theme, setTheme, isDark } = useTheme();
   const {
@@ -136,7 +141,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           className="d-none d-xl-flex align-items-center gap-1 flex-grow-1 justify-content-center"
           aria-label="Navegación principal"
         >
-          {NAV_LINKS.map((item) =>
+          {navLinks.map((item) =>
             item.to ? (
               <NavLink
                 key={item.id}
@@ -169,18 +174,6 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 
         {/* ── CTA Desktop ── */}
         <div className="d-none d-xl-flex align-items-center gap-2 flex-shrink-0">
-          {/* Botón Inicio visible solo fuera de la página principal */}
-          {!enHome && (
-            <Link
-              to="/"
-              className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
-              aria-label="Volver al inicio"
-            >
-              <Home size={15} />
-              Inicio
-            </Link>
-          )}
-
           {/* Toggle de tema */}
           <button
             type="button"
@@ -309,7 +302,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           aria-label="Menú de navegación móvil"
         >
           <div className="container pb-4 pt-2 d-flex flex-column">
-            {NAV_LINKS.map((item) =>
+            {navLinks.map((item) =>
               item.to ? (
                 <NavLink
                   key={item.id}

@@ -54,6 +54,11 @@ export const HomeFooter: React.FC = () => {
             </h4>
             <ul className="list-unstyled mb-0">
               <li>
+                <Link to="/" className="kyrios-footer-link">
+                  Inicio
+                </Link>
+              </li>
+              <li>
                 <Link to="/catalogo/servicios" className="kyrios-footer-link">
                   Servicios
                 </Link>
@@ -68,13 +73,13 @@ export const HomeFooter: React.FC = () => {
                   type="button"
                   className="kyrios-footer-link bg-transparent border-0 p-0 text-start"
                   onClick={() => setProductosModalOpen(true)}
-                  style={{ font: 'inherit', cursor: 'pointer' }}
+                  aria-label="Productos (sección en desarrollo)"
                 >
                   Productos
                 </button>
               </li>
               <li>
-                <a href="#ubicacion" className="kyrios-footer-link">
+                <a href="/#ubicacion" className="kyrios-footer-link">
                   Ubicación
                 </a>
               </li>
