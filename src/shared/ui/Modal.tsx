@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import './modal.css';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -10,6 +11,9 @@ export interface ModalProps {
   role?: 'dialog' | 'alertdialog';
   ariaLabelledBy?: string;
   ariaDescribedBy?: string;
+  /** Si es true, el modal ocupa pantalla completa en móvil (< 576px).
+   *  Por defecto false: modal centrado con márgenes en todos los tamaños. */
+  fullscreenOnMobile?: boolean;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -22,6 +26,7 @@ export const Modal: React.FC<ModalProps> = ({
   role = 'dialog',
   ariaLabelledBy,
   ariaDescribedBy,
+  fullscreenOnMobile = false,
 }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -41,7 +46,14 @@ export const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null;
 
-  const sizeClass = size === 'sm' ? 'modal-sm' : size === 'lg' ? 'modal-lg' : size === 'xl' ? 'modal-xl' : '';
+  const sizeClass =
+    size === 'sm' ? 'modal-sm'
+    : size === 'lg' ? 'modal-lg'
+    : size === 'xl' ? 'modal-xl'
+    : '';
+
+  // fullscreen solo si el consumidor lo pide explícitamente
+  const fullscreenClass = fullscreenOnMobile ? 'modal-fullscreen-sm-down' : '';
 
   return (
     <>
@@ -57,10 +69,30 @@ export const Modal: React.FC<ModalProps> = ({
           if (e.target === e.currentTarget) onClose();
         }}
       >
-        <div className={`modal-dialog modal-dialog-centered modal-fullscreen-sm-down ${sizeClass}`} role="document">
-          <div className="modal-content shadow">
-            <div className="modal-header">
-              <h5 id={ariaLabelledBy} className="modal-title fw-bold">{title}</h5>
+        <div
+          className={`modal-dialog modal-dialog-centered modal-dialog-scrollable kyrios-modal-dialog ${sizeClass} ${fullscreenClass}`.trim()}
+          role="document"
+          style={{
+            // size="sm" sin max-width Bootstrap explícito: forzamos 420px
+            maxWidth: size === 'sm' ? '420px' : undefined,
+            margin: '1rem auto',
+          }}
+        >
+          <div
+            className="modal-content shadow kyrios-modal-content"
+            style={{
+              maxHeight: 'calc(100vh - 2rem)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <div className="modal-header flex-shrink-0">
+              <h5
+                id={ariaLabelledBy}
+                className="modal-title fw-bold kyrios-modal-title"
+              >
+                {title}
+              </h5>
               <button
                 type="button"
                 className="btn-close"
@@ -68,8 +100,14 @@ export const Modal: React.FC<ModalProps> = ({
                 onClick={onClose}
               />
             </div>
-            <div className="modal-body">{children}</div>
-            {footer && <div className="modal-footer">{footer}</div>}
+
+            <div className="modal-body kyrios-modal-body">{children}</div>
+
+            {footer && (
+              <div className="modal-footer flex-shrink-0 kyrios-modal-footer">
+                {footer}
+              </div>
+            )}
           </div>
         </div>
       </div>

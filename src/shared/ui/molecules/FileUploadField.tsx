@@ -4,7 +4,7 @@ import Button from '../Button';
 interface FileUploadFieldProps {
   previewUrl?: string | null;
   placeholderTexto: string;
-  onFileSelected: (file: File) => void;
+  onFileSelected: (file: File) => void | Promise<void>;
   onRemove?: () => void;
   isUploading?: boolean;
   isRemoving?: boolean;
@@ -69,19 +69,31 @@ export const FileUploadField: React.FC<FileUploadFieldProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [errorLocal, setErrorLocal] = useState('');
 
-  const handleSeleccionar = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /**
+   * Manejador async: espera a que onFileSelected (potencialmente async,
+   * p.ej. muestra un ConfirmDialog) resuelva antes de resetear el input.
+   * Así, si el padre cancela la operación, el usuario puede volver a
+   * seleccionar el mismo archivo sin que el navegador ignore el evento change.
+   */
+  const handleSeleccionar = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setErrorLocal('');
+
     if (file.size > TAMANO_MAXIMO_BYTES) {
       setErrorLocal('La imagen supera el límite permitido de 5 MB.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
     if (!TIPOS_VALIDOS.includes(file.type)) {
       setErrorLocal('Formato no válido. Solo se admiten imágenes JPG, PNG o WEBP.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
-    onFileSelected(file);
+
+    // Esperamos a que el padre termine (incluyendo cualquier confirm async).
+    // El reset DESPUÉS de que resuelva permite re-seleccionar el mismo archivo.
+    await onFileSelected(file);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 

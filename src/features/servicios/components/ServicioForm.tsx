@@ -136,6 +136,46 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
     onCancel();
   };
 
+  /**
+   * Intercepta la selección de imagen: si ya existe una imagen previa
+   * (local o en el servidor), muestra un confirm antes de reemplazarla.
+   * Al ser async, FileUploadField espera el resultado antes de resetear
+   * el input, permitiendo re-seleccionar el mismo archivo si se cancela.
+   */
+  const handleFileSelected = async (file: File) => {
+    const tieneImagenPrevia =
+      Boolean(previewLocal) ||
+      Boolean(servicioInicial?.fotoUrl && !eliminarFotoExistente);
+
+    if (tieneImagenPrevia) {
+      const ok = await confirm({
+        title: '¿Reemplazar imagen actual?',
+        message: (
+          <div className="d-flex flex-column gap-2 small">
+            <p className="mb-0">
+              El servicio ya tiene una imagen asignada. Se reemplazará por
+              la nueva que has seleccionado.
+            </p>
+            <p className="mb-0 text-surface-muted">
+              Esta acción se aplicará al guardar el formulario.
+            </p>
+          </div>
+        ),
+        variant: 'warning',
+        confirmLabel: 'Reemplazar',
+        cancelLabel: 'Mantener actual',
+      });
+      if (!ok) return; // input se resetea en FileUploadField después de que resuelva
+    }
+
+    // Aplicar la nueva imagen
+    if (previewLocal) URL.revokeObjectURL(previewLocal);
+    setPreviewLocal(URL.createObjectURL(file));
+    setValue('foto', file, { shouldDirty: true });
+    setEliminarFotoExistente(false);
+    setValue('eliminarFoto', false, { shouldDirty: true });
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* Banner de visibilidad de servicio */}
@@ -254,46 +294,41 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
             <FileUploadField
               previewUrl={
                 previewLocal ||
-                (!eliminarFotoExistente && servicioInicial ? obtenerUrlFoto(servicioInicial.fotoUrl) : null)
+                (!eliminarFotoExistente && servicioInicial
+                  ? obtenerUrlFoto(servicioInicial.fotoUrl)
+                  : null)
               }
               placeholderTexto="Imagen"
-              onFileSelected={(file) => {
-                setPreviewLocal(URL.createObjectURL(file));
-                setValue('foto', file, { shouldDirty: true });
-                setEliminarFotoExistente(false);
-                setValue('eliminarFoto', false, { shouldDirty: true });
-              }}
+              onFileSelected={handleFileSelected}
               onRemove={
                 previewLocal || (!eliminarFotoExistente && servicioInicial?.fotoUrl)
                   ? async () => {
-                      // Caso 1: hay preview local → solo limpiar el estado local
+                      // Caso 1: hay preview local (imagen recién seleccionada pero no guardada)
                       if (previewLocal) {
+                        const ok = await confirm({
+                          title: '¿Quitar imagen seleccionada?',
+                          message:
+                            'La imagen que seleccionaste se descartará. La imagen actual del servicio no se verá afectada.',
+                          variant: 'warning',
+                          confirmLabel: 'Quitar',
+                          cancelLabel: 'Mantener',
+                        });
+                        if (!ok) return;
+
                         URL.revokeObjectURL(previewLocal);
                         setPreviewLocal(null);
                         setValue('foto', undefined, { shouldDirty: true });
-                        // Si además había foto en el server y estamos editando,
-                        // preguntar si también la borramos del backend
-                        if (servicioInicial?.fotoUrl) {
-                          const ok = await confirm({
-                            title: '¿Eliminar imagen del servicio?',
-                            message: 'Se quitará la imagen actual del servicio.',
-                            variant: 'danger',
-                            confirmLabel: 'Eliminar',
-                          });
-                          if (ok) {
-                            setEliminarFotoExistente(true);
-                            setValue('eliminarFoto', true, { shouldDirty: true });
-                          }
-                        }
                         return;
                       }
 
-                      // Caso 2: solo había foto en el server → confirmar
+                      // Caso 2: solo hay imagen en el servidor → confirmar borrado
                       const ok = await confirm({
                         title: '¿Eliminar imagen del servicio?',
-                        message: 'Se quitará la imagen actual del servicio.',
+                        message:
+                          'Se quitará la imagen actual del servicio. Esta acción se aplicará al guardar el formulario.',
                         variant: 'danger',
                         confirmLabel: 'Eliminar',
+                        cancelLabel: 'Mantener',
                       });
                       if (ok) {
                         setEliminarFotoExistente(true);
@@ -307,6 +342,20 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
               error={errors.foto?.message as string | undefined}
             />
           </div>
+
+          {/* Botón para deshacer el marcado de eliminación sin necesidad de subir una nueva imagen */}
+          {eliminarFotoExistente && (
+            <button
+              type="button"
+              className="btn btn-sm btn-link p-0 mt-1 text-decoration-none"
+              onClick={() => {
+                setEliminarFotoExistente(false);
+                setValue('eliminarFoto', false, { shouldDirty: true });
+              }}
+            >
+              ↩ Deshacer eliminación
+            </button>
+          )}
 
           <div className="text-muted small mt-2">
             Formatos permitidos: JPG, PNG o WEBP. Máximo 5 MB.
