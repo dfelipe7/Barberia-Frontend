@@ -45,11 +45,15 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
   const [eliminarFotoExistente, setEliminarFotoExistente] = useState(false);
   const [busquedaBarbero, setBusquedaBarbero] = useState('');
 
+  // Normalización de texto para búsqueda insensible a acentos/diacríticos (ej. 'Jose' encuentra 'José')
+  const normalizar = (s: string) =>
+    s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
   const barberosFiltrados = useMemo(() => {
-    const q = busquedaBarbero.trim().toLowerCase();
+    const q = normalizar(busquedaBarbero.trim());
     if (!q) return barberos;
     return barberos.filter((b) =>
-      `${b.nombre} ${b.apellido}`.toLowerCase().includes(q),
+      normalizar(`${b.nombre} ${b.apellido}`).includes(q),
     );
   }, [barberos, busquedaBarbero]);
 
@@ -77,13 +81,14 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
     onDirtyChange?.(isDirty);
   }, [isDirty, onDirtyChange]);
 
-  // Limpieza de memoria si existe previewLocal al desmontar o cambiar
+  // Se revoca el object URL del preview para evitar memory leak al cambiar de imagen varias veces
   useEffect(() => {
     return () => {
       if (previewLocal) URL.revokeObjectURL(previewLocal);
     };
   }, [previewLocal]);
 
+  // Ajuste reactivo de estados durante render al cambiar la prop servicioInicial
   const [prevServicioId, setPrevServicioId] = useState<string | number | undefined>(servicioInicial?.id);
   if (prevServicioId !== servicioInicial?.id) {
     setPrevServicioId(servicioInicial?.id);
@@ -92,7 +97,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
     setBusquedaBarbero('');
   }
 
-  // Resetear formulario de react-hook-form al cambiar de servicio inicial
+  // Sincronización del formulario de react-hook-form al cambiar el servicio en edición
   useEffect(() => {
     if (servicioInicial) {
       reset({
@@ -152,6 +157,22 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
               <span>Este servicio <strong>NO</strong> está visible para los clientes.</span>
             </>
           )}
+        </div>
+      )}
+
+      {/* Banner de progreso al subir imagen */}
+      {isSubmitting && loadingText === 'Subiendo imagen...' && (
+        <div
+          className="upload-banner alert py-2 px-3 small d-flex align-items-center gap-2 upload-banner-anim mb-3"
+          role="status"
+          style={{
+            background: 'rgba(0, 113, 188, 0.12)',
+            border: '1px solid rgba(0, 113, 188, 0.3)',
+            color: 'var(--surface-card-text)',
+          }}
+        >
+          <KyriosSpinner size="xs" aria-hidden="true" />
+          <span>Subiendo imagen del servicio...</span>
         </div>
       )}
 
@@ -224,64 +245,68 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
         </div>
 
         {/* BLOQUE 2: Imagen del servicio */}
-        <div className="col-12 mb-2">
-          <label className="form-label fw-semibold mb-2">Imagen del servicio</label>
+        <div role="group" aria-labelledby="imagen-label" className="col-12 mb-2">
+          <span id="imagen-label" className="form-label fw-semibold mb-2 d-block">
+            Imagen del servicio
+          </span>
 
-          <FileUploadField
-            previewUrl={
-              previewLocal ||
-              (!eliminarFotoExistente && servicioInicial ? obtenerUrlFoto(servicioInicial.fotoUrl) : null)
-            }
-            placeholderTexto="Imagen"
-            onFileSelected={(file) => {
-              setPreviewLocal(URL.createObjectURL(file));
-              setValue('foto', file, { shouldDirty: true });
-              setEliminarFotoExistente(false);
-              setValue('eliminarFoto', false, { shouldDirty: true });
-            }}
-            onRemove={
-              previewLocal || (!eliminarFotoExistente && servicioInicial?.fotoUrl)
-                ? async () => {
-                    // Caso 1: hay preview local → solo limpiar el estado local
-                    if (previewLocal) {
-                      URL.revokeObjectURL(previewLocal);
-                      setPreviewLocal(null);
-                      setValue('foto', undefined, { shouldDirty: true });
-                      // Si además había foto en el server y estamos editando,
-                      // preguntar si también la borramos del backend
-                      if (servicioInicial?.fotoUrl) {
-                        const ok = await confirm({
-                          title: '¿Eliminar imagen del servicio?',
-                          message: 'Se quitará la imagen actual del servicio.',
-                          variant: 'danger',
-                          confirmLabel: 'Eliminar',
-                        });
-                        if (ok) {
-                          setEliminarFotoExistente(true);
-                          setValue('eliminarFoto', true, { shouldDirty: true });
+          <div className="servicio-form-file-upload">
+            <FileUploadField
+              previewUrl={
+                previewLocal ||
+                (!eliminarFotoExistente && servicioInicial ? obtenerUrlFoto(servicioInicial.fotoUrl) : null)
+              }
+              placeholderTexto="Imagen"
+              onFileSelected={(file) => {
+                setPreviewLocal(URL.createObjectURL(file));
+                setValue('foto', file, { shouldDirty: true });
+                setEliminarFotoExistente(false);
+                setValue('eliminarFoto', false, { shouldDirty: true });
+              }}
+              onRemove={
+                previewLocal || (!eliminarFotoExistente && servicioInicial?.fotoUrl)
+                  ? async () => {
+                      // Caso 1: hay preview local → solo limpiar el estado local
+                      if (previewLocal) {
+                        URL.revokeObjectURL(previewLocal);
+                        setPreviewLocal(null);
+                        setValue('foto', undefined, { shouldDirty: true });
+                        // Si además había foto en el server y estamos editando,
+                        // preguntar si también la borramos del backend
+                        if (servicioInicial?.fotoUrl) {
+                          const ok = await confirm({
+                            title: '¿Eliminar imagen del servicio?',
+                            message: 'Se quitará la imagen actual del servicio.',
+                            variant: 'danger',
+                            confirmLabel: 'Eliminar',
+                          });
+                          if (ok) {
+                            setEliminarFotoExistente(true);
+                            setValue('eliminarFoto', true, { shouldDirty: true });
+                          }
                         }
+                        return;
                       }
-                      return;
-                    }
 
-                    // Caso 2: solo había foto en el server → confirmar
-                    const ok = await confirm({
-                      title: '¿Eliminar imagen del servicio?',
-                      message: 'Se quitará la imagen actual del servicio.',
-                      variant: 'danger',
-                      confirmLabel: 'Eliminar',
-                    });
-                    if (ok) {
-                      setEliminarFotoExistente(true);
-                      setValue('eliminarFoto', true, { shouldDirty: true });
+                      // Caso 2: solo había foto en el server → confirmar
+                      const ok = await confirm({
+                        title: '¿Eliminar imagen del servicio?',
+                        message: 'Se quitará la imagen actual del servicio.',
+                        variant: 'danger',
+                        confirmLabel: 'Eliminar',
+                      });
+                      if (ok) {
+                        setEliminarFotoExistente(true);
+                        setValue('eliminarFoto', true, { shouldDirty: true });
+                      }
                     }
-                  }
-                : undefined
-            }
-            shape="square"
-            size={160}
-            error={errors.foto?.message as string | undefined}
-          />
+                  : undefined
+              }
+              shape="square"
+              size={160}
+              error={errors.foto?.message as string | undefined}
+            />
+          </div>
 
           <div className="text-muted small mt-2">
             Formatos permitidos: JPG, PNG o WEBP. Máximo 5 MB.
@@ -319,6 +344,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
                       <span
                         className="text-surface-muted small fw-semibold"
                         aria-live="polite"
+                        aria-atomic="true"
                       >
                         {count} de {total} seleccionados
                       </span>
@@ -331,6 +357,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
                             field.onChange(barberos.map((b) => Number(b.id)))
                           }
                           disabled={total === 0 || count === total}
+                          aria-label="Seleccionar todos los barberos"
                         >
                           Seleccionar todos
                         </button>
@@ -339,6 +366,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
                           className="btn btn-sm btn-outline-secondary"
                           onClick={() => field.onChange([])}
                           disabled={count === 0}
+                          aria-label="Quitar todos los barberos seleccionados"
                         >
                           Limpiar
                         </button>
@@ -350,7 +378,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
                       placeholder="Buscar barbero por nombre..."
                       value={busquedaBarbero}
                       onChange={setBusquedaBarbero}
-                      ariaLabel="Buscar barbero"
+                      ariaLabel="Buscar barbero por nombre"
                       className="mb-3"
                     />
 
@@ -363,48 +391,56 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
                         onAction={() => setBusquedaBarbero('')}
                       />
                     ) : (
-                      <div
-                        className="d-flex flex-wrap gap-2"
-                        role="group"
-                        aria-label="Selección de barberos"
-                      >
-                        {barberosFiltrados.map((b) => {
-                          const id = Number(b.id);
-                          const seleccionado = seleccionados.includes(id);
+                      <>
+                        <p id="barberos-help" className="visually-hidden">
+                          Pulsa sobre cada chip para añadir o quitar un barbero. Se puede buscar por nombre en el campo superior.
+                        </p>
+                        <div
+                          className="d-flex flex-wrap gap-2"
+                          role="group"
+                          aria-label="Selección de barberos"
+                          aria-describedby="barberos-help"
+                          style={{ maxHeight: '320px', overflowY: 'auto' }}
+                        >
+                          {barberosFiltrados.map((b) => {
+                            const id = Number(b.id);
+                            const seleccionado = seleccionados.includes(id);
 
-                          return (
-                            <button
-                              key={id}
-                              type="button"
-                              onClick={() => {
-                                field.onChange(
-                                  seleccionado
-                                    ? seleccionados.filter((x) => x !== id)
-                                    : [...seleccionados, id],
-                                );
-                              }}
-                              aria-pressed={seleccionado}
-                              title={`${seleccionado ? 'Quitar' : 'Añadir'} ${b.nombre} ${b.apellido}`}
-                              className={`barbero-chip d-inline-flex align-items-center gap-2 ${
-                                seleccionado ? 'barbero-chip--active' : ''
-                              }`}
-                            >
-                              <UserAvatar
-                                nombre={b.nombre}
-                                apellido={b.apellido}
-                                fotoUrl={b.fotoUrl}
-                                size={28}
-                              />
-                              <span className="small fw-semibold text-nowrap">
-                                {b.nombre} {b.apellido}
-                              </span>
-                              {seleccionado && (
-                                <Check size={14} aria-hidden="true" />
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
+                            return (
+                              <button
+                                key={id}
+                                type="button"
+                                onClick={() => {
+                                  field.onChange(
+                                    seleccionado
+                                      ? seleccionados.filter((x) => x !== id)
+                                      : [...seleccionados, id],
+                                  );
+                                }}
+                                aria-pressed={seleccionado}
+                                aria-label={`${seleccionado ? 'Quitar' : 'Añadir'} ${b.nombre} ${b.apellido}`}
+                                title={`${seleccionado ? 'Quitar' : 'Añadir'} ${b.nombre} ${b.apellido}`}
+                                className={`barbero-chip d-inline-flex align-items-center gap-2 ${
+                                  seleccionado ? 'barbero-chip--active' : ''
+                                }`}
+                              >
+                                <UserAvatar
+                                  nombre={b.nombre}
+                                  apellido={b.apellido}
+                                  fotoUrl={b.fotoUrl}
+                                  size={28}
+                                />
+                                <span className="small fw-semibold text-nowrap">
+                                  {b.nombre} {b.apellido}
+                                </span>
+                                {seleccionado && (
+                                  <Check size={14} aria-hidden="true" />
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </>
                     )}
                   </div>
                 );
