@@ -1,19 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckCircle2, EyeOff } from 'lucide-react';
+import { Check, CheckCircle2, EyeOff } from 'lucide-react';
 import Button from '../../../shared/ui/Button';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
+import FileUploadField from '../../../shared/ui/molecules/FileUploadField';
+import SearchInput from '../../../shared/ui/molecules/SearchInput';
+import EmptyState from '../../../shared/ui/molecules/EmptyState';
+import UserAvatar from '../../../shared/ui/atoms/UserAvatar';
+import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { useBarberosGestion } from '../../barberos';
 import { servicioSchema, type ServicioFormValues, type ServicioFormInput } from '../schemas/servicio.schema';
 import type { Servicio } from '../types/servicios.types';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
+import './servicios.css';
 
 interface ServicioFormProps {
   servicioInicial?: Servicio | null;
   onSubmit: (datos: ServicioFormValues) => Promise<void>;
   onCancel: () => void;
   isSubmitting?: boolean;
+  loadingText?: string;
   errorMensaje?: string | null;
   onDirtyChange?: (isDirty: boolean) => void;
 }
@@ -23,20 +30,41 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
   onSubmit,
   onCancel,
   isSubmitting = false,
+  loadingText = 'Guardando...',
   errorMensaje,
   onDirtyChange,
 }) => {
   const confirm = useConfirm();
   const { data: barberosGestion = [], isLoading: cargandoBarberos } = useBarberosGestion();
-  const barberos = barberosGestion.filter((b) => b.estado === 'ACTIVO');
+  const barberos = useMemo(
+    () => barberosGestion.filter((b) => b.estado === 'ACTIVO'),
+    [barberosGestion],
+  );
+
+  const [previewLocal, setPreviewLocal] = useState<string | null>(null);
+  const [eliminarFotoExistente, setEliminarFotoExistente] = useState(false);
+  const [busquedaBarbero, setBusquedaBarbero] = useState('');
+
+  // Normalización de texto para búsqueda insensible a acentos/diacríticos (ej. 'Jose' encuentra 'José')
+  const normalizar = (s: string) =>
+    s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  const barberosFiltrados = useMemo(() => {
+    const q = normalizar(busquedaBarbero.trim());
+    if (!q) return barberos;
+    return barberos.filter((b) =>
+      normalizar(`${b.nombre} ${b.apellido}`).includes(q),
+    );
+  }, [barberos, busquedaBarbero]);
 
   const {
     register,
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors, isDirty },
-  } = useForm<ServicioFormInput, any, ServicioFormValues>({
+  } = useForm<ServicioFormInput, unknown, ServicioFormValues>({
     resolver: zodResolver(servicioSchema),
     defaultValues: {
       nombre: '',
@@ -44,12 +72,55 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
       precio: 0,
       duracionMinutos: 30,
       barberoIds: [],
+      foto: undefined,
+      eliminarFoto: false,
     },
   });
 
   useEffect(() => {
     onDirtyChange?.(isDirty);
   }, [isDirty, onDirtyChange]);
+
+  // Se revoca el object URL del preview para evitar memory leak al cambiar de imagen varias veces
+  useEffect(() => {
+    return () => {
+      if (previewLocal) URL.revokeObjectURL(previewLocal);
+    };
+  }, [previewLocal]);
+
+  // Ajuste reactivo de estados durante render al cambiar la prop servicioInicial
+  const [prevServicioId, setPrevServicioId] = useState<string | number | undefined>(servicioInicial?.id);
+  if (prevServicioId !== servicioInicial?.id) {
+    setPrevServicioId(servicioInicial?.id);
+    setPreviewLocal(null);
+    setEliminarFotoExistente(false);
+    setBusquedaBarbero('');
+  }
+
+  // Sincronización del formulario de react-hook-form al cambiar el servicio en edición
+  useEffect(() => {
+    if (servicioInicial) {
+      reset({
+        nombre: servicioInicial.nombre,
+        descripcion: servicioInicial.descripcion ?? '',
+        precio: servicioInicial.precio,
+        duracionMinutos: servicioInicial.duracionMinutos,
+        barberoIds: servicioInicial.barberos.map((b) => Number(b.id)),
+        foto: undefined,
+        eliminarFoto: false,
+      });
+    } else {
+      reset({
+        nombre: '',
+        descripcion: '',
+        precio: 0,
+        duracionMinutos: 30,
+        barberoIds: [],
+        foto: undefined,
+        eliminarFoto: false,
+      });
+    }
+  }, [servicioInicial, reset]);
 
   const handleCancel = async () => {
     if (isDirty) {
@@ -65,17 +136,45 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
     onCancel();
   };
 
-  useEffect(() => {
-    if (servicioInicial) {
-      reset({
-        nombre: servicioInicial.nombre,
-        descripcion: servicioInicial.descripcion ?? '',
-        precio: servicioInicial.precio,
-        duracionMinutos: servicioInicial.duracionMinutos,
-        barberoIds: servicioInicial.barberos.map((b) => Number(b.id)),
+  /**
+   * Intercepta la selección de imagen: si ya existe una imagen previa
+   * (local o en el servidor), muestra un confirm antes de reemplazarla.
+   * Al ser async, FileUploadField espera el resultado antes de resetear
+   * el input, permitiendo re-seleccionar el mismo archivo si se cancela.
+   */
+  const handleFileSelected = async (file: File) => {
+    const tieneImagenPrevia =
+      Boolean(previewLocal) ||
+      Boolean(servicioInicial?.fotoUrl && !eliminarFotoExistente);
+
+    if (tieneImagenPrevia) {
+      const ok = await confirm({
+        title: '¿Reemplazar imagen actual?',
+        message: (
+          <div className="d-flex flex-column gap-2 small">
+            <p className="mb-0">
+              El servicio ya tiene una imagen asignada. Se reemplazará por
+              la nueva que has seleccionado.
+            </p>
+            <p className="mb-0 text-surface-muted">
+              Esta acción se aplicará al guardar el formulario.
+            </p>
+          </div>
+        ),
+        variant: 'warning',
+        confirmLabel: 'Reemplazar',
+        cancelLabel: 'Mantener actual',
       });
+      if (!ok) return; // input se resetea en FileUploadField después de que resuelva
     }
-  }, [servicioInicial, reset]);
+
+    // Aplicar la nueva imagen
+    if (previewLocal) URL.revokeObjectURL(previewLocal);
+    setPreviewLocal(URL.createObjectURL(file));
+    setValue('foto', file, { shouldDirty: true });
+    setEliminarFotoExistente(false);
+    setValue('eliminarFoto', false, { shouldDirty: true });
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -101,8 +200,26 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
         </div>
       )}
 
+      {/* Banner de progreso al subir imagen */}
+      {isSubmitting && loadingText === 'Subiendo imagen...' && (
+        <div
+          className="upload-banner alert py-2 px-3 small d-flex align-items-center gap-2 upload-banner-anim mb-3"
+          role="status"
+          style={{
+            background: 'rgba(0, 113, 188, 0.12)',
+            border: '1px solid rgba(0, 113, 188, 0.3)',
+            color: 'var(--surface-card-text)',
+          }}
+        >
+          <KyriosSpinner size="xs" aria-hidden="true" />
+          <span>Subiendo imagen del servicio...</span>
+        </div>
+      )}
+
       {errorMensaje && <div className="alert alert-danger py-2 small">{errorMensaje}</div>}
+
       <div className="row g-3">
+        {/* BLOQUE 1: Datos básicos */}
         <div className="col-12 col-sm-8">
           <label htmlFor="nombreServicio" className="form-label fw-semibold">
             Nombre <span className="text-danger">*</span>
@@ -162,43 +279,221 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
           {errors.precio && <div className="invalid-feedback">{errors.precio.message}</div>}
         </div>
 
+        {/* Separador hacia BLOQUE 2: Imagen */}
+        <div className="col-12">
+          <hr className="my-2" />
+        </div>
+
+        {/* BLOQUE 2: Imagen del servicio */}
+        <div role="group" aria-labelledby="imagen-label" className="col-12 mb-2">
+          <span id="imagen-label" className="form-label fw-semibold mb-2 d-block">
+            Imagen del servicio
+          </span>
+
+          <div className="servicio-form-file-upload">
+            <FileUploadField
+              previewUrl={
+                previewLocal ||
+                (!eliminarFotoExistente && servicioInicial
+                  ? obtenerUrlFoto(servicioInicial.fotoUrl)
+                  : null)
+              }
+              placeholderTexto="Imagen"
+              onFileSelected={handleFileSelected}
+              onRemove={
+                previewLocal || (!eliminarFotoExistente && servicioInicial?.fotoUrl)
+                  ? async () => {
+                      // Caso 1: hay preview local (imagen recién seleccionada pero no guardada)
+                      if (previewLocal) {
+                        const ok = await confirm({
+                          title: '¿Quitar imagen seleccionada?',
+                          message:
+                            'La imagen que seleccionaste se descartará. La imagen actual del servicio no se verá afectada.',
+                          variant: 'warning',
+                          confirmLabel: 'Quitar',
+                          cancelLabel: 'Mantener',
+                        });
+                        if (!ok) return;
+
+                        URL.revokeObjectURL(previewLocal);
+                        setPreviewLocal(null);
+                        setValue('foto', undefined, { shouldDirty: true });
+                        return;
+                      }
+
+                      // Caso 2: solo hay imagen en el servidor → confirmar borrado
+                      const ok = await confirm({
+                        title: '¿Eliminar imagen del servicio?',
+                        message:
+                          'Se quitará la imagen actual del servicio. Esta acción se aplicará al guardar el formulario.',
+                        variant: 'danger',
+                        confirmLabel: 'Eliminar',
+                        cancelLabel: 'Mantener',
+                      });
+                      if (ok) {
+                        setEliminarFotoExistente(true);
+                        setValue('eliminarFoto', true, { shouldDirty: true });
+                      }
+                    }
+                  : undefined
+              }
+              shape="square"
+              size={160}
+              error={errors.foto?.message as string | undefined}
+            />
+          </div>
+
+          {/* Botón para deshacer el marcado de eliminación sin necesidad de subir una nueva imagen */}
+          {eliminarFotoExistente && (
+            <button
+              type="button"
+              className="btn btn-sm btn-link p-0 mt-1 text-decoration-none"
+              onClick={() => {
+                setEliminarFotoExistente(false);
+                setValue('eliminarFoto', false, { shouldDirty: true });
+              }}
+            >
+              ↩ Deshacer eliminación
+            </button>
+          )}
+
+          <div className="text-muted small mt-2">
+            Formatos permitidos: JPG, PNG o WEBP. Máximo 5 MB.
+          </div>
+        </div>
+
+        {/* Separador hacia BLOQUE 3: Barberos */}
+        <div className="col-12">
+          <hr className="my-2" />
+        </div>
+
+        {/* BLOQUE 3: Barberos asignados */}
         <div className="col-12">
           <label className="form-label fw-semibold">Barberos que realizan este servicio</label>
           {cargandoBarberos ? (
             <KyriosSpinner size="xs" variant="inline" mensaje="Cargando barberos..." className="my-2" />
+          ) : barberos.length === 0 ? (
+            <EmptyState
+              title="Sin barberos activos"
+              description="No hay barberos con estado ACTIVO disponibles en el sistema."
+            />
           ) : (
             <Controller
               control={control}
               name="barberoIds"
-              render={({ field }) => (
-                <div className="border rounded p-2" style={{ maxHeight: '160px', overflowY: 'auto' }}>
-                  {barberos.length === 0 && (
-                    <div className="text-muted small">No hay barberos activos disponibles.</div>
-                  )}
-                  {barberos.map((b) => (
-                    <div className="form-check" key={b.id}>
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id={`barbero-${b.id}`}
-                        checked={field.value?.includes(Number(b.id)) ?? false}
-                        onChange={(e) => {
-                          const actuales = field.value ?? [];
-                          const idNumerico = Number(b.id);
-                          field.onChange(
-                            e.target.checked
-                              ? [...actuales, idNumerico]
-                              : actuales.filter((id) => id !== idNumerico)
-                          );
-                        }}
-                      />
-                      <label className="form-check-label" htmlFor={`barbero-${b.id}`}>
-                        {b.nombre} {b.apellido}
-                      </label>
+              render={({ field }) => {
+                const seleccionados = field.value ?? [];
+                const total = barberos.length;
+                const count = seleccionados.length;
+
+                return (
+                  <div className="border rounded-3 p-3 bg-surface-card">
+                    {/* Header: contador + acciones masivas */}
+                    <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                      <span
+                        className="text-surface-muted small fw-semibold"
+                        aria-live="polite"
+                        aria-atomic="true"
+                      >
+                        {count} de {total} seleccionados
+                      </span>
+
+                      <div className="d-flex gap-2">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={() =>
+                            field.onChange(barberos.map((b) => Number(b.id)))
+                          }
+                          disabled={total === 0 || count === total}
+                          aria-label="Seleccionar todos los barberos"
+                        >
+                          Seleccionar todos
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => field.onChange([])}
+                          disabled={count === 0}
+                          aria-label="Quitar todos los barberos seleccionados"
+                        >
+                          Limpiar
+                        </button>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              )}
+
+                    {/* Búsqueda */}
+                    <SearchInput
+                      placeholder="Buscar barbero por nombre..."
+                      value={busquedaBarbero}
+                      onChange={setBusquedaBarbero}
+                      ariaLabel="Buscar barbero por nombre"
+                      className="mb-3"
+                    />
+
+                    {/* Grid de chips o EmptyState */}
+                    {barberosFiltrados.length === 0 ? (
+                      <EmptyState
+                        title="Sin coincidencias"
+                        description={`No se encontraron barberos que coincidan con "${busquedaBarbero}".`}
+                        actionLabel="Limpiar búsqueda"
+                        onAction={() => setBusquedaBarbero('')}
+                      />
+                    ) : (
+                      <>
+                        <p id="barberos-help" className="visually-hidden">
+                          Pulsa sobre cada chip para añadir o quitar un barbero. Se puede buscar por nombre en el campo superior.
+                        </p>
+                        <div
+                          className="d-flex flex-wrap gap-2"
+                          role="group"
+                          aria-label="Selección de barberos"
+                          aria-describedby="barberos-help"
+                          style={{ maxHeight: '320px', overflowY: 'auto' }}
+                        >
+                          {barberosFiltrados.map((b) => {
+                            const id = Number(b.id);
+                            const seleccionado = seleccionados.includes(id);
+
+                            return (
+                              <button
+                                key={id}
+                                type="button"
+                                onClick={() => {
+                                  field.onChange(
+                                    seleccionado
+                                      ? seleccionados.filter((x) => x !== id)
+                                      : [...seleccionados, id],
+                                  );
+                                }}
+                                aria-pressed={seleccionado}
+                                aria-label={`${seleccionado ? 'Quitar' : 'Añadir'} ${b.nombre} ${b.apellido}`}
+                                title={`${seleccionado ? 'Quitar' : 'Añadir'} ${b.nombre} ${b.apellido}`}
+                                className={`barbero-chip d-inline-flex align-items-center gap-2 ${
+                                  seleccionado ? 'barbero-chip--active' : ''
+                                }`}
+                              >
+                                <UserAvatar
+                                  nombre={b.nombre}
+                                  apellido={b.apellido}
+                                  fotoUrl={b.fotoUrl}
+                                  size={28}
+                                />
+                                <span className="small fw-semibold text-nowrap">
+                                  {b.nombre} {b.apellido}
+                                </span>
+                                {seleccionado && (
+                                  <Check size={14} aria-hidden="true" />
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              }}
             />
           )}
         </div>
@@ -207,7 +502,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
           <Button type="button" variant="light" onClick={handleCancel} disabled={isSubmitting}>
             Cancelar
           </Button>
-          <Button type="submit" variant="primary" isLoading={isSubmitting} loadingText="Guardando...">
+          <Button type="submit" variant="primary" isLoading={isSubmitting} loadingText={loadingText}>
             {servicioInicial ? 'Guardar Cambios' : 'Registrar Servicio'}
           </Button>
         </div>

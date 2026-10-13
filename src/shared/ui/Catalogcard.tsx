@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CheckCircle2, EyeOff } from 'lucide-react';
 
 export interface CatalogCardProps {
@@ -12,6 +12,40 @@ export interface CatalogCardProps {
   actions?: React.ReactNode; // botones de administración que aparecen al hover o foco
   isStateChanging?: boolean; // activa microanimación de pulso
 }
+
+/**
+ * Subcomponente de imagen con fallback a letra inicial.
+ * Se monta con key={imageUrl} para que cuando la URL cambie,
+ * React lo desmonte y remonte, reseteando el estado de error sin useEffect.
+ */
+const CardImage: React.FC<{ src: string; alt: string; title: string }> = ({
+  src,
+  alt,
+  title,
+}) => {
+  const [errorImagen, setErrorImagen] = useState(false);
+
+  if (!errorImagen) {
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className="w-100 catalog-card-image"
+        onError={() => setErrorImagen(true)}
+        loading="lazy"
+      />
+    );
+  }
+
+  return (
+    /* Fallback: letra inicial sobre el mismo contenedor cuadrado */
+    <div className="w-100 catalog-card-image d-flex align-items-center justify-content-center">
+      <span className="font-display fs-1 text-surface-muted" style={{ opacity: 0.4 }}>
+        {title.charAt(0)}
+      </span>
+    </div>
+  );
+};
 
 export function CatalogCard({
   imageUrl,
@@ -37,10 +71,14 @@ export function CatalogCard({
     >
       <div className="position-relative overflow-hidden">
         {imageUrl ? (
-          <img src={imageUrl} alt={title} className="w-100 catalog-card-image" />
+          /* key={imageUrl}: remonta CardImage cuando cambia la URL, reseteando el error */
+          <CardImage key={imageUrl} src={imageUrl} alt={title} title={title} />
         ) : (
+          /* Sin URL: fallback directo con la letra del nombre */
           <div className="w-100 catalog-card-image d-flex align-items-center justify-content-center">
-            <span className="font-display fs-1 text-white-50">{title.charAt(0)}</span>
+            <span className="font-display fs-1 text-surface-muted" style={{ opacity: 0.4 }}>
+              {title.charAt(0)}
+            </span>
           </div>
         )}
 

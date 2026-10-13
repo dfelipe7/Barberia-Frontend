@@ -14,6 +14,41 @@ interface FotoBarberoModalProps {
   error?: string | null;
 }
 
+/**
+ * Subcomponente de preview circular con fallback a iniciales.
+ * Se monta con key={src} para resetear el estado de error sin useEffect.
+ */
+const BarberoPreviewImg: React.FC<{
+  src: string;
+  iniciales: string;
+}> = ({ src, iniciales }) => {
+  const [errorImagen, setErrorImagen] = useState(false);
+
+  if (!errorImagen) {
+    return (
+      <img
+        src={src}
+        alt="Vista previa"
+        onError={() => setErrorImagen(true)}
+        className="rounded-circle border"
+        style={{ width: '110px', height: '110px', objectFit: 'cover' }}
+      />
+    );
+  }
+
+  /* Fallback: iniciales en círculo azul (mismo estilo que UserAvatar) */
+  return (
+    <div
+      className="rounded-circle d-flex align-items-center justify-content-center border"
+      style={{ width: '110px', height: '110px', backgroundColor: '#0071BC' }}
+    >
+      <span className="fw-bold text-white" style={{ fontSize: '2rem' }}>
+        {iniciales}
+      </span>
+    </div>
+  );
+};
+
 export const FotoBarberoModal: React.FC<FotoBarberoModalProps> = ({
   isOpen,
   barbero,
@@ -71,6 +106,8 @@ export const FotoBarberoModal: React.FC<FotoBarberoModalProps> = ({
   if (!isOpen || !barbero) return null;
 
   const fotoActual = obtenerUrlFoto(barbero.fotoUrl);
+  const fuenteImagen = previewUrl || fotoActual;
+  const iniciales = `${barbero.nombre.charAt(0)}${barbero.apellido.charAt(0)}`.toUpperCase();
 
   return (
     <Modal
@@ -100,23 +137,23 @@ export const FotoBarberoModal: React.FC<FotoBarberoModalProps> = ({
       )}
 
       <div className="text-center mb-3">
-        {previewUrl || fotoActual ? (
-          <img
-            src={previewUrl || fotoActual!}
-            alt="Vista previa"
-            className="rounded-circle border"
-            style={{ width: '110px', height: '110px', objectFit: 'cover' }}
-          />
-        ) : (
-          <div
-            className="rounded-circle bg-surface-app d-flex align-items-center justify-content-center mx-auto border"
-            style={{ width: '110px', height: '110px' }}
-          >
-            <span className="text-surface-muted fw-bold" style={{ fontSize: '2rem' }}>
-              {barbero.nombre.charAt(0)}{barbero.apellido.charAt(0)}
-            </span>
-          </div>
-        )}
+        {/* Contenedor fijo: evita salto de layout si la imagen falla */}
+        <div className="d-inline-block" style={{ width: '110px', height: '110px' }}>
+          {fuenteImagen ? (
+            /* key={fuenteImagen}: remonta BarberoPreviewImg cuando cambia la fuente */
+            <BarberoPreviewImg key={fuenteImagen} src={fuenteImagen} iniciales={iniciales} />
+          ) : (
+            /* Sin imagen: iniciales directamente */
+            <div
+              className="rounded-circle d-flex align-items-center justify-content-center border"
+              style={{ width: '110px', height: '110px', backgroundColor: '#0071BC' }}
+            >
+              <span className="fw-bold text-white" style={{ fontSize: '2rem' }}>
+                {iniciales}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       <input

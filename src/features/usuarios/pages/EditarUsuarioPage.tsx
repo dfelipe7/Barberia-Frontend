@@ -17,12 +17,14 @@ import {
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useReturnToPrevious } from '../../../shared/lib/useReturnToPrevious';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
+import { useToastContext } from '../../../shared/ui/ToastContext';
 
 export const EditarUsuarioPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const usuarioId = Number(id);
   const goBack = useReturnToPrevious();
   const confirm = useConfirm();
+  const { showToast } = useToastContext();
   const { roles, usuarioDb } = useAuth();
   const editandoPropioPerfil = usuarioDb?.id === usuarioId;
   const rolActorPrincipal = (roles.includes('SUPERADMIN')
@@ -160,6 +162,36 @@ export const EditarUsuarioPage: React.FC = () => {
         if (!ok) return;
       }
 
+      // Confirmación general de guardado con resumen de datos modificados
+      const resumen = (
+        <div className="d-flex flex-column gap-2 small">
+          <div><strong>Nombre:</strong> {data.nombre} {data.apellido}</div>
+          <div><strong>Email:</strong> {data.email}</div>
+          {data.esAdministrador && <div>✓ Rol Administrador activo</div>}
+          {data.esBarbero && (
+            <>
+              <div>✓ Rol Barbero activo</div>
+              <div><strong>Teléfono:</strong> {data.telefono}</div>
+              <div><strong>Comisión:</strong> {data.porcentajeComision}%</div>
+            </>
+          )}
+          {!data.esAdministrador && !data.esBarbero && (
+            <div className="text-warning-emphasis mt-2">
+              Este usuario quedará sin roles asignados.
+            </div>
+          )}
+        </div>
+      );
+
+      const ok = await confirm({
+        title: `Guardar cambios de ${usuario?.nombre}?`,
+        message: resumen,
+        variant: 'primary',
+        confirmLabel: 'Guardar cambios',
+        cancelLabel: 'Revisar',
+      });
+      if (!ok) return;
+
       await actualizarUsuarioMutation.mutateAsync({
         id: usuarioId,
         datos: {
@@ -175,11 +207,14 @@ export const EditarUsuarioPage: React.FC = () => {
         },
       });
 
+      showToast('success', `Usuario ${data.nombre} actualizado correctamente.`);
+
       goBack({
         fallbackTo: editandoPropioPerfil ? '/mi-perfil' : '/usuarios',
         state: { mensaje: `Usuario ${data.nombre} actualizado correctamente.` },
       });
     } catch (err: unknown) {
+      showToast('danger', mapApiError(err));
       console.error('Error al actualizar usuario:', err);
     }
   };

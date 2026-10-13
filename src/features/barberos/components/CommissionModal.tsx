@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Modal from '../../../shared/ui/Modal';
 import Button from '../../../shared/ui/Button';
 import ComisionSlider from '../../../shared/ui/molecules/ComisionSlider';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import {
   actualizarComisionSchema,
   type ActualizarComisionFormValues,
@@ -27,6 +28,8 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
   isLoading = false,
   error,
 }) => {
+  const confirm = useConfirm();
+
   const {
     register,
     watch,
@@ -54,8 +57,38 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
     onClose();
   };
 
-  const onFormSubmit = async (data: ActualizarComisionFormValues) => {
+  // Confirmar cambio financiero de comisión antes de ejecutar la mutación
+  const handleSubmitConConfirm = async (data: ActualizarComisionFormValues) => {
     if (!barbero) return;
+    const anterior = barbero.porcentajeComision;
+    const nuevo = data.porcentajeComision;
+    const diferencia = nuevo - anterior;
+
+    const resumen = (
+      <div className="d-flex flex-column gap-2 small">
+        <div>
+          <strong>Barbero:</strong> {barbero.nombre} {barbero.apellido}
+        </div>
+        <div>
+          <strong>Comisión anterior:</strong> {anterior}%
+        </div>
+        <div>
+          <strong>Nueva comisión:</strong> {nuevo}%{' '}
+          <span className={diferencia > 0 ? 'text-success' : diferencia < 0 ? 'text-danger' : 'text-muted'}>
+            ({diferencia > 0 ? '+' : ''}{diferencia}%)
+          </span>
+        </div>
+      </div>
+    );
+
+    const ok = await confirm({
+      title: 'Confirmar cambio de comisión',
+      message: resumen,
+      variant: 'warning',
+      confirmLabel: 'Actualizar comisión',
+      cancelLabel: 'Revisar',
+    });
+    if (!ok) return;
     await onSubmit(barbero.id, data.porcentajeComision);
     reset();
   };
@@ -80,7 +113,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
           <Button
             type="button"
             variant="primary"
-            onClick={handleSubmit(onFormSubmit)}
+            onClick={handleSubmit(handleSubmitConConfirm)}
             isLoading={isLoading}
             loadingText="Guardando..."
           >
@@ -89,7 +122,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
         </>
       }
     >
-      <form onSubmit={handleSubmit(onFormSubmit)}>
+      <form onSubmit={handleSubmit(handleSubmitConConfirm)}>
         {error && <div className="alert alert-danger mb-3">{error}</div>}
 
         <p className="text-muted small mb-3">

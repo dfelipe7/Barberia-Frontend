@@ -1,0 +1,67 @@
+/* ─── Modal: responsive, scroll interno y word-wrap ──────────────────────── */
+
+/* Ancho responsive: ocupa casi todo el viewport en mobile con margen lateral */
+.kyrios-modal-dialog {
+  width: auto;
+  max-width: calc(100vw - 1.5rem);
+}
+
+/* A partir de sm (576px) usamos el max-width estándar de Bootstrap (500px).
+   Los tamaños lg/xl sobreescriben esto con sus propias clases de Bootstrap. */
+@media (min-width: 576px) {
+  .kyrios-modal-dialog {
+    max-width: 500px;
+  }
+}
+
+/* Colores del design system (tokens de tema).
+   Hereda automáticamente el dark mode mediante los tokens CSS. */
+.kyrios-modal-content {
+  background-color: var(--surface-card-bg);
+  color: var(--surface-card-text);
+  border: 1px solid var(--surface-card-border);
+}
+
+/* Título: evita desbordamiento con palabras largas */
+.kyrios-modal-title {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+}
+
+/* Body: scroll interno cuando el contenido supera el viewport;
+   word-wrap para emails, URLs y texto sin espacios */
+.kyrios-modal-body {
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+}
+
+/* Propagación de word-wrap a elementos comunes del body */
+.kyrios-modal-body p,
+.kyrios-modal-body div,
+.kyrios-modal-body span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Fuerza wrap en textos tipo email, URL o código */
+.kyrios-modal-body a,
+.kyrios-modal-body code,
+.kyrios-modal-body .email,
+.kyrios-modal-body strong {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Footer: los botones hacen wrap si no caben en una sola línea */
+.kyrios-modal-footer {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Dark mode: heredado de los tokens --surface-card-*, no requiere override */
+
+/* prefers-reduced-motion: Bootstrap 5 ya deshabilita la transición fade.
+   No hay propiedades adicionales que apagar aquí. */

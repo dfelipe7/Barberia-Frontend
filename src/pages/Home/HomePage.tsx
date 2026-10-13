@@ -9,6 +9,7 @@ import './home.css';
 import HomeNavbar from './components/HomeNavbar';
 import HeroSection from './components/HeroSection';
 import TrustSection from './components/TrustSection';
+import VisionSection from './components/VisionSection';
 import ServicesSection from './components/ServicesSection';
 import BarbersSection from './components/BarbersSection';
 import LocationSection from './components/LocationSection';
@@ -16,7 +17,7 @@ import HomeFooter from './components/HomeFooter';
 import ReservaEnProcesoAlert from './components/ReservaEnProcesoAlert';
 
 export const HomePage: React.FC = () => {
-  const { keycloak, isAuthenticated, nombre, roles, usuarioDb } = useAuth();
+  const { keycloak, isAuthenticated, isInitializing, nombre, roles, usuarioDb } = useAuth();
   const navigate = useNavigate();
 
   const tienePermiso = roles.some((r) => esRolApp(r));
@@ -31,11 +32,12 @@ export const HomePage: React.FC = () => {
   } | null>(null);
 
   useEffect(() => {
+    if (isInitializing) return;
     // Si inicia sesión pero no posee ningún rol en la aplicación o está bloqueado globalmente, redirigir a "Sin Acceso"
     if (isAuthenticated && (!tienePermiso || usuarioDb?.estado === 'INACTIVO')) {
       navigate('/sin-acceso');
     }
-  }, [isAuthenticated, tienePermiso, usuarioDb, navigate]);
+  }, [isInitializing, isAuthenticated, tienePermiso, usuarioDb, navigate]);
 
   // Desplaza suavemente la ventana hasta donde aparece la notificación de reserva en proceso
   const scrollHaciaNotificacion = useCallback(() => {
@@ -122,6 +124,9 @@ export const HomePage: React.FC = () => {
 
         {/* Bloque de confianza con atributos de calidad no cuantitativos */}
         <TrustSection />
+
+        {/* Sección narrativa de visión y filosofía con layout editorial */}
+        <VisionSection />
 
         {/* Sección de servicios reales conectados a GET /servicios */}
         <ServicesSection onReservarServicio={handleReservarServicio} />

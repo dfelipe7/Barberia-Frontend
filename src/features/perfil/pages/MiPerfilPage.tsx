@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useToastContext } from '../../../shared/ui/ToastContext';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,6 +24,7 @@ import {
 
 export const MiPerfilPage: React.FC = () => {
   const { usuarioDb, refrescarPerfil, roles } = useAuth();
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [editando, setEditando] = useState(false);
   const { showToast } = useToastContext();
@@ -157,6 +158,20 @@ export const MiPerfilPage: React.FC = () => {
     } catch (err: unknown) {
       setErrorFoto(mapApiError(err));
     }
+  };
+
+  const handleGestionAvanzada = async () => {
+    if (!usuarioDb) return;
+    const ok = await confirm({
+      title: 'Salir de Mi Perfil',
+      message:
+        'Vas a entrar al editor avanzado de tu cuenta. Podrás cambiar tus roles y privilegios. ¿Deseas continuar?',
+      variant: 'warning',
+      confirmLabel: 'Continuar',
+      cancelLabel: 'Cancelar',
+    });
+    if (!ok) return;
+    navigate(`/usuarios/${usuarioDb.id}/editar`, { state: { from: '/mi-perfil' } });
   };
 
   return (
@@ -527,9 +542,13 @@ export const MiPerfilPage: React.FC = () => {
                 <p className="card-text text-surface-muted small mb-4">
                   Como Superadmin, puedes modificar tus propios roles y privilegios en el sistema.
                 </p>
-                <Link to={`/usuarios/${usuarioDb.id}/editar`} state={{ from: '/mi-perfil' }} className="btn btn-outline-danger w-100">
+                <button
+                  type="button"
+                  onClick={handleGestionAvanzada}
+                  className="btn btn-outline-danger w-100"
+                >
                   Gestionar mis roles
-                </Link>
+                </button>
               </div>
             </div>
           )}

@@ -1,8 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
 import type { Servicio } from '../../../features/servicios/types/servicios.types';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import ServiceCard from './ServiceCard';
+import { ArrowUpRightIcon } from './HomeIcons';
 
 interface ServicesSectionProps {
   onReservarServicio: (servicio: Servicio) => void;
@@ -96,18 +98,33 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
           </div>
         )}
 
-        {/* Estado: Lista de Servicios Activos */}
+        {/* Estado: Lista de Servicios Activos — máx. 3 en Home */}
         {!isLoading && !error && serviciosActivos.length > 0 && (
-          <div className="row g-4">
-            {serviciosActivos.map((servicio) => (
-              <div key={servicio.id} className="col-12 col-md-6 col-lg-4">
-                <ServiceCard
-                  servicio={servicio}
-                  onReservar={onReservarServicio}
-                />
+          <>
+            <div className="row g-4">
+              {serviciosActivos.slice(0, 3).map((servicio) => (
+                <div key={servicio.id} className="col-12 col-md-6 col-lg-4">
+                  <ServiceCard
+                    servicio={servicio}
+                    onReservar={onReservarServicio}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* CTA: solo visible si hay más de 3 servicios */}
+            {serviciosActivos.length > 3 && (
+              <div className="text-center mt-5">
+                <Link
+                  to="/catalogo/servicios"
+                  className="btn-kyrios-outline d-inline-flex align-items-center gap-2"
+                >
+                  Ver catálogo completo
+                  <ArrowUpRightIcon size={16} />
+                </Link>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </section>

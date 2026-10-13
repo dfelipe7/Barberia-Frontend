@@ -1,0 +1,96 @@
+.barbero-chip {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--surface-card-border);
+  background: var(--surface-card-bg);
+  color: var(--surface-card-text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition:
+    border-color 150ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 150ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.barbero-chip:hover {
+  border-color: var(--brand-blue);
+  transform: translateY(-1px);
+}
+
+.barbero-chip:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 2px;
+}
+
+.barbero-chip--active {
+  background: rgba(0, 113, 188, 0.12);
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+}
+
+.barbero-chip--active .lucide-check {
+  color: var(--brand-blue);
+}
+
+[data-theme="dark"] .barbero-chip--active {
+  background: rgba(77, 166, 232, 0.18);
+  border-color: #4DA6E8;
+  color: #4DA6E8;
+}
+
+[data-theme="dark"] .barbero-chip--active .lucide-check {
+  color: #4DA6E8;
+}
+
+/* Animación de entrada suave para banner de subida */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.upload-banner-anim {
+  animation: fadeSlideIn 150ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Adaptación del banner de subida a Dark Mode */
+[data-theme="dark"] .upload-banner {
+  background: rgba(77, 166, 232, 0.15) !important;
+  border-color: rgba(77, 166, 232, 0.35) !important;
+}
+
+/* Entrada con fade-in para la vista previa de la imagen */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.servicio-form-file-upload img {
+  animation: fadeIn 150ms ease-out both;
+}
+
+/* Respeto estricto para usuarios con reducción de movimiento activada */
+@media (prefers-reduced-motion: reduce) {
+  .barbero-chip {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .upload-banner-anim {
+    animation: none !important;
+  }
+
+  .servicio-form-file-upload img {
+    animation: none !important;
+  }
+}

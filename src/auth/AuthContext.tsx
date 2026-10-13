@@ -16,6 +16,7 @@ interface AuthContextType {
     keycloak: typeof keycloak; // La instancia original de Keycloak por si necesitamos cerrar sesión o hacer cosas avanzadas.
     cerrarSesion: () => void; // Función centralizada para cerrar sesión sincronizando todas las pestañas abiertas
     isAuthenticated: boolean; // ¿Está logueado el usuario?
+    isInitializing: boolean; // ¿Pendiente hasta que init() termine?
     nombre?: string; // Extraído del token
     apellido?: string; // Extraído del token
     email?: string; // Extraído del token
@@ -30,46 +31,44 @@ const AuthContext = createContext<AuthContextType | undefined>(
 
 export function AuthContextProvider({
     children,
+    isInitializing,
 }: {
     children: React.ReactNode;
+    isInitializing: boolean;
 }) {
     // tokenParsed es un objeto de Javascript que contiene toda la información 
     // decodificada que Keycloak metió dentro del JWT.
     const tokenParsed = keycloak.tokenParsed;
 
-    // Extraemos los roles del usuario. Si no tiene roles, dejamos un arreglo vacío [].
-    const [roles] = useState<string[]>(
-        tokenParsed?.realm_access?.roles ?? [],
-    );
-    // Extraemos los datos personales básicos que Google/Keycloak nos pasaron.
-    const [nombre] = useState<string | undefined>(tokenParsed?.given_name);
-    const [apellido] = useState<string | undefined>(tokenParsed?.family_name);
-    const [email] = useState<string | undefined>(tokenParsed?.email);
+    // Extraemos los roles y datos personales directamente de tokenParsed.
+    // Al derivarlos en cada render, cuando isInitializing pasa de true a false,
+    // se reflejan inmediatamente sin desfases de estado.
+    const roles = tokenParsed?.realm_access?.roles ?? [];
+    const nombre = tokenParsed?.given_name;
+    const apellido = tokenParsed?.family_name;
+    const email = tokenParsed?.email;
     
     // Aquí guardaremos la información de este usuario sacada de nuestra propia base de datos (Ej: su estado de comisión)
     const [usuarioDb, setUsuarioDb] = useState<Usuario | null>(null);
 
     // Función para recargar el perfil desde la BD. Se puede llamar desde cualquier página.
     const refrescarPerfil = useCallback(async () => {
-        if (keycloak.authenticated) {
-            try {
-                const perfilDTO = await usuariosService.obtenerMiPerfil();
-                setUsuarioDb(usuariosMapper.toDomain(perfilDTO));
-            } catch (error) {
-                console.error('Error obteniendo perfil de BD:', error);
-            }
+        if (!keycloak.authenticated) return;
+        try {
+            const perfilDTO = await usuariosService.obtenerMiPerfil();
+            setUsuarioDb(usuariosMapper.toDomain(perfilDTO));
+        } catch (error) {
+            console.error('Error obteniendo perfil de BD:', error);
         }
     }, []);
 
-    // Cuando este contexto carga por primera vez...
+    // Proteger refetch de perfil contra no autenticado o inicialización pendiente
     useEffect(() => {
-        // Si el usuario ya está autenticado en Keycloak...
+        if (isInitializing) return;
         if (keycloak.authenticated) {
-            // Hacemos una petición silenciosa a nuestro backend (NestJS) para decirle:
-            // "Oye, soy este usuario, dame mi información guardada en MySQL"
             refrescarPerfil();
         }
-    }, [refrescarPerfil]);
+    }, [isInitializing, refrescarPerfil]);
 
     return (
         <AuthContext.Provider
@@ -77,6 +76,7 @@ export function AuthContextProvider({
                 keycloak,
                 cerrarSesion,
                 isAuthenticated: !!keycloak.authenticated,
+                isInitializing,
                 nombre,
                 apellido,
                 email,

@@ -9,6 +9,7 @@ import { queryClient } from './shared/lib/queryClient';
 import { ThemeProvider } from './shared/context/ThemeContext';
 import { UiProvider } from './shared/contexts/UiContext';
 import { ConfirmProvider } from './shared/contexts/ConfirmContext';
+import ScrollToTop from './shared/components/ScrollToTop';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
@@ -21,6 +22,8 @@ createRoot(document.getElementById('root')!).render(
         <UiProvider>
           <ConfirmProvider>
             <BrowserRouter>
+              {/* Restaura el scroll al top en cada cambio de ruta (salvo back/forward y hash) */}
+              <ScrollToTop />
               <AuthProvider>
                 <App />
               </AuthProvider>

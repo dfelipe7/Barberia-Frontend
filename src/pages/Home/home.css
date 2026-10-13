@@ -175,7 +175,7 @@
   padding-top: 64px;
 }
 
-/* ─── Nav links con underline animado (scroll-spy) ─── */
+/* ─── Nav links con underline animado (navegación por rutas) ─── */
 .kyrios-nav-link {
   color: var(--home-nav-link);
   font-size: 0.85rem;
@@ -186,6 +186,10 @@
   padding: 0.5rem 0.85rem;
   position: relative;
   transition: color 150ms ease;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .kyrios-nav-link:hover,
@@ -243,27 +247,56 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: rgba(0, 113, 188, 0.18);
   border: 1px solid rgba(0, 113, 188, 0.4);
   color: var(--k-blue);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  text-align: center;
   flex-shrink: 0;
+  overflow: hidden;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-theme="dark"] .kyrios-nav-avatar {
+  background: rgba(0, 113, 188, 0.28);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #38bdf8;
 }
 
 .kyrios-nav-avatar__dot {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 8px;
-  height: 8px;
+  bottom: -1px;
+  right: -1px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: #22c55e;
   border: 2px solid var(--home-bg);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 767.98px) {
+  .kyrios-nav-avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 0.72rem;
+  }
+}
+
+/* ─── CTA compacto para navbar móvil / tablet ─── */
+.kyrios-nav-cta-compact {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  min-width: auto;
+  white-space: nowrap;
 }
 
 /* ─── CTA arrow micro-animación ─── */
@@ -276,11 +309,20 @@
   transform: translate(2px, -2px);
 }
 
-/* Texto de saludo en navbar */
+/* Texto de saludo en navbar con truncado elástico */
 .kyrios-nav-greeting {
   font-size: 0.85rem;
   color: var(--home-nav-link);
   transition: color 200ms ease;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kyrios-nav-collapse .kyrios-nav-greeting {
+  max-width: 100%;
+  white-space: normal;
 }
 
 /* Botón hamburguesa */
@@ -839,6 +881,14 @@
   margin-bottom: 0.6rem;
 }
 
+button.kyrios-footer-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
 .kyrios-footer-link:hover,
 .kyrios-footer-link:focus-visible {
   color: var(--footer-link-hover);
@@ -928,8 +978,12 @@
   }
 }
 
-/* ─── Responsive adjustments ─── */
-@media (max-width: 991.98px) {
+/* ─── Responsive adjustments (Mobile & Tablet <1200px) ─── */
+@media (max-width: 1199.98px) {
+  .kyrios-nav .container {
+    padding-inline: 0.75rem;
+  }
+
   .kyrios-nav-collapse {
     background-color: var(--home-nav-collapse-bg);
     border-top: 1px solid var(--home-nav-border);
@@ -942,26 +996,28 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
+  .kyrios-nav-collapse .btn-kyrios-primary,
+  .kyrios-nav-collapse .btn-kyrios-outline {
+    padding-inline: 1rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
   .kyrios-nav-link-mobile {
     border-bottom: 1px solid var(--home-nav-border);
   }
   .kyrios-nav-mobile-divider {
     border-top: 1px solid var(--home-nav-border);
   }
+}
+
+@media (max-width: 991.98px) {
   .kyrios-hero {
     min-height: 75vh;
     padding: 4rem 0;
   }
   .kyrios-section {
     padding: 4rem 0;
-  }
-}
-
-/* 768–991px: links compactos */
-@media (min-width: 768px) and (max-width: 991.98px) {
-  .kyrios-nav-link {
-    font-size: 0.78rem;
-    padding: 0.45rem 0.6rem;
   }
 }
 
@@ -1078,7 +1134,9 @@
 .kyrios-nav,
 .kyrios-footer,
 .kyrios-location-card,
-.kyrios-trust-section {
+.kyrios-trust-section,
+.kyrios-vision-media,
+.kyrios-vision-quote {
   transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
 }
 
@@ -1090,9 +1148,147 @@
   .kyrios-nav,
   .kyrios-footer,
   .kyrios-location-card,
-  .kyrios-trust-section {
+  .kyrios-trust-section,
+  .kyrios-vision-media,
+  .kyrios-vision-quote {
     transition: none !important;
   }
 }
+
+/* ─── Sección Nuestra Visión / Filosofía (.kyrios-vision-*) ─── */
+.kyrios-vision {
+  position: relative;
+  overflow: hidden;
+}
+
+.kyrios-vision--hidden {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.kyrios-vision.kyrios-fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.kyrios-vision-media {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--home-surface-border);
+  background-color: var(--home-surface);
+}
+
+[data-theme="dark"] .kyrios-vision-media {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.kyrios-vision-img {
+  width: 100%;
+  height: 100%;
+  max-height: 440px;
+  object-fit: cover;
+  object-position: center 30%;
+  display: block;
+  filter: contrast(105%);
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kyrios-vision-media:hover .kyrios-vision-img {
+  transform: scale(1.02);
+}
+
+.kyrios-vision-badge {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background-color: var(--home-surface);
+  border: 1px solid var(--home-surface-border);
+  padding: 0.35rem 0.75rem;
+  border-radius: 3px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.kyrios-vision-badge__text {
+  font-family: var(--font-brand, 'Barlow Condensed', sans-serif);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--k-blue);
+}
+
+.kyrios-vision-content {
+  max-width: 540px;
+}
+
+.kyrios-vision-text {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--home-fg-muted);
+}
+
+.kyrios-vision-quote {
+  position: relative;
+  padding-left: 1.25rem;
+  border-left: 3px solid var(--k-blue);
+  font-family: var(--font-brand, 'Barlow Condensed', sans-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--home-fg);
+  line-height: 1.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kyrios-vision--hidden {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .kyrios-vision.kyrios-fade-in {
+    animation: none !important;
+    transform: none !important;
+  }
+  .kyrios-vision-img {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+
+/* ─── Catálogo público: transiciones de resultados ──────────────────────── */
+
+/* Envuelve la lista filtrada para animar al cambiar el query */
+.search-results-fade {
+  transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Token de animación para el empty state del catálogo */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Catálogo: título de hero con entrada suave */
+.kyrios-catalog-hero-title {
+  animation: fadeInUp 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-results-fade {
+    transition: none;
+  }
+  .kyrios-catalog-hero-title {
+    animation: none;
+  }
+}
+
+
 
 

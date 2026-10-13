@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { CheckCircle2, EyeOff, Lock, Unlock } from 'lucide-react';
 import CrudPage from '../../../shared/components/CrudPage';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
@@ -16,6 +16,8 @@ import {
   useCrearServicio,
   useActualizarServicio,
   useCambiarEstadoServicio,
+  useSubirFotoServicio,
+  useEliminarFotoServicio,
 } from '../api/servicios.facade';
 import { ServicioForm } from '../components/ServicioForm';
 import { FotoServicioModal } from '../components/FotoServicioModal';
@@ -56,14 +58,13 @@ export const ServiciosPage: React.FC = () => {
   // Guardar conteos de activos/inactivos para mantener el resumen aun al filtrar
   const [conteos, setConteos] = useState<{ activos: number; inactivos: number }>({ activos: 0, inactivos: 0 });
 
-  useEffect(() => {
-    if (!filtroEstado && servicios.length > 0) {
-      setConteos({
-        activos: servicios.filter((s) => s.estado === 'ACTIVO').length,
-        inactivos: servicios.filter((s) => s.estado === 'INACTIVO').length,
-      });
+  if (!filtroEstado && servicios.length > 0) {
+    const nuevosActivos = servicios.filter((s) => s.estado === 'ACTIVO').length;
+    const nuevosInactivos = servicios.filter((s) => s.estado === 'INACTIVO').length;
+    if (conteos.activos !== nuevosActivos || conteos.inactivos !== nuevosInactivos) {
+      setConteos({ activos: nuevosActivos, inactivos: nuevosInactivos });
     }
-  }, [servicios, filtroEstado]);
+  }
 
   const activos = conteos.activos || servicios.filter((s) => s.estado === 'ACTIVO').length;
   const inactivos = conteos.inactivos || servicios.filter((s) => s.estado === 'INACTIVO').length;
@@ -74,6 +75,8 @@ export const ServiciosPage: React.FC = () => {
   const crearMutation = useCrearServicio();
   const actualizarMutation = useActualizarServicio();
   const cambiarEstadoMutation = useCambiarEstadoServicio();
+  const subirFotoMutation = useSubirFotoServicio();
+  const eliminarFotoMutation = useEliminarFotoServicio();
 
   const handleGuardar = async (
     datos: ServicioFormValues,
@@ -82,16 +85,50 @@ export const ServiciosPage: React.FC = () => {
   ) => {
     try {
       setErrorForm(null);
+
+      // ── Paso 1: Crear o actualizar el servicio ──
+      const { foto, eliminarFoto, ...datosSinArchivos } = datos;
+
+      let servicioGuardado: { id: number } | undefined;
       if (servicioEnEdicion) {
-        await actualizarMutation.mutateAsync({ id: servicioEnEdicion.id, datos });
-        showToast('success', 'Servicio actualizado correctamente.');
+        servicioGuardado = await actualizarMutation.mutateAsync({
+          id: servicioEnEdicion.id,
+          datos: datosSinArchivos,
+        });
       } else {
-        await crearMutation.mutateAsync(datos);
-        showToast('success', 'Servicio creado correctamente.');
+        servicioGuardado = await crearMutation.mutateAsync(datosSinArchivos);
       }
+
+      const servicioId = servicioGuardado?.id ?? servicioEnEdicion?.id;
+      if (!servicioId) {
+        throw new Error('No se pudo obtener el ID del servicio');
+      }
+
+      // ── Paso 2: Subir imagen si hay una nueva ──
+      if (foto instanceof File) {
+        await subirFotoMutation.mutateAsync({
+          id: servicioId,
+          file: foto,
+        });
+      }
+
+      // ── Paso 3: Eliminar imagen si el usuario la quitó ──
+      if (eliminarFoto === true && servicioEnEdicion?.fotoUrl) {
+        await eliminarFotoMutation.mutateAsync(servicioId);
+      }
+
+      // ── Paso 4: Feedback y cerrar ──
+      showToast(
+        'success',
+        servicioEnEdicion
+          ? 'Servicio actualizado correctamente.'
+          : 'Servicio creado correctamente.'
+      );
       cerrarModal();
     } catch (err: unknown) {
-      setErrorForm(mapApiError(err));
+      const mensaje = mapApiError(err);
+      setErrorForm(mensaje);
+      showToast('danger', mensaje);
     }
   };
 
@@ -147,16 +184,25 @@ export const ServiciosPage: React.FC = () => {
       modalTitle="Registrar Nuevo Servicio"
       editModalTitle="Editar Servicio"
       onModalClose={() => setErrorForm(null)}
-      renderModalForm={({ onClose, onDirectClose, record, setFormDirty }) => (
-        <ServicioForm
-          servicioInicial={record ?? null}
-          onSubmit={(datos) => handleGuardar(datos, record ?? null, onDirectClose || onClose)}
-          onCancel={onClose}
-          isSubmitting={crearMutation.isPending || actualizarMutation.isPending}
-          errorMensaje={errorForm}
-          onDirtyChange={setFormDirty}
-        />
-      )}
+      renderModalForm={({ onClose, onDirectClose, record, setFormDirty }) => {
+        const isGuardandoServicio =
+          crearMutation.isPending ||
+          actualizarMutation.isPending ||
+          subirFotoMutation.isPending ||
+          eliminarFotoMutation.isPending;
+
+        return (
+          <ServicioForm
+            servicioInicial={record ?? null}
+            onSubmit={(datos) => handleGuardar(datos, record ?? null, onDirectClose || onClose)}
+            onCancel={onClose}
+            isSubmitting={isGuardandoServicio}
+            loadingText={subirFotoMutation.isPending ? 'Subiendo imagen...' : 'Guardando...'}
+            errorMensaje={errorForm}
+            onDirtyChange={setFormDirty}
+          />
+        );
+      }}
     >
       {({ onEdit }) => (
         <>

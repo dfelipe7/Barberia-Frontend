@@ -110,6 +110,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       role="alertdialog"
       ariaLabelledBy={titleId}
       ariaDescribedBy={descId}
+      fullscreenOnMobile={false}
       footer={
         <div className="confirm-dialog__footer d-flex justify-content-end gap-2">
           <Button
@@ -140,7 +141,12 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         <div
           id={descId}
           className="flex-grow-1 text-secondary"
-          style={{ fontSize: '0.95rem', lineHeight: '1.55' }}
+          style={{
+            fontSize: '0.95rem',
+            lineHeight: '1.55',
+            minWidth: 0,
+            overflowWrap: 'anywhere',
+          }}
         >
           {typeof message === 'string' ? <p className="mb-0">{message}</p> : message}
         </div>
