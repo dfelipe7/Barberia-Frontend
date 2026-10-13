@@ -1,0 +1,181 @@
+/* ─── Kyrios Studio Luxury Login Page ─────────────────────────────────────── */
+
+.kyrios-login-container {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background-color: #0C0C0C;
+  color: #FFFDFA;
+  padding: 2rem 1.25rem;
+  overflow: hidden;
+  font-family: var(--font-body, 'Inter', system-ui, -apple-system, sans-serif);
+}
+
+/* Ambient glow orbs */
+.kyrios-login-glow-top {
+  position: absolute;
+  top: -160px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 650px;
+  height: 420px;
+  background: radial-gradient(ellipse at center, rgba(0, 113, 188, 0.32) 0%, rgba(0, 113, 188, 0.08) 45%, transparent 70%);
+  filter: blur(55px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.kyrios-login-glow-bottom {
+  position: absolute;
+  bottom: -140px;
+  right: 15%;
+  width: 420px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(0, 113, 188, 0.16) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Subtle background grid */
+.kyrios-login-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 42px 42px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+}
+
+/* Glass Card */
+.kyrios-login-card {
+  position: relative;
+  z-index: 1;
+  max-width: 440px;
+  width: 100%;
+  background: rgba(18, 18, 22, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 28px;
+  box-shadow: 
+    0 25px 60px -15px rgba(0, 0, 0, 0.95),
+    0 0 35px rgba(0, 113, 188, 0.12);
+  overflow: hidden;
+  padding: 2.75rem 2.25rem;
+  animation: kyriosFadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Top accent line */
+.kyrios-login-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #0071BC 25%, #38bdf8 50%, #0071BC 75%, transparent);
+}
+
+/* Badge */
+.kyrios-login-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(0, 113, 188, 0.12);
+  border: 1px solid rgba(0, 113, 188, 0.32);
+  color: #38bdf8;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+}
+
+.kyrios-login-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+  animation: kyriosPulse 2s infinite;
+}
+
+/* Google Button Box */
+.kyrios-google-btn-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+  transition: all 0.3s ease;
+}
+
+.kyrios-google-btn-wrapper:hover {
+  border-color: rgba(0, 113, 188, 0.55);
+  box-shadow: 0 6px 20px rgba(0, 113, 188, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Security footnote */
+.kyrios-security-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Back button */
+.kyrios-login-back-btn {
+  color: #94a3b8;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.kyrios-login-back-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(-3px);
+}
+
+@keyframes kyriosPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
+}
+
+@keyframes kyriosFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

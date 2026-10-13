@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import KyriosSpinner from '../ui/KyriosSpinner';
@@ -13,15 +12,9 @@ interface ProtectedRouteProps {
  * de autenticación (Keycloak) y de autorización RBAC (rolesPermitidos).
  */
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ rolesPermitidos }) => {
-  const { roles, isAuthenticated, isInitializing, keycloak, usuarioDb } = useAuth();
+  const { roles, isAuthenticated, isInitializing, usuarioDb } = useAuth();
 
-  useEffect(() => {
-    if (!isInitializing && !isAuthenticated) {
-      keycloak.login();
-    }
-  }, [isInitializing, isAuthenticated, keycloak]);
-
-  // Mientras Keycloak no responda, mostrar un fallback NO bloqueante
+  // Mientras se inicializa el estado de autenticación, mostrar un fallback NO bloqueante
   if (isInitializing) {
     return (
       <div className="d-flex justify-content-center align-items-center py-5">
@@ -31,7 +24,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ rolesPermitidos 
   }
 
   if (!isAuthenticated) {
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   const tienePermiso = rolesPermitidos.some((rol) => roles.includes(rol));

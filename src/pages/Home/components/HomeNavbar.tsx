@@ -77,13 +77,12 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
     cerrarSesion,
     roles,
     usuarioDb,
-    keycloak,
   } = useAuth();
 
   const isAuthenticated = propIsAuthenticated !== undefined ? propIsAuthenticated : authIsAuthenticated;
   const nombre = propNombre !== undefined ? propNombre : authNombre;
   const apellido = authApellido;
-  const onLogin = propOnLogin || (() => keycloak.login());
+  const onLogin = propOnLogin || (() => navigate('/login'));
   const tieneAcceso = roles.some(esRolApp) && usuarioDb?.estado === 'ACTIVO';
 
   // Solo mostramos avatar si la sesión está resuelta Y autenticada Y el

@@ -17,7 +17,7 @@ import HomeFooter from './components/HomeFooter';
 import ReservaEnProcesoAlert from './components/ReservaEnProcesoAlert';
 
 export const HomePage: React.FC = () => {
-  const { keycloak, isAuthenticated, isInitializing, nombre, roles, usuarioDb } = useAuth();
+  const { isAuthenticated, isInitializing, nombre, roles, usuarioDb } = useAuth();
   const navigate = useNavigate();
 
   const tienePermiso = roles.some((r) => esRolApp(r));
@@ -91,7 +91,7 @@ export const HomePage: React.FC = () => {
       <HomeNavbar
         isAuthenticated={isAuthenticated}
         nombre={nombre}
-        onLogin={() => keycloak.login()}
+        onLogin={() => navigate('/login')}
       />
 
       {/* ── Contenido público principal ── */}

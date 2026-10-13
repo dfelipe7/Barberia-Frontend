@@ -2,7 +2,6 @@ import { z } from 'zod';
 import {
   porcentajeComisionSchema,
   telefonoSchema,
-  passwordSchema,
 } from '../../../shared/schemas/comunes.schema';
 
 export const crearBarberoSchema = z.object({
@@ -10,7 +9,7 @@ export const crearBarberoSchema = z.object({
   apellido: z.string().trim().min(2, 'El apellido es obligatorio.'),
   email: z.string().trim().email('Ingrese un correo electrónico válido.'),
   telefono: telefonoSchema,
-  password: passwordSchema,
+  password: z.string().optional(),
   porcentajeComision: porcentajeComisionSchema,
 });
 

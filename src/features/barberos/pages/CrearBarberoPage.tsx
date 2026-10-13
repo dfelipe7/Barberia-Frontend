@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Info } from 'lucide-react';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useCrearBarbero } from '../api/barberos.facade';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import { useToastContext } from '../../../shared/ui/ToastContext';
-import { PasswordRequirementsChecklist } from '../../../shared/components/PasswordRequirementsChecklist';
 import {
   crearBarberoSchema,
   type CrearBarberoFormValues,
@@ -19,7 +19,6 @@ export const CrearBarberoPage: React.FC = () => {
   const confirm = useConfirm();
   const { showToast } = useToastContext();
   const crearBarberoMutation = useCrearBarbero();
-  const [showPasswordPopover, setShowPasswordPopover] = useState(false);
 
   const {
     register,
@@ -33,12 +32,11 @@ export const CrearBarberoPage: React.FC = () => {
       apellido: '',
       email: '',
       telefono: '',
-      password: '',
       porcentajeComision: 50,
     },
   });
 
-  const passwordValue = watch('password');
+  const emailValue = watch('email');
 
   const onSubmit = async (data: CrearBarberoFormValues) => {
     const resumen = (
@@ -48,7 +46,7 @@ export const CrearBarberoPage: React.FC = () => {
         <div><strong>Teléfono:</strong> {data.telefono}</div>
         <div><strong>Comisión:</strong> {data.porcentajeComision}%</div>
         <div className="text-warning-emphasis mt-2">
-          Se creará la cuenta en Keycloak y su perfil en la base de datos.
+          Se creará el perfil del barbero en el sistema. El acceso se realizará mediante Google con este correo.
         </div>
       </div>
     );
@@ -68,7 +66,6 @@ export const CrearBarberoPage: React.FC = () => {
         apellido: data.apellido,
         email: data.email,
         telefono: data.telefono,
-        password: data.password,
         porcentajeComision: data.porcentajeComision,
       });
 
@@ -93,7 +90,7 @@ export const CrearBarberoPage: React.FC = () => {
         </Link>
         <h1 className="h2 fw-bold mb-1">Registrar Nuevo Barbero</h1>
         <p className="text-muted">
-          Crea la cuenta de usuario en Keycloak y habilita su perfil profesional de barbero.
+          Registra el perfil profesional del barbero para el sistema y el catálogo.
         </p>
       </div>
 
@@ -166,26 +163,13 @@ export const CrearBarberoPage: React.FC = () => {
               )}
             </div>
 
-            <div className="col-12 col-sm-6 position-relative">
-              <label htmlFor="password" className="form-label fw-semibold">
-                Contraseña Temporal <span className="text-danger">*</span>
-              </label>
-              <input
-                id="password"
-                type="password"
-                className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-                placeholder="Ej. Barberia2026*"
-                {...register('password')}
-                onFocus={() => setShowPasswordPopover(true)}
-                onBlur={() => setShowPasswordPopover(false)}
-              />
-              {errors.password && (
-                <div className="invalid-feedback">{errors.password.message}</div>
-              )}
-              <PasswordRequirementsChecklist
-                password={passwordValue}
-                isVisible={showPasswordPopover}
-              />
+            <div className="col-12 col-sm-6">
+              <div className="alert alert-info d-flex align-items-center gap-2 py-2 px-3 rounded-3 small mb-0 h-100">
+                <Info size={18} className="flex-shrink-0" />
+                <span>
+                  <strong>Autenticación con Google:</strong> El barbero accederá con su cuenta de Google ({emailValue || 'correo registrado'}).
+                </span>
+              </div>
             </div>
 
             <div className="col-12 col-sm-6">

@@ -40,7 +40,7 @@ export const barberosMapper = {
     apellido: string;
     email: string;
     telefono: string;
-    password: string;
+    password?: string;
     porcentajeComision: number;
   }): CrearBarberoDTO {
     return {

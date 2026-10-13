@@ -2,7 +2,6 @@ import { z } from 'zod';
 import {
   porcentajeComisionSchema,
   emailSchema,
-  passwordSchema,
   telefonoSchema,
 } from '../../../shared/schemas/comunes.schema';
 
@@ -10,7 +9,7 @@ export const crearAdministradorSchema = z.object({
   nombre: z.string().trim().min(2, 'El nombre debe tener al menos 2 caracteres.'),
   apellido: z.string(),
   email: emailSchema,
-  password: passwordSchema,
+  password: z.string().optional(),
 });
 
 export type CrearAdministradorFormValues = z.infer<typeof crearAdministradorSchema>;
