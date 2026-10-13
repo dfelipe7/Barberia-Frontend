@@ -20,6 +20,15 @@ export const servicioSchema = z.object({
     .int('La duración debe ser un número entero.')
     .min(1, 'La duración mínima es 1 minuto.'),
   barberoIds: z.array(z.number()).default([]),
+  foto: z
+    .instanceof(File)
+    .optional()
+    .refine((file) => !file || file.size <= 5 * 1024 * 1024, 'La imagen no puede superar los 5 MB.')
+    .refine((file) =>
+      !file || ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(file.type),
+      'Formato no válido. Solo JPG, PNG o WEBP.'
+    ),
+  eliminarFoto: z.boolean().optional().default(false),
 });
 
 export type ServicioFormValues = z.infer<typeof servicioSchema>;

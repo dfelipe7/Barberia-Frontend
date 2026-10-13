@@ -91,7 +91,9 @@ export const ServiciosPage: React.FC = () => {
       }
       cerrarModal();
     } catch (err: unknown) {
-      setErrorForm(mapApiError(err));
+      const mensaje = mapApiError(err);
+      setErrorForm(mensaje);
+      showToast('danger', mensaje);
     }
   };
 
