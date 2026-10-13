@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { BarberoCatalogo } from '../../../features/barberos/types/barberos.types';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { PhoneIcon } from './HomeIcons';
@@ -7,6 +7,37 @@ interface BarberCardProps {
   barbero: BarberoCatalogo;
   onReservar: (barbero: BarberoCatalogo) => void;
 }
+
+/**
+ * Subcomponente de imagen del barbero con fallback a iniciales.
+ * Se monta con key={src} para resetear el estado de error sin useEffect.
+ */
+const BarberoImg: React.FC<{ src: string; nombreCompleto: string; iniciales: string }> = ({
+  src,
+  nombreCompleto,
+  iniciales,
+}) => {
+  const [errorImagen, setErrorImagen] = useState(false);
+
+  if (!errorImagen) {
+    return (
+      <img
+        src={src}
+        alt={nombreCompleto}
+        className="kyrios-barber-img"
+        loading="lazy"
+        onError={() => setErrorImagen(true)}
+      />
+    );
+  }
+
+  return (
+    <div className="kyrios-barber-img-placeholder">
+      <span className="kyrios-title-display fs-1 text-white-50">{iniciales}</span>
+      <span className="small text-white-50 mt-1">Kyrios Barber</span>
+    </div>
+  );
+};
 
 export const BarberCard: React.FC<BarberCardProps> = ({
   barbero,
@@ -20,11 +51,12 @@ export const BarberCard: React.FC<BarberCardProps> = ({
     <article className="kyrios-barber-card" aria-label={`Perfil de ${nombreCompleto}`}>
       <div className="kyrios-barber-img-wrap">
         {fotoCompleta ? (
-          <img
+          /* key={fotoCompleta}: remonta BarberoImg cuando cambia la URL */
+          <BarberoImg
+            key={fotoCompleta}
             src={fotoCompleta}
-            alt={nombreCompleto}
-            className="kyrios-barber-img"
-            loading="lazy"
+            nombreCompleto={nombreCompleto}
+            iniciales={iniciales}
           />
         ) : (
           <div className="kyrios-barber-img-placeholder">

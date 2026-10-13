@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Servicio } from '../../../features/servicios/types/servicios.types';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { ClockIcon } from './HomeIcons';
@@ -7,6 +7,32 @@ interface ServiceCardProps {
   servicio: Servicio;
   onReservar: (servicio: Servicio) => void;
 }
+
+/**
+ * Subcomponente de imagen con fallback a la letra del nombre del servicio.
+ * Se monta con key={src} para resetear el estado de error sin useEffect.
+ */
+const ServicioImg: React.FC<{ src: string; nombre: string }> = ({ src, nombre }) => {
+  const [errorImagen, setErrorImagen] = useState(false);
+
+  if (!errorImagen) {
+    return (
+      <img
+        src={src}
+        alt={`Servicio de ${nombre}`}
+        className="kyrios-service-img"
+        loading="lazy"
+        onError={() => setErrorImagen(true)}
+      />
+    );
+  }
+
+  return (
+    <div className="kyrios-service-img-placeholder" aria-hidden="true">
+      <span>{nombre.charAt(0)}</span>
+    </div>
+  );
+};
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({
   servicio,
@@ -26,12 +52,8 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
     <article className="kyrios-service-card" aria-label={servicio.nombre}>
       <div className="kyrios-service-img-wrap">
         {fotoCompleta ? (
-          <img
-            src={fotoCompleta}
-            alt={`Servicio de ${servicio.nombre}`}
-            className="kyrios-service-img"
-            loading="lazy"
-          />
+          /* key={fotoCompleta}: remonta ServicioImg cuando cambia la URL */
+          <ServicioImg key={fotoCompleta} src={fotoCompleta} nombre={servicio.nombre} />
         ) : (
           <div className="kyrios-service-img-placeholder" aria-hidden="true">
             <span>{servicio.nombre.charAt(0)}</span>
