@@ -83,13 +83,16 @@ const CatalogoServiciosPage: React.FC = () => {
         onLogin={handleLogin}
       />
 
-      {/* ── Hero compacto ── */}
+      {/* ── Breadcrumb + buscador ─────────────────────────────────────────── */}
       <section
         className="kyrios-section"
-        style={{ paddingTop: 'clamp(5rem, 10vw, 7rem)', paddingBottom: 'clamp(2rem, 4vw, 3rem)' }}
+        style={{ paddingTop: 'clamp(4rem, 8vw, 5.5rem)', paddingBottom: 'clamp(1.5rem, 3vw, 2rem)' }}
         aria-labelledby="catalogo-servicios-heading"
       >
         <div className="container">
+          {/* h1 oculto visualmente: mantiene jerarquía para SEO y lectores de pantalla */}
+          <h1 id="catalogo-servicios-heading" className="visually-hidden">Catálogo de Servicios</h1>
+
           {/* Breadcrumb accesible */}
           <nav aria-label="Ruta de navegación" className="mb-3">
             <ol className="d-flex align-items-center gap-1 list-unstyled mb-0" style={{ fontSize: '0.8rem' }}>
@@ -101,23 +104,12 @@ const CatalogoServiciosPage: React.FC = () => {
             </ol>
           </nav>
 
-          <div className="kyrios-section-header text-center mx-auto kyrios-fade-in" style={{ maxWidth: '680px' }}>
-            <span className="kyrios-eyebrow justify-content-center mb-2">Catálogo Profesional</span>
-            <h1 id="catalogo-servicios-heading" className="kyrios-section-title kyrios-title-display">
-              Nuestro Catálogo
-            </h1>
-            <p className="kyrios-section-desc mx-auto">
-              Encuentra el servicio ideal para ti. Técnica, precisión y los mejores
-              productos del mercado en cada visita.
-            </p>
-          </div>
-
           {/* Buscador */}
-          <div className="mx-auto mt-4" style={{ maxWidth: '480px' }}>
+          <div className="mx-auto" style={{ maxWidth: '480px' }}>
             <SearchInput
               value={query}
               onChange={setQuery}
-              placeholder="Buscar servicio…"
+              placeholder="Buscar servicio por nombre o descripción…"
               ariaLabel="Buscar en el catálogo de servicios"
               isSearching={isSearching}
             />

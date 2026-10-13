@@ -49,7 +49,7 @@ const CatalogoBarberosPage: React.FC = () => {
 
   // SEO: título dinámico de la pestaña
   useEffect(() => {
-    document.title = 'Nuestro Equipo | Kyrios Studio';
+    document.title = 'Barberos | Kyrios Studio';
     return () => { document.title = 'Kyrios Studio'; };
   }, []);
 
@@ -79,13 +79,16 @@ const CatalogoBarberosPage: React.FC = () => {
         onLogin={handleLogin}
       />
 
-      {/* ── Hero compacto ── */}
+      {/* ── Breadcrumb + buscador ─────────────────────────────────────────── */}
       <section
         className="kyrios-section"
-        style={{ paddingTop: 'clamp(5rem, 10vw, 7rem)', paddingBottom: 'clamp(2rem, 4vw, 3rem)' }}
+        style={{ paddingTop: 'clamp(4rem, 8vw, 5.5rem)', paddingBottom: 'clamp(1.5rem, 3vw, 2rem)' }}
         aria-labelledby="catalogo-barberos-heading"
       >
         <div className="container">
+          {/* h1 oculto visualmente: mantiene jerarquía para SEO y lectores de pantalla */}
+          <h1 id="catalogo-barberos-heading" className="visually-hidden">Barberos</h1>
+
           {/* Breadcrumb accesible */}
           <nav aria-label="Ruta de navegación" className="mb-3">
             <ol className="d-flex align-items-center gap-1 list-unstyled mb-0" style={{ fontSize: '0.8rem' }}>
@@ -93,28 +96,17 @@ const CatalogoBarberosPage: React.FC = () => {
                 <Link to="/" className="kyrios-footer-link">Inicio</Link>
               </li>
               <li aria-hidden="true" className="text-surface-muted">/</li>
-              <li className="text-surface-muted" aria-current="page">Equipo</li>
+              <li className="text-surface-muted" aria-current="page">Barberos</li>
             </ol>
           </nav>
 
-          <div className="kyrios-section-header text-center mx-auto kyrios-fade-in" style={{ maxWidth: '680px' }}>
-            <span className="kyrios-eyebrow justify-content-center mb-2">Equipo de Maestros</span>
-            <h1 id="catalogo-barberos-heading" className="kyrios-section-title kyrios-title-display">
-              Nuestro Equipo
-            </h1>
-            <p className="kyrios-section-desc mx-auto">
-              Conoce a los profesionales detrás de cada corte. Compromiso con el detalle,
-              la higiene y la satisfacción absoluta en cada sesión.
-            </p>
-          </div>
-
           {/* Buscador */}
-          <div className="mx-auto mt-4" style={{ maxWidth: '480px' }}>
+          <div className="mx-auto" style={{ maxWidth: '480px' }}>
             <SearchInput
               value={query}
               onChange={setQuery}
-              placeholder="Buscar barbero…"
-              ariaLabel="Buscar en el equipo de barberos"
+              placeholder="Buscar barbero por nombre…"
+              ariaLabel="Buscar en el catálogo de barberos"
               isSearching={isSearching}
             />
           </div>
