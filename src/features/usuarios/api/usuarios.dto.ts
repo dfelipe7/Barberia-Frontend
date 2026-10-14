@@ -1,6 +1,6 @@
 export interface UsuarioDTO {
   id: number;
-  keycloakId: string;
+  googleId?: string | null;
   email: string;
   nombre: string;
   apellido: string;
@@ -34,7 +34,6 @@ export interface AdministradorGestionDTO {
 
 export interface CrearAdministradorDTO {
   email: string;
-  password?: string;
   nombre: string;
   apellido?: string;
 }

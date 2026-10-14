@@ -40,7 +40,6 @@ export const barberosMapper = {
     apellido: string;
     email: string;
     telefono: string;
-    password?: string;
     porcentajeComision: number;
   }): CrearBarberoDTO {
     return {
@@ -48,7 +47,6 @@ export const barberosMapper = {
       apellido: values.apellido.trim(),
       email: values.email.trim().toLowerCase(),
       telefono: values.telefono.trim(),
-      password: values.password,
       porcentajeComision: values.porcentajeComision,
     };
   },

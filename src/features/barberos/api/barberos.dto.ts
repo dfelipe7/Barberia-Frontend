@@ -22,7 +22,6 @@ export interface BarberoGestionDTO {
 
 export interface CrearBarberoDTO {
   email: string;
-  password?: string;
   nombre: string;
   apellido: string;
   telefono: string;

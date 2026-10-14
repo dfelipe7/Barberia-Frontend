@@ -87,7 +87,7 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="kyrios-home min-vh-100 d-flex flex-column">
-      {/* ── Navbar público con marca Kyrios Studio y estado Keycloak ── */}
+      {/* ── Navbar público con marca Kyrios Studio y estado de sesión ── */}
       <HomeNavbar
         isAuthenticated={isAuthenticated}
         nombre={nombre}

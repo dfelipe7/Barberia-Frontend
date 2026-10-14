@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 /**
  * PATRÓN DECORATOR:
  * Envuelve el renderizado de la ruta (<Outlet />) decorándolo con validaciones
- * de autenticación (Keycloak) y de autorización RBAC (rolesPermitidos).
+ * de autenticación (Google OAuth + JWT) y de autorización RBAC (rolesPermitidos).
  */
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ rolesPermitidos }) => {
   const { roles, isAuthenticated, isInitializing, usuarioDb } = useAuth();

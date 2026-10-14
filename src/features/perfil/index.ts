@@ -1,1 +1,2 @@
-export * from './api/perfil.facade';
+export { default as MiPerfilPage } from './pages/MiPerfilPage';
+export * from './schemas/perfil.schema';

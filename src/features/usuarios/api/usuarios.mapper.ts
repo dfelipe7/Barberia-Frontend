@@ -20,7 +20,7 @@ export const usuariosMapper = {
   toDomain(dto: UsuarioDTO): Usuario {
     return {
       id: dto.id,
-      keycloakId: dto.keycloakId,
+      googleId: dto.googleId,
       email: dto.email,
       nombre: dto.nombre,
       apellido: dto.apellido,
@@ -101,13 +101,11 @@ export const usuariosMapper = {
     nombre: string;
     apellido?: string;
     email: string;
-    password?: string;
   }): CrearAdministradorDTO {
     return {
       nombre: values.nombre.trim(),
       apellido: values.apellido?.trim() || '',
       email: values.email.trim().toLowerCase(),
-      password: values.password,
     };
   },
 

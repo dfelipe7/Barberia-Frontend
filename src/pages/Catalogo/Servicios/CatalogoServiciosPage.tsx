@@ -67,7 +67,7 @@ const CatalogoServiciosPage: React.FC = () => {
     : serviciosActivos;
 
   const handleLogin = useCallback(() => {
-    // La lógica de login la gestiona Keycloak a través del AuthContext
+    // La lógica de login la gestiona Google OAuth a través del AuthContext
     window.location.href = '/dashboard';
   }, []);
 

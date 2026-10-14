@@ -9,7 +9,6 @@ export const crearBarberoSchema = z.object({
   apellido: z.string().trim().min(2, 'El apellido es obligatorio.'),
   email: z.string().trim().email('Ingrese un correo electrónico válido.'),
   telefono: telefonoSchema,
-  password: z.string().optional(),
   porcentajeComision: porcentajeComisionSchema,
 });
 

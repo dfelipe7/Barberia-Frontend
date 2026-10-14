@@ -20,7 +20,7 @@ export interface BarberoPerfil {
  */
 export interface Usuario {
   id: number;
-  keycloakId: string;
+  googleId?: string | null;
   email: string;
   nombre: string;
   apellido: string;

@@ -143,7 +143,7 @@ export const MiPerfilPage: React.FC = () => {
       <div className="mb-4">
         <h1 className="h2 fw-bold mb-1">Mi Perfil</h1>
         <p className="text-muted">
-          Consulta y gestiona tu información personal, perfiles de seguridad y contraseña.
+          Consulta y gestiona tu información personal y perfil de acceso con Google.
         </p>
       </div>
 
