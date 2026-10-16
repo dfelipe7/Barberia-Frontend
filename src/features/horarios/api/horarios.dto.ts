@@ -9,6 +9,14 @@ export const CODIGOS_DIA = [
 ] as const;
 
 export type DiaSemana = (typeof CODIGOS_DIA)[number];
+export type DiaSemanaApi =
+  | 'MONDAY'
+  | 'TUESDAY'
+  | 'WEDNESDAY'
+  | 'THURSDAY'
+  | 'FRIDAY'
+  | 'SATURDAY'
+  | 'SUNDAY';
 
 export const DIAS_SEMANA: ReadonlyArray<{ codigo: DiaSemana; nombre: string }> = [
   { codigo: 'LUNES', nombre: 'Lunes' },
@@ -20,45 +28,100 @@ export const DIAS_SEMANA: ReadonlyArray<{ codigo: DiaSemana; nombre: string }> =
   { codigo: 'DOMINGO', nombre: 'Domingo' },
 ];
 
-/**
- * Contrato esperado para el horario semanal del barbero autenticado.
- * Ajustar este DTO cuando el backend publique su contrato definitivo.
- */
-export interface HorarioDiaDTO {
-  diaSemana: DiaSemana;
-  activo: boolean;
-  horaInicio: string | null;
-  horaFin: string | null;
+export const DIA_A_API: Record<DiaSemana, DiaSemanaApi> = {
+  LUNES: 'MONDAY',
+  MARTES: 'TUESDAY',
+  MIERCOLES: 'WEDNESDAY',
+  JUEVES: 'THURSDAY',
+  VIERNES: 'FRIDAY',
+  SABADO: 'SATURDAY',
+  DOMINGO: 'SUNDAY',
+};
+
+export const API_A_DIA: Record<DiaSemanaApi, DiaSemana> = {
+  MONDAY: 'LUNES',
+  TUESDAY: 'MARTES',
+  WEDNESDAY: 'MIERCOLES',
+  THURSDAY: 'JUEVES',
+  FRIDAY: 'VIERNES',
+  SATURDAY: 'SABADO',
+  SUNDAY: 'DOMINGO',
+};
+
+export const HORAS_INICIO_FRANJA = [
+  '09:00',
+  '10:00',
+  '11:00',
+  '12:00',
+  '13:00',
+  '14:00',
+  '15:00',
+  '16:00',
+  '17:00',
+  '18:00',
+  '19:00',
+] as const;
+
+export interface FranjaHorarioDTO {
+  dayOfWeek: DiaSemanaApi;
+  startTime: string;
+  endTime: string;
 }
 
 export interface HorarioSemanalDTO {
-  dias: HorarioDiaDTO[];
+  barberoId: number;
+  franjas: FranjaHorarioDTO[];
 }
 
 export interface GuardarHorarioSemanalDTO {
-  dias: HorarioDiaDTO[];
+  franjas: FranjaHorarioDTO[];
 }
 
-export interface PeriodoNoDisponibilidadDTO {
-  id: number | string;
-  fecha: string;
-  horaInicio: string;
-  horaFin: string;
-}
+export type EstadoFranjaDTO =
+  | 'AVAILABLE'
+  | 'RESERVED'
+  | 'BLOCKED'
+  | 'GENERAL_CLOSURE'
+  | 'OUTSIDE_SCHEDULE';
 
-export type CrearPeriodoNoDisponibilidadDTO = Omit<PeriodoNoDisponibilidadDTO, 'id'>;
+export interface FranjaDisponibilidadDTO {
+  startTime: string;
+  endTime: string;
+  status: EstadoFranjaDTO;
+}
 
 export interface DisponibilidadFechaDTO {
   fecha: string;
-  horariosDisponibles: string[];
+  timeZone: string;
+  barberoId: number;
+  servicioId: number | null;
+  slots: FranjaDisponibilidadDTO[];
 }
 
-/** Contrato esperado para los bloqueos temporales que el barbero puede reactivar. */
+export type EstadoBloqueoHorarioDTO = 'ACTIVE' | 'REACTIVATED' | 'CANCELLED';
+
 export interface BloqueoHorarioDTO {
-  id: number | string;
-  fecha: string;
-  horaInicio: string;
-  horaFin: string;
+  id: number;
+  date: string;
+  startTime: string;
+  endTime: string;
+  reason: string | null;
+  notes: string | null;
+  status: EstadoBloqueoHorarioDTO;
+  createdAt: string;
+  updatedAt: string;
+  reactivatedAt: string | null;
 }
 
-export type CrearBloqueoHorarioDTO = Omit<BloqueoHorarioDTO, 'id'>;
+export interface CrearBloqueoHorarioDTO {
+  date: string;
+  startTime: string;
+  endTime: string;
+  reason?: string;
+  notes?: string;
+}
+
+export interface BloqueoHorarioAccionDTO {
+  mensaje: string;
+  block: BloqueoHorarioDTO;
+}

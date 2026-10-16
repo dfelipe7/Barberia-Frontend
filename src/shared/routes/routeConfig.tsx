@@ -9,6 +9,8 @@ import BarberosPage from '../../features/barberos/pages/BarberosPage';
 import CrearBarberoPage from '../../features/barberos/pages/CrearBarberoPage';
 import ServiciosPage from '../../features/servicios/pages/ServiciosPage';
 import HorariosPage from '../../features/horarios/pages/HorariosPage';
+import ReservasPage from '../../features/reservas/pages/ReservasPage';
+import CrearReservaAdministrativaPage from '../../features/reservas/pages/CrearReservaAdministrativaPage';
 
 export interface RouteConfigItem {
   path: string;
@@ -20,6 +22,8 @@ export const routeConfig: RouteConfigItem[] = [
   { path: '/dashboard', element: <Dashboard />, roles: ROLES_APP },
   { path: '/mi-perfil', element: <MiPerfilPage />, roles: ROLES_APP },
   { path: '/horarios', element: <HorariosPage />, roles: ['BARBERO'] },
+  { path: '/reservas', element: <ReservasPage />, roles: ['BARBERO', 'SUPERADMIN', 'ADMINISTRADOR'] },
+  { path: '/reservas/nueva', element: <CrearReservaAdministrativaPage />, roles: ['SUPERADMIN', 'ADMINISTRADOR'] },
   { path: '/usuarios', element: <UsuariosPage />, roles: ['SUPERADMIN', 'ADMINISTRADOR'] },
   { path: '/usuarios/:id/editar', element: <EditarUsuarioPage />, roles: ['SUPERADMIN', 'ADMINISTRADOR'] },
   { path: '/barberos', element: <BarberosPage />, roles: ROLES_APP },

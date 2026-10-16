@@ -1,11 +1,9 @@
 import { z } from 'zod';
-import { CODIGOS_DIA } from '../api/horarios.dto';
+import { CODIGOS_DIA, HORAS_INICIO_FRANJA } from '../api/horarios.dto';
 
 const horarioDiaSchema = z.object({
   diaSemana: z.enum(CODIGOS_DIA),
-  activo: z.boolean(),
-  horaInicio: z.string().optional(),
-  horaFin: z.string().optional(),
+  franjas: z.array(z.enum(HORAS_INICIO_FRANJA)),
 });
 
 export const horarioSemanalSchema = z
@@ -14,22 +12,11 @@ export const horarioSemanalSchema = z
   })
   .superRefine(({ dias }, context) => {
     dias.forEach((dia, indice) => {
-      if (!dia.activo) return;
-
-      if (!dia.horaInicio || !dia.horaFin) {
+      if (new Set(dia.franjas).size !== dia.franjas.length) {
         context.addIssue({
           code: 'custom',
-          path: ['dias', indice, !dia.horaInicio ? 'horaInicio' : 'horaFin'],
-          message: 'Completa la hora de inicio y de finalización.',
-        });
-        return;
-      }
-
-      if (dia.horaInicio >= dia.horaFin) {
-        context.addIssue({
-          code: 'custom',
-          path: ['dias', indice, 'horaFin'],
-          message: 'La hora de finalización debe ser posterior al inicio.',
+          path: ['dias', indice, 'franjas'],
+          message: 'Una franja no puede seleccionarse más de una vez.',
         });
       }
     });

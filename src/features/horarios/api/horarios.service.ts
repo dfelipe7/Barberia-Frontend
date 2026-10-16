@@ -1,19 +1,17 @@
 import apiClient from '../../../shared/lib/http/axios';
 import type {
-  CrearPeriodoNoDisponibilidadDTO,
+  BloqueoHorarioAccionDTO,
+  BloqueoHorarioDTO,
   CrearBloqueoHorarioDTO,
   DisponibilidadFechaDTO,
   GuardarHorarioSemanalDTO,
   HorarioSemanalDTO,
-  BloqueoHorarioDTO,
-  PeriodoNoDisponibilidadDTO,
 } from './horarios.dto';
 
-// Mantener estas rutas concentradas aquí para ajustarlas al contrato definitivo del backend.
-const ENDPOINT_MI_HORARIO = '/horarios/me';
-const ENDPOINT_NO_DISPONIBILIDAD = ENDPOINT_MI_HORARIO + '/no-disponibilidad';
-const ENDPOINT_DISPONIBILIDAD = ENDPOINT_MI_HORARIO + '/disponibilidad';
-const ENDPOINT_BLOQUEOS = ENDPOINT_MI_HORARIO + '/bloqueos';
+const ENDPOINT_BARBERO = '/usuarios/me/barbero';
+const ENDPOINT_MI_HORARIO = ENDPOINT_BARBERO + '/horario-semanal';
+const ENDPOINT_DISPONIBILIDAD = ENDPOINT_BARBERO + '/disponibilidad';
+const ENDPOINT_BLOQUEOS = ENDPOINT_BARBERO + '/bloqueos-horario';
 
 export const horariosService = {
   async obtenerMiHorario(): Promise<HorarioSemanalDTO> {
@@ -21,32 +19,15 @@ export const horariosService = {
     return response.data;
   },
 
-  async guardarMiHorario(datos: GuardarHorarioSemanalDTO): Promise<void> {
-    await apiClient.put(ENDPOINT_MI_HORARIO, datos);
-  },
-
-  async obtenerPeriodosNoDisponibilidad(): Promise<PeriodoNoDisponibilidadDTO[]> {
-    const response = await apiClient.get<PeriodoNoDisponibilidadDTO[]>(
-      ENDPOINT_NO_DISPONIBILIDAD
-    );
-    return response.data;
-  },
-
-  async crearPeriodoNoDisponibilidad(
-    datos: CrearPeriodoNoDisponibilidadDTO
-  ): Promise<PeriodoNoDisponibilidadDTO> {
-    const response = await apiClient.post<PeriodoNoDisponibilidadDTO>(
-      ENDPOINT_NO_DISPONIBILIDAD,
-      datos
-    );
+  async guardarMiHorario(datos: GuardarHorarioSemanalDTO): Promise<HorarioSemanalDTO> {
+    const response = await apiClient.put<HorarioSemanalDTO>(ENDPOINT_MI_HORARIO, datos);
     return response.data;
   },
 
   async consultarMiDisponibilidad(fecha: string): Promise<DisponibilidadFechaDTO> {
-    const response = await apiClient.get<DisponibilidadFechaDTO>(
-      ENDPOINT_DISPONIBILIDAD,
-      { params: { fecha } }
-    );
+    const response = await apiClient.get<DisponibilidadFechaDTO>(ENDPOINT_DISPONIBILIDAD, {
+      params: { fecha },
+    });
     return response.data;
   },
 
@@ -55,12 +36,15 @@ export const horariosService = {
     return response.data;
   },
 
-  async crearBloqueo(datos: CrearBloqueoHorarioDTO): Promise<BloqueoHorarioDTO> {
-    const response = await apiClient.post<BloqueoHorarioDTO>(ENDPOINT_BLOQUEOS, datos);
+  async crearBloqueo(datos: CrearBloqueoHorarioDTO): Promise<BloqueoHorarioAccionDTO> {
+    const response = await apiClient.post<BloqueoHorarioAccionDTO>(ENDPOINT_BLOQUEOS, datos);
     return response.data;
   },
 
-  async reactivarBloqueo(id: number | string): Promise<void> {
-    await apiClient.delete(`${ENDPOINT_BLOQUEOS}/${id}`);
+  async reactivarBloqueo(id: number): Promise<BloqueoHorarioAccionDTO> {
+    const response = await apiClient.patch<BloqueoHorarioAccionDTO>(
+      ENDPOINT_BLOQUEOS + '/' + id + '/reactivar',
+    );
+    return response.data;
   },
 };

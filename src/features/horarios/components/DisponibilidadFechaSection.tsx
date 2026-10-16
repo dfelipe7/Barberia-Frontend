@@ -4,6 +4,22 @@ import { mapApiError } from '../../../shared/lib/mapApiError';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useDisponibilidadFecha } from '../api/horarios.facade';
+import type { EstadoFranjaDTO } from '../api/horarios.dto';
+
+const ESTADOS: Record<EstadoFranjaDTO, string> = {
+  AVAILABLE: 'Disponible',
+  RESERVED: 'Reservado',
+  BLOCKED: 'Bloqueado',
+  GENERAL_CLOSURE: 'Cierre general',
+  OUTSIDE_SCHEDULE: 'Fuera de horario',
+};
+
+const formatearFecha = (valor: string) => {
+  const [anio, mes, dia] = valor.split('-').map(Number);
+  return new Intl.DateTimeFormat('es-CO', { dateStyle: 'long' }).format(
+    new Date(anio, mes - 1, dia, 12),
+  );
+};
 
 export const DisponibilidadFechaSection = () => {
   const [fecha, setFecha] = useState('');
@@ -21,7 +37,7 @@ export const DisponibilidadFechaSection = () => {
         <div className="mb-3">
           <h2 className="h5 fw-bold mb-1">Consultar disponibilidad</h2>
           <p className="small text-surface-muted mb-0">
-            Selecciona un día para ver las horas en las que puedes recibir reservas.
+            Consulta el estado de cada franja para una fecha.
           </p>
         </div>
 
@@ -64,26 +80,30 @@ export const DisponibilidadFechaSection = () => {
                   Reintentar consulta
                 </button>
               </div>
-            ) : consulta.data?.fecha === fechaConsultada &&
-              consulta.data.horariosDisponibles.length > 0 ? (
+            ) : consulta.data?.slots.length ? (
               <div>
                 <h3 className="h6 fw-bold mb-2">
-                  Horas disponibles para {fechaConsultada}
+                  Franjas del {formatearFecha(consulta.data.fecha)}
                 </h3>
-                <ul className="list-inline d-flex flex-wrap gap-2 mb-0">
-                  {consulta.data.horariosDisponibles.map((hora) => (
+                <ul className="list-unstyled d-flex flex-column gap-2 mb-0">
+                  {consulta.data.slots.map((slot) => (
                     <li
-                      key={hora}
-                      className="list-inline-item border rounded-pill px-3 py-2 mb-0"
+                      key={slot.startTime}
+                      className="d-flex flex-wrap justify-content-between align-items-center gap-2 border rounded-3 px-3 py-2"
                     >
-                      {hora}
+                      <span className="fw-semibold">
+                        {slot.startTime}–{slot.endTime}
+                      </span>
+                      <span className="badge rounded-pill text-bg-light border">
+                        {ESTADOS[slot.status] ?? slot.status}
+                      </span>
                     </li>
                   ))}
                 </ul>
               </div>
             ) : (
               <p className="small text-surface-muted mb-0" role="status">
-                No hay horarios disponibles para la fecha seleccionada.
+                No hay franjas configuradas para la fecha seleccionada.
               </p>
             )}
           </div>

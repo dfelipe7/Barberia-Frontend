@@ -16,29 +16,7 @@ export function useGuardarMiHorario() {
     mutationFn: horariosService.guardarMiHorario,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: horariosKeys.miHorario() });
-    },
-  });
-}
-
-export function usePeriodosNoDisponibilidad() {
-  return useQuery({
-    queryKey: horariosKeys.periodosNoDisponibilidad(),
-    queryFn: horariosService.obtenerPeriodosNoDisponibilidad,
-  });
-}
-
-export function useCrearPeriodoNoDisponibilidad() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: horariosService.crearPeriodoNoDisponibilidad,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: horariosKeys.periodosNoDisponibilidad(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: horariosKeys.disponibilidad(),
-      });
+      queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
     },
   });
 }

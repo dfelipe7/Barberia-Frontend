@@ -17,21 +17,27 @@ import {
   type NoDisponibilidadFormValues,
 } from '../schemas/noDisponibilidad.schema';
 
+const ESTADOS_BLOQUEO = {
+  ACTIVE: 'Bloqueando',
+  REACTIVATED: 'Liberado',
+  CANCELLED: 'Cancelado',
+} as const;
+
 const formatearFecha = (valor: string) => {
   const [anio, mes, dia] = valor.split('-').map(Number);
   return new Intl.DateTimeFormat('es-CO', { dateStyle: 'long' }).format(
-    new Date(anio, mes - 1, dia, 12)
+    new Date(anio, mes - 1, dia, 12),
   );
 };
 
 const ordenarBloqueos = (bloqueos: BloqueoHorarioDTO[]) =>
   [...bloqueos].sort((a, b) =>
-    (a.fecha + a.horaInicio).localeCompare(b.fecha + b.horaInicio)
+    (a.date + a.startTime).localeCompare(b.date + b.startTime),
   );
 
 const mensajeErrorReactivacion = (error: unknown) =>
   isAxiosError(error) && error.response?.status === 404
-    ? 'No existe un bloqueo que pueda ser reactivado.'
+    ? 'No existe un bloqueo activo que pueda reactivarse.'
     : mapApiError(error);
 
 export const BloqueosHorarioSection = () => {
@@ -52,18 +58,22 @@ export const BloqueosHorarioSection = () => {
 
   const onGuardar = async (valores: NoDisponibilidadFormValues) => {
     try {
-      await crearBloqueo.mutateAsync(valores);
+      await crearBloqueo.mutateAsync({
+        date: valores.fecha,
+        startTime: valores.horaInicio,
+        endTime: valores.horaFin,
+      });
       reset();
-      showToast('success', 'Horario bloqueado correctamente.');
+      showToast('success', 'Bloqueo guardado correctamente.');
     } catch (error: unknown) {
       showToast('danger', mapApiError(error));
     }
   };
 
-  const onReactivar = async (id: number | string) => {
+  const onReactivar = async (id: number) => {
     try {
       await reactivarBloqueo.mutateAsync(id);
-      showToast('success', 'Horario reactivado correctamente.');
+      showToast('success', 'Franja liberada correctamente.');
     } catch (error: unknown) {
       showToast('danger', mensajeErrorReactivacion(error));
     }
@@ -75,9 +85,9 @@ export const BloqueosHorarioSection = () => {
     <section className="card card-surface border-0 shadow-sm mt-4">
       <div className="card-body p-3 p-md-4">
         <div className="mb-3">
-          <h2 className="h5 fw-bold mb-1">Bloqueos temporales</h2>
+          <h2 className="h5 fw-bold mb-1">Ausencias y bloqueos temporales</h2>
           <p className="small text-surface-muted mb-0">
-            Bloquea un rango para impedir nuevas reservas y reactívalo cuando vuelvas a estar disponible.
+            Registra un rango de una o más horas. El backend conserva el registro y su estado en el historial.
           </p>
         </div>
 
@@ -150,9 +160,9 @@ export const BloqueosHorarioSection = () => {
                 <Button
                   type="submit"
                   isLoading={crearBloqueo.isPending}
-                  loadingText="Bloqueando..."
+                  loadingText="Guardando..."
                 >
-                  Bloquear horario
+                  Guardar bloqueo
                 </Button>
               </div>
             </div>
@@ -166,14 +176,14 @@ export const BloqueosHorarioSection = () => {
 
         <hr className="my-4" />
 
-        <h3 className="h6 fw-bold mb-3">Horarios bloqueados</h3>
+        <h3 className="h6 fw-bold mb-3">Historial de bloqueos</h3>
         {consulta.isLoading ? (
           <p className="small text-surface-muted" role="status">
             Cargando bloqueos...
           </p>
         ) : bloqueos.length === 0 ? (
           <p className="small text-surface-muted mb-0">
-            No tienes horarios bloqueados.
+            No tienes bloqueos registrados.
           </p>
         ) : (
           <ul className="list-group list-group-flush">
@@ -183,26 +193,39 @@ export const BloqueosHorarioSection = () => {
                 className="list-group-item card-surface px-0 d-flex flex-wrap align-items-center justify-content-between gap-2"
               >
                 <span>
-                  <span className="fw-semibold d-block">{formatearFecha(bloqueo.fecha)}</span>
-                  <span className="small text-surface-muted">
-                    {bloqueo.horaInicio} – {bloqueo.horaFin}
+                  <span className="fw-semibold d-block">{formatearFecha(bloqueo.date)}</span>
+                  <span className="small text-surface-muted d-block">
+                    {bloqueo.startTime}–{bloqueo.endTime}
+                    {bloqueo.notes ? ' · ' + bloqueo.notes : ''}
                   </span>
                 </span>
-                <Button
-                  type="button"
-                  variant="outline-success"
-                  size="sm"
-                  icon={<RotateCcw size={15} aria-hidden="true" />}
-                  disabled={reactivarBloqueo.isPending}
-                  isLoading={
-                    reactivarBloqueo.isPending && reactivarBloqueo.variables === bloqueo.id
-                  }
-                  loadingText="Reactivando..."
-                  onClick={() => void onReactivar(bloqueo.id)}
-                  aria-label={`Reactivar horario del ${formatearFecha(bloqueo.fecha)} de ${bloqueo.horaInicio} a ${bloqueo.horaFin}`}
-                >
-                  Reactivar horario
-                </Button>
+                <span className="d-flex align-items-center gap-2">
+                  <span
+                    className={
+                      'badge rounded-pill ' +
+                      (bloqueo.status === 'ACTIVE' ? 'text-bg-warning' : 'text-bg-light border')
+                    }
+                  >
+                    {ESTADOS_BLOQUEO[bloqueo.status]}
+                  </span>
+                  {bloqueo.status === 'ACTIVE' && (
+                    <Button
+                      type="button"
+                      variant="outline-success"
+                      size="sm"
+                      icon={<RotateCcw size={15} aria-hidden="true" />}
+                      disabled={reactivarBloqueo.isPending}
+                      isLoading={
+                        reactivarBloqueo.isPending && reactivarBloqueo.variables === bloqueo.id
+                      }
+                      loadingText="Liberando..."
+                      onClick={() => void onReactivar(bloqueo.id)}
+                      aria-label={'Liberar horario del ' + formatearFecha(bloqueo.date) + ' de ' + bloqueo.startTime + ' a ' + bloqueo.endTime}
+                    >
+                      Liberar horario
+                    </Button>
+                  )}
+                </span>
               </li>
             ))}
           </ul>
