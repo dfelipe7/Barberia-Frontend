@@ -5,6 +5,7 @@ import ProtectedRoute from './shared/components/ProtectedRoute';
 import { ErrorBoundary } from './shared/components/ErrorBoundary';
 import NotFound from './pages/NotFound/NotFound';
 import HomePage from './pages/Home/HomePage';
+import ReservaClientePage from './features/reservas/pages/ReservaClientePage';
 import SinAcceso from './pages/SinAcceso/SinAcceso';
 import LoginPage from './pages/Login/LoginPage';
 import { routeConfig } from './shared/routes/routeConfig';
@@ -33,6 +34,7 @@ function App() {
 
         {/* Rutas públicas fuera de MainLayout (sin sidebar, con HomeNavbar) */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/reservar" element={<ReservaClientePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/sin-acceso" element={<SinAcceso />} />
         <Route

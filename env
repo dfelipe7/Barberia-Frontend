@@ -1,0 +1,5 @@
+# URL base de la API del Backend (NestJS)
+VITE_API_URL=http://localhost:3000
+
+# Google OAuth 2.0 (Client ID oficial para la autenticación)
+VITE_GOOGLE_CLIENT_ID=720763692805-1ujg3kddpcpk26ki4lm2tam5rqtpp5fc.apps.googleusercontent.com

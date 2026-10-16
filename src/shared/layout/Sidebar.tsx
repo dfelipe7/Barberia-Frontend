@@ -172,7 +172,7 @@ export default function Sidebar() {
           to: '/horarios',
           label: 'Horarios',
           icon: Clock,
-          permiso: esSuperAdmin || esAdministrador || esBarbero,
+          permiso: esBarbero,
         },
       ],
     },
