@@ -1,13 +1,16 @@
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import { esRolApp } from '../../shared/lib/autorizacion/roles';
 import BrandLogo from '../../shared/ui/BrandLogo';
 
 export default function SinAcceso() {
     const { cerrarSesion, email, roles, usuarioDb } = useAuth();
+    const navigate = useNavigate();
 
     const cuentaBloqueada = usuarioDb?.estado === 'INACTIVO';
     // ¿El usuario está autenticado pero sin ningún rol reconocido del sistema?
     const sinRolesAsignados = roles.every((r) => !esRolApp(r));
+    const tieneRolApp = roles.some((r) => esRolApp(r));
 
     return (
         <div
@@ -20,11 +23,15 @@ export default function SinAcceso() {
                 </div>
 
                 <div className="mb-3" style={{ fontSize: '2.5rem' }}>
-                    {cuentaBloqueada ? '🔒' : sinRolesAsignados ? '⚠️' : '🚫'}
+                    {cuentaBloqueada ? '🔒' : sinRolesAsignados ? '⚠️' : '🛡️'}
                 </div>
 
                 <h1 className="h3 fw-bold mb-2">
-                    {cuentaBloqueada ? 'Cuenta bloqueada' : sinRolesAsignados ? 'Sin roles asignados' : 'Sin acceso'}
+                    {cuentaBloqueada
+                        ? 'Cuenta bloqueada'
+                        : sinRolesAsignados
+                        ? 'Sin roles asignados'
+                        : 'Acceso restringido'}
                 </h1>
 
                 {cuentaBloqueada ? (
@@ -50,20 +57,32 @@ export default function SinAcceso() {
                 ) : (
                     <>
                         <p className="text-surface-muted mb-1">
-                            Tu cuenta <strong>{email}</strong> no tiene permisos para acceder a esta aplicación.
+                            Tu cuenta <strong>{email}</strong> tiene rol activo (<strong>{roles.filter(esRolApp).join(', ')}</strong>), pero la sección solicitada requiere permisos administrativos adicionales.
                         </p>
                         <p className="text-surface-muted mb-4">
-                            Contacta al administrador para que te asigne un rol.
+                            Puedes volver a tu panel principal para continuar accediendo a tus funciones permitidas.
                         </p>
                     </>
                 )}
 
-                <button
-                    className="btn btn-primary"
-                    onClick={cerrarSesion}
-                >
-                    Cerrar sesión
-                </button>
+                <div className="d-flex flex-wrap gap-2 justify-content-center">
+                    {tieneRolApp && !cuentaBloqueada && (
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={() => navigate('/dashboard')}
+                        >
+                            Ir a mi Dashboard
+                        </button>
+                    )}
+                    <button
+                        type="button"
+                        className={tieneRolApp && !cuentaBloqueada ? 'btn btn-outline-secondary' : 'btn btn-primary'}
+                        onClick={cerrarSesion}
+                    >
+                        Cerrar sesión
+                    </button>
+                </div>
             </div>
         </div>
     );

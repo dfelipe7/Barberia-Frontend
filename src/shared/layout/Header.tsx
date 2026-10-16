@@ -12,7 +12,7 @@ import UserAvatar from '../ui/atoms/UserAvatar';
 import RoleBadge from '../ui/atoms/RoleBadge';
 
 export default function Header() {
-  const { cerrarSesion, nombre, apellido, email, roles, usuarioDb } = useAuth();
+  const { cerrarSesion, nombre, apellido, email, roles, usuarioDb, fotoUrl: fotoGoogle } = useAuth();
   const { theme, setTheme, isDark } = useTheme();
   const { toggleSidebar, isSidebarOpen } = useUi();
 
@@ -40,7 +40,8 @@ export default function Header() {
     roles[0] ||
     'USUARIO';
 
-  const fotoUrl = obtenerUrlFoto(usuarioDb?.barbero?.fotoUrl);
+  // Prioridad: 1° Foto de barbero subida a la base de datos -> 2° Foto de Google de la sesión -> 3° null
+  const fotoUrl = obtenerUrlFoto(usuarioDb?.barbero?.fotoUrl) || fotoGoogle || null;
 
   return (
     <header style={{ position: 'sticky', top: 0, zIndex: 1030 }}>

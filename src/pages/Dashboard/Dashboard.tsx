@@ -1,5 +1,6 @@
-import type { ComponentType } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useEffect, type ComponentType } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useToastContext } from '../../shared/ui/ToastContext';
 import {
     Calendar,
     Scissors,
@@ -81,6 +82,18 @@ export default function Dashboard() {
         email,
         roles,
     } = useAuth();
+
+    const { showToast } = useToastContext();
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const aviso = (location.state as { avisoAcceso?: string } | null)?.avisoAcceso;
+        if (aviso) {
+            showToast('warning', aviso);
+            navigate(location.pathname, { replace: true, state: null });
+        }
+    }, [location.state, location.pathname, navigate, showToast]);
 
     const esSuperAdmin = roles.includes('SUPERADMIN');
     const esAdministrador = roles.includes('ADMINISTRADOR');

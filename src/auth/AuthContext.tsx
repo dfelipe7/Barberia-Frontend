@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { usuariosService } from '../features/usuarios/api/usuarios.service';
 import { usuariosMapper } from '../features/usuarios/api/usuarios.mapper';
 import type { Usuario } from '../features/usuarios/types/usuarios.types';
@@ -10,6 +10,7 @@ interface UsuarioSesion {
   nombre: string;
   apellido?: string;
   rol: string;
+  roles?: string[];
   estado: string;
   fotoUrl?: string | null;
 }
@@ -52,7 +53,26 @@ export function AuthContextProvider({
   const [usuarioDb, setUsuarioDb] = useState<Usuario | null>(null);
 
   const isAuthenticated = !!token;
-  const roles = usuarioSesion?.rol ? [usuarioSesion.rol] : [];
+
+  // Resuelve todos los roles activos combinando la sesión JWT y el perfil cargado de BD
+  const rolesFromSesion = Array.isArray(usuarioSesion?.roles) && usuarioSesion.roles.length > 0
+    ? usuarioSesion.roles
+    : (usuarioSesion?.rol ? [usuarioSesion.rol] : []);
+
+  const rolesFromDb: string[] = [];
+  if (usuarioDb) {
+    if (usuarioDb.rol === 'SUPERADMIN') rolesFromDb.push('SUPERADMIN');
+    if (usuarioDb.administrador?.estado === 'ACTIVO' || (usuarioDb.rol === 'ADMINISTRADOR' && !usuarioDb.administrador)) {
+      if (!rolesFromDb.includes('ADMINISTRADOR')) rolesFromDb.push('ADMINISTRADOR');
+    }
+    if (usuarioDb.barbero?.estado === 'ACTIVO' || (usuarioDb.rol === 'BARBERO' && !usuarioDb.barbero)) {
+      if (!rolesFromDb.includes('BARBERO')) rolesFromDb.push('BARBERO');
+    }
+  }
+
+  // Resuelve los roles activos: si ya cargó el perfil real de la BD, la BD es la fuente de verdad.
+  // Si aún está en la carga inicial, se usa temporalmente la sesión local para evitar parpadeos visuales.
+  const roles = usuarioDb ? rolesFromDb : rolesFromSesion;
   const nombre = usuarioSesion?.nombre;
   const apellido = usuarioSesion?.apellido;
   const email = usuarioSesion?.email;
@@ -68,16 +88,41 @@ export function AuthContextProvider({
     window.location.href = '/';
   }, []);
 
+  const isRefreshingRef = useRef(false);
+
   const refrescarPerfil = useCallback(async () => {
     const currentToken = localStorage.getItem('token_barberia');
-    if (!currentToken) return;
+    if (!currentToken || isRefreshingRef.current) return;
+    isRefreshingRef.current = true;
     try {
+      // 1. Renovar silenciosamente el token JWT con los roles vigentes en la base de datos
+      try {
+        const refreshRes = await apiClient.post('/auth/refresh');
+        if (refreshRes.data?.accessToken) {
+          const { accessToken, usuario } = refreshRes.data;
+          localStorage.setItem('token_barberia', accessToken);
+          localStorage.setItem('usuario_barberia', JSON.stringify(usuario));
+          setToken(accessToken);
+          setUsuarioSesion(usuario);
+        }
+      } catch (err: any) {
+        // Si la cuenta fue suspendida o el token es inválido, cerrar sesión de inmediato
+        if (err?.response?.status === 401 || err?.response?.status === 403) {
+          cerrarSesion();
+          return;
+        }
+      }
+
+      // 2. Traer perfil completo de dominio de la BD
       const perfilDTO = await usuariosService.obtenerMiPerfil();
-      setUsuarioDb(usuariosMapper.toDomain(perfilDTO));
+      const domainUser = usuariosMapper.toDomain(perfilDTO);
+      setUsuarioDb(domainUser);
     } catch (error) {
       console.error('Error obteniendo perfil de BD:', error);
+    } finally {
+      isRefreshingRef.current = false;
     }
-  }, []);
+  }, [cerrarSesion]);
 
   const loginConGoogle = useCallback(async (idToken: string) => {
     try {
@@ -122,12 +167,56 @@ export function AuthContextProvider({
     }
   }, []);
 
+  // 1. Carga inicial al arrancar la app
   useEffect(() => {
     if (isInitializing) return;
     if (token) {
       refrescarPerfil();
     }
   }, [isInitializing, token, refrescarPerfil]);
+
+  // 2. Sincronización al volver a la pestaña (focus con debounce de 5s)
+  const lastFocusRefreshRef = useRef(0);
+  useEffect(() => {
+    if (!token) return;
+    const handleFocus = () => {
+      const now = Date.now();
+      if (now - lastFocusRefreshRef.current > 5000) {
+        lastFocusRefreshRef.current = now;
+        refrescarPerfil();
+      }
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [token, refrescarPerfil]);
+
+  // 3. Sondeo silencioso periódico (cada 45s) solo cuando la pestaña esté activa y visible
+  useEffect(() => {
+    if (!token) return;
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        refrescarPerfil();
+      }
+    }, 45000);
+    return () => clearInterval(interval);
+  }, [token, refrescarPerfil]);
+
+  // 4. Sincronización pasiva entre pestañas (adopta el token sin repetir llamadas a la API)
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'token_barberia' && e.newValue) {
+        setToken(e.newValue);
+        const userStr = localStorage.getItem('usuario_barberia');
+        if (userStr) {
+          try {
+            setUsuarioSesion(JSON.parse(userStr));
+          } catch {}
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
 
   return (
     <AuthContext.Provider

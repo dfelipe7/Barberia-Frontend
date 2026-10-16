@@ -2,6 +2,8 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import KyriosSpinner from '../ui/KyriosSpinner';
 
+import { esRolApp } from '../lib/autorizacion/roles';
+
 interface ProtectedRouteProps {
   rolesPermitidos: string[];
 }
@@ -27,10 +29,32 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ rolesPermitidos 
     return <Navigate to="/login" replace />;
   }
 
-  const tienePermiso = rolesPermitidos.some((rol) => roles.includes(rol));
-
-  if (!tienePermiso || usuarioDb?.estado === 'INACTIVO') {
+  // 1. Cuenta bloqueada globalmente
+  if (usuarioDb?.estado === 'INACTIVO') {
     return <Navigate to="/sin-acceso" replace />;
+  }
+
+  // 2. Usuario sin ningún rol del sistema asignado
+  const tieneRolApp = roles.some((rol) => esRolApp(rol));
+  if (!tieneRolApp) {
+    return <Navigate to="/sin-acceso" replace />;
+  }
+
+  // 3. Verificación de permiso para la ruta actual
+  const tienePermiso = rolesPermitidos.some((rol) => roles.includes(rol));
+  if (!tienePermiso) {
+    // Si el usuario tiene un rol activo (ej. Barbero) pero no para esta vista administrativa,
+    // se le redirige a su Dashboard con aviso en vez de bloquearlo en /sin-acceso
+    return (
+      <Navigate
+        to="/dashboard"
+        replace
+        state={{
+          avisoAcceso:
+            'No tienes los permisos necesarios para acceder a esa sección. Te hemos redirigido a tu panel principal.',
+        }}
+      />
+    );
   }
 
   return <Outlet />;
