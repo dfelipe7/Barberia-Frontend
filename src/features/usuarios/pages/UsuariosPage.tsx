@@ -57,9 +57,24 @@ export const UsuariosPage: React.FC = () => {
     : esAdministrador
       ? 'ADMINISTRADOR'
       : 'BARBERO';
-  const [pestañaActiva, setPestañaActiva] = useState<Pestaña>(
-    esSuperAdmin ? 'administradores' : 'barberos',
-  );
+  const searchTab = new URLSearchParams(location.search).get('tab') as Pestaña | null;
+  const pestañaInicial: Pestaña =
+    (searchTab === 'administradores' && esSuperAdmin) || searchTab === 'barberos'
+      ? searchTab
+      : esSuperAdmin
+        ? 'administradores'
+        : 'barberos';
+
+  const [pestañaActiva, setPestañaActiva] = useState<Pestaña>(pestañaInicial);
+
+  useEffect(() => {
+    const tabFromUrl = new URLSearchParams(location.search).get('tab') as Pestaña | null;
+    if (tabFromUrl === 'barberos') {
+      setPestañaActiva('barberos');
+    } else if (tabFromUrl === 'administradores' && esSuperAdmin) {
+      setPestañaActiva('administradores');
+    }
+  }, [location.search, esSuperAdmin]);
 
   // Consultas asíncronas con TanStack Query
   const {
@@ -311,6 +326,7 @@ export const UsuariosPage: React.FC = () => {
             }`}
             onClick={() => {
               setPestañaActiva('administradores');
+              navigate('?tab=administradores', { replace: true });
             }}
           >
             <Shield size={16} />
@@ -331,6 +347,7 @@ export const UsuariosPage: React.FC = () => {
           }`}
           onClick={() => {
             setPestañaActiva('barberos');
+            navigate('?tab=barberos', { replace: true });
           }}
         >
           <Scissors size={16} />

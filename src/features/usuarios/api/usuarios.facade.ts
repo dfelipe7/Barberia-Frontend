@@ -63,6 +63,7 @@ export function useActualizarUsuario() {
       queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
       queryClient.invalidateQueries({ queryKey: usuariosKeys.detail(variables.id) });
       queryClient.invalidateQueries({ queryKey: usuariosKeys.perfil() });
+      queryClient.invalidateQueries({ queryKey: ['barberos'] });
     },
   });
 }
@@ -74,7 +75,7 @@ export function useCambiarEstadoUsuarioGlobal() {
       usuariosService.cambiarEstadoUsuario(id, datos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
-      queryClient.invalidateQueries({ queryKey: ['barberos', 'gestion'] });
+      queryClient.invalidateQueries({ queryKey: ['barberos'] });
     },
   });
 }
@@ -87,6 +88,7 @@ export function useCambiarEstadoUsuario() {
       usuariosService.cambiarEstado(id, datos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
+      queryClient.invalidateQueries({ queryKey: ['barberos'] });
     },
   });
 }
@@ -99,6 +101,7 @@ export function useCambiarEstadoAdministrador() {
       usuariosService.cambiarEstadoAdministrador(id, datos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
+      queryClient.invalidateQueries({ queryKey: ['barberos'] });
     },
   });
 }
@@ -111,6 +114,7 @@ export function useConfigurarBarbero() {
       usuariosService.configurarBarbero(id, datos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
+      queryClient.invalidateQueries({ queryKey: ['barberos'] });
     },
   });
 }
@@ -123,6 +127,7 @@ export function useConfigurarMeComoBarbero() {
       usuariosService.configurarMeComoBarbero(datos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: usuariosKeys.perfil() });
+      queryClient.invalidateQueries({ queryKey: ['barberos'] });
     },
   });
 }

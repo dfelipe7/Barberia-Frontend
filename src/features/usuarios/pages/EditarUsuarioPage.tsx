@@ -6,6 +6,7 @@ import Spinner from '../../../shared/ui/Spinner';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import ComisionSlider from '../../../shared/ui/molecules/ComisionSlider';
+import { Lock } from 'lucide-react';
 import { useAuth } from '../../../auth/AuthContext';
 import { useUsuario, useActualizarUsuario } from '../api/usuarios.facade';
 import { puedeGestionarEstado } from '../../../shared/lib/autorizacion/jerarquiaRoles';
@@ -25,7 +26,7 @@ export const EditarUsuarioPage: React.FC = () => {
   const goBack = useReturnToPrevious();
   const confirm = useConfirm();
   const { showToast } = useToastContext();
-  const { roles, usuarioDb } = useAuth();
+  const { roles, usuarioDb, refrescarPerfil } = useAuth();
   const editandoPropioPerfil = usuarioDb?.id === usuarioId;
   const rolActorPrincipal = (roles.includes('SUPERADMIN')
     ? 'SUPERADMIN'
@@ -39,6 +40,13 @@ export const EditarUsuarioPage: React.FC = () => {
     isLoading: cargandoUsuario,
     error: errorUsuario,
   } = useUsuario(usuarioId);
+
+  const esSuperadminObjetivo = usuario?.rol === 'SUPERADMIN';
+  const esAdminObjetivo = Boolean(
+    usuario?.administrador?.estado === 'ACTIVO' || usuario?.rol === 'ADMINISTRADOR'
+  );
+  const noPuedeRevocarAdmin =
+    esSuperadminObjetivo || (editandoPropioPerfil && (esAdminObjetivo || esSuperadmin));
 
   const actualizarUsuarioMutation = useActualizarUsuario();
 
@@ -87,29 +95,6 @@ export const EditarUsuarioPage: React.FC = () => {
     }
   }, [usuario, setValue]);
 
-  // Protección si un usuario intenta editar a otro de jerarquía igual o superior sin ser superadmin
-  
-  const rolObjetivo: Rol =
-    usuario?.administrador?.estado === 'ACTIVO' || usuario?.rol === 'ADMINISTRADOR'
-      ? 'ADMINISTRADOR'
-      : 'BARBERO';
-  if (!puedeGestionarEstado(rolActorPrincipal, rolObjetivo) && usuarioDb?.id !== usuarioId) {
-    return (
-      <div className="container py-4">
-        <div className="alert alert-warning">
-          No tienes permisos para editar el perfil de otro administrador.
-        </div>
-        <button
-          type="button"
-          className="btn btn-outline-secondary"
-          onClick={() => goBack({ fallbackTo: '/usuarios' })}
-        >
-          &larr; Volver
-        </button>
-      </div>
-    );
-  }
-
   if (cargandoUsuario) {
     return <Spinner mensaje="Cargando datos del usuario..." />;
   }
@@ -131,6 +116,28 @@ export const EditarUsuarioPage: React.FC = () => {
     );
   }
 
+  // Protección si un usuario intenta editar a otro de jerarquía igual o superior sin ser superadmin
+  const rolObjetivo: Rol =
+    usuario.administrador?.estado === 'ACTIVO' || usuario.rol === 'ADMINISTRADOR'
+      ? 'ADMINISTRADOR'
+      : 'BARBERO';
+  if (!puedeGestionarEstado(rolActorPrincipal, rolObjetivo) && usuarioDb?.id !== usuarioId) {
+    return (
+      <div className="container py-4">
+        <div className="alert alert-warning">
+          No tienes permisos para editar el perfil de otro administrador.
+        </div>
+        <button
+          type="button"
+          className="btn btn-outline-secondary"
+          onClick={() => goBack({ fallbackTo: '/usuarios' })}
+        >
+          &larr; Volver
+        </button>
+      </div>
+    );
+  }
+
   const onSubmit = async (data: EditarUsuarioFormValues) => {
     try {
       const teniaAdmin = Boolean(
@@ -141,7 +148,7 @@ export const EditarUsuarioPage: React.FC = () => {
       const teniaBarbero = Boolean(usuario?.barbero && usuario.barbero.estado === 'ACTIVO');
 
       // Si desmarca rol de administrador (SUPERADMIN editando a otro admin) -> peligroso
-      if (teniaAdmin && !data.esAdministrador) {
+      if (!noPuedeRevocarAdmin && teniaAdmin && !data.esAdministrador) {
         const ok = await confirm({
           title: `¿Revocar rol de Administrador de ${usuario?.nombre}?`,
           message: `El usuario perderá el acceso a las funciones de administración y configuración del sistema.`,
@@ -202,12 +209,16 @@ export const EditarUsuarioPage: React.FC = () => {
             telefono: data.telefono,
             porcentajeComision: data.porcentajeComision,
           }),
-          esAdministrador: data.esAdministrador,
+          esAdministrador: noPuedeRevocarAdmin ? true : data.esAdministrador,
           esBarbero: data.esBarbero,
         },
       });
 
       showToast('success', `Usuario ${data.nombre} actualizado correctamente.`);
+
+      if (editandoPropioPerfil) {
+        await refrescarPerfil();
+      }
 
       goBack({
         fallbackTo: editandoPropioPerfil ? '/mi-perfil' : '/usuarios',
@@ -295,17 +306,24 @@ export const EditarUsuarioPage: React.FC = () => {
             <div className="col-12 pt-2">
               <h5 className="fw-bold mb-3 border-bottom pb-2">Perfiles del Sistema</h5>
               <div className="d-flex flex-column gap-2">
-                {esSuperadmin && (
-                  <div className="form-check">
+                {(esSuperadmin || esAdminObjetivo) && (
+                  <div className="form-check d-flex align-items-center gap-2 flex-wrap">
                     <input
                       id="esAdministrador"
                       type="checkbox"
-                      className="form-check-input"
+                      className="form-check-input mt-0"
+                      disabled={noPuedeRevocarAdmin}
                       {...register('esAdministrador')}
                     />
-                    <label htmlFor="esAdministrador" className="form-check-label fw-semibold">
+                    <label htmlFor="esAdministrador" className="form-check-label fw-semibold mb-0">
                       Rol Administrador (Acceso a módulos de gestión y panel)
                     </label>
+                    {noPuedeRevocarAdmin && (
+                      <span className="badge bg-secondary-subtle text-secondary-emphasis d-inline-flex align-items-center gap-1 small py-1 px-2">
+                        <Lock size={12} />
+                        {esSuperadminObjetivo ? 'Superadmin inmutable' : 'No puedes revocar tu propio rol'}
+                      </span>
+                    )}
                   </div>
                 )}
 

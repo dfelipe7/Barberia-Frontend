@@ -102,7 +102,7 @@ export const UserTable: React.FC<UserTableProps> = ({
             label: 'Editar datos del perfil',
             icon: <Pencil size={15} className="text-primary" />,
             to: `/usuarios/${admin.id}/editar`,
-            linkState: { from: '/usuarios' },
+            linkState: { from: '/usuarios?tab=administradores' },
             title: 'Editar datos del perfil',
           },
           !admin.esBarbero &&
@@ -279,7 +279,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                 {puedeEditar && (
                   <Link
                     to={`/usuarios/${admin.id}/editar`}
-                    state={{ from: '/usuarios' }}
+                    state={{ from: '/usuarios?tab=administradores' }}
                     className="btn btn-outline-primary mobile-action-btn"
                     title="Editar datos del perfil"
                     aria-label="Editar datos del perfil"

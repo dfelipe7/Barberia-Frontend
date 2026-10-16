@@ -23,10 +23,18 @@ export const editarUsuarioSchema = z
     esAdministrador: z.boolean(),
     esBarbero: z.boolean(),
   })
-  .refine((data) => data.esAdministrador || data.esBarbero, {
-    message: 'Debes asignar al menos un rol: Administrador o Barbero.',
-    path: ['esBarbero'],
-  });
+  .refine(
+    (data) => {
+      if (data.esBarbero) {
+        return data.telefono.trim().length >= 7;
+      }
+      return true;
+    },
+    {
+      message: 'El teléfono debe tener al menos 7 dígitos si se activa el perfil de barbero.',
+      path: ['telefono'],
+    },
+  );
 
 export type EditarUsuarioFormValues = z.infer<typeof editarUsuarioSchema>;
 
