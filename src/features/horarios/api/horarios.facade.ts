@@ -1,0 +1,61 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { horariosKeys } from './horarios.keys';
+import { horariosService } from './horarios.service';
+
+export function useMiHorario() {
+  return useQuery({
+    queryKey: horariosKeys.miHorario(),
+    queryFn: horariosService.obtenerMiHorario,
+  });
+}
+
+export function useGuardarMiHorario() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: horariosService.guardarMiHorario,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: horariosKeys.miHorario() });
+      queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
+    },
+  });
+}
+
+export function useDisponibilidadFecha(fecha: string) {
+  return useQuery({
+    queryKey: horariosKeys.disponibilidadFecha(fecha),
+    queryFn: () => horariosService.consultarMiDisponibilidad(fecha),
+    enabled: Boolean(fecha),
+  });
+}
+
+export function useBloqueosHorario() {
+  return useQuery({
+    queryKey: horariosKeys.bloqueos(),
+    queryFn: horariosService.obtenerBloqueos,
+  });
+}
+
+export function useCrearBloqueoHorario() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: horariosService.crearBloqueo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: horariosKeys.bloqueos() });
+      queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
+    },
+  });
+}
+
+export function useReactivarBloqueoHorario() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: horariosService.reactivarBloqueo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: horariosKeys.bloqueos() });
+      queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
+    },
+  });
+}
