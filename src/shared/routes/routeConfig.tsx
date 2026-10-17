@@ -11,6 +11,7 @@ import ServiciosPage from '../../features/servicios/pages/ServiciosPage';
 import HorariosPage from '../../features/horarios/pages/HorariosPage';
 import ReservasPage from '../../features/reservas/pages/ReservasPage';
 import CrearReservaAdministrativaPage from '../../features/reservas/pages/CrearReservaAdministrativaPage';
+import WhatsAppConfigPage from '../../features/whatsapp/pages/WhatsAppConfigPage';
 
 export interface RouteConfigItem {
   path: string;
@@ -30,4 +31,5 @@ export const routeConfig: RouteConfigItem[] = [
   { path: '/barberos/nuevo', element: <CrearBarberoPage />, roles: ['SUPERADMIN', 'ADMINISTRADOR'] },
   { path: '/administradores/nuevo', element: <CrearAdministradorPage />, roles: ['SUPERADMIN'] },
   { path: '/servicios', element: <ServiciosPage />, roles: ['SUPERADMIN', 'ADMINISTRADOR'] },
+  { path: '/whatsapp', element: <WhatsAppConfigPage />, roles: ['SUPERADMIN', 'ADMINISTRADOR'] },
 ];
