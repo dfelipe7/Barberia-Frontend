@@ -161,6 +161,34 @@ const PRESETS = {
 
 const EMOJIS_RAPIDOS = ['💈', '✂️', '⏰', '📅', '📍', '💰', '⭐', '👋', '✅', '🔥'];
 
+export const PRESETS_ANTICIPACION = [
+  { minutos: 30, label: '30 min antes', icono: '⚡' },
+  { minutos: 60, label: '1 hora antes', icono: '⏱️' },
+  { minutos: 120, label: '2 horas antes (Recomendado)', icono: '⭐' },
+  { minutos: 180, label: '3 horas antes', icono: '🕒' },
+  { minutos: 240, label: '4 horas antes', icono: '🕓' },
+];
+
+export const formatoHorasMinutos = (mins: number) => {
+  if (mins >= 60) {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return m > 0 ? `${h}h ${m}m` : `${h} hora${h > 1 ? 's' : ''}`;
+  }
+  return `${mins} minutos`;
+};
+
+export const getEjemploEnvio = (mins: number) => {
+  const citaHora = 16 * 60; // 4:00 PM (16:00)
+  const envioHora = Math.max(0, citaHora - mins);
+  const h = Math.floor(envioHora / 60);
+  const m = envioHora % 60;
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const displayH = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  const timeStr = `${displayH}:${m.toString().padStart(2, '0')} ${ampm}`;
+  return `Ejemplo: Si un cliente tiene cita a las 4:00 PM, recibirá el recordatorio a las ${timeStr} (${formatoHorasMinutos(mins)} antes).`;
+};
+
 export const WhatsAppConfigPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'conexion' | 'plantillas'>('conexion');
   const [subTab, setSubTab] = useState<'confirmacion' | 'recordatorio'>('confirmacion');
@@ -171,9 +199,16 @@ export const WhatsAppConfigPage: React.FC = () => {
   const [isDisconnecting, setIsDisconnecting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Estado de plantillas
+  // Control de inactividad del código QR (1 minuto / 60 segundos de expiración)
+  const QR_TIMEOUT_SECONDS = 60;
+  const [isQrExpired, setIsQrExpired] = useState<boolean>(false);
+  const [qrSecondsLeft, setQrSecondsLeft] = useState<number>(QR_TIMEOUT_SECONDS);
+
+  // Estado de plantillas y tiempo de anticipación del recordatorio
   const [plantillaConfirmacion, setPlantillaConfirmacion] = useState<string>('');
   const [plantillaRecordatorio, setPlantillaRecordatorio] = useState<string>('');
+  const [minutosAnticipacion, setMinutosAnticipacion] = useState<number>(120);
+  const [modoPersonalizado, setModoPersonalizado] = useState<boolean>(false);
   const [isSavingTemplates, setIsSavingTemplates] = useState<boolean>(false);
   const [loadingTemplates, setLoadingTemplates] = useState<boolean>(false);
 
@@ -181,7 +216,6 @@ export const WhatsAppConfigPage: React.FC = () => {
 
   const { showToast } = useToastContext();
   const confirm = useConfirm();
-  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchStatus = useCallback(async (manual = false) => {
     if (manual) setIsRefreshing(true);
@@ -206,6 +240,13 @@ export const WhatsAppConfigPage: React.FC = () => {
       const data = await whatsappService.getPlantillas();
       setPlantillaConfirmacion(data.confirmacion);
       setPlantillaRecordatorio(data.recordatorio);
+      if (data.minutosAnticipacion) {
+        setMinutosAnticipacion(data.minutosAnticipacion);
+        const esPreset = PRESETS_ANTICIPACION.some(
+          (p) => p.minutos === data.minutosAnticipacion,
+        );
+        setModoPersonalizado(!esPreset);
+      }
     } catch (err) {
       console.error('Error al cargar plantillas de WhatsApp:', err);
       showToast('danger', 'No se pudieron cargar las plantillas de mensajes.');
@@ -214,21 +255,81 @@ export const WhatsAppConfigPage: React.FC = () => {
     }
   }, [showToast]);
 
-  // Polling automático cada 3 segundos para el estado de la conexión
+  // Ref para rastrear estado de conexión actual en el ciclo de vida (desmontaje)
+  const statusRef = useRef(status);
   useEffect(() => {
-    void fetchStatus();
-    void fetchPlantillas();
+    statusRef.current = status;
+  }, [status]);
 
-    pollTimerRef.current = setInterval(() => {
-      void fetchStatus();
-    }, 3000);
-
+  // Si el usuario sale de la pantalla y WhatsApp no quedó conectado,
+  // pausamos el socket en el backend de inmediato para ahorrar recursos.
+  useEffect(() => {
     return () => {
-      if (pollTimerRef.current) {
-        clearInterval(pollTimerRef.current);
+      if (!statusRef.current?.conectado) {
+        void whatsappService.pausar().catch(() => {});
       }
     };
-  }, [fetchStatus, fetchPlantillas]);
+  }, []);
+
+  // Cuando el QR expira por inactividad, notificamos al backend para entrar en modo reposo
+  useEffect(() => {
+    if (isQrExpired) {
+      void whatsappService.pausar().catch(() => {});
+    }
+  }, [isQrExpired]);
+
+  // Temporizador de inactividad de 60 segundos y sondeo condicional para no saturar recursos
+  useEffect(() => {
+    void fetchPlantillas();
+
+    if (status?.conectado) {
+      setIsQrExpired(false);
+      // Cuando ya está conectado, sondeo suave cada 10 segundos
+      const timer = setInterval(() => {
+        void fetchStatus();
+      }, 10000);
+      return () => clearInterval(timer);
+    }
+
+    // Si NO está conectado y el QR NO ha expirado:
+    if (!isQrExpired) {
+      // Despertar socket bajo demanda al entrar
+      void whatsappService.iniciar().then(() => fetchStatus()).catch(() => fetchStatus());
+
+      // Sondeo rápido cada 3 segundos
+      const pollTimer = setInterval(() => {
+        void fetchStatus();
+      }, 3000);
+
+      // Cuenta regresiva de 60 segundos
+      const countdownTimer = setInterval(() => {
+        setQrSecondsLeft((prev) => {
+          if (prev <= 1) {
+            setIsQrExpired(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => {
+        clearInterval(pollTimer);
+        clearInterval(countdownTimer);
+      };
+    }
+  }, [fetchStatus, fetchPlantillas, status?.conectado, isQrExpired]);
+
+  const handleRecargarQR = async () => {
+    setIsQrExpired(false);
+    setQrSecondsLeft(QR_TIMEOUT_SECONDS);
+    showToast('info', 'Generando nuevo código QR de WhatsApp...');
+    try {
+      await whatsappService.iniciar();
+      await fetchStatus(true);
+    } catch (err) {
+      console.error('Error al reactivar WhatsApp:', err);
+    }
+  };
 
   const handleDesconectar = async () => {
     const confirmado = await confirm({
@@ -345,10 +446,14 @@ export const WhatsAppConfigPage: React.FC = () => {
       const actualizadas = await whatsappService.guardarPlantillas({
         confirmacion: plantillaConfirmacion,
         recordatorio: plantillaRecordatorio,
+        minutosAnticipacion,
       });
       setPlantillaConfirmacion(actualizadas.confirmacion);
       setPlantillaRecordatorio(actualizadas.recordatorio);
-      showToast('success', 'Plantillas de mensajes actualizadas con éxito.');
+      if (actualizadas.minutosAnticipacion) {
+        setMinutosAnticipacion(actualizadas.minutosAnticipacion);
+      }
+      showToast('success', 'Plantillas y configuración de recordatorio guardadas con éxito.');
     } catch (err: any) {
       showToast('danger', 'Error al guardar las plantillas de WhatsApp.');
     } finally {
@@ -360,7 +465,7 @@ export const WhatsAppConfigPage: React.FC = () => {
     const confirmado = await confirm({
       title: '¿Restablecer plantillas oficiales?',
       message:
-        'Esto borrará las personalizaciones actuales y restaurará los mensajes por defecto de Kyrios Barber Studio.',
+        'Esto borrará las personalizaciones actuales y restaurará los mensajes y el tiempo de anticipación (2 horas) por defecto de Kyrios Barber Studio.',
       confirmLabel: 'Restablecer por Defecto',
       cancelLabel: 'Cancelar',
       variant: 'warning',
@@ -373,7 +478,9 @@ export const WhatsAppConfigPage: React.FC = () => {
       const defaults = await whatsappService.resetPlantillas();
       setPlantillaConfirmacion(defaults.confirmacion);
       setPlantillaRecordatorio(defaults.recordatorio);
-      showToast('info', 'Plantillas restablecidas a los textos por defecto.');
+      setMinutosAnticipacion(defaults.minutosAnticipacion ?? 120);
+      setModoPersonalizado(false);
+      showToast('info', 'Plantillas y configuración restablecidas por defecto.');
     } catch (err: any) {
       showToast('danger', 'Error al restablecer las plantillas.');
     } finally {
@@ -448,7 +555,7 @@ export const WhatsAppConfigPage: React.FC = () => {
           <button
             type="button"
             className="wa-refresh-btn"
-            onClick={() => void fetchStatus(true)}
+            onClick={handleRecargarQR}
             disabled={isRefreshing || loading}
             title="Actualizar estado manualmente"
           >
@@ -541,7 +648,7 @@ export const WhatsAppConfigPage: React.FC = () => {
                     <Clock size={20} className="wa-feature-icon" />
                     <div>
                       <div className="wa-feature-title">
-                        Recordatorio 2 Horas Antes
+                        Recordatorio {formatoHorasMinutos(minutosAnticipacion)} Antes
                       </div>
                       <p className="wa-feature-desc">
                         El cron job evalúa citas activas cada 10 minutos y envía un
@@ -629,7 +736,45 @@ export const WhatsAppConfigPage: React.FC = () => {
                 </div>
 
                 <div className="wa-qr-container">
-                  {qrCode ? (
+                  {isQrExpired ? (
+                    <>
+                      <div className="wa-qr-frame">
+                        <div className="wa-qr-expired-overlay">
+                          <div className="wa-qr-expired-content">
+                            <div className="wa-qr-expired-icon-box">
+                              <Clock size={32} className="text-warning" />
+                            </div>
+                            <div className="wa-qr-expired-title">
+                              Código QR Expirado
+                            </div>
+                            <p className="wa-qr-expired-desc">
+                              El código caducó por inactividad para no saturar recursos.
+                            </p>
+                            <button
+                              type="button"
+                              className="wa-btn-reload-qr"
+                              onClick={handleRecargarQR}
+                            >
+                              <RefreshCw size={15} />
+                              <span>Recargar Código QR</span>
+                            </button>
+                          </div>
+                        </div>
+                        {qrCode && (
+                          <img
+                            src={qrCode}
+                            alt="Código QR de WhatsApp"
+                            className="wa-qr-image blur"
+                          />
+                        )}
+                      </div>
+
+                      <p className="text-warning small mt-1 mb-0 d-flex align-items-center justify-content-center gap-1">
+                        <AlertCircle size={14} />
+                        <span>Haz clic en "Recargar Código QR" para generar un código fresco.</span>
+                      </p>
+                    </>
+                  ) : qrCode ? (
                     <>
                       <div className="wa-qr-frame">
                         <img
@@ -638,10 +783,14 @@ export const WhatsAppConfigPage: React.FC = () => {
                           className="wa-qr-image"
                         />
                       </div>
-                      <p className="text-secondary small mt-1 mb-0">
-                        El código se renueva automáticamente para garantizar una
-                        conexión segura.
-                      </p>
+
+                      <div className="wa-qr-countdown-text">
+                        <span className="wa-radar-dot connected" style={{ width: 6, height: 6 }} />
+                        <span>
+                          Expira en {Math.floor(qrSecondsLeft / 60)}:
+                          {(qrSecondsLeft % 60).toString().padStart(2, '0')} min (Sondeo activo)
+                        </span>
+                      </div>
                     </>
                   ) : (
                     <div className="wa-qr-loading">
@@ -759,7 +908,7 @@ export const WhatsAppConfigPage: React.FC = () => {
                 onClick={() => setSubTab('recordatorio')}
               >
                 <Clock size={15} />
-                <span>Mensaje de Recordatorio (2h)</span>
+                <span>Mensaje de Recordatorio ({formatoHorasMinutos(minutosAnticipacion)})</span>
               </button>
             </div>
 
@@ -774,16 +923,99 @@ export const WhatsAppConfigPage: React.FC = () => {
                 ) : (
                   <>
                     <Clock size={14} className="text-info" />
-                    <span>Disparo Automático (2 Horas Antes)</span>
+                    <span>Disparo Automático ({formatoHorasMinutos(minutosAnticipacion)} Antes)</span>
                   </>
                 )}
               </div>
               <p className="wa-context-desc">
                 {subTab === 'confirmacion'
                   ? 'Este mensaje se envía de forma automática a WhatsApp tan pronto el cliente confirma su cita en la página web.'
-                  : 'El sistema revisa las citas del día cada 10 minutos y envía este recordatorio a los clientes que tengan cita en las próximas 2 horas.'}
+                  : `El sistema revisa las citas del día cada 10 minutos y envía este recordatorio a los clientes que tengan cita en las próximas ${formatoHorasMinutos(minutosAnticipacion)}.`}
               </p>
             </div>
+
+            {/* Configuración interactiva del Tiempo de Anticipación (Solo en Recordatorio) */}
+            {subTab === 'recordatorio' && (
+              <div className="wa-anticipacion-card">
+                <div className="wa-anticipacion-header">
+                  <div className="wa-anticipacion-title">
+                    <Clock size={16} className="text-warning" />
+                    <span>¿Con cuánto tiempo de anticipación enviar el recordatorio?</span>
+                  </div>
+                  <span className="wa-anticipacion-badge">
+                    Actualmente: {formatoHorasMinutos(minutosAnticipacion)} antes
+                  </span>
+                </div>
+
+                <div className="wa-anticipacion-pills">
+                  {PRESETS_ANTICIPACION.map((preset) => {
+                    const isSelected =
+                      !modoPersonalizado && minutosAnticipacion === preset.minutos;
+                    return (
+                      <button
+                        key={preset.minutos}
+                        type="button"
+                        className={`wa-anticipacion-pill ${isSelected ? 'active' : ''}`}
+                        onClick={() => {
+                          setModoPersonalizado(false);
+                          setMinutosAnticipacion(preset.minutos);
+                        }}
+                      >
+                        <span className="wa-pill-icon">{preset.icono}</span>
+                        <span>{preset.label}</span>
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    type="button"
+                    className={`wa-anticipacion-pill ${modoPersonalizado ? 'active' : ''}`}
+                    onClick={() => setModoPersonalizado(true)}
+                  >
+                    <span className="wa-pill-icon">⚙️</span>
+                    <span>Personalizado</span>
+                  </button>
+                </div>
+
+                {modoPersonalizado && (
+                  <div className="wa-anticipacion-custom-box">
+                    <label htmlFor="custom-minutos-input" className="wa-custom-label">
+                      Ingresa los minutos de anticipación deseados:
+                    </label>
+                    <div className="wa-custom-input-group">
+                      <input
+                        id="custom-minutos-input"
+                        type="number"
+                        min={15}
+                        max={720}
+                        step={15}
+                        className="wa-custom-input"
+                        value={minutosAnticipacion}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value, 10);
+                          if (!isNaN(val) && val >= 15 && val <= 720) {
+                            setMinutosAnticipacion(val);
+                          } else if (e.target.value === '') {
+                            setMinutosAnticipacion(15);
+                          }
+                        }}
+                      />
+                      <span className="wa-custom-unit">
+                        minutos ({formatoHorasMinutos(minutosAnticipacion)})
+                      </span>
+                    </div>
+                    <span className="wa-custom-hint">
+                      Rango permitido: 15 minutos a 720 minutos (12 horas).
+                    </span>
+                  </div>
+                )}
+
+                <div className="wa-anticipacion-example">
+                  <Lightbulb size={16} className="text-warning flex-shrink-0" />
+                  <span>{getEjemploEnvio(minutosAnticipacion)}</span>
+                </div>
+              </div>
+            )}
 
             {/* Estilos Prediseñados (Presets con 1 Clic) */}
             <div className="wa-presets-bar">

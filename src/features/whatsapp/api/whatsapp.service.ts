@@ -17,6 +17,22 @@ export const whatsappService = {
   },
 
   /**
+   * Reactiva el socket bajo demanda para vincular WhatsApp y generar un código QR nuevo.
+   */
+  async iniciar(): Promise<{ mensaje: string }> {
+    const response = await apiClient.post<{ mensaje: string }>('/whatsapp/iniciar');
+    return response.data;
+  },
+
+  /**
+   * Pone la vinculación de WhatsApp en modo reposo cerrando el socket activo para ahorrar recursos.
+   */
+  async pausar(): Promise<{ mensaje: string }> {
+    const response = await apiClient.post<{ mensaje: string }>('/whatsapp/pausar');
+    return response.data;
+  },
+
+  /**
    * Desvincula la sesión activa de WhatsApp Web en el backend y genera un nuevo código QR.
    * Requiere rol ADMINISTRADOR o SUPERADMIN.
    */

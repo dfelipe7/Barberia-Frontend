@@ -10,9 +10,11 @@ export interface DesconectarResponse {
 export interface WhatsAppPlantillas {
   confirmacion: string;
   recordatorio: string;
+  minutosAnticipacion: number;
 }
 
 export interface ActualizarPlantillasDTO {
   confirmacion?: string;
   recordatorio?: string;
+  minutosAnticipacion?: number;
 }
