@@ -11,16 +11,20 @@ import type {
   ReservaClienteDTO,
   ReservaCreadaDTO,
   ActualizarReservaDTO,
-  DescuentoAplicadoDTO,
-  ValidarDescuentoDTO,
   AgendaSemanalBarberoDTO,
   ClienteAdministrativoDTO,
   CrearReservaAdministrativaDTO,
   ClientesAdministrativosResponseDTO,
+  FiltroReservasAdministrativasDTO,
+  ReservaAdministrativaDTO,
+  ReservaAccionDTO,
+  ReservaModificadaDTO,
 } from './reservas.dto';
 
 const TOKEN_CLIENTE_KEY = 'token_cliente_barberia';
 const SESION_CLIENTE_KEY = 'cliente_barberia';
+const TOKEN_INVITADO_PREFIX = 'reserva_invitado_gestion_';
+const TOKEN_GESTION_HEADER = 'X-Reservation-Management-Token';
 
 const reservasApiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -86,6 +90,35 @@ export const reservasService = {
 
   async crearReserva(datos: CrearReservaDTO): Promise<ReservaCreadaDTO> {
     const response = await reservasApiClient.post<ReservaCreadaDTO>('/reservas', datos);
+    if (response.data.tokenGestion) {
+      sessionStorage.setItem(TOKEN_INVITADO_PREFIX + response.data.id, response.data.tokenGestion);
+    }
+    return response.data;
+  },
+
+  obtenerTokenGestionInvitado(id: number): string | null {
+    return sessionStorage.getItem(TOKEN_INVITADO_PREFIX + id);
+  },
+
+  eliminarTokenGestionInvitado(id: number) {
+    sessionStorage.removeItem(TOKEN_INVITADO_PREFIX + id);
+  },
+
+  async modificarReservaInvitado(id: number, token: string, datos: ActualizarReservaDTO): Promise<ReservaModificadaDTO> {
+    const response = await reservasApiClient.patch<ReservaModificadaDTO>(
+      '/reservas/invitado/' + id,
+      datos,
+      { headers: { [TOKEN_GESTION_HEADER]: token } },
+    );
+    return response.data;
+  },
+
+  async cancelarReservaInvitado(id: number, token: string): Promise<ReservaAccionDTO> {
+    const response = await reservasApiClient.patch<ReservaAccionDTO>(
+      '/reservas/invitado/' + id + '/cancelar',
+      undefined,
+      { headers: { [TOKEN_GESTION_HEADER]: token } },
+    );
     return response.data;
   },
 
@@ -99,9 +132,8 @@ export const reservasService = {
     return response.data;
   },
 
-  // Rutas previstas para las historias nuevas; se ajustarán al Swagger que publique backend.
-  async modificarMiReserva(id: number, datos: ActualizarReservaDTO): Promise<ReservaClienteDTO> {
-    const response = await reservasApiClient.patch<ReservaClienteDTO>('/reservas/me/' + id, datos);
+  async modificarMiReserva(id: number, datos: ActualizarReservaDTO): Promise<ReservaModificadaDTO> {
+    const response = await reservasApiClient.patch<ReservaModificadaDTO>('/reservas/me/' + id, datos);
     return response.data;
   },
 
@@ -109,11 +141,6 @@ export const reservasService = {
     const response = await reservasApiClient.patch<{ mensaje: string }>(
       '/reservas/me/' + id + '/cancelar',
     );
-    return response.data;
-  },
-
-  async validarDescuento(datos: ValidarDescuentoDTO): Promise<DescuentoAplicadoDTO> {
-    const response = await reservasApiClient.post<DescuentoAplicadoDTO>('/descuentos/validar', datos);
     return response.data;
   },
 
@@ -125,8 +152,8 @@ export const reservasService = {
   },
 
   async buscarClientesAdministrativos(busqueda: string): Promise<ClienteAdministrativoDTO[]> {
-    const response = await apiClient.get<ClienteAdministrativoDTO[] | ClientesAdministrativosResponseDTO>('/clientes/gestion', {
-      params: { busqueda },
+    const response = await apiClient.get<ClienteAdministrativoDTO[] | ClientesAdministrativosResponseDTO>('/reservas/admin/clientes', {
+      params: { termino: busqueda },
     });
     return Array.isArray(response.data) ? response.data : response.data.clientes;
   },
@@ -135,6 +162,41 @@ export const reservasService = {
     datos: CrearReservaAdministrativaDTO,
   ): Promise<ReservaCreadaDTO> {
     const response = await apiClient.post<ReservaCreadaDTO>('/reservas/admin', datos);
+    if (response.data.tokenGestion) {
+      sessionStorage.setItem(TOKEN_INVITADO_PREFIX + response.data.id, response.data.tokenGestion);
+    }
+    return response.data;
+  },
+
+  async listarReservasAdministrativas(
+    filtro: FiltroReservasAdministrativasDTO = {},
+  ): Promise<ReservaAdministrativaDTO[]> {
+    const response = await apiClient.get<ReservaAdministrativaDTO[]>('/reservas/admin', { params: filtro });
+    return response.data;
+  },
+
+  async obtenerReservaAdministrativa(id: number): Promise<ReservaAdministrativaDTO> {
+    const response = await apiClient.get<ReservaAdministrativaDTO>('/reservas/admin/' + id);
+    return response.data;
+  },
+
+  async modificarReservaAdministrativa(id: number, datos: ActualizarReservaDTO): Promise<ReservaModificadaDTO> {
+    const response = await apiClient.patch<ReservaModificadaDTO>('/reservas/admin/' + id, datos);
+    return response.data;
+  },
+
+  async cancelarReservaAdministrativa(id: number): Promise<ReservaAccionDTO> {
+    const response = await apiClient.patch<ReservaAccionDTO>('/reservas/admin/' + id + '/cancelar');
+    return response.data;
+  },
+
+  async completarReserva(id: number): Promise<ReservaAccionDTO> {
+    const response = await apiClient.patch<ReservaAccionDTO>('/reservas/' + id + '/completar');
+    return response.data;
+  },
+
+  async marcarReservaNoAsistida(id: number): Promise<ReservaAccionDTO> {
+    const response = await apiClient.patch<ReservaAccionDTO>('/reservas/' + id + '/no-show');
     return response.data;
   },
 };

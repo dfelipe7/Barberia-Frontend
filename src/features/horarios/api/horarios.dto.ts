@@ -99,13 +99,14 @@ export interface DisponibilidadFechaDTO {
 }
 
 export type EstadoBloqueoHorarioDTO = 'ACTIVE' | 'REACTIVATED' | 'CANCELLED';
+export type RazonBloqueoHorarioDTO = 'PERSONAL' | 'MEDICAL' | 'VACATION' | 'OTHER';
 
 export interface BloqueoHorarioDTO {
   id: number;
   date: string;
   startTime: string;
   endTime: string;
-  reason: string | null;
+  reason: RazonBloqueoHorarioDTO | null;
   notes: string | null;
   status: EstadoBloqueoHorarioDTO;
   createdAt: string;
@@ -117,8 +118,16 @@ export interface CrearBloqueoHorarioDTO {
   date: string;
   startTime: string;
   endTime: string;
-  reason?: string;
+  reason?: RazonBloqueoHorarioDTO;
   notes?: string;
+}
+
+export interface ActualizarBloqueoHorarioDTO {
+  date: string;
+  startTime: string;
+  endTime: string;
+  reason: RazonBloqueoHorarioDTO | null;
+  notes: string | null;
 }
 
 export interface BloqueoHorarioAccionDTO {

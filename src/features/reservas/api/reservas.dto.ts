@@ -35,7 +35,6 @@ export interface CrearReservaDTO {
   nombre?: string;
   apellido?: string;
   telefono?: string;
-  codigoDescuento?: string;
 }
 
 export interface BarberoReservaDTO {
@@ -54,17 +53,18 @@ export interface ServicioReservaCreadaDTO {
 export interface ReservaCreadaDTO {
   mensaje: string;
   id: number;
-  estado: string;
+  estado: EstadoReservaDTO;
   fecha: string;
   hora: string;
   horaFin: string;
   barbero: BarberoReservaDTO;
   servicio: ServicioReservaCreadaDTO;
+  tokenGestion?: string;
 }
 
 export interface ReservaClienteDTO {
   id: number;
-  estado: string;
+  estado: EstadoReservaDTO;
   fecha: string;
   hora: string;
   horaFin: string;
@@ -80,22 +80,53 @@ export interface MisReservasDTO {
 
 
 export interface ActualizarReservaDTO {
-  barberoId: number;
+  barberoId?: number;
+  fecha?: string;
+  hora?: string;
+}
+
+export interface ReservaAccionDTO {
+  mensaje: string;
+  id: number;
+  estado: EstadoReservaDTO;
+}
+
+export interface ReservaModificadaDTO extends ReservaAccionDTO {
   fecha: string;
   hora: string;
+  horaFin: string;
+  precio: number;
+  barbero: BarberoReservaDTO;
+  servicio: ServicioReservaCreadaDTO;
 }
 
-export interface ValidarDescuentoDTO {
-  codigo: string;
-  servicioId: number;
+export interface ReservaAdministrativaDTO {
+  id: number;
+  fecha: string;
+  hora: string;
+  horaFin: string;
+  estado: EstadoReservaDTO;
+  precio: number;
+  createdAt: string;
+  barbero: BarberoReservaDTO;
+  cliente: {
+    id: number;
+    nombre: string;
+    apellido?: string | null;
+    telefono?: string | null;
+    email?: string | null;
+    esRegistrado: boolean;
+  };
+  servicio: ServicioReservaCreadaDTO;
 }
 
-export interface DescuentoAplicadoDTO {
-  codigo: string;
-  precioOriginal: number;
-  precioFinal: number;
-  montoDescuento: number;
-  porcentaje?: number;
+export interface FiltroReservasAdministrativasDTO {
+  fecha?: string;
+  desde?: string;
+  hasta?: string;
+  barberoId?: number;
+  estado?: EstadoReservaDTO;
+  clienteId?: number;
 }
 
 export type EstadoReservaDTO =
@@ -103,7 +134,8 @@ export type EstadoReservaDTO =
   | 'CONFIRMED'
   | 'IN_PROGRESS'
   | 'COMPLETED'
-  | 'CANCELLED';
+  | 'CANCELLED'
+  | 'NO_SHOW';
 
 export interface CitaAgendaBarberoDTO {
   id: number;
@@ -132,6 +164,7 @@ export interface ClienteAdministrativoDTO {
   apellido?: string | null;
   telefono?: string | null;
   email?: string | null;
+  esRegistrado?: boolean;
 }
 
 export interface ClientesAdministrativosResponseDTO {
@@ -140,7 +173,7 @@ export interface ClientesAdministrativosResponseDTO {
 
 export interface CrearReservaAdministrativaDTO extends CrearReservaDTO {
   clienteId?: number;
-  codigoDescuento?: string;
+  email?: string;
 }
 
 export interface ClienteSesionDTO {

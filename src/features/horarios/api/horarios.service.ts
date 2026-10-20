@@ -2,6 +2,7 @@ import apiClient from '../../../shared/lib/http/axios';
 import type {
   BloqueoHorarioAccionDTO,
   BloqueoHorarioDTO,
+  ActualizarBloqueoHorarioDTO,
   CrearBloqueoHorarioDTO,
   DisponibilidadFechaDTO,
   GuardarHorarioSemanalDTO,
@@ -38,6 +39,24 @@ export const horariosService = {
 
   async crearBloqueo(datos: CrearBloqueoHorarioDTO): Promise<BloqueoHorarioAccionDTO> {
     const response = await apiClient.post<BloqueoHorarioAccionDTO>(ENDPOINT_BLOQUEOS, datos);
+    return response.data;
+  },
+
+  async actualizarBloqueo(
+    id: number,
+    datos: ActualizarBloqueoHorarioDTO,
+  ): Promise<BloqueoHorarioAccionDTO> {
+    const response = await apiClient.patch<BloqueoHorarioAccionDTO>(
+      ENDPOINT_BLOQUEOS + '/' + id,
+      datos,
+    );
+    return response.data;
+  },
+
+  async cancelarBloqueo(id: number): Promise<BloqueoHorarioAccionDTO> {
+    const response = await apiClient.delete<BloqueoHorarioAccionDTO>(
+      ENDPOINT_BLOQUEOS + '/' + id,
+    );
     return response.data;
   },
 

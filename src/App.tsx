@@ -6,6 +6,7 @@ import { ErrorBoundary } from './shared/components/ErrorBoundary';
 import NotFound from './pages/NotFound/NotFound';
 import HomePage from './pages/Home/HomePage';
 import ReservaClientePage from './features/reservas/pages/ReservaClientePage';
+import ClienteAccesoPage from './features/reservas/pages/ClienteAccesoPage';
 import SinAcceso from './pages/SinAcceso/SinAcceso';
 import LoginPage from './pages/Login/LoginPage';
 import { routeConfig } from './shared/routes/routeConfig';
@@ -35,6 +36,8 @@ function App() {
         {/* Rutas públicas fuera de MainLayout (sin sidebar, con HomeNavbar) */}
         <Route path="/" element={<HomePage />} />
         <Route path="/reservar" element={<ReservaClientePage />} />
+        <Route path="/cliente/registro" element={<ClienteAccesoPage modo="registro" />} />
+        <Route path="/cliente/iniciar-sesion" element={<ClienteAccesoPage modo="iniciar-sesion" />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/sin-acceso" element={<SinAcceso />} />
         <Route

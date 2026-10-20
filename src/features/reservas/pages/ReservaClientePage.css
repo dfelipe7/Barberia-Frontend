@@ -1,0 +1,160 @@
+.booking-flow {
+  padding-bottom: 7.5rem !important;
+}
+
+.booking-stepper ol {
+  row-gap: 0.55rem !important;
+}
+
+.booking-stepper__step {
+  min-height: 2.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 999px;
+  color: var(--bs-secondary-color);
+  background: var(--bs-body-bg);
+  font-size: 0.88rem;
+  font-weight: 650;
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.booking-stepper__step:not(:disabled):hover {
+  border-color: var(--bs-primary);
+  transform: translateY(-1px);
+}
+
+.booking-stepper__step.is-current {
+  border-color: var(--bs-primary);
+  color: #fff;
+  background: var(--bs-primary);
+  box-shadow: 0 0.35rem 1rem rgba(0, 0, 0, 0.12);
+}
+
+.booking-stepper__step.is-done {
+  border-color: rgba(var(--bs-success-rgb), 0.45);
+  color: var(--bs-success-text-emphasis);
+  background: rgba(var(--bs-success-rgb), 0.1);
+}
+
+.booking-stepper__step:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.booking-flow section[aria-labelledby="seleccionar-servicio-titulo"] .card,
+.booking-flow section[aria-labelledby="seleccionar-barbero-titulo"] .card {
+  transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.booking-flow section[aria-labelledby="seleccionar-servicio-titulo"] .card:hover,
+.booking-flow section[aria-labelledby="seleccionar-barbero-titulo"] .card:hover {
+  border-color: var(--bs-primary) !important;
+  box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.12) !important;
+  transform: translateY(-2px);
+}
+
+.booking-flow section[aria-labelledby="seleccionar-servicio-titulo"] .card-body {
+  padding: 0.9rem 1rem;
+}
+
+.booking-flow__floating-actions {
+  position: fixed;
+  z-index: 1040;
+  left: 50%;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: min(calc(100vw - 2rem), 66rem);
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 1rem;
+  color: var(--bs-body-color);
+  background: color-mix(in srgb, var(--bs-body-bg) 94%, transparent);
+  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(14px);
+  transform: translateX(-50%);
+}
+
+.booking-flow__floating-summary {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.booking-flow__floating-summary strong {
+  overflow: hidden;
+  max-width: 50vw;
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.booking-flow__floating-label {
+  color: var(--bs-secondary-color);
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.booking-flow__floating-actions .btn {
+  flex: 0 0 auto;
+  min-height: 2.75rem;
+  padding-inline: 1.15rem;
+  font-weight: 700;
+}
+
+@media (max-width: 576px) {
+  .booking-stepper__step {
+    min-height: 2.45rem;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.78rem;
+  }
+
+  .booking-stepper__step span {
+    max-width: 6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .booking-flow__floating-actions {
+    bottom: max(0.65rem, env(safe-area-inset-bottom));
+    gap: 0.55rem;
+    padding: 0.65rem;
+    border-radius: 0.85rem;
+  }
+
+  .booking-flow__floating-summary strong {
+    max-width: 50vw;
+    font-size: 0.78rem;
+  }
+
+  .booking-flow__floating-actions .btn {
+    min-height: 2.6rem;
+    padding-inline: 0.85rem;
+    font-size: 0.82rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booking-stepper__step,
+  .booking-flow section[aria-labelledby="seleccionar-servicio-titulo"] .card,
+  .booking-flow section[aria-labelledby="seleccionar-barbero-titulo"] .card {
+    transition: none;
+  }
+}
+
+.booking-flow__service-description {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
