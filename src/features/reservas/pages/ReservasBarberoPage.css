@@ -803,3 +803,27 @@
     animation: none;
   }
 }
+
+.barber-agenda__status--no_show {
+  color: #8f5d16;
+  background: #fbf0d2;
+}
+
+.barber-agenda__detail-actions {
+  margin-top: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--agenda-border);
+  border-radius: 12px;
+}
+
+.barber-agenda__detail-actions p {
+  margin-bottom: 0.8rem;
+  color: var(--agenda-muted);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 575px) {
+  .barber-agenda__detail-actions .btn {
+    flex: 1 1 auto;
+  }
+}

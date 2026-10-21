@@ -1,12 +1,23 @@
+import { lazy, Suspense } from 'react';
 import { CalendarPlus, Scissors } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../auth/AuthContext';
 import ReservasBarberoPage from './ReservasBarberoPage';
 import BackLink from '../../../shared/ui/BackLink';
+import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
+
+const ReservasAdministrativasPage = lazy(() => import('./ReservasAdministrativasPage'));
 
 export default function ReservasPage() {
   const { roles } = useAuth();
   if (roles.includes('BARBERO')) return <ReservasBarberoPage />;
+  if (roles.includes('SUPERADMIN')) {
+    return (
+      <Suspense fallback={<div className="d-flex justify-content-center py-5"><KyriosSpinner /></div>}>
+        <ReservasAdministrativasPage />
+      </Suspense>
+    );
+  }
 
   return (
     <main className="container-fluid p-3 p-md-4">

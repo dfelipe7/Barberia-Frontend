@@ -21,6 +21,8 @@ export const noDisponibilidadSchema = z
     fecha: z.string(),
     horaInicio: z.string(),
     horaFin: z.string(),
+    razon: z.enum(['PERSONAL', 'MEDICAL', 'VACATION', 'OTHER']).or(z.literal('')),
+    notas: z.string().max(500, 'La nota no puede superar 500 caracteres.'),
   })
   .superRefine((periodo, context) => {
     if (!fechaExiste(periodo.fecha)) {
@@ -48,6 +50,23 @@ export const noDisponibilidadSchema = z
     }
 
     if (periodo.horaInicio && periodo.horaFin) {
+      const formatoHoraValido = /^([01]\d|2[0-3]):[0-5]\d$/;
+      if (!formatoHoraValido.test(periodo.horaInicio)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['horaInicio'],
+          message: 'Selecciona una hora válida.',
+        });
+        return;
+      }
+      if (!formatoHoraValido.test(periodo.horaFin)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['horaFin'],
+          message: 'Selecciona una hora válida.',
+        });
+        return;
+      }
       const inicio = minutos(periodo.horaInicio);
       const fin = minutos(periodo.horaFin);
 
@@ -67,7 +86,7 @@ export const noDisponibilidadSchema = z
         context.addIssue({
           code: 'custom',
           path: ['horaFin'],
-          message: 'Usa horas en punto entre 09:00 y 20:00, en bloques completos de una hora.',
+        message: 'Usa horas en punto entre 09:00 y 20:00, en bloques completos de una hora.',
         });
       }
     }

@@ -39,9 +39,13 @@ export default function CrearReservaAdministrativaPage() {
   const [nombreInvitado, setNombreInvitado] = useState('');
   const [apellidoInvitado, setApellidoInvitado] = useState('');
   const [telefonoInvitado, setTelefonoInvitado] = useState('');
+  const [emailInvitado, setEmailInvitado] = useState('');
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
   const [creada, setCreada] = useState<Awaited<ReturnType<typeof reservasService.crearReservaAdministrativa>> | null>(null);
   const crearReserva = useCrearReservaAdministrativa();
+  const emailInvitadoInvalido = Boolean(
+    emailInvitado.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInvitado.trim()),
+  );
   const servicioSeleccionado = servicios.find((servicio) => servicio.id === servicioId);
   const consultaBarberos = useQuery({
     queryKey: reservasKeys.barberosPorServicio(servicioId ?? 0),
@@ -94,6 +98,10 @@ export default function CrearReservaAdministrativaPage() {
       setErrorAccion('El nombre y el teléfono son obligatorios para el cliente invitado.');
       return;
     }
+    if (tipoCliente === 'invitado' && emailInvitadoInvalido) {
+      setErrorAccion('Escribe un correo electrónico válido o deja el campo vacío.');
+      return;
+    }
 
     const datos = {
       servicioId: servicioSeleccionado.id,
@@ -105,6 +113,7 @@ export default function CrearReservaAdministrativaPage() {
         nombre: nombreInvitado.trim(),
         apellido: apellidoInvitado.trim() || undefined,
         telefono: telefonoInvitado.trim(),
+        ...(emailInvitado.trim() ? { email: emailInvitado.trim() } : {}),
       } : {}),
     };
 
@@ -216,7 +225,7 @@ export default function CrearReservaAdministrativaPage() {
                   <>
                     <label htmlFor="buscar-cliente-reserva" className="form-label">Busca por nombre, teléfono o correo</label>
                     <div className="input-group mb-3">
-                      <input id="buscar-cliente-reserva" className="form-control" value={busquedaCliente} onChange={(event) => { setBusquedaCliente(event.target.value); setConsultarClientes(false); setCliente(null); }} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); setConsultarClientes(true); } }} />
+                      <input id="buscar-cliente-reserva" className="form-control" maxLength={150} value={busquedaCliente} onChange={(event) => { setBusquedaCliente(event.target.value); setConsultarClientes(false); setCliente(null); }} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); setConsultarClientes(true); } }} />
                       <Button type="button" variant="outline-primary" disabled={busquedaCliente.trim().length < 3} onClick={() => setConsultarClientes(true)}>Buscar</Button>
                     </div>
                     {clientes.isFetching && <p className="small text-surface-muted" role="status">Buscando clientes...</p>}
@@ -237,16 +246,28 @@ export default function CrearReservaAdministrativaPage() {
                 ) : (
                   <div className="row g-3">
                     <div className="col-12">
-                      <label htmlFor="invitado-nombre-admin" className="form-label">Nombre</label>
-                      <input id="invitado-nombre-admin" className="form-control" autoComplete="given-name" value={nombreInvitado} onChange={(event) => setNombreInvitado(event.target.value)} />
+                      <label htmlFor="invitado-nombre-admin" className="form-label">Nombre <span className="text-surface-muted fw-normal">(máx. 100)</span></label>
+                      <input id="invitado-nombre-admin" className="form-control" autoComplete="given-name" value={nombreInvitado} maxLength={100} onChange={(event) => setNombreInvitado(event.target.value)} />
+                      <div className="form-text text-end">{nombreInvitado.length}/100</div>
                     </div>
                     <div className="col-12">
-                      <label htmlFor="invitado-apellido-admin" className="form-label">Apellido</label>
-                      <input id="invitado-apellido-admin" className="form-control" autoComplete="family-name" value={apellidoInvitado} onChange={(event) => setApellidoInvitado(event.target.value)} />
+                      <label htmlFor="invitado-apellido-admin" className="form-label">Apellido <span className="text-surface-muted fw-normal">(máx. 100)</span></label>
+                      <input id="invitado-apellido-admin" className="form-control" autoComplete="family-name" value={apellidoInvitado} maxLength={100} onChange={(event) => setApellidoInvitado(event.target.value)} />
+                      <div className="form-text text-end">{apellidoInvitado.length}/100</div>
                     </div>
                     <div className="col-12">
-                      <label htmlFor="invitado-telefono-admin" className="form-label">Teléfono</label>
-                      <input id="invitado-telefono-admin" type="tel" className="form-control" autoComplete="tel" value={telefonoInvitado} onChange={(event) => setTelefonoInvitado(event.target.value)} />
+                      <label htmlFor="invitado-telefono-admin" className="form-label">Teléfono <span className="text-surface-muted fw-normal">(máx. 20)</span></label>
+                      <input id="invitado-telefono-admin" type="tel" className="form-control" autoComplete="tel" value={telefonoInvitado} maxLength={20} onChange={(event) => setTelefonoInvitado(event.target.value)} />
+                      <div className="form-text text-end">{telefonoInvitado.length}/20</div>
+                    </div>
+                    <div className="col-12">
+                      <label htmlFor="invitado-email-admin" className="form-label">Correo electrónico <span className="text-surface-muted fw-normal">(opcional · máx. 150)</span></label>
+                      <input id="invitado-email-admin" type="email" className={'form-control' + (emailInvitadoInvalido ? ' is-invalid' : '')} autoComplete="email" value={emailInvitado} maxLength={150} aria-invalid={emailInvitadoInvalido} onChange={(event) => { setEmailInvitado(event.target.value); setErrorAccion(null); }} />
+                      {emailInvitadoInvalido ? (
+                        <div className="invalid-feedback d-block">Escribe un correo válido o deja el campo vacío.</div>
+                      ) : (
+                        <div className="form-text text-end">{emailInvitado.length}/150</div>
+                      )}
                     </div>
                   </div>
                 )}

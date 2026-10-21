@@ -48,6 +48,31 @@ export function useCrearBloqueoHorario() {
   });
 }
 
+export function useActualizarBloqueoHorario() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, datos }: { id: number; datos: Parameters<typeof horariosService.actualizarBloqueo>[1] }) =>
+      horariosService.actualizarBloqueo(id, datos),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: horariosKeys.bloqueos() });
+      queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
+    },
+  });
+}
+
+export function useCancelarBloqueoHorario() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: horariosService.cancelarBloqueo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: horariosKeys.bloqueos() });
+      queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
+    },
+  });
+}
+
 export function useReactivarBloqueoHorario() {
   const queryClient = useQueryClient();
 

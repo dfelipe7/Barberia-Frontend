@@ -1,7 +1,6 @@
-import { useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { isAxiosError } from 'axios';
-import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQueries, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, CalendarDays, Check, Clock3, Scissors, UserRound } from 'lucide-react';
 import { useServiciosCatalogo } from '../../servicios/api/servicios.facade';
@@ -11,12 +10,13 @@ import {
   useCrearReserva,
   useDisponibilidadReserva,
   useModificarMiReserva,
+  useModificarReservaInvitado,
+  useCancelarReservaInvitado,
 } from '../api/reservas.facade';
 import type {
   ClienteSesionDTO,
   BarberoDisponibleReservaDTO,
   CrearReservaDTO,
-  DescuentoAplicadoDTO,
   FiltroDisponibilidadReservaDTO,
   ReservaCreadaDTO,
 } from '../api/reservas.dto';
@@ -28,12 +28,28 @@ import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import BackLink from '../../../shared/ui/BackLink';
+import './ReservaClientePage.css';
 
 interface ReservaLocationState {
   reservaId?: number;
   servicioId?: number;
   barberoId?: number;
+  fecha?: string;
+  hora?: string;
 }
+
+type PasoReserva = 1 | 2 | 3 | 4;
+
+const numeroPositivo = (valor: string | null) => {
+  if (!valor) return null;
+  const numero = Number(valor);
+  return Number.isSafeInteger(numero) && numero > 0 && numero <= 2_147_483_647 ? numero : null;
+};
+
+const pasoValido = (valor: string | null): PasoReserva | null => {
+  const paso = Number(valor);
+  return paso === 1 || paso === 2 || paso === 3 || paso === 4 ? paso : null;
+};
 
 const aFechaISO = (fecha: Date) => {
   const anio = fecha.getFullYear();
@@ -109,17 +125,35 @@ const mensajeErrorConfirmacion = (error: unknown) => {
 
 export const ReservaClientePage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const initialState = (location.state ?? {}) as ReservaLocationState;
   const queryClient = useQueryClient();
   const { data: servicios = [], isLoading, error, refetch } = useServiciosCatalogo();
   const crearReserva = useCrearReserva();
   const modificarReserva = useModificarMiReserva();
+  const modificarInvitado = useModificarReservaInvitado();
+  const cancelarInvitado = useCancelarReservaInvitado();
   const ventana = useMemo(() => crearVentanaDisponibilidad(), []);
-  const [paso, setPaso] = useState<1 | 2 | 3 | 4>(initialState.reservaId ? 3 : 1);
-  const [servicioId, setServicioId] = useState<number | null>(initialState.servicioId ?? null);
-  const [barberoId, setBarberoId] = useState<number | null>(initialState.barberoId ?? null);
-  const [fechaSeleccionada, setFechaSeleccionada] = useState<string | null>(null);
-  const [horaSeleccionada, setHoraSeleccionada] = useState<string | null>(null);
+  const idReservaUrl = numeroPositivo(searchParams.get('reservaId'));
+  const reservaId = idReservaUrl ?? numeroPositivo(initialState.reservaId?.toString() ?? null) ?? undefined;
+  const barberoPreseleccionadoId = numeroPositivo(initialState.barberoId?.toString() ?? null);
+  const paso = pasoValido(searchParams.get('paso')) ?? (reservaId ? 3 : 1);
+  const servicioId = searchParams.has('servicioId')
+    ? numeroPositivo(searchParams.get('servicioId'))
+    : numeroPositivo(initialState.servicioId?.toString() ?? null);
+  const barberoId = searchParams.has('barberoId')
+    ? numeroPositivo(searchParams.get('barberoId'))
+    : numeroPositivo(initialState.barberoId?.toString() ?? null);
+  const fechaSeleccionada = searchParams.has('fecha')
+    ? searchParams.get('fecha') || null
+    : initialState.fecha ?? null;
+  const horaSeleccionada = searchParams.has('hora')
+    ? searchParams.get('hora') || null
+    : initialState.hora ?? null;
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [paso]);
   const [paginaFechas, setPaginaFechas] = useState(0);
   const fechasDelRango = useMemo(
     () => crearFechasDisponibilidad(ventana.fechaInicio, ventana.fechaFin),
@@ -129,15 +163,10 @@ export const ReservaClientePage = () => {
   const fechasDeLaPagina = fechasDelRango.slice(paginaFechas * 7, paginaFechas * 7 + 7);
   const [reservaCreada, setReservaCreada] = useState<ReservaCreadaDTO | null>(null);
   const [reservaModificada, setReservaModificada] = useState(false);
-  const [codigoDescuento, setCodigoDescuento] = useState('');
-  const [descuentoAplicado, setDescuentoAplicado] = useState<DescuentoAplicadoDTO | null>(null);
-  const [validandoDescuento, setValidandoDescuento] = useState(false);
-  const [errorDescuento, setErrorDescuento] = useState<string | null>(null);
+  const [reservaCancelada, setReservaCancelada] = useState(false);
   const [clienteSesion, setClienteSesion] = useState<ClienteSesionDTO | null>(
     () => clientesService.obtenerSesion(),
   );
-  const [errorLoginCliente, setErrorLoginCliente] = useState<string | null>(null);
-  const [loginClienteCargando, setLoginClienteCargando] = useState(false);
   const [nombreInvitado, setNombreInvitado] = useState('');
   const [apellidoInvitado, setApellidoInvitado] = useState('');
   const [telefonoInvitado, setTelefonoInvitado] = useState('');
@@ -151,23 +180,23 @@ export const ReservaClientePage = () => {
       queryFn: () => reservasService.obtenerBarberosPorServicio(servicio.id),
       enabled:
         servicio.estado === 'ACTIVO' &&
-        (Boolean(initialState.barberoId) || (paso >= 2 && servicio.id === servicioId)),
+        (Boolean(barberoPreseleccionadoId) || (paso >= 2 && servicio.id === servicioId)),
       staleTime: 30_000,
     })),
   });
 
   const serviciosActivos = servicios.filter((servicio, index) => {
     if (servicio.estado !== 'ACTIVO') return false;
-    if (!initialState.barberoId) return true;
+    if (!barberoPreseleccionadoId) return true;
     return consultasBarberosPorServicio[index]?.data?.some(
-      (barbero) => barbero.id === initialState.barberoId,
+      (barbero) => barbero.id === barberoPreseleccionadoId,
     );
   });
-  const cargandoServiciosDelBarbero = Boolean(initialState.barberoId) && servicios.some(
+  const cargandoServiciosDelBarbero = Boolean(barberoPreseleccionadoId) && servicios.some(
     (servicio, index) =>
       servicio.estado === 'ACTIVO' && consultasBarberosPorServicio[index]?.isLoading,
   );
-  const erroresServiciosDelBarbero = Boolean(initialState.barberoId) && servicios.some(
+  const erroresServiciosDelBarbero = Boolean(barberoPreseleccionadoId) && servicios.some(
     (servicio, index) =>
       servicio.estado === 'ACTIVO' && consultasBarberosPorServicio[index]?.isError,
   );
@@ -217,81 +246,66 @@ export const ReservaClientePage = () => {
       (consulta) => !(consulta.data?.slots ?? []).some((slot) => slot.available),
     );
 
-  const iniciarSesionCliente = async (respuesta: CredentialResponse) => {
-    if (!respuesta.credential) {
-      setErrorLoginCliente('Google no devolvió la credencial de acceso.');
-      return;
-    }
+  const actualizarParametros = (
+    actualizaciones: Record<string, string | null>,
+    replace = true,
+  ) => {
+    setSearchParams((actuales) => {
+      const siguientes = new URLSearchParams(actuales);
+      Object.entries(actualizaciones).forEach(([clave, valor]) => {
+        if (valor === null) siguientes.delete(clave);
+        else siguientes.set(clave, valor);
+      });
+      return siguientes;
+    }, { replace });
+  };
 
-    setLoginClienteCargando(true);
-    setErrorLoginCliente(null);
-    try {
-      const sesion = await clientesService.iniciarSesionGoogle(respuesta.credential);
-      clientesService.guardarSesion(sesion);
-      setClienteSesion(sesion.cliente);
-      await queryClient.invalidateQueries({ queryKey: reservasKeys.misReservas() });
-    } catch (error: unknown) {
-      setErrorLoginCliente(mapApiError(error));
-    } finally {
-      setLoginClienteCargando(false);
-    }
+  const irAPaso = (
+    siguiente: PasoReserva,
+    replace = false,
+    valoresExtra: Record<string, string | null> = {},
+  ) => {
+    actualizarParametros({
+      paso: String(siguiente),
+      servicioId: servicioId ? String(servicioId) : null,
+      barberoId: barberoId ? String(barberoId) : null,
+      fecha: fechaSeleccionada,
+      hora: horaSeleccionada,
+      reservaId: reservaId ? String(reservaId) : null,
+      ...valoresExtra,
+    }, replace);
   };
 
   const cerrarSesionCliente = () => {
     clientesService.cerrarSesion();
     setClienteSesion(null);
     setReservaCreada(null);
+    setReservaModificada(false);
     void queryClient.removeQueries({ queryKey: reservasKeys.all });
   };
 
   const cambiarServicio = (servicio: Servicio) => {
-    setServicioId(servicio.id);
-    setBarberoId(initialState.barberoId ?? null);
-    setFechaSeleccionada(null);
-    setHoraSeleccionada(null);
     setPaginaFechas(0);
     setReservaCreada(null);
     setReservaModificada(false);
-    setDescuentoAplicado(null);
-    setCodigoDescuento('');
-    setErrorDescuento(null);
+    setReservaCancelada(false);
+    actualizarParametros({
+      servicioId: String(servicio.id),
+      barberoId: barberoPreseleccionadoId ? String(barberoPreseleccionadoId) : null,
+      fecha: '',
+      hora: '',
+    });
   };
 
   const continuarABarberos = () => {
     if (!servicioSeleccionado) return;
-    setPaso(2);
+    irAPaso(2);
   };
 
   const continuarADisponibilidad = () => {
     if (!barberoSeleccionado) return;
-    setFechaSeleccionada(null);
-    setHoraSeleccionada(null);
     setPaginaFechas(0);
-    setPaso(3);
-  };
-
-  const aplicarDescuento = async () => {
-    if (!servicioSeleccionado || !codigoDescuento.trim()) return;
-    setValidandoDescuento(true);
-    setErrorDescuento(null);
-    try {
-      const resultado = await reservasService.validarDescuento({
-        codigo: codigoDescuento.trim(),
-        servicioId: servicioSeleccionado.id,
-      });
-      setDescuentoAplicado(resultado);
-    } catch (error: unknown) {
-      setDescuentoAplicado(null);
-      setErrorDescuento(mapApiError(error));
-    } finally {
-      setValidandoDescuento(false);
-    }
-  };
-
-  const retirarDescuento = () => {
-    setDescuentoAplicado(null);
-    setCodigoDescuento('');
-    setErrorDescuento(null);
+    irAPaso(3, false, { fecha: '', hora: '' });
   };
 
   const confirmarReserva = async () => {
@@ -299,12 +313,13 @@ export const ReservaClientePage = () => {
       return;
     }
 
-    if (initialState.reservaId && !clienteSesion) {
-      setErrorContacto('Inicia sesión con la cuenta de cliente que creó esta reserva para modificarla.');
+    const tokenInvitado = reservaId ? reservasService.obtenerTokenGestionInvitado(reservaId) : null;
+    if (reservaId && !clienteSesion && !tokenInvitado) {
+      setErrorContacto('Para cambiar esta cita, inicia sesión con la cuenta que la reservó o abre esta pestaña donde la creaste.');
       return;
     }
 
-    if (!initialState.reservaId && !clienteSesion && (!nombreInvitado.trim() || !telefonoInvitado.trim())) {
+    if (!reservaId && !clienteSesion && (!nombreInvitado.trim() || !telefonoInvitado.trim())) {
       setErrorContacto('El nombre y el teléfono son obligatorios para reservar como invitado.');
       return;
     }
@@ -317,30 +332,29 @@ export const ReservaClientePage = () => {
       hora: horaSeleccionada,
     };
 
-    if (!initialState.reservaId && descuentoAplicado) {
-      datos.codigoDescuento = descuentoAplicado.codigo;
-    }
-
-    if (!clienteSesion && !initialState.reservaId) {
+    if (!clienteSesion && !reservaId) {
       datos.nombre = nombreInvitado.trim();
       datos.apellido = apellidoInvitado.trim() || undefined;
       datos.telefono = telefonoInvitado.trim();
     }
 
     try {
-      if (initialState.reservaId) {
-        await modificarReserva.mutateAsync({
-          id: initialState.reservaId,
-          datos: {
-            barberoId: barberoSeleccionado.id,
-            fecha: fechaSeleccionada,
-            hora: horaSeleccionada,
-          },
-        });
+      if (reservaId) {
+        const datosModificados = {
+          barberoId: barberoSeleccionado.id,
+          fecha: fechaSeleccionada,
+          hora: horaSeleccionada,
+        };
+        if (clienteSesion) {
+          await modificarReserva.mutateAsync({ id: reservaId, datos: datosModificados });
+        } else if (tokenInvitado) {
+          await modificarInvitado.mutateAsync({ id: reservaId, token: tokenInvitado, datos: datosModificados });
+        }
         setReservaModificada(true);
       } else {
         const resultado = await crearReserva.mutateAsync(datos);
         setReservaCreada(resultado);
+        actualizarParametros({ reservaId: String(resultado.id) });
       }
     } catch {
       // El error de API se muestra en el resumen.
@@ -359,8 +373,7 @@ export const ReservaClientePage = () => {
       });
     }
 
-    setHoraSeleccionada(null);
-    setPaso(3);
+    irAPaso(3, false, { hora: '' });
   };
 
   const enviarReserva = (event: FormEvent<HTMLFormElement>) => {
@@ -369,15 +382,65 @@ export const ReservaClientePage = () => {
   };
 
   const volverPaso = () => {
-    setPaso((actual) => Math.max(1, actual - 1) as 1 | 2 | 3 | 4);
+    irAPaso(Math.max(1, paso - 1) as PasoReserva);
     setErrorContacto(null);
   };
 
-  const errorConfirmacion = initialState.reservaId ? modificarReserva.error : crearReserva.error;
+  const errorConfirmacion = reservaId
+    ? (clienteSesion ? modificarReserva.error : modificarInvitado.error)
+    : crearReserva.error;
   const conflictoReserva = isAxiosError(errorConfirmacion) && errorConfirmacion.response?.status === 409;
+  const rutaActual = location.pathname + location.search;
+
+  const cancelarReservaDeInvitado = async () => {
+    if (!reservaCreada || clienteSesion) return;
+    const token = reservasService.obtenerTokenGestionInvitado(reservaCreada.id);
+    if (!token) {
+      setErrorContacto('No encontramos los datos de gestión de esta cita en esta pestaña.');
+      return;
+    }
+    if (!window.confirm('¿Quieres cancelar esta cita?')) return;
+    try {
+      await cancelarInvitado.mutateAsync({ id: reservaCreada.id, token });
+      reservasService.eliminarTokenGestionInvitado(reservaCreada.id);
+      setReservaCancelada(true);
+      setReservaCreada(null);
+      actualizarParametros({
+        paso: '1',
+        reservaId: null,
+        servicioId: null,
+        barberoId: null,
+        fecha: null,
+        hora: null,
+      });
+    } catch (error: unknown) {
+      setErrorContacto(mapApiError(error));
+    }
+  };
+
+  const cambiarReservaDeInvitado = () => {
+    if (!reservaCreada || clienteSesion || !servicioSeleccionado || !barberoSeleccionado) return;
+    const query = new URLSearchParams({
+      paso: '3',
+      reservaId: String(reservaCreada.id),
+      servicioId: String(servicioSeleccionado.id),
+      barberoId: String(barberoSeleccionado.id),
+      fecha: reservaCreada.fecha,
+      hora: reservaCreada.hora,
+    });
+    navigate({ pathname: '/reservar', search: query.toString() }, {
+      state: {
+        reservaId: reservaCreada.id,
+        servicioId: servicioSeleccionado.id,
+        barberoId: barberoSeleccionado.id,
+        fecha: reservaCreada.fecha,
+        hora: reservaCreada.hora,
+      },
+    });
+  };
 
   return (
-    <main className="container py-4 py-lg-5" style={{ maxWidth: '1080px' }}>
+    <main className="booking-flow container py-4 py-lg-5" style={{ maxWidth: '1080px' }}>
       <header className="mb-4">
         <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
           <BackLink to="/">Volver al sitio público</BackLink>
@@ -387,8 +450,8 @@ export const ReservaClientePage = () => {
             </Button>
           )}
         </div>
-        <span className="text-eyebrow d-block mb-2">RESERVAS / {initialState.reservaId ? 'CAMBIAR CITA' : 'NUEVA CITA'}</span>
-        <h1 className="h2 fw-bold mb-1">{initialState.reservaId ? 'Modifica tu reserva' : 'Reserva tu cita'}</h1>
+        <span className="text-eyebrow d-block mb-2">RESERVAS / {reservaId && !reservaCreada ? 'CAMBIAR CITA' : 'NUEVA CITA'}</span>
+        <h1 className="h2 fw-bold mb-1">{reservaId && !reservaCreada ? 'Modifica tu reserva' : 'Reserva tu cita'}</h1>
         <p className="text-surface-muted mb-0">Elige un servicio, un barbero y una fecha con horario disponible.</p>
       </header>
 
@@ -406,9 +469,9 @@ export const ReservaClientePage = () => {
               </>
             ) : (
               <>
-                <h2 className="h6 fw-bold mb-1">Reserva como invitado o inicia sesión</h2>
+                <h2 className="h6 fw-bold mb-1">Reserva como invitado o con tu cuenta</h2>
                 <p className="small text-surface-muted mb-0">
-                  Con Google puedes consultar después tus reservas desde esta pantalla.
+                  Con tu cuenta podrás consultar y cambiar tus citas desde aquí.
                 </p>
               </>
             )}
@@ -422,20 +485,22 @@ export const ReservaClientePage = () => {
                 Cerrar sesión de cliente
               </button>
             </div>
-          ) : loginClienteCargando ? (
-            <KyriosSpinner size="sm" mensaje="Iniciando sesión..." />
           ) : (
-            <div className="d-flex flex-column align-items-start gap-2">
-              <GoogleLogin
-                onSuccess={(respuesta) => void iniciarSesionCliente(respuesta)}
-                onError={() => setErrorLoginCliente('No se pudo iniciar sesión con Google.')}
-                useOneTap={false}
-                theme="outline"
-                shape="pill"
-                size="medium"
-                text="continue_with"
-              />
-              {errorLoginCliente && <ErrorMessage message={errorLoginCliente} />}
+            <div className="d-flex flex-wrap gap-2">
+              <Link
+                className="btn btn-outline-secondary"
+                to={'/cliente/iniciar-sesion?returnTo=' + encodeURIComponent(rutaActual)}
+                state={{ returnTo: rutaActual }}
+              >
+                Iniciar sesión
+              </Link>
+              <Link
+                className="btn btn-primary"
+                to={'/cliente/registro?returnTo=' + encodeURIComponent(rutaActual)}
+                state={{ returnTo: rutaActual }}
+              >
+                Crear cuenta
+              </Link>
             </div>
           )}
         </div>
@@ -443,7 +508,7 @@ export const ReservaClientePage = () => {
 
       {clienteSesion && <MisReservasSection />}
 
-      <nav aria-label="Pasos de la reserva" className="mb-4">
+      <nav aria-label="Pasos de la reserva" className="mb-4 booking-stepper">
         <ol className="list-unstyled d-flex flex-wrap gap-2 mb-0">
           {[
             { numero: 1, label: 'Servicio', icono: <Scissors size={15} /> },
@@ -451,19 +516,23 @@ export const ReservaClientePage = () => {
             { numero: 3, label: 'Fecha y hora', icono: <CalendarDays size={15} /> },
             { numero: 4, label: 'Confirmar', icono: <Check size={15} /> },
           ].map((item) => (
-            <li
-              key={item.numero}
-              className={'badge rounded-pill border d-inline-flex align-items-center gap-2 px-3 py-2 ' + (
-                paso === item.numero
-                  ? 'text-bg-dark border-dark'
-                  : paso > item.numero
-                    ? 'text-bg-success border-success'
-                    : 'text-bg-light text-surface-muted'
-              )}
-              aria-current={paso === item.numero ? 'step' : undefined}
-            >
-              {paso > item.numero ? <Check size={15} /> : item.icono}
-              Paso {item.numero}: {item.label}
+            <li key={item.numero}>
+              <button
+                type="button"
+                className={'booking-stepper__step ' + (
+                  paso === item.numero
+                    ? 'is-current'
+                    : paso > item.numero
+                      ? 'is-done'
+                      : ''
+                )}
+                aria-current={paso === item.numero ? 'step' : undefined}
+                disabled={item.numero > paso}
+                onClick={() => irAPaso(item.numero as PasoReserva)}
+              >
+                {paso > item.numero ? <Check size={15} /> : item.icono}
+                <span>{item.label}</span>
+              </button>
             </li>
           ))}
         </ol>
@@ -528,12 +597,12 @@ export const ReservaClientePage = () => {
           )}
 
           {!isLoading && !cargandoServiciosDelBarbero && !error && serviciosActivos.length > 0 && (
-            <div className="row g-3">
+            <div className="row g-2">
               {serviciosActivos.map((servicio) => {
                 const foto = obtenerUrlFoto(servicio.fotoUrl);
                 const seleccionado = servicio.id === servicioId;
                 return (
-                  <div className="col-12 col-md-6" key={servicio.id}>
+                  <div className="col-12 col-sm-6 col-lg-4" key={servicio.id}>
                     <button
                       type="button"
                       className={'card card-surface border w-100 h-100 text-start p-0 overflow-hidden ' + (
@@ -547,7 +616,7 @@ export const ReservaClientePage = () => {
                           src={foto}
                           alt=""
                           className="w-100 object-fit-cover"
-                          style={{ height: '170px' }}
+                          style={{ height: '124px' }}
                           loading="lazy"
                         />
                       ) : (
@@ -564,7 +633,7 @@ export const ReservaClientePage = () => {
                           <span className="h6 fw-bold mb-1">{servicio.nombre}</span>
                           {seleccionado && <span className="badge text-bg-primary">Seleccionado</span>}
                         </span>
-                        <span className="small text-surface-muted flex-grow-1">
+                        <span className="booking-flow__service-description small text-surface-muted flex-grow-1">
                           {servicio.descripcion || 'Servicio profesional de barbería.'}
                         </span>
                         <span className="d-flex flex-wrap gap-3 mt-3 small">
@@ -582,11 +651,6 @@ export const ReservaClientePage = () => {
             </div>
           )}
 
-          <div className="d-flex justify-content-end mt-4">
-            <Button type="button" disabled={!servicioSeleccionado} onClick={continuarABarberos}>
-              Continuar con este servicio
-            </Button>
-          </div>
         </section>
       )}
 
@@ -599,8 +663,8 @@ export const ReservaClientePage = () => {
                 Barberos habilitados para {servicioSeleccionado.nombre}.
               </p>
             </div>
-            {!initialState.reservaId && (
-              <Button type="button" size="sm" variant="outline-secondary" onClick={() => setPaso(1)}>
+            {!reservaId && (
+              <Button type="button" size="sm" variant="outline-secondary" onClick={() => irAPaso(1)}>
                 Cambiar servicio
               </Button>
             )}
@@ -644,10 +708,12 @@ export const ReservaClientePage = () => {
                       )}
                       aria-pressed={seleccionado}
                       onClick={() => {
-                        setBarberoId(barbero.id);
-                        setFechaSeleccionada(null);
-                        setHoraSeleccionada(null);
                         setPaginaFechas(0);
+                        actualizarParametros({
+                          barberoId: String(barbero.id),
+                          fecha: '',
+                          hora: '',
+                        });
                       }}
                     >
                       {foto ? (
@@ -676,11 +742,6 @@ export const ReservaClientePage = () => {
             </div>
           )}
 
-          <div className="d-flex justify-content-end mt-4">
-            <Button type="button" disabled={!barberoSeleccionado} onClick={continuarADisponibilidad}>
-              Continuar a fecha y hora
-            </Button>
-          </div>
         </section>
       )}
 
@@ -693,7 +754,7 @@ export const ReservaClientePage = () => {
                 Consulta la disponibilidad de {barberoSeleccionado.nombre} para cada fecha.
               </p>
             </div>
-            <Button type="button" size="sm" variant="outline-secondary" onClick={() => setPaso(2)}>
+            <Button type="button" size="sm" variant="outline-secondary" onClick={() => irAPaso(2)}>
               Cambiar barbero
             </Button>
           </div>
@@ -747,8 +808,7 @@ export const ReservaClientePage = () => {
                   aria-label={`${etiquetasFecha.semana} ${etiquetasFecha.numero} de ${etiquetasFecha.mes}: ${cantidadHorarios} horarios disponibles`}
                   disabled={deshabilitada}
                   onClick={() => {
-                    setFechaSeleccionada(fecha);
-                    setHoraSeleccionada(null);
+                    actualizarParametros({ fecha, hora: '' });
                   }}
                 >
                   <span className="small text-capitalize">{etiquetasFecha.semana}</span>
@@ -826,7 +886,7 @@ export const ReservaClientePage = () => {
                       slot.startTime === horaSeleccionada ? 'btn-primary' : 'btn-outline-primary'
                     )}
                     aria-pressed={slot.startTime === horaSeleccionada}
-                    onClick={() => setHoraSeleccionada(slot.startTime)}
+                    onClick={() => actualizarParametros({ hora: slot.startTime })}
                   >
                     {slot.startTime}–{slot.endTime}
                   </button>
@@ -836,7 +896,7 @@ export const ReservaClientePage = () => {
                 <Button
                   type="button"
                   disabled={!fechaSeleccionada || !horaSeleccionada}
-                  onClick={() => setPaso(4)}
+                  onClick={() => irAPaso(4)}
                 >
                   Continuar al resumen
                 </Button>
@@ -854,7 +914,7 @@ export const ReservaClientePage = () => {
               <p className="small text-surface-muted mb-0">Revisa los datos antes de confirmar.</p>
             </div>
             {!reservaCreada && !reservaModificada && (
-              <Button type="button" size="sm" variant="outline-secondary" onClick={() => setPaso(3)}>
+              <Button type="button" size="sm" variant="outline-secondary" onClick={() => irAPaso(3)}>
                 Modificar
               </Button>
             )}
@@ -891,9 +951,25 @@ export const ReservaClientePage = () => {
                 {' '}{formatearFecha(fechaSeleccionada ?? '')} de {horaSeleccionada}.
               </p>
               <p className="small mb-0">
-                Reserva #{reservaCreada?.id ?? initialState.reservaId}
+                Reserva #{reservaCreada?.id ?? reservaId}
                 {reservaCreada ? ' · Estado: ' + reservaCreada.estado : ''}
               </p>
+              {reservaCreada && !clienteSesion && reservaCreada.tokenGestion && (
+                <div className="d-flex flex-wrap gap-2 mt-3">
+                  <Button type="button" size="sm" variant="outline-primary" onClick={cambiarReservaDeInvitado}>
+                    Cambiar fecha u hora
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline-danger"
+                    isLoading={cancelarInvitado.isPending}
+                    onClick={() => void cancelarReservaDeInvitado()}
+                  >
+                    Cancelar cita
+                  </Button>
+                </div>
+              )}
             </div>
           ) : (
             <>
@@ -913,118 +989,115 @@ export const ReservaClientePage = () => {
                 <dt className="col-sm-4 text-surface-muted">Duración</dt>
                 <dd className="col-sm-8 fw-semibold">{servicioSeleccionado.duracionMinutos} minutos</dd>
                 <dt className="col-sm-4 text-surface-muted">Precio</dt>
-                <dd className="col-sm-8 fw-semibold mb-0">
-                  {formatearPrecio(descuentoAplicado?.precioFinal ?? servicioSeleccionado.precio)}
-                  {descuentoAplicado && (
-                    <span className="small text-success d-block">
-                      Antes {formatearPrecio(descuentoAplicado.precioOriginal)} · ahorras {formatearPrecio(descuentoAplicado.montoDescuento)}
-                    </span>
-                  )}
-                </dd>
+                <dd className="col-sm-8 fw-semibold mb-0">{formatearPrecio(servicioSeleccionado.precio)}</dd>
               </dl>
-
-              {!initialState.reservaId && (
-                <section className="border rounded-3 p-3 mb-4" aria-labelledby="descuento-reserva-titulo">
-                  <h3 id="descuento-reserva-titulo" className="h6 fw-bold mb-2">¿Tienes un código de descuento?</h3>
-                  {descuentoAplicado ? (
-                    <div className="d-flex flex-wrap align-items-center justify-content-between gap-2">
-                      <p className="small text-success mb-0">Código {descuentoAplicado.codigo} aplicado.</p>
-                      <Button type="button" size="sm" variant="outline-secondary" onClick={retirarDescuento}>
-                        Quitar descuento
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="d-flex flex-wrap gap-2">
-                      <label className="visually-hidden" htmlFor="codigo-descuento">Código de descuento</label>
-                      <input
-                        id="codigo-descuento"
-                        className="form-control"
-                        style={{ maxWidth: '320px' }}
-                        value={codigoDescuento}
-                        onChange={(event) => setCodigoDescuento(event.target.value)}
-                        placeholder="Ingresa tu código"
-                        autoComplete="off"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline-primary"
-                        isLoading={validandoDescuento}
-                        loadingText="Validando..."
-                        disabled={!codigoDescuento.trim()}
-                        onClick={() => void aplicarDescuento()}
-                      >
-                        Aplicar descuento
-                      </Button>
-                    </div>
-                  )}
-                  {errorDescuento && <div className="mt-2"><ErrorMessage message={errorDescuento} /></div>}
-                </section>
-              )}
 
               <form onSubmit={enviarReserva}>
               {clienteSesion ? (
                 <p className="small text-surface-muted">
                   La reserva quedará asociada a {clienteSesion.email || clienteSesion.nombre}.
                 </p>
-              ) : (
+              ) : !reservaId ? (
                 <div className="border rounded-3 p-3 mb-4">
-                  <h3 className="h6 fw-bold mb-3">Datos de contacto del invitado</h3>
+                  <h3 className="h6 fw-bold mb-3">Datos de contacto</h3>
                   <p className="small text-surface-muted">
-                    El backend necesita tu nombre y teléfono para crear una reserva sin iniciar sesión.
+                    Déjanos tus datos para confirmar la cita y enviarte sus detalles.
                   </p>
                   <div className="row g-3">
                     <div className="col-12 col-md-4">
-                      <label htmlFor="invitado-nombre" className="form-label small fw-semibold">Nombre</label>
+                      <label htmlFor="invitado-nombre" className="form-label small fw-semibold">Nombre <span className="text-surface-muted fw-normal">(máx. 100)</span></label>
                       <input
                         id="invitado-nombre"
                         className="form-control"
                         autoComplete="given-name"
                         value={nombreInvitado}
+                        maxLength={100}
                         onChange={(event) => setNombreInvitado(event.target.value)}
                         required
                       />
+                      <div className="form-text text-end">{nombreInvitado.length}/100</div>
                     </div>
                     <div className="col-12 col-md-4">
-                      <label htmlFor="invitado-apellido" className="form-label small fw-semibold">Apellido</label>
+                      <label htmlFor="invitado-apellido" className="form-label small fw-semibold">Apellido <span className="text-surface-muted fw-normal">(máx. 100)</span></label>
                       <input
                         id="invitado-apellido"
                         className="form-control"
                         autoComplete="family-name"
                         value={apellidoInvitado}
+                        maxLength={100}
                         onChange={(event) => setApellidoInvitado(event.target.value)}
                       />
+                      <div className="form-text text-end">{apellidoInvitado.length}/100</div>
                     </div>
                     <div className="col-12 col-md-4">
-                      <label htmlFor="invitado-telefono" className="form-label small fw-semibold">Teléfono</label>
+                      <label htmlFor="invitado-telefono" className="form-label small fw-semibold">Teléfono <span className="text-surface-muted fw-normal">(máx. 30)</span></label>
                       <input
                         id="invitado-telefono"
                         type="tel"
                         className="form-control"
                         autoComplete="tel"
                         value={telefonoInvitado}
+                        maxLength={30}
                         onChange={(event) => setTelefonoInvitado(event.target.value)}
                         required
                       />
+                      <div className="form-text text-end">{telefonoInvitado.length}/30</div>
                     </div>
                   </div>
                 </div>
+              ) : (
+                <p className="small text-surface-muted">La cita se actualizará con los datos de gestión asociados a esta reserva.</p>
               )}
 
               {errorContacto && <ErrorMessage message={errorContacto} />}
               <div className="d-flex justify-content-end">
                 <Button
                   type="submit"
-                  isLoading={crearReserva.isPending || modificarReserva.isPending}
-                  loadingText={initialState.reservaId ? 'Guardando cambios...' : 'Confirmando reserva...'}
-                  disabled={!fechaSeleccionada || !horaSeleccionada || (Boolean(initialState.reservaId) && !clienteSesion)}
+                  isLoading={crearReserva.isPending || modificarReserva.isPending || modificarInvitado.isPending}
+                  loadingText={reservaId ? 'Guardando cambios...' : 'Confirmando reserva...'}
+                  disabled={!fechaSeleccionada || !horaSeleccionada || (reservaId !== undefined && !clienteSesion && !reservasService.obtenerTokenGestionInvitado(reservaId))}
                 >
-                  {initialState.reservaId ? 'Guardar cambios' : 'Confirmar reserva'}
+                  {reservaId ? 'Guardar cambios' : 'Confirmar reserva'}
                 </Button>
               </div>
               </form>
             </>
           )}
         </section>
+      )}
+
+      {reservaCancelada && (
+        <div className="alert alert-success" role="status">
+          <strong>Tu cita fue cancelada.</strong> Si deseas, puedes reservar otro horario.
+        </div>
+      )}
+
+      {paso === 1 && (
+        <div className="booking-flow__floating-actions">
+          <div className="booking-flow__floating-summary">
+            <span className="booking-flow__floating-label">Servicio</span>
+            <strong>{servicioSeleccionado?.nombre ?? 'Selecciona una opción'}</strong>
+          </div>
+          <Button type="button" disabled={!servicioSeleccionado} onClick={continuarABarberos}>
+            Continuar
+          </Button>
+        </div>
+      )}
+
+      {paso === 2 && (
+        <div className="booking-flow__floating-actions">
+          <div className="booking-flow__floating-summary">
+            <span className="booking-flow__floating-label">Tu cita</span>
+            <strong>
+              {servicioSeleccionado?.nombre ?? 'Servicio'} · {barberoSeleccionado
+                ? barberoSeleccionado.nombre + ' ' + barberoSeleccionado.apellido
+                : 'Elige un barbero'}
+            </strong>
+          </div>
+          <Button type="button" disabled={!barberoSeleccionado} onClick={continuarADisponibilidad}>
+            Elegir fecha
+          </Button>
+        </div>
       )}
 
       {paso > 1 && (

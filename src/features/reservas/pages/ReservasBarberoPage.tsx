@@ -13,10 +13,11 @@ import {
   Timer,
   UserRound,
 } from 'lucide-react';
-import { useAgendaBarbero } from '../api/reservas.facade';
+import { useAgendaBarbero, useCompletarReserva, useMarcarReservaNoAsistida } from '../api/reservas.facade';
 import type { CitaAgendaBarberoDTO, EstadoReservaDTO } from '../api/reservas.dto';
 import Button from '../../../shared/ui/Button';
 import BackLink from '../../../shared/ui/BackLink';
+import { mapApiError } from '../../../shared/lib/mapApiError';
 import './ReservasBarberoPage.css';
 
 const estados: Record<EstadoReservaDTO, string> = {
@@ -25,6 +26,7 @@ const estados: Record<EstadoReservaDTO, string> = {
   IN_PROGRESS: 'En progreso',
   COMPLETED: 'Completada',
   CANCELLED: 'Cancelada',
+  NO_SHOW: 'No asistió',
 };
 
 const SIN_RESERVAS: CitaAgendaBarberoDTO[] = [];
@@ -184,6 +186,10 @@ export default function ReservasBarberoPage() {
   const desde = aFechaLocal(semana);
   const hasta = aFechaLocal(desplazarDias(semana, 6));
   const consulta = useAgendaBarbero(desde, hasta);
+  const completarReserva = useCompletarReserva();
+  const marcarNoAsistida = useMarcarReservaNoAsistida();
+  const [errorAccion, setErrorAccion] = useState<string | null>(null);
+  const [mensajeAccion, setMensajeAccion] = useState<string | null>(null);
   const reservas = consulta.data?.reservas ?? SIN_RESERVAS;
   const reservaSeleccionada = reservas.find((reserva) => reserva.id === reservaSeleccionadaId) ?? null;
 
@@ -196,7 +202,9 @@ export default function ReservasBarberoPage() {
     };
   }), [reservas, semana]);
 
-  const citasPendientes = reservas.filter((reserva) => reserva.estado === 'PENDING').length;
+  const citasPendientes = reservas.filter((reserva) =>
+    reserva.estado === 'PENDING' || reserva.estado === 'CONFIRMED' || reserva.estado === 'IN_PROGRESS',
+  ).length;
   const minutosAgendados = reservas.reduce((total, reserva) => total + reserva.servicio.duracionMinutos, 0);
 
   const cambiarSemana = (cantidad: number) => {
@@ -207,6 +215,32 @@ export default function ReservasBarberoPage() {
   const irAEstaSemana = () => {
     setSemana(inicioDeSemana(new Date()));
     setReservaSeleccionadaId(null);
+  };
+
+  const ejecutarAccionReserva = async (accion: 'completar' | 'no-asistio') => {
+    if (!reservaSeleccionada) return;
+    const mensajeConfirmacion = accion === 'completar'
+      ? '¿Confirmas que el servicio de esta cita ya fue realizado?'
+      : '¿Confirmas que el cliente no asistió a esta cita?';
+    if (!window.confirm(mensajeConfirmacion)) return;
+
+    setErrorAccion(null);
+    setMensajeAccion(null);
+    try {
+      const resultado = accion === 'completar'
+        ? await completarReserva.mutateAsync(reservaSeleccionada.id)
+        : await marcarNoAsistida.mutateAsync(reservaSeleccionada.id);
+      setMensajeAccion(resultado.mensaje);
+      await consulta.refetch();
+    } catch (error: unknown) {
+      if (isAxiosError(error) && error.response?.status === 409) {
+        setErrorAccion(accion === 'completar'
+          ? 'La cita debe haber terminado para poder marcarla como completada.'
+          : 'Aún no se cumple el tiempo de espera para marcar que el cliente no asistió.');
+      } else {
+        setErrorAccion(mapApiError(error));
+      }
+    }
   };
 
   return (
@@ -233,7 +267,7 @@ export default function ReservasBarberoPage() {
           </article>
           <article className="barber-agenda__metric card-surface">
             <span className="barber-agenda__metric-icon barber-agenda__metric-icon--warm"><CheckCircle2 size={18} aria-hidden="true" /></span>
-            <div><p>Pendientes de confirmar</p><strong>{consulta.isLoading || consulta.isError ? '—' : citasPendientes}</strong></div>
+            <div><p>Por atender</p><strong>{consulta.isLoading || consulta.isError ? '—' : citasPendientes}</strong></div>
           </article>
           <article className="barber-agenda__metric card-surface">
             <span className="barber-agenda__metric-icon barber-agenda__metric-icon--neutral"><Timer size={18} aria-hidden="true" /></span>
@@ -318,7 +352,40 @@ export default function ReservasBarberoPage() {
 
             <aside className="barber-agenda__details" aria-label="Detalle de la cita seleccionada">
               {reservaSeleccionada ? (
-                <DetalleReserva reserva={reservaSeleccionada} />
+                <>
+                  <DetalleReserva reserva={reservaSeleccionada} />
+                  {errorAccion && <div className="alert alert-warning mt-3" role="alert">{errorAccion}</div>}
+                  {mensajeAccion && <div className="alert alert-success mt-3" role="status">{mensajeAccion}</div>}
+                  {reservaSeleccionada.estado !== 'COMPLETED' &&
+                    reservaSeleccionada.estado !== 'CANCELLED' &&
+                    reservaSeleccionada.estado !== 'NO_SHOW' && (
+                    <div className="barber-agenda__detail-actions card-surface">
+                      <p>Actualiza el estado cuando termine la cita o si el cliente no llega.</p>
+                      <div className="d-flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          variant="primary"
+                          isLoading={completarReserva.isPending}
+                          disabled={marcarNoAsistida.isPending}
+                          onClick={() => void ejecutarAccionReserva('completar')}
+                        >
+                          Marcar completada
+                        </Button>
+                        {(reservaSeleccionada.estado === 'PENDING' || reservaSeleccionada.estado === 'CONFIRMED') && (
+                          <Button
+                            type="button"
+                            variant="outline-secondary"
+                            isLoading={marcarNoAsistida.isPending}
+                            disabled={completarReserva.isPending}
+                            onClick={() => void ejecutarAccionReserva('no-asistio')}
+                          >
+                            Marcar no asistió
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="barber-agenda__detail-placeholder card-surface">
                   <span><Scissors size={22} aria-hidden="true" /></span>

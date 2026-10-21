@@ -11,4 +11,6 @@ export const reservasKeys = {
   agendaBarbero: (desde: string, hasta: string) =>
     [...reservasKeys.all, 'barbero', 'agenda', desde, hasta] as const,
   clientesAdministrativos: (busqueda: string) => ['clientes', 'gestion', busqueda] as const,
+  listadoAdministrativo: (filtro: unknown) => [...reservasKeys.all, 'admin', filtro] as const,
+  detalleAdministrativo: (id: number | null) => [...reservasKeys.all, 'admin', 'detalle', id] as const,
 };
