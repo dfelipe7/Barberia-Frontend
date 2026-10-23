@@ -140,7 +140,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         {renderIcon()}
         <div
           id={descId}
-          className="flex-grow-1 text-secondary"
+          className="flex-grow-1 confirm-dialog__message"
           style={{
             fontSize: '0.95rem',
             lineHeight: '1.55',

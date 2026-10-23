@@ -43,6 +43,27 @@
   color: #0071BC;
 }
 
+.confirm-dialog__message {
+  color: var(--surface-card-muted, #4b5563);
+}
+
+[data-theme='dark'] .confirm-dialog__message,
+[data-bs-theme='dark'] .confirm-dialog__message {
+  color: var(--surface-card-muted, #a1a1aa);
+}
+
+[data-theme='dark'] .confirm-dialog__icon--warning,
+[data-bs-theme='dark'] .confirm-dialog__icon--warning {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+}
+
+[data-theme='dark'] .confirm-dialog__icon--primary,
+[data-bs-theme='dark'] .confirm-dialog__icon--primary {
+  background: rgba(0, 113, 188, 0.22);
+  color: #38bdf8;
+}
+
 .confirm-dialog__footer {
   width: 100%;
 }
@@ -58,3 +79,4 @@
     width: 100%;
   }
 }
+

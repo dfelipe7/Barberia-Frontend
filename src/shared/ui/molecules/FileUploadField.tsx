@@ -31,13 +31,47 @@ const PreviewImg: React.FC<{
   const [errorImagen, setErrorImagen] = useState(false);
 
   if (!errorImagen) {
+    if (shape === 'square') {
+      return (
+        <div
+          className="position-relative overflow-hidden rounded shadow-sm border d-flex align-items-center justify-content-center bg-black"
+          style={{ width: size, height: size }}
+        >
+          {/* Ambient blur backdrop */}
+          <img
+            src={src}
+            alt=""
+            aria-hidden="true"
+            className="position-absolute"
+            style={{
+              inset: '-10px',
+              width: 'calc(100% + 20px)',
+              height: 'calc(100% + 20px)',
+              objectFit: 'cover',
+              filter: 'blur(10px) brightness(0.35)',
+              transform: 'scale(1.15)',
+              pointerEvents: 'none',
+            }}
+          />
+          {/* Imagen completa contenida sin recorte */}
+          <img
+            src={src}
+            alt={alt}
+            onError={() => setErrorImagen(true)}
+            className="position-relative"
+            style={{ width: '100%', height: '100%', objectFit: 'contain', zIndex: 1 }}
+          />
+        </div>
+      );
+    }
+
     return (
       <img
         src={src}
         alt={alt}
         onError={() => setErrorImagen(true)}
-        className={shape === 'circle' ? 'rounded-circle shadow-sm border' : 'rounded shadow-sm border'}
-        style={{ width: size, height: size, objectFit: 'cover' }}
+        className="rounded-circle shadow-sm border"
+        style={{ width: size, height: size, objectFit: 'cover', objectPosition: 'center top' }}
       />
     );
   }

@@ -18,7 +18,7 @@ export default function MainLayout() {
                 <div className="d-flex flex-grow-1 position-relative">
                     <Sidebar />
 
-                    <main className="flex-grow-1 p-3 p-md-4 bg-surface-app overflow-x-hidden">
+                    <main className="flex-grow-1 p-2 p-sm-3 p-md-4 bg-surface-app" style={{ minWidth: 0, overflowX: 'clip' }}>
                         <Outlet />
                     </main>
                 </div>

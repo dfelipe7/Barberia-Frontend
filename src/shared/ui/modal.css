@@ -2,15 +2,21 @@
 
 /* Ancho responsive: ocupa casi todo el viewport en mobile con margen lateral */
 .kyrios-modal-dialog {
-  width: auto;
-  max-width: calc(100vw - 1.5rem);
+  width: 100%;
+  max-width: calc(100vw - 2rem);
+  margin: auto !important;
 }
 
-/* A partir de sm (576px) usamos el max-width estándar de Bootstrap (500px).
-   Los tamaños lg/xl sobreescriben esto con sus propias clases de Bootstrap. */
+/* A partir de sm (576px) tamaños adaptativos por clase */
 @media (min-width: 576px) {
   .kyrios-modal-dialog {
     max-width: 500px;
+  }
+  .kyrios-modal-dialog.modal-lg {
+    max-width: 760px;
+  }
+  .kyrios-modal-dialog.modal-xl {
+    max-width: 880px;
   }
 }
 
@@ -33,6 +39,7 @@
    word-wrap para emails, URLs y texto sin espacios */
 .kyrios-modal-body {
   overflow-y: auto;
+  overflow-x: hidden;
   overflow-wrap: anywhere;
   word-break: break-word;
   min-width: 0;

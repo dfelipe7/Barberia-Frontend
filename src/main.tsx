@@ -15,6 +15,7 @@ import ScrollToTop from './shared/components/ScrollToTop';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 import './shared/styles/theme.css';
+import './shared/styles/responsive.css';
 
 const googleClientId =
   import.meta.env.VITE_GOOGLE_CLIENT_ID ||

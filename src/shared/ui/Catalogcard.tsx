@@ -27,19 +27,27 @@ const CardImage: React.FC<{ src: string; alt: string; title: string }> = ({
 
   if (!errorImagen) {
     return (
-      <img
-        src={src}
-        alt={alt}
-        className="w-100 catalog-card-image"
-        onError={() => setErrorImagen(true)}
-        loading="lazy"
-      />
+      <div className="w-100 catalog-card-img-wrap">
+        <img
+          src={src}
+          alt=""
+          aria-hidden="true"
+          className="catalog-card-image-bg"
+        />
+        <img
+          src={src}
+          alt={alt}
+          className="catalog-card-image"
+          onError={() => setErrorImagen(true)}
+          loading="lazy"
+        />
+      </div>
     );
   }
 
   return (
     /* Fallback: letra inicial sobre el mismo contenedor cuadrado */
-    <div className="w-100 catalog-card-image d-flex align-items-center justify-content-center">
+    <div className="w-100 catalog-card-img-wrap d-flex align-items-center justify-content-center">
       <span className="font-display fs-1 text-surface-muted" style={{ opacity: 0.4 }}>
         {title.charAt(0)}
       </span>
@@ -75,7 +83,7 @@ export function CatalogCard({
           <CardImage key={imageUrl} src={imageUrl} alt={title} title={title} />
         ) : (
           /* Sin URL: fallback directo con la letra del nombre */
-          <div className="w-100 catalog-card-image d-flex align-items-center justify-content-center">
+          <div className="w-100 catalog-card-img-wrap d-flex align-items-center justify-content-center">
             <span className="font-display fs-1 text-surface-muted" style={{ opacity: 0.4 }}>
               {title.charAt(0)}
             </span>
@@ -143,10 +151,10 @@ export function CatalogCard({
         )}
       </div>
 
-      <div className="p-3">
-        <p className="fw-semibold mb-0 text-surface-card">{title}</p>
-        {subtitle && <p className="text-surface-muted small mb-2">{subtitle}</p>}
-        <p className="catalog-card-price mb-0 fs-5 text-surface-card">{priceLabel}</p>
+      <div className="p-2.5 p-sm-3 catalog-card-body">
+        <p className="fw-semibold mb-0 text-surface-card catalog-card-title text-truncate" title={title}>{title}</p>
+        {subtitle && <p className="text-surface-muted small mb-1 mb-sm-2 catalog-card-subtitle">{subtitle}</p>}
+        <p className="catalog-card-price mb-0 fs-6 fs-sm-5 text-surface-card">{priceLabel}</p>
       </div>
     </div>
   );

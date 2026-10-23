@@ -117,7 +117,7 @@ export function CrudPage<T>({
             <>
               {actions}
               {canCreate && renderModalForm && (
-                <Button variant="primary" onClick={handleOpenCreateModal}>
+                <Button variant="primary" onClick={handleOpenCreateModal} className="w-100 w-sm-auto justify-content-center text-center">
                   {createButtonText}
                 </Button>
               )}

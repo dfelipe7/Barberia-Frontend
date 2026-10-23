@@ -316,7 +316,8 @@ body {
   box-shadow: none !important;
 }
 
-.catalog-card.is-inactive .catalog-card-image {
+.catalog-card.is-inactive .catalog-card-image,
+.catalog-card.is-inactive .catalog-card-image-bg {
   filter: grayscale(0.8) opacity(0.7) !important;
 }
 
@@ -360,11 +361,48 @@ body {
   will-change: transform;
 }
 
-.catalog-card-image {
-  background: var(--catalog-image-bg);
-  height: 12rem;
+.catalog-card-img-wrap {
+  position: relative;
+  height: 12.5rem;
+  background: var(--catalog-image-bg, #0d0d0d);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.catalog-card-image-bg {
+  position: absolute;
+  inset: -15px;
+  width: calc(100% + 30px);
+  height: calc(100% + 30px);
   object-fit: cover;
-  transition: filter 0.3s ease;
+  object-position: center;
+  filter: blur(14px) brightness(0.35) saturate(1.2);
+  opacity: 0.7;
+  transform: scale(1.15);
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 0.4s ease;
+}
+
+.catalog-card-image {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+}
+
+.catalog-card:hover .catalog-card-image {
+  transform: scale(1.04);
+}
+
+.catalog-card:hover .catalog-card-image-bg {
+  opacity: 0.9;
 }
 
 .catalog-card-price {
