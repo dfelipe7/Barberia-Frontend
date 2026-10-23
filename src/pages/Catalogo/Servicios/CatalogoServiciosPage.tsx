@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Scissors } from 'lucide-react';
 import '../../Home/home.css';
 import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
@@ -15,7 +15,7 @@ import { useAuth } from '../../../auth/AuthContext';
 
 /* ─── Skeletons reutilizables ──────────────────────────────────────────────── */
 const ServiceSkeleton: React.FC = () => (
-  <div className="kyrios-service-card" style={{ minHeight: '380px', opacity: 0.6 }}>
+  <div className="kyrios-service-card" style={{ opacity: 0.6 }}>
     <div
       className="kyrios-service-img-wrap d-flex align-items-center justify-content-center"
       style={{ background: 'var(--home-surface-alt)' }}
@@ -32,6 +32,7 @@ const ServiceSkeleton: React.FC = () => (
 
 /* ─── Página principal ─────────────────────────────────────────────────────── */
 const CatalogoServiciosPage: React.FC = () => {
+  const navigate = useNavigate();
   const { isAuthenticated, nombre } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
@@ -56,8 +57,10 @@ const CatalogoServiciosPage: React.FC = () => {
 
   const { data: servicios = [], isLoading, error, refetch } = useServiciosCatalogo();
 
-  // Solo activos en la vista pública
-  const serviciosActivos = servicios.filter((s) => s.estado === 'ACTIVO');
+  // Solo activos en la vista pública que cuenten con al menos un barbero asignado
+  const serviciosActivos = servicios.filter(
+    (s) => s.estado === 'ACTIVO' && s.barberos && s.barberos.length > 0,
+  );
 
   // Filtrado client-side: no se necesita una segunda petición al servidor
   const serviciosFiltrados = debouncedQuery.trim()
@@ -125,9 +128,9 @@ const CatalogoServiciosPage: React.FC = () => {
         <div className="container">
           {/* Estado: Cargando */}
           {isLoading && (
-            <div className="row g-4" aria-busy="true" aria-label="Cargando catálogo de servicios">
+            <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col" aria-busy="true" aria-label="Cargando catálogo de servicios">
               {[1, 2, 3, 4, 5, 6].map((n) => (
-                <div key={n} className="col-12 col-md-6 col-lg-4">
+                <div key={n} className="col-6 col-md-6 col-lg-4">
                   <ServiceSkeleton />
                 </div>
               ))}
@@ -164,15 +167,15 @@ const CatalogoServiciosPage: React.FC = () => {
 
               {/* Grid */}
               {serviciosFiltrados.length > 0 ? (
-                <div className="row g-4">
+                <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col">
                   {serviciosFiltrados.map((servicio: Servicio) => (
-                    <div key={servicio.id} className="col-12 col-md-6 col-lg-4">
+                    <div key={servicio.id} className="col-6 col-md-6 col-lg-4">
                       <ServiceCard
                         servicio={servicio}
-                        // El catálogo público no tiene flujo de reserva;
-                        // redirige al home para que el usuario reserve desde allí
-                        onReservar={() => {
-                          window.location.href = `/#servicios`;
+                        onReservar={(s) => {
+                          navigate('/reservar', {
+                            state: { servicioId: s.id, origen: 'servicio' },
+                          });
                         }}
                       />
                     </div>

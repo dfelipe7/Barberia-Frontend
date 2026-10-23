@@ -82,10 +82,10 @@ export const VisionSection: React.FC = () => {
                 </p>
               </blockquote>
 
-              <div>
+              <div className="text-center text-lg-start">
                 <a
                   href="#ubicacion"
-                  className="btn-kyrios-outline d-inline-flex align-items-center gap-2"
+                  className="btn-kyrios-outline d-inline-flex align-items-center justify-content-center gap-2"
                   aria-label="Conoce nuestra ubicación y visítanos"
                 >
                   <span>Conócenos</span>

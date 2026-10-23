@@ -19,7 +19,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
   // deben mostrarse a los clientes en la HomePage pública.
   // El backend restringe la respuesta a ACTIVOS, y esta cláusula client-side garantiza
   // que ningún servicio inactivo sea visible o seleccionable.
-  const serviciosActivos = servicios.filter((s) => s.estado === 'ACTIVO');
+  const serviciosActivos = servicios.filter(
+    (s) => s.estado === 'ACTIVO' && s.barberos && s.barberos.length > 0,
+  );
 
   return (
     <section id="servicios" className="kyrios-section" aria-labelledby="servicios-heading">
@@ -40,12 +42,12 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
 
         {/* Estado: Cargando */}
         {isLoading && (
-          <div className="row g-4" aria-busy="true" aria-label="Cargando catálogo de servicios">
+          <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col" aria-busy="true" aria-label="Cargando catálogo de servicios">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="col-12 col-md-6 col-lg-4">
+              <div key={n} className="col-6 col-md-6 col-lg-4">
                 <div
                   className="kyrios-service-card"
-                  style={{ minHeight: '380px', opacity: 0.6 }}
+                  style={{ opacity: 0.6 }}
                 >
                   <div
                     className="kyrios-service-img-wrap d-flex align-items-center justify-content-center"
@@ -53,7 +55,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
                   >
                     <KyriosSpinner size="sm" aria-hidden="true" />
                   </div>
-                  <div className="p-4">
+                  <div className="p-3">
                     <div
                       className="placeholder-glow mb-2"
                       style={{ height: '22px', width: '60%', background: 'var(--home-surface-border)' }}
@@ -101,9 +103,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
         {/* Estado: Lista de Servicios Activos — máx. 3 en Home */}
         {!isLoading && !error && serviciosActivos.length > 0 && (
           <>
-            <div className="row g-4">
+            <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col">
               {serviciosActivos.slice(0, 3).map((servicio) => (
-                <div key={servicio.id} className="col-12 col-md-6 col-lg-4">
+                <div key={servicio.id} className="col-6 col-md-6 col-lg-4">
                   <ServiceCard
                     servicio={servicio}
                     onReservar={onReservarServicio}

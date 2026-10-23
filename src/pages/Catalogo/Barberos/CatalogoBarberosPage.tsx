@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Users } from 'lucide-react';
 import '../../Home/home.css';
 import { useBarberosCatalogo } from '../../../features/barberos/api/barberos.facade';
@@ -15,15 +15,15 @@ import { useAuth } from '../../../auth/AuthContext';
 
 /* ─── Skeleton de tarjeta ─────────────────────────────────────────────────── */
 const BarberSkeleton: React.FC = () => (
-  <div className="kyrios-barber-card" style={{ minHeight: '380px', opacity: 0.6 }}>
+  <div className="kyrios-barber-card" style={{ opacity: 0.6 }}>
     <div
       className="kyrios-barber-img-wrap d-flex align-items-center justify-content-center"
       style={{ background: 'var(--home-surface-alt)' }}
     >
       <KyriosSpinner size="sm" aria-hidden="true" />
     </div>
-    <div className="p-4">
-      <div className="placeholder-glow mb-2" style={{ height: '22px', width: '70%', background: 'var(--home-surface-border)' }} />
+    <div className="p-3">
+      <div className="placeholder-glow mb-2" style={{ height: '20px', width: '70%', background: 'var(--home-surface-border)' }} />
       <div className="placeholder-glow" style={{ height: '14px', width: '40%', background: 'var(--home-meta-border)' }} />
     </div>
   </div>
@@ -31,6 +31,7 @@ const BarberSkeleton: React.FC = () => (
 
 /* ─── Página principal ─────────────────────────────────────────────────────── */
 const CatalogoBarberosPage: React.FC = () => {
+  const navigate = useNavigate();
   const { isAuthenticated, nombre } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
@@ -121,9 +122,9 @@ const CatalogoBarberosPage: React.FC = () => {
         <div className="container">
           {/* Estado: Cargando */}
           {isLoading && (
-            <div className="row g-4" aria-busy="true" aria-label="Cargando equipo de barberos">
-              {[1, 2, 3, 4, 5, 6].map((n) => (
-                <div key={n} className="col-12 col-sm-6 col-lg-4">
+            <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col justify-content-center" aria-busy="true" aria-label="Cargando equipo de barberos">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                <div key={n} className="col-6 col-sm-6 col-md-4 col-xl-3">
                   <BarberSkeleton />
                 </div>
               ))}
@@ -160,14 +161,19 @@ const CatalogoBarberosPage: React.FC = () => {
 
               {/* Grid */}
               {barberosFiltrados.length > 0 ? (
-                <div className="row g-4 justify-content-center">
+                <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col justify-content-center">
                   {barberosFiltrados.map((barbero: BarberoCatalogo) => (
-                    <div key={barbero.id} className="col-12 col-sm-6 col-lg-4">
+                    <div key={barbero.id} className="col-6 col-sm-6 col-md-4 col-xl-3">
                       <BarberCard
                         barbero={barbero}
-                        // En el catálogo público se redirige al Home para reservar
-                        onReservar={() => {
-                          window.location.href = `/#barberos`;
+                        onReservar={(b, servicioId) => {
+                          navigate('/reservar', {
+                            state: {
+                              barberoId: b.id,
+                              origen: 'barbero',
+                              ...(servicioId ? { servicioId, paso: 3 } : {}),
+                            },
+                          });
                         }}
                       />
                     </div>

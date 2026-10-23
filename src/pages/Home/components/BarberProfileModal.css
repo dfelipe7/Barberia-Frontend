@@ -1,0 +1,930 @@
+/* ─── Modal de Perfil de Barbero (Estilo Booksy / Kyrios Studio) ─── */
+
+/* Diálogo del perfil del barbero: tamaño amplio optimizado para legibilidad */
+.kyrios-modal-dialog.barber-profile-dialog {
+  max-width: 630px !important;
+  width: 100%;
+}
+
+@media (max-width: 670px) {
+  .kyrios-modal-dialog.barber-profile-dialog {
+    max-width: calc(100vw - 1.25rem) !important;
+    margin: 0.625rem auto !important;
+  }
+}
+
+/* Anular la regla agresiva de word-break de modal.css dentro de esta tarjeta */
+.barber-modal-card,
+.barber-modal-card p,
+.barber-modal-card div,
+.barber-modal-card span,
+.barber-modal-card button {
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+.barber-modal-card {
+  padding: 1.75rem 2rem;
+  background-color: var(--surface-card-bg, #ffffff);
+  color: var(--surface-card-text, #111111);
+}
+
+@media (max-width: 576px) {
+  .barber-modal-card {
+    padding: 1.25rem 1.15rem;
+  }
+}
+
+.barber-modal-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.barber-modal-btn-icon {
+  background: transparent;
+  border: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--surface-card-text, #111111);
+  opacity: 0.85;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  padding: 0;
+}
+
+.barber-modal-btn-icon:hover {
+  opacity: 1;
+  background: rgba(128, 128, 128, 0.14);
+}
+
+.barber-modal-avatar-wrap {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 0.75rem;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--k-blue, #0071BC);
+  box-shadow: 0 6px 20px rgba(0, 113, 188, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0d0d0d;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-avatar-wrap {
+    width: 74px;
+    height: 74px;
+    margin: 0 auto 0.5rem;
+    border-width: 2.5px;
+  }
+}
+
+.barber-modal-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.barber-modal-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1b1b1b 0%, #0d0d0d 100%);
+  color: var(--k-blue, #0071BC);
+  font-family: var(--font-brand, sans-serif);
+  font-weight: 800;
+  font-size: 1.9rem;
+}
+
+.barber-modal-name {
+  font-size: 1.45rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.3rem;
+  color: var(--surface-card-text, #111111);
+}
+
+@media (max-width: 576px) {
+  .barber-modal-name {
+    font-size: 1.18rem;
+    margin-bottom: 0.2rem;
+  }
+}
+
+.barber-modal-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.barber-modal-badge-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.22rem 0.65rem;
+  border-radius: 9999px;
+}
+
+.barber-modal-badge-role {
+  background: rgba(0, 113, 188, 0.1);
+  color: var(--k-blue, #0071BC);
+  border: 1px solid rgba(0, 113, 188, 0.25);
+}
+
+[data-theme="dark"] .barber-modal-badge-role {
+  background: rgba(0, 113, 188, 0.18);
+  color: #4DA6E8;
+  border-color: rgba(0, 113, 188, 0.35);
+}
+
+.barber-modal-badge-rating {
+  background: rgba(128, 128, 128, 0.08);
+  color: var(--surface-card-text, #111111);
+  border: 1px solid var(--surface-card-border, rgba(128, 128, 128, 0.18));
+}
+
+[data-theme="dark"] .barber-modal-badge-rating {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f1f5f9;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.barber-modal-rating-count {
+  opacity: 0.65;
+  font-weight: 500;
+  font-size: 0.74rem;
+  margin-left: 0.15rem;
+}
+
+.barber-modal-sede {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  opacity: 0.75;
+  margin-bottom: 1rem;
+  text-align: center;
+  width: 100%;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-sede {
+    font-size: 0.76rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+.barber-modal-sede-icon {
+  color: var(--k-blue, #0071BC);
+}
+
+[data-theme="dark"] .barber-modal-sede-icon {
+  color: #4DA6E8;
+}
+
+/* Pills de navegación (Tabs) */
+.barber-modal-pills {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.25rem 0.35rem;
+  background: rgba(128, 128, 128, 0.07);
+  border: 1px solid var(--surface-card-border, rgba(128, 128, 128, 0.14));
+  border-radius: 9999px;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-pills {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 0.25rem !important;
+    padding: 0.25rem !important;
+    margin-bottom: 0.85rem !important;
+    width: 100% !important;
+  }
+}
+
+[data-theme="dark"] .barber-modal-pills {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.barber-modal-pill {
+  border-radius: 9999px;
+  padding: 0.42rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--surface-card-text, #111111);
+  opacity: 0.8;
+  white-space: nowrap !important;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  text-align: center;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-pill {
+    padding: 0.36rem 0.15rem !important;
+    font-size: 0.69rem !important;
+    letter-spacing: -0.01em !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+  }
+}
+
+.barber-modal-pill:hover:not(.active) {
+  opacity: 1;
+  color: var(--k-blue, #0071BC);
+  background: rgba(0, 113, 188, 0.08);
+}
+
+[data-theme="dark"] .barber-modal-pill:hover:not(.active) {
+  color: #4DA6E8;
+  background: rgba(0, 113, 188, 0.15);
+}
+
+.barber-modal-pill.active {
+  background-color: var(--k-blue, #0071BC) !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  border-color: var(--k-blue, #0071BC) !important;
+  box-shadow: 0 3px 12px var(--k-blue-glow, rgba(0, 113, 188, 0.35));
+  opacity: 1;
+}
+
+[data-theme="dark"] .barber-modal-pill {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .barber-modal-pill.active {
+  background-color: var(--k-blue, #0071BC) !important;
+  color: #ffffff !important;
+  border-color: var(--k-blue, #0071BC) !important;
+  box-shadow: 0 4px 14px rgba(0, 113, 188, 0.5);
+}
+
+/* ─── Contenedor del Tab Perfil ─── */
+.barber-modal-perfil-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  margin-bottom: 0.35rem;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-perfil-content {
+    gap: 0.65rem;
+  }
+}
+
+/* Grid de Métricas del Barbero (Siempre 3 Columnas Horizontales) */
+.barber-modal-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 0.65rem;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-stats-grid {
+    gap: 0.4rem !important;
+  }
+}
+
+.barber-modal-stat-card {
+  background: var(--home-surface-alt, rgba(128, 128, 128, 0.05));
+  border: 1px solid var(--surface-card-border, rgba(128, 128, 128, 0.12));
+  border-radius: 12px;
+  padding: 0.85rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.35rem;
+  transition: all 0.2s ease;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-stat-card {
+    padding: 0.5rem 0.25rem !important;
+    border-radius: 10px !important;
+    gap: 0.2rem !important;
+  }
+}
+
+[data-theme="dark"] .barber-modal-stat-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+.barber-modal-stat-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--k-blue, #0071BC);
+  box-shadow: 0 4px 14px rgba(0, 113, 188, 0.15);
+}
+
+.barber-modal-stat-icon-wrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: rgba(0, 113, 188, 0.1);
+  color: var(--k-blue, #0071BC);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-stat-icon-wrap {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 6px !important;
+  }
+  .barber-modal-stat-icon-wrap svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+}
+
+[data-theme="dark"] .barber-modal-stat-icon-wrap {
+  background: rgba(0, 113, 188, 0.18);
+  color: #4DA6E8;
+}
+
+.barber-modal-stat-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.barber-modal-stat-number {
+  font-family: var(--font-brand, "Barlow Condensed", sans-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--surface-card-text, #111111);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-stat-number {
+    font-size: 1.08rem !important;
+  }
+}
+
+[data-theme="dark"] .barber-modal-stat-number {
+  color: #f8fafc;
+}
+
+.barber-modal-stat-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  opacity: 0.65;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-stat-title {
+    font-size: 0.6rem !important;
+    letter-spacing: 0.01em !important;
+  }
+}
+
+/* Franja de Información de Ubicación y Horario */
+.barber-modal-info-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  background: rgba(128, 128, 128, 0.04);
+  border: 1px dashed var(--surface-card-border, rgba(128, 128, 128, 0.18));
+  border-radius: 12px;
+  padding: 0.75rem 0.95rem;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-info-strip {
+    gap: 0.45rem !important;
+    padding: 0.5rem 0.65rem !important;
+    border-radius: 10px !important;
+  }
+}
+
+[data-theme="dark"] .barber-modal-info-strip {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.09);
+}
+
+.barber-modal-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-info-item {
+    gap: 0.45rem !important;
+  }
+}
+
+.barber-modal-info-icon-box {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(0, 113, 188, 0.1);
+  color: var(--k-blue, #0071BC);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-info-icon-box {
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 6px !important;
+  }
+  .barber-modal-info-icon-box svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+}
+
+[data-theme="dark"] .barber-modal-info-icon-box {
+  background: rgba(0, 113, 188, 0.18);
+  color: #4DA6E8;
+}
+
+.barber-modal-info-texts {
+  display: flex;
+  flex-direction: column;
+}
+
+.barber-modal-info-label {
+  font-size: 0.68rem;
+  opacity: 0.6;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-info-label {
+    font-size: 0.6rem !important;
+  }
+}
+
+.barber-modal-info-value {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--surface-card-text, #111111);
+  line-height: 1.25;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-info-value {
+    font-size: 0.72rem !important;
+    line-height: 1.2 !important;
+  }
+}
+
+[data-theme="dark"] .barber-modal-info-value {
+  color: #f1f5f9;
+}
+
+/* Tarjeta de Biografía y Especialidad */
+.barber-modal-bio-card {
+  background: var(--home-surface-alt, rgba(128, 128, 128, 0.05));
+  border: 1px solid var(--surface-card-border, rgba(128, 128, 128, 0.12));
+  border-radius: 12px;
+  padding: 1.1rem 1.2rem;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-bio-card {
+    padding: 0.7rem 0.8rem !important;
+    border-radius: 10px !important;
+  }
+}
+
+[data-theme="dark"] .barber-modal-bio-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+.barber-modal-bio-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-bio-header {
+    margin-bottom: 0.4rem !important;
+  }
+}
+
+.barber-modal-bio-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.barber-modal-bio-gold-icon {
+  color: var(--k-blue, #0071BC);
+}
+
+[data-theme="dark"] .barber-modal-bio-gold-icon {
+  color: #4DA6E8;
+}
+
+.barber-modal-section-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--surface-card-text, #111111);
+}
+
+@media (max-width: 576px) {
+  .barber-modal-section-title {
+    font-size: 0.82rem !important;
+  }
+}
+
+[data-theme="dark"] .barber-modal-section-title {
+  color: #f8fafc;
+}
+
+.barber-modal-bio-exp-badge {
+  background: rgba(0, 113, 188, 0.1);
+  color: var(--k-blue, #0071BC);
+  border: 1px solid rgba(0, 113, 188, 0.25);
+  padding: 0.18rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-bio-exp-badge {
+    font-size: 0.66rem !important;
+    padding: 0.12rem 0.45rem !important;
+  }
+}
+
+[data-theme="dark"] .barber-modal-bio-exp-badge {
+  background: rgba(0, 113, 188, 0.18);
+  color: #4DA6E8;
+  border-color: rgba(0, 113, 188, 0.35);
+}
+
+.barber-modal-about {
+  font-size: 0.86rem;
+  line-height: 1.55;
+  opacity: 0.85;
+  margin-bottom: 0.85rem;
+  color: var(--surface-card-text, #111111);
+}
+
+@media (max-width: 576px) {
+  .barber-modal-about {
+    font-size: 0.76rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 0.5rem !important;
+  }
+}
+
+[data-theme="dark"] .barber-modal-about {
+  color: #cbd5e1;
+}
+
+/* Chips de Especialidades */
+.barber-modal-chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-chips-container {
+    gap: 0.3rem !important;
+  }
+}
+
+.barber-modal-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 7px;
+  background: rgba(128, 128, 128, 0.07);
+  border: 1px solid var(--surface-card-border, rgba(128, 128, 128, 0.14));
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--surface-card-text, #111111);
+  transition: all 0.2s ease;
+}
+
+@media (max-width: 576px) {
+  .barber-modal-chip {
+    padding: 0.2rem 0.45rem !important;
+    font-size: 0.68rem !important;
+    gap: 0.22rem !important;
+    border-radius: 5px !important;
+  }
+  .barber-modal-chip svg {
+    width: 11px !important;
+    height: 11px !important;
+  }
+}
+
+[data-theme="dark"] .barber-modal-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+}
+
+.barber-modal-chip:hover {
+  border-color: var(--k-blue, #0071BC);
+  color: var(--k-blue, #0071BC);
+}
+
+[data-theme="dark"] .barber-modal-chip:hover {
+  border-color: #4DA6E8;
+  color: #4DA6E8;
+}
+
+/* Botón CTA dentro de Perfil: Alineado al botón principal Kyrios Brand Blue */
+.barber-modal-perfil-action {
+  margin-top: 0.2rem;
+}
+
+.barber-modal-cta-primary-btn {
+  width: 100%;
+  border-radius: 9999px;
+  background-color: var(--k-blue, #0071BC);
+  color: #ffffff !important;
+  border: 1px solid var(--k-blue, #0071BC);
+  padding: 0.85rem 1.4rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px var(--k-blue-glow, rgba(0, 113, 188, 0.32));
+}
+
+.barber-modal-cta-primary-btn:hover {
+  background-color: var(--k-blue-hover, #005fa0);
+  border-color: var(--k-blue-hover, #005fa0);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 113, 188, 0.45);
+}
+
+.barber-modal-cta-primary-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 113, 188, 0.3);
+}
+
+@media (max-width: 576px) {
+  .barber-modal-cta-primary-btn {
+    padding: 0.72rem 1.15rem !important;
+    font-size: 0.8rem !important;
+    letter-spacing: 0.04em !important;
+  }
+}
+
+/* Lista de Servicios dentro del tab */
+.barber-modal-service-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.barber-modal-service-item {
+  padding: 0.95rem 1.25rem;
+  border-radius: 12px;
+  background: var(--home-surface-alt, rgba(128, 128, 128, 0.06));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid var(--surface-card-border, rgba(128, 128, 128, 0.14));
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.barber-modal-service-item--interactive {
+  cursor: pointer;
+  user-select: none;
+}
+
+.barber-modal-service-item--interactive:hover {
+  background: rgba(0, 113, 188, 0.05);
+  border-color: var(--k-blue, #0071BC);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.barber-modal-service-main {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.barber-modal-service-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(198, 168, 117, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.barber-modal-scissor-icon {
+  color: var(--home-gold, #c6a875);
+}
+
+.barber-modal-service-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.barber-modal-service-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.35;
+  color: var(--surface-card-text, #111111);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barber-modal-service-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  opacity: 0.8;
+  margin-top: 0.25rem;
+  flex-wrap: nowrap;
+}
+
+.barber-modal-service-duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap !important;
+  flex-shrink: 0;
+}
+
+.barber-modal-service-desc {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.barber-modal-service-side {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-shrink: 0;
+}
+
+.barber-modal-service-price {
+  font-family: var(--font-brand, "Barlow Condensed", sans-serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--home-gold, #c6a875);
+  white-space: nowrap !important;
+  letter-spacing: 0.02em;
+}
+
+/* Botón de acción 'Elegir' en cada servicio: Alineado con la paleta de botones Kyrios (Brand Blue) */
+.barber-modal-service-cta-badge {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.42rem 1rem;
+  border-radius: 9999px;
+  background-color: var(--k-blue, #0071BC);
+  color: #ffffff !important;
+  border: 1px solid var(--k-blue, #0071BC);
+  white-space: nowrap !important;
+  flex-shrink: 0;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px var(--k-blue-glow, rgba(0, 113, 188, 0.25));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.barber-modal-service-item--interactive:hover .barber-modal-service-cta-badge {
+  background-color: var(--k-blue-hover, #005fa0);
+  border-color: var(--k-blue-hover, #005fa0);
+  transform: scale(1.05);
+  box-shadow: 0 4px 14px rgba(0, 113, 188, 0.45);
+}
+
+/* Galería de Portfolio */
+.barber-modal-portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.barber-modal-portfolio-item {
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.barber-modal-portfolio-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Reseñas */
+.barber-modal-review-item {
+  padding: 1.1rem 1.25rem;
+  border-radius: 12px;
+  background: var(--home-surface-alt, rgba(128, 128, 128, 0.06));
+  border: 1px solid var(--surface-card-border, rgba(128, 128, 128, 0.14));
+  margin-bottom: 0.85rem;
+  font-size: 0.9rem;
+}
+
+.barber-modal-review-item p {
+  line-height: 1.55;
+  margin-bottom: 0;
+}
+
+.barber-modal-stars {
+  color: var(--home-gold, #c6a875) !important;
+  letter-spacing: 0.08em;
+}
+
+/* Overrides para Modo Oscuro en elementos del Modal */
+[data-theme="dark"] .barber-modal-service-item {
+  background: #161616;
+  border-color: #272727;
+}
+
+[data-theme="dark"] .barber-modal-service-item--interactive:hover {
+  background: #1f1f1f;
+  border-color: var(--k-blue, #0071BC);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .barber-modal-review-item {
+  background: #161616;
+  border-color: #272727;
+}

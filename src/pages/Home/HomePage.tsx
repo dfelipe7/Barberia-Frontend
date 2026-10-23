@@ -32,10 +32,16 @@ export const HomePage: React.FC = () => {
   const handleReservarGeneral = () => navigate('/reservar');
 
   const handleReservarServicio = (servicio: Servicio) =>
-    navigate('/reservar', { state: { servicioId: servicio.id } });
+    navigate('/reservar', { state: { servicioId: servicio.id, origen: 'servicio' } });
 
-  const handleReservarBarbero = (barbero: BarberoCatalogo) =>
-    navigate('/reservar', { state: { barberoId: barbero.id } });
+  const handleReservarBarbero = (barbero: BarberoCatalogo, servicioId?: number) =>
+    navigate('/reservar', {
+      state: {
+        barberoId: barbero.id,
+        origen: 'barbero',
+        ...(servicioId ? { servicioId, paso: 3 } : {}),
+      },
+    });
 
   return (
     <div className="kyrios-home min-vh-100 d-flex flex-column">

@@ -1,0 +1,206 @@
+/* ─── Modal de Detalles del Servicio (Estilo Kyrios Barber Studio) ─── */
+
+.kyrios-modal-dialog.service-detail-dialog {
+  max-width: 520px !important;
+  width: 100%;
+}
+
+@media (max-width: 576px) {
+  .kyrios-modal-dialog.service-detail-dialog {
+    max-width: calc(100vw - 1.25rem) !important;
+    margin: 0.625rem auto !important;
+  }
+}
+
+.service-modal-card {
+  padding: 1.5rem 1.75rem;
+  background-color: var(--surface-card-bg, #ffffff);
+  color: var(--surface-card-text, #111111);
+  border-radius: 20px;
+}
+
+@media (max-width: 576px) {
+  .service-modal-card {
+    padding: 1.25rem 1.15rem;
+  }
+}
+
+/* Barra superior de acciones */
+.service-modal-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+
+.service-modal-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.service-modal-btn-icon {
+  background: transparent;
+  border: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--surface-card-text, #111111);
+  opacity: 0.85;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  padding: 0;
+}
+
+.service-modal-btn-icon:hover {
+  opacity: 1;
+  background: rgba(128, 128, 128, 0.12);
+  transform: scale(1.05);
+}
+
+/* Banner visual Hero */
+.service-modal-hero-wrap {
+  width: 100%;
+  height: 200px;
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  background: #0d0d0d;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(128, 128, 128, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-modal-hero-bg {
+  position: absolute;
+  inset: -15px;
+  width: calc(100% + 30px);
+  height: calc(100% + 30px);
+  object-fit: cover;
+  filter: blur(18px) brightness(0.35);
+  transform: scale(1.15);
+  pointer-events: none;
+}
+
+.service-modal-hero-img {
+  position: relative;
+  max-height: 185px;
+  max-width: 90%;
+  object-fit: contain;
+  z-index: 1;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.6));
+}
+
+/* Título */
+.service-modal-name {
+  font-family: var(--font-brand, "Barlow Condensed", sans-serif);
+  font-size: 1.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  color: var(--surface-card-text, #111111);
+  margin-bottom: 0.5rem;
+}
+
+/* Barra de Precio y Duración */
+.service-modal-pricing-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.15rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--surface-card-border, rgba(128, 128, 128, 0.16));
+}
+
+.service-modal-price {
+  font-family: var(--font-brand, "Barlow Condensed", sans-serif);
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--home-gold, #c6a875);
+  letter-spacing: 0.02em;
+  white-space: nowrap !important;
+}
+
+.service-modal-duration-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.38rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: var(--home-surface-alt, rgba(128, 128, 128, 0.08));
+  border: 1px solid var(--surface-card-border, rgba(128, 128, 128, 0.16));
+  color: var(--surface-card-text, #111111);
+  white-space: nowrap !important;
+}
+
+/* Sección de Descripción */
+.service-modal-section-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.72;
+  margin-bottom: 0.45rem;
+}
+
+.service-modal-about {
+  font-size: 0.92rem;
+  line-height: 1.62;
+  opacity: 0.88;
+  margin-bottom: 1.25rem;
+}
+
+/* Botón CTA: Reservar Ahora (Alineado a Kyrios Brand Blue) */
+.service-modal-btn-cta {
+  width: 100%;
+  border-radius: 9999px;
+  background-color: var(--k-blue, #0071BC);
+  color: #ffffff !important;
+  border: 1px solid var(--k-blue, #0071BC);
+  padding: 0.88rem 1.5rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  box-shadow: 0 4px 14px var(--k-blue-glow, rgba(0, 113, 188, 0.3));
+  text-decoration: none;
+}
+
+.service-modal-btn-cta:hover {
+  background-color: var(--k-blue-hover, #005fa0);
+  border-color: var(--k-blue-hover, #005fa0);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 113, 188, 0.45);
+}
+
+.service-modal-btn-cta:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 113, 188, 0.3);
+}
+
+/* Overrides para Modo Oscuro */
+[data-theme="dark"] .service-modal-card {
+  background-color: var(--surface-card-bg, #1a1a1a);
+  color: var(--surface-card-text, #ffffff);
+}
+
+[data-theme="dark"] .service-modal-duration-badge {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f1f5f9;
+}
