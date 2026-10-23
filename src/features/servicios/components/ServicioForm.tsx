@@ -35,9 +35,14 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
   onDirtyChange,
 }) => {
   const confirm = useConfirm();
-  const { data: barberosGestion = [], isLoading: cargandoBarberos } = useBarberosGestion();
+  const { data: barberosGestion = [], isLoading: cargandoBarberos } = useBarberosGestion({
+    estado: 'ACTIVO',
+  });
   const barberos = useMemo(
-    () => barberosGestion.filter((b) => b.estado === 'ACTIVO'),
+    () =>
+      barberosGestion.filter(
+        (b) => b.estado === 'ACTIVO' && b.estadoGlobal === 'ACTIVO',
+      ),
     [barberosGestion],
   );
 
@@ -177,19 +182,19 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className="servicio-form-wrapper px-4 pb-4 pt-1">
       {/* Banner de visibilidad de servicio */}
       {servicioInicial && (
         <div
-          className={`alert ${
+          className={`servicio-form-status-banner alert ${
             servicioInicial.estado === 'ACTIVO' ? 'alert-success' : 'alert-warning'
-          } py-2 px-3 small d-flex align-items-center gap-2 mb-3`}
+          } py-2 px-3 small d-flex align-items-center gap-2 mb-3 rounded-3 shadow-sm border`}
           role="status"
         >
           {servicioInicial.estado === 'ACTIVO' ? (
             <>
               <CheckCircle2 size={16} className="flex-shrink-0 text-success" />
-              <span>Este servicio está visible para los clientes.</span>
+              <span>Este servicio está visible para los clientes en el catálogo.</span>
             </>
           ) : (
             <>
@@ -203,7 +208,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
       {/* Banner de progreso al subir imagen */}
       {isSubmitting && loadingText === 'Subiendo imagen...' && (
         <div
-          className="upload-banner alert py-2 px-3 small d-flex align-items-center gap-2 upload-banner-anim mb-3"
+          className="upload-banner alert py-2 px-3 small d-flex align-items-center gap-2 upload-banner-anim mb-3 rounded-3"
           role="status"
           style={{
             background: 'rgba(0, 113, 188, 0.12)',
@@ -216,160 +221,183 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
         </div>
       )}
 
-      {errorMensaje && <div className="alert alert-danger py-2 small">{errorMensaje}</div>}
+      {errorMensaje && <div className="alert alert-danger py-2 small rounded-3 mb-3">{errorMensaje}</div>}
 
       <div className="row g-3">
-        {/* BLOQUE 1: Datos básicos */}
-        <div className="col-12 col-sm-8">
-          <label htmlFor="nombreServicio" className="form-label fw-semibold">
-            Nombre <span className="text-danger">*</span>
-          </label>
-          <input
-            id="nombreServicio"
-            type="text"
-            className={`form-control ${errors.nombre ? 'is-invalid' : ''}`}
-            {...register('nombre')}
-          />
-          {errors.nombre && <div className="invalid-feedback">{errors.nombre.message}</div>}
+        {/* BLOQUE 1: Datos principales del servicio (Columna Izquierda) */}
+        <div className="col-12 col-md-7">
+          <div className="d-flex flex-column gap-3">
+            <div>
+              <label htmlFor="nombreServicio" className="form-label servicio-form-label">
+                Nombre del servicio <span className="text-danger">*</span>
+              </label>
+              <input
+                id="nombreServicio"
+                type="text"
+                placeholder="Ej. Corte Clásico y Barba"
+                className={`form-control ${errors.nombre ? 'is-invalid' : ''}`}
+                {...register('nombre')}
+              />
+              {errors.nombre && <div className="invalid-feedback">{errors.nombre.message}</div>}
+            </div>
+
+            <div className="row g-2">
+              <div className="col-6">
+                <label htmlFor="precioServicio" className="form-label fw-semibold">
+                  Precio ($) <span className="text-danger">*</span>
+                </label>
+                <div className="input-group">
+                  <span className="input-group-text">$</span>
+                  <input
+                    id="precioServicio"
+                    type="number"
+                    min={0}
+                    step={500}
+                    placeholder="50000"
+                    className={`form-control ${errors.precio ? 'is-invalid' : ''}`}
+                    {...register('precio', { valueAsNumber: true })}
+                  />
+                </div>
+                {errors.precio && (
+                  <div className="invalid-feedback d-block">{errors.precio.message}</div>
+                )}
+              </div>
+
+              <div className="col-6">
+                <label htmlFor="duracionServicio" className="form-label fw-semibold">
+                  Duración (min) <span className="text-danger">*</span>
+                </label>
+                <div className="input-group">
+                  <input
+                    id="duracionServicio"
+                    type="number"
+                    min={1}
+                    placeholder="30"
+                    className={`form-control ${errors.duracionMinutos ? 'is-invalid' : ''}`}
+                    {...register('duracionMinutos', { valueAsNumber: true })}
+                  />
+                  <span className="input-group-text">min</span>
+                </div>
+                {errors.duracionMinutos && (
+                  <div className="invalid-feedback d-block">{errors.duracionMinutos.message}</div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="descripcionServicio" className="form-label fw-semibold">
+                Descripción
+              </label>
+              <textarea
+                id="descripcionServicio"
+                placeholder="Describe qué incluye el servicio y técnicas utilizadas..."
+                className={`form-control ${errors.descripcion ? 'is-invalid' : ''}`}
+                rows={3}
+                {...register('descripcion')}
+              />
+              {errors.descripcion && (
+                <div className="invalid-feedback">{errors.descripcion.message}</div>
+              )}
+            </div>
+          </div>
         </div>
 
-        <div className="col-12 col-sm-4">
-          <label htmlFor="duracionServicio" className="form-label fw-semibold">
-            Duración (min) <span className="text-danger">*</span>
-          </label>
-          <input
-            id="duracionServicio"
-            type="number"
-            min={1}
-            className={`form-control ${errors.duracionMinutos ? 'is-invalid' : ''}`}
-            {...register('duracionMinutos', { valueAsNumber: true })}
-          />
-          {errors.duracionMinutos && (
-            <div className="invalid-feedback">{errors.duracionMinutos.message}</div>
-          )}
-        </div>
+        {/* BLOQUE 2: Imagen del servicio (Columna Derecha organizada) */}
+        <div className="col-12 col-md-5">
+          <div
+            role="group"
+            aria-labelledby="imagen-label"
+            className="servicio-form-image-card p-3 border rounded-3 bg-surface-card h-100 d-flex flex-column align-items-center justify-content-between text-center"
+          >
+            <div className="w-100 text-start">
+              <span id="imagen-label" className="form-label fw-semibold mb-1 d-block">
+                Imagen del servicio
+              </span>
+              <p className="text-surface-muted small mb-0" style={{ fontSize: '0.76rem' }}>
+                Foto representativa en el catálogo público
+              </p>
+            </div>
 
-        <div className="col-12">
-          <label htmlFor="descripcionServicio" className="form-label fw-semibold">
-            Descripción
-          </label>
-          <textarea
-            id="descripcionServicio"
-            className={`form-control ${errors.descripcion ? 'is-invalid' : ''}`}
-            rows={2}
-            {...register('descripcion')}
-          />
-          {errors.descripcion && (
-            <div className="invalid-feedback">{errors.descripcion.message}</div>
-          )}
-        </div>
+            <div className="servicio-form-file-upload my-2">
+              <FileUploadField
+                previewUrl={
+                  previewLocal ||
+                  (!eliminarFotoExistente && servicioInicial
+                    ? obtenerUrlFoto(servicioInicial.fotoUrl)
+                    : null)
+                }
+                placeholderTexto="Sin imagen"
+                onFileSelected={handleFileSelected}
+                onRemove={
+                  previewLocal || (!eliminarFotoExistente && servicioInicial?.fotoUrl)
+                    ? async () => {
+                        // Caso 1: hay preview local (imagen recién seleccionada pero no guardada)
+                        if (previewLocal) {
+                          const ok = await confirm({
+                            title: '¿Quitar imagen seleccionada?',
+                            message:
+                              'La imagen que seleccionaste se descartará. La imagen actual del servicio no se verá afectada.',
+                            variant: 'warning',
+                            confirmLabel: 'Quitar',
+                            cancelLabel: 'Mantener',
+                          });
+                          if (!ok) return;
 
-        <div className="col-12 col-sm-6">
-          <label htmlFor="precioServicio" className="form-label fw-semibold">
-            Precio ($) <span className="text-danger">*</span>
-          </label>
-          <input
-            id="precioServicio"
-            type="number"
-            min={0}
-            step={500}
-            className={`form-control ${errors.precio ? 'is-invalid' : ''}`}
-            {...register('precio', { valueAsNumber: true })}
-          />
-          {errors.precio && <div className="invalid-feedback">{errors.precio.message}</div>}
-        </div>
+                          URL.revokeObjectURL(previewLocal);
+                          setPreviewLocal(null);
+                          setValue('foto', undefined, { shouldDirty: true });
+                          return;
+                        }
 
-        {/* Separador hacia BLOQUE 2: Imagen */}
-        <div className="col-12">
-          <hr className="my-2" />
-        </div>
-
-        {/* BLOQUE 2: Imagen del servicio */}
-        <div role="group" aria-labelledby="imagen-label" className="col-12 mb-2">
-          <span id="imagen-label" className="form-label fw-semibold mb-2 d-block">
-            Imagen del servicio
-          </span>
-
-          <div className="servicio-form-file-upload">
-            <FileUploadField
-              previewUrl={
-                previewLocal ||
-                (!eliminarFotoExistente && servicioInicial
-                  ? obtenerUrlFoto(servicioInicial.fotoUrl)
-                  : null)
-              }
-              placeholderTexto="Imagen"
-              onFileSelected={handleFileSelected}
-              onRemove={
-                previewLocal || (!eliminarFotoExistente && servicioInicial?.fotoUrl)
-                  ? async () => {
-                      // Caso 1: hay preview local (imagen recién seleccionada pero no guardada)
-                      if (previewLocal) {
+                        // Caso 2: solo hay imagen en el servidor → confirmar borrado
                         const ok = await confirm({
-                          title: '¿Quitar imagen seleccionada?',
+                          title: '¿Eliminar imagen del servicio?',
                           message:
-                            'La imagen que seleccionaste se descartará. La imagen actual del servicio no se verá afectada.',
-                          variant: 'warning',
-                          confirmLabel: 'Quitar',
+                            'Se quitará la imagen actual del servicio. Esta acción se aplicará al guardar el formulario.',
+                          variant: 'danger',
+                          confirmLabel: 'Eliminar',
                           cancelLabel: 'Mantener',
                         });
-                        if (!ok) return;
-
-                        URL.revokeObjectURL(previewLocal);
-                        setPreviewLocal(null);
-                        setValue('foto', undefined, { shouldDirty: true });
-                        return;
+                        if (ok) {
+                          setEliminarFotoExistente(true);
+                          setValue('eliminarFoto', true, { shouldDirty: true });
+                        }
                       }
+                    : undefined
+                }
+                shape="square"
+                size={145}
+                error={errors.foto?.message as string | undefined}
+              />
+            </div>
 
-                      // Caso 2: solo hay imagen en el servidor → confirmar borrado
-                      const ok = await confirm({
-                        title: '¿Eliminar imagen del servicio?',
-                        message:
-                          'Se quitará la imagen actual del servicio. Esta acción se aplicará al guardar el formulario.',
-                        variant: 'danger',
-                        confirmLabel: 'Eliminar',
-                        cancelLabel: 'Mantener',
-                      });
-                      if (ok) {
-                        setEliminarFotoExistente(true);
-                        setValue('eliminarFoto', true, { shouldDirty: true });
-                      }
-                    }
-                  : undefined
-              }
-              shape="square"
-              size={160}
-              error={errors.foto?.message as string | undefined}
-            />
+            {/* Botón para deshacer el marcado de eliminación */}
+            {eliminarFotoExistente && (
+              <button
+                type="button"
+                className="btn btn-sm btn-link p-0 my-1 text-decoration-none"
+                onClick={() => {
+                  setEliminarFotoExistente(false);
+                  setValue('eliminarFoto', false, { shouldDirty: true });
+                }}
+              >
+                ↩ Deshacer eliminación
+              </button>
+            )}
           </div>
-
-          {/* Botón para deshacer el marcado de eliminación sin necesidad de subir una nueva imagen */}
-          {eliminarFotoExistente && (
-            <button
-              type="button"
-              className="btn btn-sm btn-link p-0 mt-1 text-decoration-none"
-              onClick={() => {
-                setEliminarFotoExistente(false);
-                setValue('eliminarFoto', false, { shouldDirty: true });
-              }}
-            >
-              ↩ Deshacer eliminación
-            </button>
-          )}
-
-          <div className="text-muted small mt-2">
-            Formatos permitidos: JPG, PNG o WEBP. Máximo 5 MB.
-          </div>
-        </div>
-
-        {/* Separador hacia BLOQUE 3: Barberos */}
-        <div className="col-12">
-          <hr className="my-2" />
         </div>
 
         {/* BLOQUE 3: Barberos asignados */}
-        <div className="col-12">
-          <label className="form-label fw-semibold">Barberos que realizan este servicio</label>
+        <div className="col-12 mt-3 pt-3 border-top">
+          <div className="d-flex align-items-center justify-content-between mb-2">
+            <label className="servicio-form-label mb-0">
+              Barberos que realizan este servicio
+            </label>
+            <span className="text-surface-muted small" style={{ fontSize: '0.78rem' }}>
+              Selecciona quiénes pueden atender este servicio
+            </span>
+          </div>
+
           {cargandoBarberos ? (
             <KyriosSpinner size="xs" variant="inline" mensaje="Cargando barberos..." className="my-2" />
           ) : barberos.length === 0 ? (
@@ -387,21 +415,29 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
                 const count = seleccionados.length;
 
                 return (
-                  <div className="border rounded-3 p-3 bg-surface-card">
+                  <div className="barbero-selection-panel">
                     {/* Header: contador + acciones masivas */}
                     <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-                      <span
-                        className="text-surface-muted small fw-semibold"
-                        aria-live="polite"
-                        aria-atomic="true"
-                      >
-                        {count} de {total} seleccionados
-                      </span>
+                      <div className="d-flex align-items-center">
+                        <span
+                          className="barbero-selection-counter-badge"
+                          aria-hidden="true"
+                        >
+                          {count}
+                        </span>
+                        <span
+                          className="text-surface-muted small fw-semibold"
+                          aria-live="polite"
+                          aria-atomic="true"
+                        >
+                          de {total} barberos seleccionados
+                        </span>
+                      </div>
 
                       <div className="d-flex gap-2">
                         <button
                           type="button"
-                          className="btn btn-sm btn-outline-primary"
+                          className="btn btn-sm btn-outline-primary barbero-action-btn py-1 px-2.5"
                           onClick={() =>
                             field.onChange(barberos.map((b) => Number(b.id)))
                           }
@@ -412,7 +448,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
                         </button>
                         <button
                           type="button"
-                          className="btn btn-sm btn-outline-secondary"
+                          className="btn btn-sm btn-outline-secondary barbero-action-btn py-1 px-2.5"
                           onClick={() => field.onChange([])}
                           disabled={count === 0}
                           aria-label="Quitar todos los barberos seleccionados"
@@ -431,7 +467,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
                       className="mb-3"
                     />
 
-                    {/* Grid de chips o EmptyState */}
+                    {/* Grid de tarjetas o EmptyState */}
                     {barberosFiltrados.length === 0 ? (
                       <EmptyState
                         title="Sin coincidencias"
@@ -442,14 +478,13 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
                     ) : (
                       <>
                         <p id="barberos-help" className="visually-hidden">
-                          Pulsa sobre cada chip para añadir o quitar un barbero. Se puede buscar por nombre en el campo superior.
+                          Pulsa sobre cada tarjeta para añadir o quitar un barbero. Se puede buscar por nombre en el campo superior.
                         </p>
                         <div
-                          className="d-flex flex-wrap gap-2"
+                          className="barbero-grid"
                           role="group"
                           aria-label="Selección de barberos"
                           aria-describedby="barberos-help"
-                          style={{ maxHeight: '320px', overflowY: 'auto' }}
                         >
                           {barberosFiltrados.map((b) => {
                             const id = Number(b.id);
@@ -469,22 +504,35 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
                                 aria-pressed={seleccionado}
                                 aria-label={`${seleccionado ? 'Quitar' : 'Añadir'} ${b.nombre} ${b.apellido}`}
                                 title={`${seleccionado ? 'Quitar' : 'Añadir'} ${b.nombre} ${b.apellido}`}
-                                className={`barbero-chip d-inline-flex align-items-center gap-2 ${
-                                  seleccionado ? 'barbero-chip--active' : ''
+                                className={`barbero-card ${
+                                  seleccionado ? 'barbero-card--selected' : ''
                                 }`}
                               >
-                                <UserAvatar
-                                  nombre={b.nombre}
-                                  apellido={b.apellido}
-                                  fotoUrl={b.fotoUrl}
-                                  size={28}
-                                />
-                                <span className="small fw-semibold text-nowrap">
-                                  {b.nombre} {b.apellido}
-                                </span>
-                                {seleccionado && (
-                                  <Check size={14} aria-hidden="true" />
-                                )}
+                                <div className="barbero-card-main">
+                                  <UserAvatar
+                                    nombre={b.nombre}
+                                    apellido={b.apellido}
+                                    fotoUrl={b.fotoUrl}
+                                    size={34}
+                                  />
+                                  <div className="barbero-card-info">
+                                    <span className="barbero-card-name text-truncate">
+                                      {b.nombre} {b.apellido}
+                                    </span>
+                                    <span className="barbero-card-role text-truncate">
+                                      {seleccionado ? 'Asignado' : 'Barbero'}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div
+                                  className={`barbero-card-checkbox ${
+                                    seleccionado ? 'barbero-card-checkbox--checked' : ''
+                                  }`}
+                                  aria-hidden="true"
+                                >
+                                  {seleccionado && <Check size={13} strokeWidth={3} />}
+                                </div>
                               </button>
                             );
                           })}
@@ -498,7 +546,8 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
           )}
         </div>
 
-        <div className="col-12 d-flex justify-content-end gap-2 mt-3">
+        {/* Footer de Acciones */}
+        <div className="col-12 d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
           <Button type="button" variant="light" onClick={handleCancel} disabled={isSubmitting}>
             Cancelar
           </Button>

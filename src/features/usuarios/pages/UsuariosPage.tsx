@@ -312,7 +312,7 @@ export const UsuariosPage: React.FC = () => {
       />
 
       <div
-        className="d-flex flex-nowrap gap-2 p-1 rounded bg-surface-app border mb-4 usuarios-tabs-container overflow-x-auto"
+        className="d-flex gap-2 p-1 rounded bg-surface-app border mb-4 usuarios-tabs-container w-100"
         role="tablist"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
@@ -321,7 +321,7 @@ export const UsuariosPage: React.FC = () => {
             type="button"
             role="tab"
             aria-selected={pestañaActiva === 'administradores'}
-            className={`btn btn-sm px-3 py-2 fw-semibold rounded d-inline-flex align-items-center gap-2 text-nowrap flex-shrink-0 ${
+            className={`btn btn-sm px-2 px-sm-3 py-2 fw-semibold rounded d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2 flex-fill ${
               pestañaActiva === 'administradores' ? 'btn-dark' : 'btn-light text-muted'
             }`}
             onClick={() => {
@@ -329,10 +329,11 @@ export const UsuariosPage: React.FC = () => {
               navigate('?tab=administradores', { replace: true });
             }}
           >
-            <Shield size={16} />
-            <span>Administradores</span>
+            <Shield size={16} className="flex-shrink-0" />
+            <span className="d-none d-sm-inline">Administradores</span>
+            <span className="d-sm-none">Admins</span>
             <span
-              className={`badge ms-2 ${pestañaActiva === 'administradores' ? 'bg-secondary' : 'bg-secondary-subtle text-secondary-emphasis'}`}
+              className={`badge ms-1 ms-sm-2 ${pestañaActiva === 'administradores' ? 'bg-secondary' : 'bg-secondary-subtle text-secondary-emphasis'}`}
             >
               {administradores.length}
             </span>
@@ -342,7 +343,7 @@ export const UsuariosPage: React.FC = () => {
           type="button"
           role="tab"
           aria-selected={pestañaActiva === 'barberos'}
-          className={`btn btn-sm px-3 py-2 fw-semibold rounded d-inline-flex align-items-center gap-2 text-nowrap flex-shrink-0 ${
+          className={`btn btn-sm px-2 px-sm-3 py-2 fw-semibold rounded d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2 flex-fill ${
             pestañaActiva === 'barberos' ? 'btn-dark' : 'btn-light text-muted'
           }`}
           onClick={() => {
@@ -350,10 +351,10 @@ export const UsuariosPage: React.FC = () => {
             navigate('?tab=barberos', { replace: true });
           }}
         >
-          <Scissors size={16} />
+          <Scissors size={16} className="flex-shrink-0" />
           <span>Barberos</span>
           <span
-            className={`badge ms-2 ${pestañaActiva === 'barberos' ? 'bg-secondary' : 'bg-secondary-subtle text-secondary-emphasis'}`}
+            className={`badge ms-1 ms-sm-2 ${pestañaActiva === 'barberos' ? 'bg-secondary' : 'bg-secondary-subtle text-secondary-emphasis'}`}
           >
             {barberos.length}
           </span>
@@ -363,7 +364,7 @@ export const UsuariosPage: React.FC = () => {
       {/* ── Barra de búsqueda debounced para usuarios ── */}
       <div className="mb-4" style={{ maxWidth: '440px' }}>
         <SearchInput
-          placeholder={`Buscar en ${pestañaActiva === 'administradores' ? 'administradores' : 'barberos'} por nombre o correo...`}
+          placeholder={`Buscar ${pestañaActiva === 'administradores' ? 'administrador' : 'barbero'}...`}
           value={filtroBusqueda}
           onChange={setFiltroBusqueda}
           isSearching={filtroBusqueda !== debouncedBusqueda}

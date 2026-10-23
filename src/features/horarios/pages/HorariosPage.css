@@ -1,0 +1,1230 @@
+/* ==========================================================================
+   ESTILOS DE HORARIOS SEMANALES (KYRIOS BARBER)
+   Diseño editorial adaptativo (Modo Claro & Modo Oscuro)
+   ========================================================================== */
+
+/* Contenedor principal de la tarjeta de horarios */
+.horario-card {
+  background: var(--surface-card-bg, #ffffff);
+  color: var(--surface-card-text, #0c0c0c);
+  border: 1px solid var(--surface-card-border, #e5e3dc);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+[data-theme="dark"] .horario-card,
+[data-bs-theme="dark"] .horario-card {
+  background: #141416;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Header estadístico con total de horas */
+.horario-header-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.horario-stat-badge {
+  background: rgba(0, 113, 188, 0.1);
+  color: var(--brand-blue, #0071bc);
+  border: 1px solid rgba(0, 113, 188, 0.22);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+}
+
+/* Barra de control general (Expandir / Colapsar todos) */
+.horario-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--surface-card-border, #e5e3dc);
+}
+
+[data-theme="dark"] .horario-toolbar,
+[data-bs-theme="dark"] .horario-toolbar {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Lista de días tipo Acordeón */
+.horario-accordion-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.horario-day-item {
+  border-bottom: 1px solid var(--surface-card-border, #e5e3dc);
+  transition: background-color 0.2s ease;
+}
+
+[data-theme="dark"] .horario-day-item,
+[data-bs-theme="dark"] .horario-day-item {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.horario-day-item:last-child {
+  border-bottom: none;
+}
+
+.horario-day-item--open {
+  background: #fbfcfd;
+}
+
+[data-theme="dark"] .horario-day-item--open,
+[data-bs-theme="dark"] .horario-day-item--open {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.horario-day-item--inactive {
+  opacity: 0.75;
+}
+
+/* Cabecera del día (Header del Acordeón) */
+.horario-day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.95rem 1.25rem;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  gap: 1rem;
+}
+
+.horario-day-header:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="dark"] .horario-day-header:hover,
+[data-bs-theme="dark"] .horario-day-header:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.horario-day-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Switch toggle personalizado para día activo/descanso */
+.horario-switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 22px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.horario-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.horario-switch-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #cbd5e1;
+  border-radius: 22px;
+  transition: 0.25s;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .horario-switch-slider,
+[data-bs-theme="dark"] .horario-switch-slider {
+  background-color: #2a2a2a;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.horario-switch-slider::before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  transition: 0.25s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.horario-switch input:checked + .horario-switch-slider {
+  background-color: var(--brand-blue, #0071bc);
+  border-color: var(--brand-blue, #0071bc);
+}
+
+.horario-switch input:checked + .horario-switch-slider::before {
+  transform: translateX(16px);
+}
+
+/* Nombre del día */
+.horario-day-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--surface-card-text, #0c0c0c);
+  min-width: 85px;
+}
+
+[data-theme="dark"] .horario-day-name,
+[data-bs-theme="dark"] .horario-day-name {
+  color: #ffffff;
+}
+
+/* Resumen textual del horario cuando está colapsado */
+.horario-day-summary {
+  font-size: 0.85rem;
+  color: var(--surface-card-muted, #64748b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.horario-day-summary--descanso {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* Controles de la derecha del header */
+.horario-day-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.horario-badge-hours {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme="dark"] .horario-badge-hours,
+[data-bs-theme="dark"] .horario-badge-hours {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.horario-badge-hours--active {
+  background: rgba(0, 113, 188, 0.1);
+  color: var(--brand-blue, #0071bc);
+  border-color: rgba(0, 113, 188, 0.25);
+}
+
+[data-theme="dark"] .horario-badge-hours--active,
+[data-bs-theme="dark"] .horario-badge-hours--active {
+  background: rgba(0, 113, 188, 0.15);
+  color: #38bdf8;
+  border-color: rgba(0, 113, 188, 0.3);
+}
+
+.horario-chevron-icon {
+  color: var(--surface-card-muted, #64748b);
+  transition: transform 0.25s ease;
+}
+
+.horario-chevron-icon--rotated {
+  transform: rotate(180deg);
+}
+
+/* Cuerpo desplegado del acordeón */
+.horario-day-body {
+  padding: 0.5rem 1.25rem 1.25rem;
+  border-top: 1px solid var(--surface-card-border, #e5e3dc);
+  animation: fadeInHorario 0.25s ease-out;
+}
+
+[data-theme="dark"] .horario-day-body,
+[data-bs-theme="dark"] .horario-day-body {
+  border-top-color: rgba(255, 255, 255, 0.04);
+}
+
+@keyframes fadeInHorario {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Barra de Presets / Acciones Rápidas */
+.horario-presets-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--surface-card-border, #e5e3dc);
+}
+
+[data-theme="dark"] .horario-presets-bar,
+[data-bs-theme="dark"] .horario-presets-bar {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.horario-presets-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--surface-card-muted, #64748b);
+  margin-right: 0.25rem;
+}
+
+.horario-preset-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.28rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.horario-preset-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+[data-theme="dark"] .horario-preset-btn,
+[data-bs-theme="dark"] .horario-preset-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .horario-preset-btn:hover,
+[data-bs-theme="dark"] .horario-preset-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.horario-preset-btn--clean {
+  color: #dc2626;
+  border-color: rgba(220, 38, 38, 0.25);
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.horario-preset-btn--clean:hover {
+  background: rgba(220, 38, 38, 0.12);
+  color: #b91c1c;
+  border-color: rgba(220, 38, 38, 0.4);
+}
+
+[data-theme="dark"] .horario-preset-btn--clean,
+[data-bs-theme="dark"] .horario-preset-btn--clean {
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.25);
+  background: rgba(248, 113, 113, 0.06);
+}
+
+[data-theme="dark"] .horario-preset-btn--clean:hover,
+[data-bs-theme="dark"] .horario-preset-btn--clean:hover {
+  background: rgba(248, 113, 113, 0.15);
+  color: #fca5a5;
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+/* Grilla interactiva de bloques horarios */
+.horario-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.95rem;
+}
+
+/* Cada bloque horario tipo chip */
+.horario-slot-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.4rem;
+  min-height: 50px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  text-align: center;
+}
+
+.horario-slot-chip:hover {
+  border-color: var(--brand-blue, #0071bc);
+  transform: translateY(-1px);
+  background: rgba(0, 113, 188, 0.05);
+}
+
+.horario-slot-chip--active {
+  background: rgba(0, 113, 188, 0.1);
+  border-color: var(--brand-blue, #0071bc);
+  box-shadow: 0 0 8px rgba(0, 113, 188, 0.15);
+}
+
+[data-theme="dark"] .horario-slot-chip,
+[data-bs-theme="dark"] .horario-slot-chip {
+  background: #18181b;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .horario-slot-chip:hover,
+[data-bs-theme="dark"] .horario-slot-chip:hover {
+  background: rgba(0, 113, 188, 0.08);
+  border-color: var(--brand-blue, #0071bc);
+}
+
+[data-theme="dark"] .horario-slot-chip--active,
+[data-bs-theme="dark"] .horario-slot-chip--active {
+  background: rgba(0, 113, 188, 0.18);
+  border-color: var(--brand-blue, #0071bc);
+  box-shadow: 0 0 10px rgba(0, 113, 188, 0.22);
+}
+
+.horario-slot-time {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.horario-slot-chip--active .horario-slot-time {
+  color: var(--brand-blue, #0071bc);
+}
+
+[data-theme="dark"] .horario-slot-time,
+[data-bs-theme="dark"] .horario-slot-time {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .horario-slot-chip--active .horario-slot-time,
+[data-bs-theme="dark"] .horario-slot-chip--active .horario-slot-time {
+  color: #38bdf8;
+}
+
+.horario-slot-range {
+  font-size: 0.68rem;
+  color: #64748b;
+  margin-top: 1px;
+}
+
+.horario-slot-chip--active .horario-slot-range {
+  color: var(--brand-blue, #0071bc);
+}
+
+[data-theme="dark"] .horario-slot-chip--active .horario-slot-range,
+[data-bs-theme="dark"] .horario-slot-chip--active .horario-slot-range {
+  color: rgba(56, 189, 248, 0.7);
+}
+
+/* Panel de "Replicar a otros días" */
+.horario-copy-panel {
+  background: #f1f5f9;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+[data-theme="dark"] .horario-copy-panel,
+[data-bs-theme="dark"] .horario-copy-panel {
+  background: rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.horario-copy-targets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.horario-copy-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--surface-card-muted, #64748b);
+  margin-right: 0.3rem;
+}
+
+.horario-copy-day-btn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 0.74rem;
+  font-weight: 500;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.horario-copy-day-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.horario-copy-day-btn--shortcut {
+  font-weight: 600;
+  border-color: var(--brand-blue, #0071bc);
+  color: var(--brand-blue, #0071bc);
+  background: rgba(0, 113, 188, 0.05);
+}
+
+[data-theme="dark"] .horario-copy-day-btn,
+[data-bs-theme="dark"] .horario-copy-day-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .horario-copy-day-btn:hover,
+[data-bs-theme="dark"] .horario-copy-day-btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .horario-copy-day-btn--shortcut,
+[data-bs-theme="dark"] .horario-copy-day-btn--shortcut {
+  background: rgba(0, 113, 188, 0.15);
+  border-color: rgba(0, 113, 188, 0.4);
+  color: #38bdf8;
+}
+
+.horario-copy-day-btn--selected {
+  background: var(--brand-blue, #0071bc) !important;
+  border-color: var(--brand-blue, #0071bc) !important;
+  color: #ffffff !important;
+}
+
+.horario-copy-action-btn {
+  font-size: 0.78rem;
+  padding: 0.3rem 0.8rem;
+}
+
+/* ==========================================================================
+   PESTAÑAS (TABS) DE NAVEGACIÓN DE HORARIOS
+   ========================================================================== */
+.horario-nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--surface-card-border, #e5e3dc);
+  padding-bottom: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.horario-nav-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.horario-nav-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--surface-card-muted, #64748b);
+  padding: 0.65rem 1.15rem;
+  border-radius: 10px;
+  font-size: 0.925rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.horario-nav-tab:hover {
+  color: var(--surface-card-text, #0c0c0c);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .horario-nav-tab:hover,
+[data-bs-theme="dark"] .horario-nav-tab:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.horario-nav-tab.active {
+  color: var(--brand-blue, #0071bc);
+  background: rgba(0, 113, 188, 0.09);
+  border-color: rgba(0, 113, 188, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 113, 188, 0.08);
+}
+
+[data-theme="dark"] .horario-nav-tab.active,
+[data-bs-theme="dark"] .horario-nav-tab.active {
+  color: #38bdf8;
+  background: rgba(0, 113, 188, 0.16);
+  border-color: rgba(56, 189, 248, 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.horario-tab-badge {
+  background: rgba(0, 113, 188, 0.12);
+  color: var(--brand-blue, #0071bc);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+}
+
+[data-theme="dark"] .horario-tab-badge,
+[data-bs-theme="dark"] .horario-tab-badge {
+  background: rgba(56, 189, 248, 0.18);
+  color: #7dd3fc;
+}
+
+.horario-tab-panel > section.card {
+  margin-top: 0 !important;
+}
+
+/* ==========================================================================
+   ESTILOS DE BLOQUEOS Y AUSENCIAS TEMPORALES
+   ========================================================================== */
+
+.bloqueo-form-box {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--surface-card-border, #e5e3dc);
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .bloqueo-form-box,
+[data-bs-theme="dark"] .bloqueo-form-box {
+  background: rgba(255, 255, 255, 0.025);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.bloqueo-editing-banner {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #d97706;
+}
+
+[data-theme="dark"] .bloqueo-editing-banner,
+[data-bs-theme="dark"] .bloqueo-editing-banner {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+
+.bloqueo-card {
+  padding: 1rem 1.15rem;
+  border-radius: 10px;
+  background: var(--surface-card-bg, #ffffff);
+  border: 1px solid var(--surface-card-border, #e5e3dc);
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .bloqueo-card,
+[data-bs-theme="dark"] .bloqueo-card {
+  background: #18181b;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.bloqueo-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .bloqueo-card:hover,
+[data-bs-theme="dark"] .bloqueo-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.bloqueo-card--active {
+  border-left: 4px solid #f59e0b;
+}
+
+.bloqueo-card--inactive {
+  border-left: 4px solid rgba(255, 255, 255, 0.15);
+  opacity: 0.85;
+}
+
+.bloqueo-time-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 6px;
+  background: rgba(0, 113, 188, 0.08);
+  color: var(--brand-blue, #0071bc);
+  border: 1px solid rgba(0, 113, 188, 0.18);
+}
+
+[data-theme="dark"] .bloqueo-time-badge,
+[data-bs-theme="dark"] .bloqueo-time-badge {
+  background: rgba(56, 189, 248, 0.12);
+  color: #7dd3fc;
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+.bloqueo-reason-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--surface-card-text, #1e293b);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .bloqueo-reason-chip,
+[data-bs-theme="dark"] .bloqueo-reason-chip {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.bloqueo-notes-text {
+  font-size: 0.8rem;
+}
+
+/* Badges con diferenciación clara de color para bloqueos */
+.bloqueo-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  letter-spacing: 0.01em;
+  transition: all 0.2s ease;
+}
+
+.bloqueo-status-dot {
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.bloqueo-status-badge--active {
+  background: rgba(245, 158, 11, 0.15);
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+[data-theme="dark"] .bloqueo-status-badge--active,
+[data-bs-theme="dark"] .bloqueo-status-badge--active {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.bloqueo-status-badge--reactivated {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="dark"] .bloqueo-status-badge--reactivated,
+[data-bs-theme="dark"] .bloqueo-status-badge--reactivated {
+  background: rgba(16, 185, 129, 0.16);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.bloqueo-status-badge--cancelled {
+  background: rgba(100, 116, 139, 0.1);
+  color: #64748b;
+  border: 1px solid rgba(100, 116, 139, 0.25);
+}
+
+[data-theme="dark"] .bloqueo-status-badge--cancelled,
+[data-bs-theme="dark"] .bloqueo-status-badge--cancelled {
+  background: rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ==========================================================================
+   ESTILOS DE CONSULTA DE DISPONIBILIDAD
+   ========================================================================== */
+
+.disp-form-box {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--surface-card-border, #e5e3dc);
+}
+
+[data-theme="dark"] .disp-form-box,
+[data-bs-theme="dark"] .disp-form-box {
+  background: rgba(255, 255, 255, 0.025);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.disp-quick-pill {
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  background: transparent;
+  color: var(--surface-card-text, #475569);
+  border: 1px solid var(--surface-card-border, #cbd5e1);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+[data-theme="dark"] .disp-quick-pill,
+[data-bs-theme="dark"] .disp-quick-pill {
+  color: #cbd5e1;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.disp-quick-pill:hover {
+  background: rgba(0, 113, 188, 0.08);
+  border-color: var(--brand-blue, #0071bc);
+  color: var(--brand-blue, #0071bc);
+}
+
+[data-theme="dark"] .disp-quick-pill:hover,
+[data-bs-theme="dark"] .disp-quick-pill:hover {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: #38bdf8;
+  color: #7dd3fc;
+}
+
+.disp-quick-pill--active {
+  background: var(--brand-blue, #0071bc) !important;
+  color: #ffffff !important;
+  border-color: var(--brand-blue, #0071bc) !important;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 113, 188, 0.25);
+}
+
+[data-theme="dark"] .disp-quick-pill--active,
+[data-bs-theme="dark"] .disp-quick-pill--active {
+  background: #0284c7 !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+}
+
+/* Grilla de Franjas de Disponibilidad */
+.disp-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75rem;
+}
+
+.disp-slot-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 9px;
+  background: var(--surface-card-bg, #ffffff);
+  border: 1px solid var(--surface-card-border, #e5e3dc);
+  transition: all 0.18s ease;
+}
+
+[data-theme="dark"] .disp-slot-card,
+[data-bs-theme="dark"] .disp-slot-card {
+  background: #18181b;
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+.disp-slot-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .disp-slot-card:hover,
+[data-bs-theme="dark"] .disp-slot-card:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.disp-slot-time {
+  font-size: 0.9rem;
+  letter-spacing: -0.01em;
+}
+
+.disp-slot-clock {
+  opacity: 0.65;
+}
+
+/* Variaciones por estado de franja */
+.disp-slot-card--available {
+  border-left: 3px solid #10b981;
+}
+
+.disp-slot-card--reserved {
+  border-left: 3px solid #0071bc;
+}
+
+[data-theme="dark"] .disp-slot-card--reserved,
+[data-bs-theme="dark"] .disp-slot-card--reserved {
+  border-left-color: #38bdf8;
+}
+
+.disp-slot-card--blocked {
+  border-left: 3px solid #f59e0b;
+}
+
+.disp-slot-card--closure {
+  border-left: 3px solid #ef4444;
+}
+
+.disp-slot-card--outside {
+  border-left: 3px solid rgba(148, 163, 184, 0.4);
+  opacity: 0.75;
+}
+
+/* Badges de estado en disponibilidad */
+.disp-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 14px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.disp-status-dot {
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.disp-status-badge--available {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.28);
+}
+
+[data-theme="dark"] .disp-status-badge--available,
+[data-bs-theme="dark"] .disp-status-badge--available {
+  background: rgba(16, 185, 129, 0.16);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.disp-status-badge--reserved {
+  background: rgba(0, 113, 188, 0.1);
+  color: var(--brand-blue, #0071bc);
+  border: 1px solid rgba(0, 113, 188, 0.25);
+}
+
+[data-theme="dark"] .disp-status-badge--reserved,
+[data-bs-theme="dark"] .disp-status-badge--reserved {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+.disp-status-badge--blocked {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+[data-theme="dark"] .disp-status-badge--blocked,
+[data-bs-theme="dark"] .disp-status-badge--blocked {
+  background: rgba(245, 158, 11, 0.16);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.disp-status-badge--closure {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+[data-theme="dark"] .disp-status-badge--closure,
+[data-bs-theme="dark"] .disp-status-badge--closure {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.disp-status-badge--outside {
+  background: rgba(100, 116, 139, 0.08);
+  color: #64748b;
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
+[data-theme="dark"] .disp-status-badge--outside,
+[data-bs-theme="dark"] .disp-status-badge--outside {
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ==========================================================================
+   OPTIMIZACIONES RESPONSIVAS MÓVILES (MOBILE-FIRST)
+   ========================================================================== */
+@media (max-width: 767.98px) {
+  .horario-card {
+    border-radius: 12px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .horario-nav-tabs {
+    padding-bottom: 0.35rem;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .horario-nav-tab {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.82rem;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .horario-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 0.65rem 0.85rem;
+  }
+
+  .horario-toolbar .d-flex {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .horario-toolbar .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .horario-day-header {
+    padding: 0.75rem 0.85rem;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .horario-day-header-left {
+    gap: 0.55rem;
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .horario-day-name {
+    min-width: auto;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+
+  .horario-day-summary {
+    display: none !important; /* Ocultar en móvil para dar espacio completo al switch, nombre y badge */
+  }
+
+  .horario-day-header-right {
+    flex-shrink: 0;
+    gap: 0.45rem;
+  }
+
+  .horario-badge-hours {
+    font-size: 0.72rem;
+    padding: 0.15rem 0.45rem;
+    white-space: nowrap;
+  }
+
+  .horario-day-body {
+    padding: 0.65rem 0.75rem 0.85rem !important;
+  }
+
+  /* Barra de Presets Rápidos en móvil */
+  .horario-presets-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    padding-bottom: 0.65rem;
+    margin-bottom: 0.75rem;
+    width: 100%;
+  }
+
+  .horario-presets-label {
+    width: 100%;
+    margin-bottom: 0.15rem;
+    font-size: 0.72rem;
+    display: block;
+  }
+
+  .horario-preset-btn {
+    font-size: 0.72rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .horario-presets-bar .ms-auto {
+    margin-left: 0 !important;
+    width: 100%;
+    margin-top: 0.25rem;
+  }
+
+  .horario-presets-bar .ms-auto .horario-preset-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Grilla de bloques horarios: 4 columnas exactas para teléfonos (evita desborde horizontal) */
+  .horario-slots-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 0.35rem !important;
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+
+  .horario-slot-chip {
+    min-width: 0 !important;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.35rem 0.2rem !important;
+    min-height: 48px;
+    border-radius: 6px;
+  }
+
+  .horario-slot-time {
+    font-size: 0.78rem !important;
+    line-height: 1.1;
+  }
+
+  .horario-slot-range {
+    font-size: 0.62rem !important;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .horario-copy-panel {
+    padding: 0.75rem;
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.5rem;
+  }
+
+  .horario-copy-targets {
+    width: 100%;
+    gap: 0.35rem;
+  }
+
+  .horario-copy-label {
+    width: 100%;
+    margin-bottom: 0.2rem;
+    font-size: 0.75rem;
+  }
+
+  .horario-copy-day-btn {
+    font-size: 0.72rem;
+    padding: 0.25rem 0.45rem;
+  }
+
+  .horario-copy-panel > .d-flex {
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .horario-copy-action-btn {
+    flex: 1 1 auto;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  .bloqueo-card {
+    padding: 0.85rem;
+  }
+
+  .bloqueo-card > div {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.65rem;
+  }
+
+  .bloqueo-card .d-flex.align-items-center.gap-2 {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .bloqueo-card .d-flex.align-items-center.gap-2 .btn {
+    flex: 1 1 auto;
+  }
+
+  .disp-slots-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .disp-slot-card {
+    padding: 0.65rem 0.85rem;
+  }
+
+  .disp-summary-strip {
+    width: 100%;
+  }
+}
+
+/* Pantallas muy estrechas (< 380px como iPhone SE de 375px o Galaxy Fold) */
+@media (max-width: 379.98px) {
+  .horario-slots-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.3rem !important;
+  }
+
+  .horario-preset-btn {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .horario-header-stats {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+}
+
+
+

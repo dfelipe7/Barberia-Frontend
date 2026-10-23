@@ -13,6 +13,11 @@ export const serviciosService = {
     return response.data;
   },
 
+  async obtenerServiciosPorBarbero(barberoId: number): Promise<ServicioDTO[]> {
+    const response = await apiClient.get<ServicioDTO[]>(`/servicios/barbero/${barberoId}`);
+    return response.data;
+  },
+
   async obtenerServiciosGestion(filtro?: FiltroServiciosDTO): Promise<ServicioDTO[]> {
     const response = await apiClient.get<ServicioDTO[]>('/servicios/gestion', {
       params: filtro,

@@ -91,3 +91,18 @@ export function useServiciosCatalogo(filtro?: FiltroServicios) {
     staleTime: 30_000,
   });
 }
+
+export function useServiciosPorBarbero(barberoId: number | null | undefined) {
+  return useQuery<Servicio[], Error>({
+    queryKey: serviciosKeys.porBarbero(barberoId ?? 0),
+    queryFn: async () => {
+      if (!barberoId) return [];
+      const dtos = await serviciosService.obtenerServiciosPorBarbero(barberoId);
+      return dtos.map(serviciosMapper.toDomain);
+    },
+    enabled: Boolean(barberoId),
+    placeholderData: (prev) => prev,
+    staleTime: 60_000,
+  });
+}
+

@@ -7,4 +7,6 @@ export const serviciosKeys = {
   gestion: (filtro?: FiltroServicios) =>
     [...serviciosKeys.all, 'gestion', filtro ?? {}] as const,
   detail: (id: number | string) => [...serviciosKeys.all, 'detail', Number(id)] as const,
+  porBarbero: (barberoId: number | string) =>
+    [...serviciosKeys.all, 'barbero', Number(barberoId)] as const,
 };

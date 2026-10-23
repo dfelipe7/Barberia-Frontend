@@ -224,7 +224,7 @@ export const ServiciosPage: React.FC = () => {
           <div className="row g-2 mb-4 align-items-center">
             <div className="col-12 col-md-7">
               <SearchInput
-                placeholder="Buscar por nombre o descripción..."
+                placeholder="Buscar servicios..."
                 value={filtroNombre}
                 onChange={setFiltroNombre}
                 isSearching={estaBuscando}
@@ -243,7 +243,7 @@ export const ServiciosPage: React.FC = () => {
                   role="tab"
                   aria-selected={filtroEstado === ''}
                   onClick={() => setFiltroEstado('')}
-                  className={`btn btn-sm px-3 py-1 fw-semibold rounded flex-fill flex-md-grow-0 ${
+                  className={`btn btn-sm px-2 px-sm-3 py-1 fw-semibold rounded flex-fill flex-md-grow-0 text-center justify-content-center ${
                     filtroEstado === ''
                       ? 'btn-primary text-white shadow-sm'
                       : 'btn-link text-decoration-none text-surface-muted border-0'
@@ -257,14 +257,14 @@ export const ServiciosPage: React.FC = () => {
                   role="tab"
                   aria-selected={filtroEstado === 'ACTIVO'}
                   onClick={() => setFiltroEstado('ACTIVO')}
-                  className={`btn btn-sm px-3 py-1 fw-semibold rounded d-inline-flex align-items-center justify-content-center gap-1 flex-fill flex-md-grow-0 ${
+                  className={`btn btn-sm px-2 px-sm-3 py-1 fw-semibold rounded d-inline-flex align-items-center justify-content-center gap-1 flex-fill flex-md-grow-0 text-center ${
                     filtroEstado === 'ACTIVO'
                       ? 'btn-primary text-white shadow-sm'
                       : 'btn-link text-decoration-none text-surface-muted border-0'
                   }`}
                   style={{ transition: 'all 150ms ease' }}
                 >
-                  <CheckCircle2 size={13} />
+                  <CheckCircle2 size={13} className="d-none d-sm-inline flex-shrink-0" />
                   <span>Activos</span>
                 </button>
                 <button
@@ -272,14 +272,14 @@ export const ServiciosPage: React.FC = () => {
                   role="tab"
                   aria-selected={filtroEstado === 'INACTIVO'}
                   onClick={() => setFiltroEstado('INACTIVO')}
-                  className={`btn btn-sm px-3 py-1 fw-semibold rounded d-inline-flex align-items-center justify-content-center gap-1 flex-fill flex-md-grow-0 ${
+                  className={`btn btn-sm px-2 px-sm-3 py-1 fw-semibold rounded d-inline-flex align-items-center justify-content-center gap-1 flex-fill flex-md-grow-0 text-center ${
                     filtroEstado === 'INACTIVO'
                       ? 'btn-primary text-white shadow-sm'
                       : 'btn-link text-decoration-none text-surface-muted border-0'
                   }`}
                   style={{ transition: 'all 150ms ease' }}
                 >
-                  <EyeOff size={13} />
+                  <EyeOff size={13} className="d-none d-sm-inline flex-shrink-0" />
                   <span>Inactivos</span>
                 </button>
               </div>
@@ -288,7 +288,7 @@ export const ServiciosPage: React.FC = () => {
 
           {/* Grid de servicios con placeholderData (mantiene lista previa sin parpadeo) */}
           <div
-            className={`row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 search-results-fade ${
+            className={`row row-cols-2 row-cols-md-3 row-cols-xl-4 g-2 g-sm-3 g-md-4 catalog-grid-2col search-results-fade ${
               isFetching && servicios.length > 0 ? 'opacity-75' : ''
             }`}
             style={{ transition: 'opacity 150ms ease' }}
@@ -322,10 +322,10 @@ export const ServiciosPage: React.FC = () => {
                   isStateChanging={idServicioAnimado === s.id}
                   priceLabel={`$${s.precio.toLocaleString()}`}
                   actions={
-                    <div className="d-flex gap-1 w-100">
+                    <div className="d-flex gap-1 w-100 catalog-action-buttons">
                       <button
                         type="button"
-                        className="btn btn-sm btn-light flex-fill"
+                        className="btn btn-sm btn-light flex-fill px-1 py-1 catalog-btn-action"
                         style={{ borderRadius: '2px' }}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -337,7 +337,7 @@ export const ServiciosPage: React.FC = () => {
                       </button>
                       <button
                         type="button"
-                        className="btn btn-sm btn-light flex-fill"
+                        className="btn btn-sm btn-light flex-fill px-1 py-1 catalog-btn-action"
                         style={{ borderRadius: '2px' }}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -349,7 +349,7 @@ export const ServiciosPage: React.FC = () => {
                       </button>
                       <button
                         type="button"
-                        className={`btn btn-sm flex-fill d-inline-flex align-items-center justify-content-center gap-1 ${
+                        className={`btn btn-sm flex-fill px-1 py-1 d-inline-flex align-items-center justify-content-center gap-1 catalog-btn-action ${
                           s.estado === 'ACTIVO' ? 'btn-outline-danger' : 'btn-success'
                         }`}
                         style={{ borderRadius: '2px', transition: 'all 150ms ease' }}
@@ -364,12 +364,13 @@ export const ServiciosPage: React.FC = () => {
                           <KyriosSpinner size="xs" aria-hidden="true" />
                         ) : s.estado === 'ACTIVO' ? (
                           <>
-                            <Lock size={13} />
-                            <span>Desactivar</span>
+                            <Lock size={12} className="flex-shrink-0" />
+                            <span className="d-none d-sm-inline">Desactivar</span>
+                            <span className="d-inline d-sm-none">Desact.</span>
                           </>
                         ) : (
                           <>
-                            <Unlock size={13} />
+                            <Unlock size={12} className="flex-shrink-0" />
                             <span>Activar</span>
                           </>
                         )}

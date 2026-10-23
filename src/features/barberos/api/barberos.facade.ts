@@ -22,11 +22,17 @@ export function useBarberosCatalogo(enabled = true) {
   });
 }
 
-export function useBarberosGestion(enabled = true) {
+export function useBarberosGestion(
+  filtroOrEnabled?: { estado?: 'ACTIVO' | 'INACTIVO'; nombre?: string } | boolean,
+  enabledArg = true,
+) {
+  const filtro = typeof filtroOrEnabled === 'object' ? filtroOrEnabled : undefined;
+  const enabled = typeof filtroOrEnabled === 'boolean' ? filtroOrEnabled : enabledArg;
+
   return useQuery<BarberoGestion[], Error>({
-    queryKey: barberosKeys.gestion(),
+    queryKey: barberosKeys.gestion(filtro),
     queryFn: async () => {
-      const dtos = await barberosService.obtenerBarberosGestion();
+      const dtos = await barberosService.obtenerBarberosGestion(filtro);
       return dtos.map(barberosMapper.toGestionDomain);
     },
     enabled,

@@ -13,8 +13,13 @@ export const barberosService = {
     return response.data;
   },
 
-  async obtenerBarberosGestion(): Promise<BarberoGestionDTO[]> {
-    const response = await apiClient.get<BarberoGestionDTO[]>('/usuarios/barberos/gestion');
+  async obtenerBarberosGestion(filtro?: {
+    estado?: 'ACTIVO' | 'INACTIVO';
+    nombre?: string;
+  }): Promise<BarberoGestionDTO[]> {
+    const response = await apiClient.get<BarberoGestionDTO[]>('/usuarios/barberos/gestion', {
+      params: filtro,
+    });
     return response.data;
   },
 

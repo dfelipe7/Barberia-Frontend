@@ -5,7 +5,7 @@ import Spinner from '../../../shared/ui/Spinner';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import SearchInput from '../../../shared/ui/molecules/SearchInput';
 import EmptyState from '../../../shared/ui/molecules/EmptyState';
-import { useBarberosCatalogo } from '../api/barberos.facade';
+import { useBarberosGestion } from '../api/barberos.facade';
 import BarberoCard from '../components/BarberoCard';
 import { useToastContext } from '../../../shared/ui/ToastContext';
 import { useDebounce } from '../../../shared/lib/useDebounce';
@@ -24,7 +24,21 @@ export const BarberosPage: React.FC = () => {
   const [filtroNombre, setFiltroNombre] = useState('');
   const debouncedNombre = useDebounce(filtroNombre, 350);
 
-  const { data: barberos = [], isLoading, isFetching, error, refetch } = useBarberosCatalogo();
+  const {
+    data: barberosGestion = [],
+    isLoading,
+    isFetching,
+    error,
+    refetch,
+  } = useBarberosGestion({ estado: 'ACTIVO' });
+
+  const barberos = useMemo(
+    () =>
+      barberosGestion.filter(
+        (b) => b.estado === 'ACTIVO' && b.estadoGlobal === 'ACTIVO',
+      ),
+    [barberosGestion],
+  );
 
   const { showToast } = useToastContext();
 
@@ -48,7 +62,7 @@ export const BarberosPage: React.FC = () => {
         subtitle="Conoce a nuestros profesionales especializados y agenda tu corte o servicio."
         actions={
           puedeCrearBarbero ? (
-            <Link to="/barberos/nuevo" className="btn btn-primary">
+            <Link to="/barberos/nuevo" className="btn btn-primary w-100 w-sm-auto text-center justify-content-center">
               + Nuevo Barbero
             </Link>
           ) : undefined
@@ -87,7 +101,7 @@ export const BarberosPage: React.FC = () => {
         />
       ) : (
         <div
-          className={`row g-4 search-results-fade ${
+          className={`row g-2 g-sm-3 g-md-4 catalog-grid-2col search-results-fade ${
             isFetching && barberos.length > 0 ? 'opacity-75' : ''
           }`}
           style={{ transition: 'opacity 150ms ease' }}

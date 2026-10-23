@@ -31,6 +31,16 @@ export const noDisponibilidadSchema = z
         path: ['fecha'],
         message: 'Selecciona una fecha válida.',
       });
+    } else {
+      const ahora = new Date();
+      const hoyLocal = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
+      if (periodo.fecha < hoyLocal) {
+        context.addIssue({
+          code: 'custom',
+          path: ['fecha'],
+          message: 'No puedes programar ausencias en fechas pasadas.',
+        });
+      }
     }
 
     if (!periodo.horaInicio) {
