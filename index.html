@@ -20,6 +20,11 @@
 
     <!-- Inicialización inmediata de tema para prevenir parpadeo (FOUC) -->
     <script src="/theme-init.js"></script>
+
+    <!-- Prevenir almacenamiento en caché de index.html por navegadores (evita chunks JS 404 tras despliegues) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
   </head>
   <body>
     <div id="root"></div>

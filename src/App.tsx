@@ -12,11 +12,29 @@ import LoginPage from './pages/Login/LoginPage';
 import { routeConfig } from './shared/routes/routeConfig';
 import KyriosSpinner from './shared/ui/KyriosSpinner';
 
-// Páginas públicas de catálogo — lazy para no aumentar el bundle inicial
-const CatalogoServiciosPage = lazy(
+// Helper para recargar la página automáticamente si falla la descarga de un chunk dinámico tras un despliegue
+function lazyWithRetry<T extends React.ComponentType<any>>(
+  factory: () => Promise<{ default: T }>
+) {
+  return lazy(() =>
+    factory().catch((error) => {
+      const key = 'chunk_reload_done';
+      const last = sessionStorage.getItem(key);
+      const now = Date.now();
+      if (!last || now - Number(last) > 10_000) {
+        sessionStorage.setItem(key, now.toString());
+        window.location.reload();
+      }
+      throw error;
+    })
+  );
+}
+
+// Páginas públicas de catálogo — lazy con recuperación automática ante chunks obsoletos
+const CatalogoServiciosPage = lazyWithRetry(
   () => import('./pages/Catalogo/Servicios/CatalogoServiciosPage')
 );
-const CatalogoBarberosPage = lazy(
+const CatalogoBarberosPage = lazyWithRetry(
   () => import('./pages/Catalogo/Barberos/CatalogoBarberosPage')
 );
 
