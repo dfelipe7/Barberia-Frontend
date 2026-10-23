@@ -3,6 +3,7 @@ import { usuariosService } from '../features/usuarios/api/usuarios.service';
 import { usuariosMapper } from '../features/usuarios/api/usuarios.mapper';
 import type { Usuario } from '../features/usuarios/types/usuarios.types';
 import apiClient from '../shared/lib/http/axios';
+import { queryClient } from '../shared/lib/queryClient';
 
 interface UsuarioSesion {
   id: number;
@@ -82,6 +83,7 @@ export function AuthContextProvider({
     localStorage.removeItem('token_barberia');
     localStorage.removeItem('usuario_barberia');
     window.localStorage.setItem('barberia_logout_event', Date.now().toString());
+    queryClient.clear();
     setToken(null);
     setUsuarioSesion(null);
     setUsuarioDb(null);
@@ -130,6 +132,7 @@ export function AuthContextProvider({
       const { accessToken, usuario } = response.data;
       localStorage.setItem('token_barberia', accessToken);
       localStorage.setItem('usuario_barberia', JSON.stringify(usuario));
+      queryClient.clear();
       setToken(accessToken);
       setUsuarioSesion(usuario);
 

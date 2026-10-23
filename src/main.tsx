@@ -17,6 +17,17 @@ import './index.css';
 import './shared/styles/theme.css';
 import './shared/styles/responsive.css';
 
+// Auto-recarga limpia si un despliegue en producción reemplaza los chunks dinámicos en el servidor
+window.addEventListener('vite:preloadError', (event) => {
+  event.preventDefault();
+  const lastReload = sessionStorage.getItem('last_vite_preload_reload');
+  const now = Date.now();
+  if (!lastReload || now - Number(lastReload) > 10_000) {
+    sessionStorage.setItem('last_vite_preload_reload', now.toString());
+    window.location.reload();
+  }
+});
+
 const googleClientId =
   import.meta.env.VITE_GOOGLE_CLIENT_ID ||
   '720763692805-1ujg3kddpcpk26ki4lm2tam5rqtpp5fc.apps.googleusercontent.com';
