@@ -1,9 +1,112 @@
+/* ==========================================================================
+   KYRIOS STUDIO — INTEGRACIÓN OFICIAL DE WHATSAPP
+   Sistema de Estilos Adaptable (Modo Claro & Modo Oscuro)
+   ========================================================================== */
+
+/* ─── Variables de Tema por Defecto (Modo Claro) ────────────────────────── */
+:root {
+  --wa-text-primary: #0C0C0C;
+  --wa-text-secondary: #526071;
+  --wa-text-muted: #8290a2;
+  --wa-card-bg: #FFFFFF;
+  --wa-card-border: #e2e8f0;
+  --wa-card-shadow: 0 4px 20px -2px rgba(12, 12, 12, 0.06);
+  --wa-bg-secondary: #f8fafc;
+  --wa-bg-tertiary: #f1f5f9;
+  --wa-border-subtle: #edf2f7;
+  --wa-border-medium: #cbd5e1;
+  --wa-toolbar-bg: #f8fafc;
+  --wa-textarea-color: #0f172a;
+  --wa-chat-preview-bg: #e5ddd5;
+  --wa-chat-pattern: radial-gradient(rgba(0, 0, 0, 0.07) 1px, transparent 0);
+  --wa-bubble-bg: #d9fdd3;
+  --wa-bubble-text: #111b21;
+  --wa-bubble-time: #667781;
+  --wa-bubble-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  --wa-tab-inactive-color: #526071;
+  --wa-tab-hover-bg: rgba(0, 0, 0, 0.04);
+  --wa-pill-bg: #f1f5f9;
+  --wa-pill-border: #cbd5e1;
+  --wa-pill-text: #1e293b;
+  --wa-code-bg: #e2e8f0;
+  --wa-code-text: #0f766e;
+  --wa-primary-green: #15803d;
+  --wa-primary-green-glow: rgba(22, 163, 74, 0.3);
+  --wa-connected-banner-bg: linear-gradient(135deg, rgba(37, 211, 102, 0.1) 0%, rgba(18, 140, 126, 0.06) 100%);
+  --wa-connected-banner-border: rgba(21, 128, 61, 0.3);
+  --wa-warning-bg: rgba(234, 179, 8, 0.12);
+  --wa-warning-border: rgba(234, 179, 8, 0.35);
+  --wa-warning-text: #854d0e;
+  --wa-warning-code: #713f12;
+  --wa-info-bg: rgba(14, 165, 233, 0.1);
+  --wa-info-border: rgba(14, 165, 233, 0.3);
+  --wa-info-text: #0369a1;
+  --wa-context-bg: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  --wa-context-border: #e2e8f0;
+  --wa-input-bg: #ffffff;
+  --wa-input-border: #cbd5e1;
+  --wa-input-text: #0f172a;
+}
+
+/* ─── Variables de Tema (Modo Oscuro) ───────────────────────────────────── */
+[data-theme="dark"],
+[data-bs-theme="dark"] {
+  --wa-text-primary: #FFFDFA;
+  --wa-text-secondary: #94a3b8;
+  --wa-text-muted: #64748b;
+  --wa-card-bg: #141b24;
+  --wa-card-border: #222d3d;
+  --wa-card-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.45);
+  --wa-bg-secondary: #0d1520;
+  --wa-bg-tertiary: rgba(0, 0, 0, 0.25);
+  --wa-border-subtle: rgba(255, 255, 255, 0.08);
+  --wa-border-medium: rgba(255, 255, 255, 0.15);
+  --wa-toolbar-bg: rgba(255, 255, 255, 0.03);
+  --wa-textarea-color: #f1f5f9;
+  --wa-chat-preview-bg: #0b141a;
+  --wa-chat-pattern: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+  --wa-bubble-bg: #005c4b;
+  --wa-bubble-text: #e9edef;
+  --wa-bubble-time: rgba(233, 237, 239, 0.6);
+  --wa-bubble-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  --wa-tab-inactive-color: #94a3b8;
+  --wa-tab-hover-bg: rgba(255, 255, 255, 0.04);
+  --wa-pill-bg: rgba(255, 255, 255, 0.04);
+  --wa-pill-border: rgba(255, 255, 255, 0.12);
+  --wa-pill-text: #ffffff;
+  --wa-code-bg: rgba(0, 0, 0, 0.35);
+  --wa-code-text: #a7f3d0;
+  --wa-primary-green: #25d366;
+  --wa-primary-green-glow: rgba(37, 211, 102, 0.4);
+  --wa-connected-banner-bg: linear-gradient(135deg, rgba(37, 211, 102, 0.12) 0%, rgba(18, 140, 126, 0.08) 100%);
+  --wa-connected-banner-border: rgba(37, 211, 102, 0.35);
+  --wa-warning-bg: rgba(234, 179, 8, 0.1);
+  --wa-warning-border: rgba(234, 179, 8, 0.25);
+  --wa-warning-text: #fef08a;
+  --wa-warning-code: #ffffff;
+  --wa-info-bg: rgba(56, 189, 248, 0.08);
+  --wa-info-border: rgba(56, 189, 248, 0.2);
+  --wa-info-text: #bae6fd;
+  --wa-context-bg: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+  --wa-context-border: rgba(255, 255, 255, 0.08);
+  --wa-input-bg: rgba(255, 255, 255, 0.06);
+  --wa-input-border: rgba(255, 255, 255, 0.2);
+  --wa-input-text: #ffffff;
+}
+
+/* ─── Contenedor Principal ───────────────────────────────────────────────── */
 .wa-page-container {
   padding: 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
+  --text-primary: var(--wa-text-primary);
+  --text-secondary: var(--wa-text-secondary);
+  --card-bg: var(--wa-card-bg);
+  --border-color: var(--wa-card-border);
+  --bg-secondary: var(--wa-bg-secondary);
 }
 
+/* ─── Cabecera ───────────────────────────────────────────────────────────── */
 .wa-header {
   margin-bottom: 2rem;
 }
@@ -11,22 +114,24 @@
 .wa-header-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-primary, #ffffff);
+  color: var(--wa-text-primary);
   display: flex;
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.5rem;
+  transition: color 0.2s ease;
 }
 
 .wa-header-icon {
-  color: #25d366;
-  filter: drop-shadow(0 0 8px rgba(37, 211, 102, 0.4));
+  color: var(--wa-primary-green);
+  filter: drop-shadow(0 0 8px var(--wa-primary-green-glow));
 }
 
 .wa-header-subtitle {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--wa-text-secondary);
   font-size: 0.95rem;
   margin: 0;
+  transition: color 0.2s ease;
 }
 
 /* Badge de estado en Header */
@@ -42,18 +147,18 @@
 }
 
 .wa-status-badge.connected {
-  background: rgba(37, 211, 102, 0.15);
-  color: #25d366;
-  border: 1px solid rgba(37, 211, 102, 0.3);
+  background: rgba(37, 211, 102, 0.12);
+  color: var(--wa-primary-green);
+  border: 1px solid rgba(37, 211, 102, 0.35);
 }
 
 .wa-status-badge.disconnected {
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-/* Punto pulsante */
+/* Punto radar pulsante */
 .wa-radar-dot {
   width: 8px;
   height: 8px;
@@ -62,8 +167,8 @@
 }
 
 .wa-radar-dot.connected {
-  background-color: #25d366;
-  box-shadow: 0 0 10px #25d366;
+  background-color: var(--wa-primary-green);
+  box-shadow: 0 0 10px var(--wa-primary-green);
   animation: wa-pulse 1.8s infinite;
 }
 
@@ -83,7 +188,102 @@
   }
 }
 
-/* Layout Grid Principal */
+/* Botón de recarga en cabecera */
+.wa-refresh-btn {
+  background: var(--wa-card-bg);
+  border: 1px solid var(--wa-border-medium);
+  color: var(--wa-text-secondary);
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wa-refresh-btn:hover:not(:disabled) {
+  color: var(--wa-text-primary);
+  border-color: var(--wa-primary-green);
+}
+
+.wa-refresh-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Pestañas de Navegación (Tabs) ──────────────────────────────────────── */
+.wa-nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--wa-card-border);
+  padding-bottom: 0.5rem;
+}
+
+.wa-nav-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--wa-tab-inactive-color);
+  padding: 0.6rem 1.15rem;
+  border-radius: 0.6rem;
+  font-size: 0.925rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.wa-nav-tab:hover {
+  color: var(--wa-text-primary);
+  background: var(--wa-tab-hover-bg);
+}
+
+.wa-nav-tab.active {
+  color: var(--wa-primary-green);
+  background: rgba(37, 211, 102, 0.12);
+  border: 1px solid rgba(37, 211, 102, 0.35);
+}
+
+/* Sub-pestañas de plantillas */
+.wa-subtabs {
+  display: flex;
+  gap: 0.5rem;
+  background: var(--wa-bg-secondary);
+  padding: 0.35rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--wa-card-border);
+}
+
+.wa-subtab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--wa-tab-inactive-color);
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.wa-subtab-btn.active {
+  background: var(--wa-card-bg);
+  color: var(--wa-text-primary);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* ─── Layout Grid Principal ──────────────────────────────────────────────── */
 .wa-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -96,15 +296,16 @@
   }
 }
 
-/* Tarjetas Principales */
+/* ─── Tarjetas Principales ───────────────────────────────────────────────── */
 .wa-card {
-  background: var(--card-bg, #1e293b);
-  border: 1px solid var(--border-color, #334155);
+  background: var(--wa-card-bg);
+  border: 1px solid var(--wa-card-border);
   border-radius: 1rem;
   padding: 1.75rem;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--wa-card-shadow);
   position: relative;
   overflow: hidden;
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .wa-card-header {
@@ -117,14 +318,14 @@
 .wa-card-title {
   font-size: 1.15rem;
   font-weight: 600;
-  color: var(--text-primary, #ffffff);
+  color: var(--wa-text-primary);
   display: flex;
   align-items: center;
   gap: 0.6rem;
   margin: 0;
 }
 
-/* Sección QR */
+/* ─── Sección QR ─────────────────────────────────────────────────────────── */
 .wa-qr-container {
   display: flex;
   flex-direction: column;
@@ -137,8 +338,8 @@
   background: #ffffff;
   padding: 1.25rem;
   border-radius: 1.25rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(37, 211, 102, 0.25);
-  border: 4px solid #25d366;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 20px rgba(37, 211, 102, 0.2);
+  border: 4px solid var(--wa-primary-green);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -246,14 +447,14 @@
 
 .wa-qr-countdown-text {
   font-size: 0.825rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--wa-text-secondary);
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--wa-bg-secondary);
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--wa-border-subtle);
   margin-top: 0.25rem;
 }
 
@@ -269,10 +470,10 @@
 .wa-qr-loading-text {
   margin-top: 1.25rem;
   font-size: 0.95rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--wa-text-secondary);
 }
 
-/* Pasos de Instrucción */
+/* ─── Pasos de Instrucción ───────────────────────────────────────────────── */
 .wa-steps-list {
   display: flex;
   flex-direction: column;
@@ -284,15 +485,15 @@
   align-items: flex-start;
   gap: 1rem;
   padding: 0.85rem;
-  background: var(--bg-secondary, rgba(255, 255, 255, 0.03));
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+  background: var(--wa-bg-secondary);
+  border: 1px solid var(--wa-card-border);
   border-radius: 0.75rem;
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .wa-step-item:hover {
   transform: translateY(-2px);
-  border-color: rgba(37, 211, 102, 0.4);
+  border-color: var(--wa-primary-green);
 }
 
 .wa-step-number {
@@ -317,21 +518,21 @@
 .wa-step-title {
   font-weight: 600;
   font-size: 0.925rem;
-  color: var(--text-primary, #ffffff);
+  color: var(--wa-text-primary);
   margin-bottom: 0.2rem;
 }
 
 .wa-step-desc {
   font-size: 0.825rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--wa-text-secondary);
   margin: 0;
   line-height: 1.4;
 }
 
-/* Panel Conectado */
+/* ─── Panel Conectado y Operativo ────────────────────────────────────────── */
 .wa-connected-banner {
-  background: linear-gradient(135deg, rgba(37, 211, 102, 0.12) 0%, rgba(18, 140, 126, 0.08) 100%);
-  border: 1px solid rgba(37, 211, 102, 0.35);
+  background: var(--wa-connected-banner-bg);
+  border: 1px solid var(--wa-connected-banner-border);
   border-radius: 1rem;
   padding: 1.75rem;
   display: flex;
@@ -350,19 +551,19 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.35);
 }
 
 .wa-connected-info h4 {
   margin: 0 0 0.25rem 0;
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--text-primary, #ffffff);
+  color: var(--wa-text-primary);
 }
 
 .wa-connected-info p {
   margin: 0;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--wa-text-secondary);
   font-size: 0.9rem;
 }
 
@@ -385,13 +586,19 @@
   align-items: flex-start;
   gap: 0.75rem;
   padding: 1rem;
-  background: var(--bg-secondary, rgba(255, 255, 255, 0.03));
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+  background: var(--wa-bg-secondary);
+  border: 1px solid var(--wa-card-border);
   border-radius: 0.75rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.wa-feature-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(37, 211, 102, 0.35);
 }
 
 .wa-feature-icon {
-  color: #25d366;
+  color: var(--wa-primary-green);
   flex-shrink: 0;
   margin-top: 0.15rem;
 }
@@ -399,44 +606,74 @@
 .wa-feature-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text-primary, #ffffff);
+  color: var(--wa-text-primary);
   margin-bottom: 0.2rem;
 }
 
 .wa-feature-desc {
   font-size: 0.8rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--wa-text-secondary);
   margin: 0;
+  line-height: 1.35;
 }
 
-/* Simulación de Mensaje de WhatsApp */
+/* Botón de Desconexión */
+.wa-btn-disconnect {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wa-btn-disconnect:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: #ef4444;
+  color: #dc2626;
+}
+
+.wa-btn-disconnect:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── Simulación de Mensaje de WhatsApp (Live Preview) ───────────────────── */
 .wa-chat-preview-box {
-  background: #0b141a;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+  background: var(--wa-chat-preview-bg);
+  background-image: var(--wa-chat-pattern);
   background-size: 16px 16px;
   border-radius: 0.85rem;
   padding: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--wa-card-border);
+  transition: background-color 0.2s ease;
 }
 
 .wa-bubble {
-  background: #005c4b;
-  color: #e9edef;
+  background: var(--wa-bubble-bg);
+  color: var(--wa-bubble-text);
   padding: 0.85rem 1.1rem;
   border-radius: 0.75rem 0.75rem 0.2rem 0.75rem;
   max-width: 380px;
   margin-left: auto;
   font-size: 0.85rem;
   line-height: 1.45;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--wa-bubble-shadow);
   position: relative;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .wa-bubble-time {
   text-align: right;
   font-size: 0.7rem;
-  color: rgba(233, 237, 239, 0.6);
+  color: var(--wa-bubble-time);
   margin-top: 0.4rem;
   display: flex;
   align-items: center;
@@ -448,136 +685,24 @@
   color: #53bdeb;
 }
 
-/* Botón de desconexión */
-.wa-disconnect-section {
+.wa-preview-footnote {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
-}
-
-.wa-btn-disconnect {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  color: #f87171;
-  border-radius: 0.65rem;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.wa-btn-disconnect:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: #ef4444;
-  color: #ffffff;
-}
-
-.wa-btn-disconnect:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.wa-refresh-btn {
-  background: transparent;
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
-  color: var(--text-secondary, #94a3b8);
-  padding: 0.4rem 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 0.8rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.wa-refresh-btn:hover {
-  color: var(--text-primary, #ffffff);
-  border-color: var(--text-secondary, #94a3b8);
-}
-
-/* ================= PESTAÑAS (TABS) ================= */
-.wa-nav-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
-  padding-bottom: 0.5rem;
-}
-
-.wa-nav-tab {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary, #94a3b8);
-  padding: 0.6rem 1.15rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--wa-info-bg);
+  border: 1px solid var(--wa-info-border);
   border-radius: 0.6rem;
-  font-size: 0.925rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
+  font-size: 0.8rem;
+  color: var(--wa-info-text);
+  margin-top: 1rem;
+  line-height: 1.4;
 }
 
-.wa-nav-tab:hover {
-  color: var(--text-primary, #ffffff);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.wa-nav-tab.active {
-  color: #25d366;
-  background: rgba(37, 211, 102, 0.12);
-  border: 1px solid rgba(37, 211, 102, 0.3);
-}
-
-/* Sub-pestañas de plantillas */
-.wa-subtabs {
-  display: flex;
-  gap: 0.5rem;
-  background: var(--bg-secondary, rgba(0, 0, 0, 0.2));
-  padding: 0.35rem;
-  border-radius: 0.75rem;
-  margin-bottom: 1.25rem;
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
-}
-
-.wa-subtab-btn {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: var(--text-secondary, #94a3b8);
-  padding: 0.5rem 0.85rem;
-  border-radius: 0.5rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  transition: all 0.2s ease;
-}
-
-.wa-subtab-btn.active {
-  background: var(--card-bg, #1e293b);
-  color: var(--text-primary, #ffffff);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* ================= PESTAÑA 2: PERSONALIZACIÓN ================= */
-
-/* Banner de contexto del momento de envío */
+/* ─── Pestaña 2: Personalización de Mensajes ─────────────────────────────── */
 .wa-context-banner {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--wa-context-bg);
+  border: 1px solid var(--wa-context-border);
   border-radius: 0.75rem;
   padding: 0.85rem 1rem;
   margin-bottom: 1.25rem;
@@ -592,12 +717,12 @@
   gap: 0.45rem;
   font-size: 0.825rem;
   font-weight: 700;
-  color: var(--text-primary, #ffffff);
+  color: var(--wa-text-primary);
 }
 
 .wa-context-desc {
   font-size: 0.825rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--wa-text-secondary);
   margin: 0;
   line-height: 1.4;
 }
@@ -618,7 +743,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--wa-text-secondary);
 }
 
 .wa-presets-btns {
@@ -628,9 +753,9 @@
 }
 
 .wa-preset-pill {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--text-primary, #ffffff);
+  background: var(--wa-pill-bg);
+  border: 1px solid var(--wa-pill-border);
+  color: var(--wa-pill-text);
   border-radius: 9999px;
   padding: 0.35rem 0.85rem;
   font-size: 0.825rem;
@@ -643,17 +768,17 @@
 }
 
 .wa-preset-pill:hover {
-  border-color: #25d366;
+  border-color: var(--wa-primary-green);
   background: rgba(37, 211, 102, 0.12);
+  color: var(--wa-text-primary);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.25);
 }
 
 /* Pastillas de variables dinámicas */
 .wa-variables-container {
   margin-bottom: 1.25rem;
-  background: var(--bg-secondary, rgba(255, 255, 255, 0.02));
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.06));
+  background: var(--wa-bg-secondary);
+  border: 1px solid var(--wa-card-border);
   padding: 1rem;
   border-radius: 0.75rem;
 }
@@ -663,7 +788,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--wa-text-secondary);
   margin-bottom: 0.35rem;
   display: flex;
   align-items: center;
@@ -672,7 +797,7 @@
 
 .wa-variables-desc {
   font-size: 0.78rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--wa-text-secondary);
   margin-bottom: 0.65rem;
 }
 
@@ -683,8 +808,8 @@
 }
 
 .wa-tag-pill {
-  background: rgba(37, 211, 102, 0.08);
-  border: 1px solid rgba(37, 211, 102, 0.25);
+  background: rgba(37, 211, 102, 0.1);
+  border: 1px solid rgba(37, 211, 102, 0.3);
   padding: 0.3rem 0.65rem;
   border-radius: 9999px;
   cursor: pointer;
@@ -697,16 +822,16 @@
 .wa-tag-label {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #25d366;
+  color: var(--wa-primary-green);
 }
 
 .wa-tag-code {
   font-size: 0.72rem;
   font-family: monospace;
-  background: rgba(0, 0, 0, 0.35);
+  background: var(--wa-code-bg);
   padding: 0.1rem 0.35rem;
   border-radius: 4px;
-  color: #a7f3d0;
+  color: var(--wa-code-text);
 }
 
 .wa-tag-pill:hover {
@@ -721,22 +846,22 @@
 }
 
 .wa-tag-pill:hover .wa-tag-code {
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.2);
   color: #0b141a;
 }
 
 /* Wrapper del Editor de Texto */
 .wa-editor-wrapper {
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+  border: 1px solid var(--wa-card-border);
   border-radius: 0.75rem;
   overflow: hidden;
   margin-bottom: 1rem;
-  background: var(--bg-secondary, rgba(0, 0, 0, 0.3));
+  background: var(--wa-input-bg);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .wa-editor-wrapper:focus-within {
-  border-color: #25d366;
+  border-color: var(--wa-primary-green);
   box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.2);
 }
 
@@ -747,8 +872,8 @@
   flex-wrap: wrap;
   gap: 0.4rem;
   padding: 0.5rem 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--wa-toolbar-bg);
+  border-bottom: 1px solid var(--wa-card-border);
 }
 
 .wa-toolbar-group {
@@ -759,7 +884,7 @@
 
 .wa-toolbar-label {
   font-size: 0.75rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--wa-text-secondary);
   font-weight: 600;
   margin-right: 0.2rem;
 }
@@ -776,21 +901,26 @@
 }
 
 .wa-emoji-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.08);
   transform: scale(1.25);
+}
+
+[data-theme="dark"] .wa-emoji-btn:hover,
+[data-bs-theme="dark"] .wa-emoji-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .wa-toolbar-divider {
   width: 1px;
   height: 18px;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--wa-border-medium);
   margin: 0 0.35rem;
 }
 
 .wa-format-btn {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--text-secondary, #94a3b8);
+  border: 1px solid var(--wa-border-medium);
+  color: var(--wa-text-secondary);
   border-radius: 4px;
   padding: 0.2rem 0.55rem;
   font-size: 0.75rem;
@@ -803,8 +933,8 @@
 }
 
 .wa-format-btn:hover {
-  color: #ffffff;
-  border-color: #25d366;
+  color: var(--wa-primary-green);
+  border-color: var(--wa-primary-green);
   background: rgba(37, 211, 102, 0.1);
 }
 
@@ -814,7 +944,7 @@
   min-height: 220px;
   background: transparent;
   border: none;
-  color: var(--text-primary, #ffffff);
+  color: var(--wa-textarea-color);
   padding: 1rem;
   font-size: 0.9rem;
   line-height: 1.55;
@@ -837,15 +967,15 @@
   flex-wrap: wrap;
   gap: 0.6rem;
   padding: 0.55rem 0.85rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--wa-bg-secondary);
+  border: 1px solid var(--wa-card-border);
   border-radius: 0.6rem;
 }
 
 .wa-checklist-title {
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--wa-text-secondary);
 }
 
 .wa-checklist-items {
@@ -866,14 +996,14 @@
 
 .wa-check-chip.active {
   background: rgba(37, 211, 102, 0.15);
-  color: #25d366;
+  color: var(--wa-primary-green);
   border: 1px solid rgba(37, 211, 102, 0.3);
 }
 
 .wa-check-chip.missing {
-  background: rgba(148, 163, 184, 0.08);
-  color: #64748b;
-  border: 1px solid rgba(148, 163, 184, 0.15);
+  background: var(--wa-bg-tertiary);
+  color: var(--wa-text-muted);
+  border: 1px solid var(--wa-border-subtle);
 }
 
 .wa-warning-tip {
@@ -881,34 +1011,24 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 0.85rem;
-  background: rgba(234, 179, 8, 0.1);
-  border: 1px solid rgba(234, 179, 8, 0.25);
+  background: var(--wa-warning-bg);
+  border: 1px solid var(--wa-warning-border);
   border-radius: 0.6rem;
   font-size: 0.8rem;
-  color: #fef08a;
+  color: var(--wa-warning-text);
   line-height: 1.4;
 }
 
 .wa-warning-tip code {
-  color: #ffffff;
-  background: rgba(0, 0, 0, 0.3);
+  color: var(--wa-warning-code);
+  background: rgba(0, 0, 0, 0.08);
   padding: 0.1rem 0.3rem;
   border-radius: 4px;
 }
 
-/* Nota aclaratoria en la Vista Previa */
-.wa-preview-footnote {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  padding: 0.65rem 0.85rem;
-  background: rgba(56, 189, 248, 0.08);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  border-radius: 0.6rem;
-  font-size: 0.8rem;
-  color: #bae6fd;
-  margin-top: 1rem;
-  line-height: 1.4;
+[data-theme="dark"] .wa-warning-tip code,
+[data-bs-theme="dark"] .wa-warning-tip code {
+  background: rgba(0, 0, 0, 0.35);
 }
 
 /* Botones de acción del editor */
@@ -949,8 +1069,8 @@
 
 .wa-btn-reset {
   background: transparent;
-  color: var(--text-secondary, #94a3b8);
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+  color: var(--wa-text-secondary);
+  border: 1px solid var(--wa-border-medium);
   padding: 0.65rem 1rem;
   border-radius: 0.6rem;
   font-weight: 600;
@@ -963,23 +1083,21 @@
 }
 
 .wa-btn-reset:hover:not(:disabled) {
-  color: var(--text-primary, #ffffff);
-  border-color: var(--text-secondary, #94a3b8);
+  color: var(--wa-text-primary);
+  border-color: var(--wa-primary-green);
 }
 
-/* ==========================================================================
-   Configuración de Tiempo de Anticipación del Recordatorio
-   ========================================================================== */
+/* ─── Configuración de Tiempo de Anticipación del Recordatorio ─────────── */
 .wa-anticipacion-card {
-  background: var(--bg-secondary, rgba(255, 255, 255, 0.03));
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+  background: var(--wa-card-bg);
+  border: 1px solid var(--wa-card-border);
   border-radius: 0.75rem;
   padding: 1.15rem;
   margin-bottom: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--wa-card-shadow);
 }
 
 .wa-anticipacion-header {
@@ -996,14 +1114,14 @@
   gap: 0.5rem;
   font-size: 0.88rem;
   font-weight: 700;
-  color: var(--text-primary, #ffffff);
+  color: var(--wa-text-primary);
 }
 
 .wa-anticipacion-badge {
   font-size: 0.75rem;
   font-weight: 600;
   background: rgba(37, 211, 102, 0.12);
-  color: #25d366;
+  color: var(--wa-primary-green);
   border: 1px solid rgba(37, 211, 102, 0.25);
   padding: 0.2rem 0.65rem;
   border-radius: 9999px;
@@ -1016,9 +1134,9 @@
 }
 
 .wa-anticipacion-pill {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--text-secondary, #cbd5e1);
+  background: var(--wa-pill-bg);
+  border: 1px solid var(--wa-pill-border);
+  color: var(--wa-pill-text);
   border-radius: 9999px;
   padding: 0.4rem 0.95rem;
   font-size: 0.825rem;
@@ -1031,18 +1149,17 @@
 }
 
 .wa-anticipacion-pill:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.25);
-  color: #ffffff;
+  background: rgba(37, 211, 102, 0.1);
+  border-color: var(--wa-primary-green);
   transform: translateY(-1px);
 }
 
 .wa-anticipacion-pill.active {
-  background: linear-gradient(135deg, rgba(37, 211, 102, 0.2), rgba(18, 140, 126, 0.25));
-  border-color: #25d366;
-  color: #ffffff;
+  background: linear-gradient(135deg, rgba(37, 211, 102, 0.18), rgba(18, 140, 126, 0.22));
+  border-color: var(--wa-primary-green);
+  color: var(--wa-text-primary);
   font-weight: 700;
-  box-shadow: 0 0 12px rgba(37, 211, 102, 0.35);
+  box-shadow: 0 0 10px rgba(37, 211, 102, 0.25);
 }
 
 .wa-pill-icon {
@@ -1050,8 +1167,8 @@
 }
 
 .wa-anticipacion-custom-box {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px dashed rgba(255, 255, 255, 0.15);
+  background: var(--wa-bg-secondary);
+  border: 1px dashed var(--wa-border-medium);
   border-radius: 0.5rem;
   padding: 0.85rem 1rem;
   display: flex;
@@ -1061,7 +1178,7 @@
 
 .wa-custom-label {
   font-size: 0.8rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--wa-text-secondary);
   margin: 0;
 }
 
@@ -1073,9 +1190,9 @@
 
 .wa-custom-input {
   width: 100px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background: var(--wa-input-bg);
+  border: 1px solid var(--wa-input-border);
+  color: var(--wa-input-text);
   border-radius: 0.375rem;
   padding: 0.35rem 0.65rem;
   font-size: 0.9rem;
@@ -1085,31 +1202,66 @@
 
 .wa-custom-input:focus {
   outline: none;
-  border-color: #25d366;
+  border-color: var(--wa-primary-green);
   box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.25);
 }
 
 .wa-custom-unit {
   font-size: 0.85rem;
-  color: #cbd5e1;
+  color: var(--wa-text-secondary);
 }
 
 .wa-custom-hint {
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--wa-text-muted);
 }
 
 .wa-anticipacion-example {
-  background: rgba(234, 179, 8, 0.08);
-  border: 1px solid rgba(234, 179, 8, 0.2);
+  background: var(--wa-warning-bg);
+  border: 1px solid var(--wa-warning-border);
   border-radius: 0.5rem;
   padding: 0.6rem 0.85rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 0.825rem;
-  color: #fde047;
+  color: var(--wa-warning-text);
   line-height: 1.35;
 }
 
+/* Consejos de formato en WhatsApp */
+.wa-format-tips-box {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--wa-bg-secondary);
+  border: 1px solid var(--wa-card-border);
+  border-radius: 0.6rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.wa-format-tips-title {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--wa-warning-text);
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.wa-format-tips-list {
+  font-size: 0.8rem;
+  color: var(--wa-text-secondary);
+  padding-left: 1.25rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.wa-format-tips-list code {
+  color: var(--wa-text-primary);
+  background: var(--wa-code-bg);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
 

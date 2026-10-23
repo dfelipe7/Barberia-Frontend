@@ -1278,11 +1278,11 @@ export const WhatsAppConfigPage: React.FC = () => {
               </span>
             </div>
 
-            <div className="mt-3 p-3 bg-dark rounded border border-secondary border-opacity-25">
-              <div className="small fw-semibold text-warning mb-1">
+            <div className="wa-format-tips-box">
+              <div className="wa-format-tips-title">
                 💡 Consejos de Formato en WhatsApp:
               </div>
-              <ul className="small text-secondary ps-3 mb-0">
+              <ul className="wa-format-tips-list">
                 <li>
                   Coloca asteriscos para <strong>*negrita*</strong> (ej:{' '}
                   <code>*texto*</code>).
