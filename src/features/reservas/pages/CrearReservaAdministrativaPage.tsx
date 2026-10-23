@@ -191,7 +191,28 @@ export default function CrearReservaAdministrativaPage() {
               <div className="card-body p-3 p-md-4">
                 <h2 className="h5 fw-bold mb-3">2. Fecha y hora</h2>
                 <label htmlFor="reserva-fecha-admin" className="form-label fw-semibold">Fecha (próximos 30 días)</label>
-                <input id="reserva-fecha-admin" type="date" className="form-control mb-3" min={minimo} max={maximo} value={fecha} onChange={(event) => cambiarFecha(event.target.value)} />
+                <input
+                  id="reserva-fecha-admin"
+                  type="date"
+                  className="form-control mb-3"
+                  min={minimo}
+                  max={maximo}
+                  value={fecha}
+                  style={{ cursor: 'pointer' }}
+                  onClick={(e) => {
+                    try {
+                      e.currentTarget.showPicker?.();
+                    } catch {
+                      // Fallback
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key !== 'Tab' && e.key !== 'Enter' && e.key !== 'Escape') {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(event) => cambiarFecha(event.target.value)}
+                />
 
                 {!barberoSeleccionado ? <p className="small text-surface-muted mb-0">Selecciona primero un servicio y un barbero.</p> : disponibilidad.isLoading ? (
                   <p className="small text-surface-muted" role="status">Consultando disponibilidad...</p>

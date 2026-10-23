@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { isAxiosError } from 'axios';
 import { Link } from 'react-router-dom';
 import {
@@ -12,11 +12,14 @@ import {
   Scissors,
   Timer,
   UserRound,
+  X,
 } from 'lucide-react';
 import { useAgendaBarbero, useCompletarReserva, useMarcarReservaNoAsistida } from '../api/reservas.facade';
 import type { CitaAgendaBarberoDTO, EstadoReservaDTO } from '../api/reservas.dto';
 import Button from '../../../shared/ui/Button';
 import BackLink from '../../../shared/ui/BackLink';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
+import { useToastContext } from '../../../shared/ui/ToastContext';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import './ReservasBarberoPage.css';
 
@@ -165,6 +168,59 @@ function DetalleReserva({ reserva }: { reserva: CitaAgendaBarberoDTO }) {
   );
 }
 
+function PanelContenidoDetalle({
+  reserva,
+  errorAccion,
+  mensajeAccion,
+  completarReservaPending,
+  marcarNoAsistidaPending,
+  onEjecutarAccion,
+}: {
+  reserva: CitaAgendaBarberoDTO;
+  errorAccion: string | null;
+  mensajeAccion: string | null;
+  completarReservaPending: boolean;
+  marcarNoAsistidaPending: boolean;
+  onEjecutarAccion: (accion: 'completar' | 'no-asistio') => void;
+}) {
+  return (
+    <>
+      <DetalleReserva reserva={reserva} />
+      {errorAccion && <div className="alert alert-warning mt-3" role="alert">{errorAccion}</div>}
+      {mensajeAccion && <div className="alert alert-success mt-3" role="status">{mensajeAccion}</div>}
+      {reserva.estado !== 'COMPLETED' &&
+        reserva.estado !== 'CANCELLED' &&
+        reserva.estado !== 'NO_SHOW' && (
+        <div className="barber-agenda__detail-actions card-surface">
+          <p>Actualiza el estado cuando termine la cita o si el cliente no llega.</p>
+          <div className="d-flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="primary"
+              isLoading={completarReservaPending}
+              disabled={marcarNoAsistidaPending}
+              onClick={() => onEjecutarAccion('completar')}
+            >
+              Marcar completada
+            </Button>
+            {(reserva.estado === 'PENDING' || reserva.estado === 'CONFIRMED') && (
+              <Button
+                type="button"
+                variant="outline-secondary"
+                isLoading={marcarNoAsistidaPending}
+                disabled={completarReservaPending}
+                onClick={() => onEjecutarAccion('no-asistio')}
+              >
+                Marcar no asistió
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 function CargandoAgenda() {
   return (
     <div className="barber-agenda__loading" role="status" aria-label="Cargando agenda">
@@ -181,6 +237,8 @@ function CargandoAgenda() {
 }
 
 export default function ReservasBarberoPage() {
+  const confirm = useConfirm();
+  const { showToast } = useToastContext();
   const [semana, setSemana] = useState(() => inicioDeSemana(new Date()));
   const [reservaSeleccionadaId, setReservaSeleccionadaId] = useState<number | null>(null);
   const desde = aFechaLocal(semana);
@@ -192,6 +250,28 @@ export default function ReservasBarberoPage() {
   const [mensajeAccion, setMensajeAccion] = useState<string | null>(null);
   const reservas = consulta.data?.reservas ?? SIN_RESERVAS;
   const reservaSeleccionada = reservas.find((reserva) => reserva.id === reservaSeleccionadaId) ?? null;
+
+  useEffect(() => {
+    if (!reservaSeleccionadaId) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setReservaSeleccionadaId(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    // En pantallas móviles (< 992px), bloquea el scroll de fondo mientras el Bottom Sheet está abierto
+    const esMovil = window.innerWidth < 992;
+    if (esMovil) {
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [reservaSeleccionadaId]);
 
   const dias = useMemo(() => Array.from({ length: 7 }, (_, indice) => {
     const fecha = aFechaLocal(desplazarDias(semana, indice));
@@ -219,10 +299,47 @@ export default function ReservasBarberoPage() {
 
   const ejecutarAccionReserva = async (accion: 'completar' | 'no-asistio') => {
     if (!reservaSeleccionada) return;
-    const mensajeConfirmacion = accion === 'completar'
-      ? '¿Confirmas que el servicio de esta cita ya fue realizado?'
-      : '¿Confirmas que el cliente no asistió a esta cita?';
-    if (!window.confirm(mensajeConfirmacion)) return;
+
+    const esCompletar = accion === 'completar';
+    const confirmado = await confirm({
+      title: esCompletar ? 'Completar cita' : 'Marcar inasistencia',
+      message: (
+        <div>
+          <p className="mb-2">
+            {esCompletar
+              ? '¿Confirmas que el servicio de esta cita ya fue realizado?'
+              : '¿Confirmas que el cliente no asistió a esta cita agendada?'}
+          </p>
+          <div
+            className="p-3 rounded mb-2 border"
+            style={{
+              backgroundColor: 'var(--surface-app-bg)',
+              borderColor: 'var(--surface-card-border)',
+            }}
+          >
+            <div className="fw-bold text-surface-primary mb-1">
+              {reservaSeleccionada.servicio.nombre}
+            </div>
+            <div className="small text-surface-muted d-flex align-items-center gap-1 mb-1">
+              <UserRound size={14} aria-hidden="true" /> Cliente: <strong>{reservaSeleccionada.cliente.nombre}</strong>
+            </div>
+            <div className="small text-surface-muted d-flex align-items-center gap-1">
+              <Clock3 size={14} aria-hidden="true" /> Horario: {reservaSeleccionada.hora} ({reservaSeleccionada.servicio.duracionMinutos} min)
+            </div>
+          </div>
+          {!esCompletar && (
+            <p className="small text-warning mb-0">
+              Esta acción marcará la cita como <strong>No asistió</strong> y liberará el registro del barbero.
+            </p>
+          )}
+        </div>
+      ),
+      confirmLabel: esCompletar ? 'Sí, completar' : 'Sí, marcar no asistió',
+      cancelLabel: 'Volver',
+      variant: esCompletar ? 'primary' : 'warning',
+    });
+
+    if (!confirmado) return;
 
     setErrorAccion(null);
     setMensajeAccion(null);
@@ -231,15 +348,12 @@ export default function ReservasBarberoPage() {
         ? await completarReserva.mutateAsync(reservaSeleccionada.id)
         : await marcarNoAsistida.mutateAsync(reservaSeleccionada.id);
       setMensajeAccion(resultado.mensaje);
+      showToast('success', resultado.mensaje);
       await consulta.refetch();
     } catch (error: unknown) {
-      if (isAxiosError(error) && error.response?.status === 409) {
-        setErrorAccion(accion === 'completar'
-          ? 'La cita debe haber terminado para poder marcarla como completada.'
-          : 'Aún no se cumple el tiempo de espera para marcar que el cliente no asistió.');
-      } else {
-        setErrorAccion(mapApiError(error));
-      }
+      const mensaje = mapApiError(error);
+      setErrorAccion(mensaje);
+      showToast('danger', mensaje);
     }
   };
 
@@ -351,49 +465,63 @@ export default function ReservasBarberoPage() {
             </section>
 
             <aside className="barber-agenda__details" aria-label="Detalle de la cita seleccionada">
-              {reservaSeleccionada ? (
-                <>
-                  <DetalleReserva reserva={reservaSeleccionada} />
-                  {errorAccion && <div className="alert alert-warning mt-3" role="alert">{errorAccion}</div>}
-                  {mensajeAccion && <div className="alert alert-success mt-3" role="status">{mensajeAccion}</div>}
-                  {reservaSeleccionada.estado !== 'COMPLETED' &&
-                    reservaSeleccionada.estado !== 'CANCELLED' &&
-                    reservaSeleccionada.estado !== 'NO_SHOW' && (
-                    <div className="barber-agenda__detail-actions card-surface">
-                      <p>Actualiza el estado cuando termine la cita o si el cliente no llega.</p>
-                      <div className="d-flex flex-wrap gap-2">
-                        <Button
-                          type="button"
-                          variant="primary"
-                          isLoading={completarReserva.isPending}
-                          disabled={marcarNoAsistida.isPending}
-                          onClick={() => void ejecutarAccionReserva('completar')}
-                        >
-                          Marcar completada
-                        </Button>
-                        {(reservaSeleccionada.estado === 'PENDING' || reservaSeleccionada.estado === 'CONFIRMED') && (
-                          <Button
-                            type="button"
-                            variant="outline-secondary"
-                            isLoading={marcarNoAsistida.isPending}
-                            disabled={completarReserva.isPending}
-                            onClick={() => void ejecutarAccionReserva('no-asistio')}
-                          >
-                            Marcar no asistió
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="barber-agenda__detail-placeholder card-surface">
-                  <span><Scissors size={22} aria-hidden="true" /></span>
-                  <h2>Detalles de la cita</h2>
-                  <p>Selecciona una cita para consultar la información completa del servicio y del cliente.</p>
-                </div>
-              )}
+              <div className="barber-agenda__details-sticky">
+                {reservaSeleccionada ? (
+                  <PanelContenidoDetalle
+                    reserva={reservaSeleccionada}
+                    errorAccion={errorAccion}
+                    mensajeAccion={mensajeAccion}
+                    completarReservaPending={completarReserva.isPending}
+                    marcarNoAsistidaPending={marcarNoAsistida.isPending}
+                    onEjecutarAccion={(accion) => void ejecutarAccionReserva(accion)}
+                  />
+                ) : (
+                  <div className="barber-agenda__detail-placeholder card-surface">
+                    <span><Scissors size={22} aria-hidden="true" /></span>
+                    <h2>Detalles de la cita</h2>
+                    <p>Selecciona una cita para consultar la información completa del servicio y del cliente.</p>
+                  </div>
+                )}
+              </div>
             </aside>
+          </div>
+        )}
+
+        {/* Modal Bottom Sheet exclusivo para pantallas móviles / tablets (< 992px) */}
+        {reservaSeleccionada && (
+          <div
+            className="barber-agenda__mobile-sheet-overlay"
+            onClick={() => setReservaSeleccionadaId(null)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Detalle de cita"
+          >
+            <div
+              className="barber-agenda__mobile-sheet-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="barber-agenda__mobile-sheet-header">
+                <div className="barber-agenda__mobile-sheet-drag-handle" aria-hidden="true" />
+                <button
+                  type="button"
+                  className="barber-agenda__mobile-sheet-close"
+                  onClick={() => setReservaSeleccionadaId(null)}
+                  aria-label="Cerrar detalle"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="barber-agenda__mobile-sheet-body">
+                <PanelContenidoDetalle
+                  reserva={reservaSeleccionada}
+                  errorAccion={errorAccion}
+                  mensajeAccion={mensajeAccion}
+                  completarReservaPending={completarReserva.isPending}
+                  marcarNoAsistidaPending={marcarNoAsistida.isPending}
+                  onEjecutarAccion={(accion) => void ejecutarAccionReserva(accion)}
+                />
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -41,7 +41,7 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
     try {
       const sesion = await clientesService.iniciarSesionGoogle(respuesta.credential);
       clientesService.guardarSesion(sesion);
-      navigate(returnTo, { replace: true });
+      navigate(returnTo, { replace: true, state: { desdeLogin: true } });
     } catch (errorDesconocido: unknown) {
       setError(mapApiError(errorDesconocido));
     } finally {
