@@ -5,8 +5,9 @@ import Spinner from '../../../shared/ui/Spinner';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import SearchInput from '../../../shared/ui/molecules/SearchInput';
 import EmptyState from '../../../shared/ui/molecules/EmptyState';
-import { useBarberosGestion } from '../api/barberos.facade';
+import { useBarberosGestion, useBarberosCatalogo } from '../api/barberos.facade';
 import BarberoCard from '../components/BarberoCard';
+import type { BarberoCatalogo, BarberoGestion } from '../types/barberos.types';
 import { useToastContext } from '../../../shared/ui/ToastContext';
 import { useDebounce } from '../../../shared/lib/useDebounce';
 import PageHeader from '../../../shared/ui/organisms/PageHeader';
@@ -24,21 +25,28 @@ export const BarberosPage: React.FC = () => {
   const [filtroNombre, setFiltroNombre] = useState('');
   const debouncedNombre = useDebounce(filtroNombre, 350);
 
+  // Superadmin y Administrador consultan la lista de gestión interna.
+  // Barberos y clientes consultan el catálogo público autorizado sin datos sensibles de gestión.
+  const gestionQuery = useBarberosGestion({ estado: 'ACTIVO' }, puedeCrearBarbero);
+  const catalogoQuery = useBarberosCatalogo(!puedeCrearBarbero);
+
   const {
-    data: barberosGestion = [],
+    data: barberosRaw = [],
     isLoading,
     isFetching,
     error,
     refetch,
-  } = useBarberosGestion({ estado: 'ACTIVO' });
+  } = puedeCrearBarbero ? gestionQuery : catalogoQuery;
 
-  const barberos = useMemo(
-    () =>
-      barberosGestion.filter(
+  const barberos = useMemo(() => {
+    if (!barberosRaw) return [];
+    if (puedeCrearBarbero) {
+      return (barberosRaw as BarberoGestion[]).filter(
         (b) => b.estado === 'ACTIVO' && b.estadoGlobal === 'ACTIVO',
-      ),
-    [barberosGestion],
-  );
+      );
+    }
+    return barberosRaw as BarberoCatalogo[];
+  }, [barberosRaw, puedeCrearBarbero]);
 
   const { showToast } = useToastContext();
 
