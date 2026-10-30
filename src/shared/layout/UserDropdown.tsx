@@ -4,6 +4,7 @@ import { ChevronDown, User, Globe, LogOut } from 'lucide-react';
 import { ROLES_APP } from '../constants/roles';
 import UserAvatar from '../ui/atoms/UserAvatar';
 import RoleBadge from '../ui/atoms/RoleBadge';
+import { obtenerNegocioSlugActivo } from '../lib/http/axios';
 
 export interface UserDropdownProps {
   nombre?: string;
@@ -33,6 +34,8 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
 
   const rolesApp = roles.filter((r) => (ROLES_APP as readonly string[]).includes(r));
   const rolesAMostrar = rolesApp.length > 0 ? rolesApp : roles;
+  const slugActivo = obtenerNegocioSlugActivo() || localStorage.getItem('negocio_slug') || 'kyrios-studio';
+  const rutaSitioPublico = `/${slugActivo}`;
 
   const closeDropdown = () => {
     if (!isOpen || isExiting) return;
@@ -214,7 +217,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
           </Link>
 
           <Link
-            to="/"
+            to={rutaSitioPublico}
             role="menuitem"
             className="user-dropdown-item d-flex align-items-center gap-2 text-decoration-none px-3 py-2 rounded"
             onClick={closeDropdown}

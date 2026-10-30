@@ -55,7 +55,8 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
   const [productosModalOpen, setProductosModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { slug } = useParams<{ slug?: string }>();
+  const { slug: paramSlug } = useParams<{ slug?: string }>();
+  const slug = paramSlug || localStorage.getItem('negocio_slug') || undefined;
   const basePrefix = slug ? `/${slug}` : '';
   const rutaHome = slug ? `/${slug}` : '/';
   const enHome = location.pathname === '/' || (Boolean(slug) && location.pathname === `/${slug}`);

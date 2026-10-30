@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Globe, User, Menu, Moon, Sun, Monitor } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import { obtenerUrlFoto } from '../lib/obtenerUrlFoto';
+import { obtenerNegocioSlugActivo } from '../lib/http/axios';
 import BrandLogo from '../ui/BrandLogo';
 import { useTheme } from '../context/ThemeContext';
 import { BRAND } from '../../config/brand';
@@ -13,6 +14,8 @@ import RoleBadge from '../ui/atoms/RoleBadge';
 
 export default function Header() {
   const { cerrarSesion, nombre, apellido, email, roles, usuarioDb, fotoUrl: fotoGoogle } = useAuth();
+  const slugActivo = obtenerNegocioSlugActivo() || localStorage.getItem('negocio_slug') || 'kyrios-studio';
+  const rutaSitioPublico = `/${slugActivo}`;
   const { theme, setTheme, isDark } = useTheme();
   const { toggleSidebar, isSidebarOpen } = useUi();
 
@@ -83,7 +86,7 @@ export default function Header() {
             </Link>
 
             <Link
-              to="/"
+              to={rutaSitioPublico}
               className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-inline-flex align-items-center gap-1 header-action-btn`}
               title="Ir al sitio público"
               aria-label="Ir al sitio público"

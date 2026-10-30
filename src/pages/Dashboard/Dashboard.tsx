@@ -12,6 +12,7 @@ import {
     LogOut,
 } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
+import { obtenerNegocioSlugActivo } from '../../shared/lib/http/axios';
 import { ROLES_APP } from '../../shared/constants/roles';
 
 interface ShortcutItem {
@@ -108,7 +109,7 @@ export default function Dashboard() {
         return (
             <div key={label} className="col-12 col-md-6 col-xl-3">
                 <NavLink
-                    to={to}
+                    to={to === '/' ? `/${obtenerNegocioSlugActivo() || localStorage.getItem('negocio_slug') || 'kyrios-studio'}` : to}
                     className="dash-shortcut-link"
                 >
                     <div
