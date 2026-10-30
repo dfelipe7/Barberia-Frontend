@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useParams } from 'react-router-dom';
-import { obtenerNegocioSlugActivo } from '../../shared/lib/http/axios';
+import { obtenerNegocioSlugActivo, RUTAS_RESERVADAS } from '../../shared/lib/http/axios';
 import { GoogleLogin } from '@react-oauth/google';
 import {
   AlertCircle,
@@ -24,6 +24,12 @@ export const LoginPage: React.FC = () => {
   const { loginConGoogle, isAuthenticated, isInitializing } = useAuth();
   const [errorMensaje, setErrorMensaje] = useState<string | null>(null);
   const [isCargando, setIsCargando] = useState(false);
+
+  useEffect(() => {
+    if (paramSlug && !RUTAS_RESERVADAS.has(paramSlug.toLowerCase().trim())) {
+      localStorage.setItem('negocio_slug', paramSlug.toLowerCase().trim());
+    }
+  }, [paramSlug]);
 
   useEffect(() => {
     if (!isInitializing && isAuthenticated) {

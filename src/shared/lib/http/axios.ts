@@ -16,7 +16,8 @@ export const apiClient = axios.create({
  * Rutas internas y palabras reservadas del sistema que NUNCA deben
  * ser interpretadas como slug de negocio.
  */
-const RUTAS_RESERVADAS = new Set([
+export const RUTAS_RESERVADAS = new Set([
+  '',
   'login',
   'sin-acceso',
   'dashboard',
@@ -32,12 +33,18 @@ const RUTAS_RESERVADAS = new Set([
   'cliente',
   'catalogo',
   'reservar',
+  'reserva',
+  'plataforma',
+  'explorar',
+  'c',
+  'api',
 ]);
 
 /**
  * Resuelve dinámicamente el slug de la barbería activa:
  * 1. Del primer segmento del pathname de la URL (ej: /barberia-demo-2/login -> 'barberia-demo-2').
  * 2. O del valor guardado en localStorage ('negocio_slug').
+ * 3. Si el valor almacenado coincide con una ruta reservada (ej: 'plataforma'), se purga automáticamente.
  */
 export function obtenerNegocioSlugActivo(): string | null {
   try {
@@ -46,7 +53,17 @@ export function obtenerNegocioSlugActivo(): string | null {
       localStorage.setItem('negocio_slug', primerSegmento);
       return primerSegmento;
     }
-    return localStorage.getItem('negocio_slug') || null;
+
+    const guardado = localStorage.getItem('negocio_slug')?.toLowerCase().trim();
+    if (guardado) {
+      if (RUTAS_RESERVADAS.has(guardado)) {
+        localStorage.removeItem('negocio_slug');
+        return null;
+      }
+      return guardado;
+    }
+
+    return null;
   } catch {
     return null;
   }

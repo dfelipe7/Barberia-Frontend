@@ -11,6 +11,8 @@ import ClienteAccesoPage from './features/reservas/pages/ClienteAccesoPage';
 import ClientePortalPage from './features/reservas/pages/ClientePortalPage';
 import SinAcceso from './pages/SinAcceso/SinAcceso';
 import LoginPage from './pages/Login/LoginPage';
+import PlataformaHubPage from './pages/Plataforma/PlataformaHubPage';
+import LandingPlataformaPage from './pages/Plataforma/LandingPlataformaPage';
 import { routeConfig } from './shared/routes/routeConfig';
 import KyriosSpinner from './shared/ui/KyriosSpinner';
 
@@ -79,8 +81,10 @@ function App() {
           }
         />
 
-        {/* Rutas públicas directas (compatibilidad) */}
-        <Route path="/" element={<HomePage />} />
+        {/* Landing de la Plataforma SaaS en raíz */}
+        <Route path="/" element={<LandingPlataformaPage />} />
+        <Route path="/plataforma" element={<PlataformaHubPage />} />
+        <Route path="/explorar" element={<PlataformaHubPage />} />
         <Route path="/reservar" element={<ReservaClientePage />} />
         <Route path="/reserva/gestion" element={<ReservaGestionInvitadoPage />} />
         <Route path="/c/:id/:token" element={<ReservaGestionInvitadoPage />} />

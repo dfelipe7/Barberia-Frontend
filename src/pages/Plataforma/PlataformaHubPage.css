@@ -1,0 +1,440 @@
+/* ─── Hub de Barberías Estilo Netflix / SaaS Platform ───────────────────── */
+
+.hub-plataforma {
+  min-height: 100vh;
+  min-height: 100svh;
+  background-color: #09090b;
+  color: #f4f4f5;
+  font-family: var(--font-body, 'Inter', system-ui, sans-serif);
+  position: relative;
+  overflow-x: hidden;
+  padding-bottom: 5rem;
+}
+
+/* Ambient Glow cinematográfico */
+.hub-plataforma__glow {
+  position: absolute;
+  top: -160px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 950px;
+  height: 480px;
+  background: radial-gradient(ellipse at center, rgba(0, 113, 188, 0.28) 0%, rgba(0, 113, 188, 0.08) 45%, transparent 75%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hub-plataforma__grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(circle at top center, black 35%, transparent 85%);
+  -webkit-mask-image: radial-gradient(circle at top center, black 35%, transparent 85%);
+}
+
+.hub-plataforma__container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Top bar */
+.hub-plataforma__top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hub-plataforma__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(0, 113, 188, 0.15);
+  border: 1px solid rgba(0, 113, 188, 0.35);
+  color: #38bdf8;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+}
+
+/* Hero Header */
+.hub-plataforma__hero {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 3rem;
+}
+
+.hub-plataforma__title {
+  font-size: clamp(2rem, 3.2vw, 2.75rem);
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 0.75rem;
+}
+
+.hub-plataforma__subtitle {
+  font-size: 1.05rem;
+  color: #a1a1aa;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+
+/* Stats Ribbon */
+.hub-plataforma__stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.hub-plataforma__stat-pill {
+  background: rgba(24, 24, 27, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.hub-plataforma__stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(0, 113, 188, 0.15);
+  color: #0071BC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hub-plataforma__stat-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.hub-plataforma__stat-label {
+  font-size: 0.78rem;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* Actions Bar */
+.hub-plataforma__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.hub-plataforma__search {
+  position: relative;
+  min-width: 280px;
+  max-width: 380px;
+  flex-grow: 1;
+}
+
+.hub-plataforma__search-input {
+  background: rgba(24, 24, 27, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 0.7rem 1rem 0.7rem 2.6rem;
+  width: 100%;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.hub-plataforma__search-input:focus {
+  border-color: #0071BC;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 113, 188, 0.25);
+}
+
+.hub-plataforma__search-icon {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #71717a;
+  pointer-events: none;
+}
+
+.btn-volver-landing {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e4e4e7;
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 0.65rem 1.15rem;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-volver-landing:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  transform: translateX(-2px);
+}
+
+.btn-crear-barberia {
+  background: #0071BC;
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+  font-size: 0.92rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 18px rgba(0, 113, 188, 0.4);
+}
+
+.btn-crear-barberia:hover {
+  background: #005fa0;
+  transform: translateY(-1px);
+}
+
+/* ── Grid de Barberías Tipo Netflix Posters ── */
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.hub-card {
+  background: rgba(18, 18, 22, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+
+.hub-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(0, 113, 188, 0.45);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 113, 188, 0.15);
+}
+
+.hub-card--inactiva {
+  opacity: 0.65;
+  filter: grayscale(0.4);
+}
+
+.hub-card--inactiva:hover {
+  opacity: 0.9;
+  filter: none;
+}
+
+/* Banner de la Barbería */
+.hub-card__banner {
+  height: 140px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  background-color: #121214;
+}
+
+.hub-card__banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(18, 18, 22, 0.2) 0%, rgba(18, 18, 22, 0.95) 100%);
+}
+
+.hub-card__status-chip {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  backdrop-filter: blur(8px);
+}
+
+.chip--ACTIVO {
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+}
+
+.chip--INACTIVO {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+.hub-card__body {
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.hub-card__title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.01em;
+}
+
+.hub-card__slug {
+  font-size: 0.84rem;
+  color: #38bdf8;
+  font-family: var(--font-body, monospace);
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.hub-card__location {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: #a1a1aa;
+  margin-bottom: 1.25rem;
+}
+
+/* Métricas del Card */
+.hub-card__metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.hub-card__metric-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.hub-card__metric-val {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.hub-card__metric-lbl {
+  font-size: 0.72rem;
+  color: #71717a;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Botones de Acción de la Barbería */
+.hub-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.hub-card__launch-btn {
+  background: rgba(0, 113, 188, 0.15);
+  border: 1px solid rgba(0, 113, 188, 0.35);
+  color: #38bdf8;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.hub-card__launch-btn:hover {
+  background: #0071BC;
+  color: #ffffff;
+  border-color: #0071BC;
+  box-shadow: 0 4px 15px rgba(0, 113, 188, 0.35);
+}
+
+.hub-card__secondary-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.hub-card__booking-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e4e4e7;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.hub-card__booking-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.hub-card__toggle-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #a1a1aa;
+  font-size: 0.8rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hub-card__toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
