@@ -6,11 +6,51 @@ import axios from 'axios';
  *
  * PATRÓN PROXY (Interceptor de Peticiones):
  * Intercepta de forma transparente cada request saliente para inyectar
- * el Bearer token JWT de la sesión en los headers sin acoplar a los consumidores.
+ * el Bearer token JWT de la sesión y el tenant activo (X-Negocio-Slug).
  */
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
+
+/**
+ * Rutas internas y palabras reservadas del sistema que NUNCA deben
+ * ser interpretadas como slug de negocio.
+ */
+const RUTAS_RESERVADAS = new Set([
+  'login',
+  'sin-acceso',
+  'dashboard',
+  'mi-perfil',
+  'horarios',
+  'reservas',
+  'usuarios',
+  'barberos',
+  'servicios',
+  'whatsapp',
+  'administradores',
+  'configuracion',
+  'cliente',
+  'catalogo',
+  'reservar',
+]);
+
+/**
+ * Resuelve dinámicamente el slug de la barbería activa:
+ * 1. Del primer segmento del pathname de la URL (ej: /barberia-demo-2/login -> 'barberia-demo-2').
+ * 2. O del valor guardado en localStorage ('negocio_slug').
+ */
+export function obtenerNegocioSlugActivo(): string | null {
+  try {
+    const primerSegmento = window.location.pathname.replace(/^\/+/, '').split('/')[0]?.toLowerCase().trim();
+    if (primerSegmento && !RUTAS_RESERVADAS.has(primerSegmento)) {
+      localStorage.setItem('negocio_slug', primerSegmento);
+      return primerSegmento;
+    }
+    return localStorage.getItem('negocio_slug') || null;
+  } catch {
+    return null;
+  }
+}
 
 apiClient.interceptors.request.use(
   (config) => {
@@ -18,6 +58,13 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // Inyecta dinámicamente la barbería activa para la arquitectura multitenant
+    const slug = obtenerNegocioSlugActivo();
+    if (slug) {
+      config.headers['X-Negocio-Slug'] = slug;
+    }
+
     return config;
   },
   (error) => {
@@ -48,14 +95,16 @@ apiClient.interceptors.response.use(
 
     if (error.response && error.response.status === 401) {
       console.warn('Sesión no autorizada o expirada (401).');
+      const slug = obtenerNegocioSlugActivo();
       localStorage.removeItem('token_barberia');
       localStorage.removeItem('usuario_barberia');
+      const loginUrl = slug ? `/${slug}/login` : '/login';
       if (
-        window.location.pathname !== '/login' &&
+        window.location.pathname !== loginUrl &&
         window.location.pathname !== '/' &&
         window.location.pathname !== '/sin-acceso'
       ) {
-        window.location.href = '/login';
+        window.location.href = loginUrl;
       }
     }
     return Promise.reject(error);

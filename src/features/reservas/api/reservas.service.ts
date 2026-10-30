@@ -1,5 +1,5 @@
 import axios from 'axios';
-import apiClient from '../../../shared/lib/http/axios';
+import apiClient, { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import type {
   ClienteSesionDTO,
   ClienteSesionResponseDTO,
@@ -30,14 +30,37 @@ const reservasApiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-// Este cliente solo adjunta el JWT de cliente. Nunca envía por accidente el JWT del personal.
+// Este cliente gestiona las peticiones del portal público y del flujo de reservas.
 reservasApiClient.interceptors.request.use((config) => {
+  // 1. Multitenant: Inyectar la cabecera X-Negocio-Slug para resolver la barbería activa
+  const slug = obtenerNegocioSlugActivo();
+  if (slug) {
+    config.headers['X-Negocio-Slug'] = slug;
+  }
+
+  // 2. Adjuntar el JWT de cliente (si existe)
   const tokenCliente = localStorage.getItem(TOKEN_CLIENTE_KEY);
   if (tokenCliente) {
     config.headers.Authorization = 'Bearer ' + tokenCliente;
   }
   return config;
 });
+
+reservasApiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Si la sesión de cliente es rechazada (401 expirada o 403 sesión de otra barbería / inválida),
+    // limpiamos automáticamente los datos locales de cliente para que la UI no quede bloqueada.
+    if (error?.response?.status === 401 || error?.response?.status === 403) {
+      const url = error.config?.url || '';
+      if (url.includes('/reservas/me') || url.includes('/auth/clientes')) {
+        localStorage.removeItem(TOKEN_CLIENTE_KEY);
+        localStorage.removeItem(SESION_CLIENTE_KEY);
+      }
+    }
+    return Promise.reject(error);
+  },
+);
 
 export const clientesService = {
   async iniciarSesionGoogle(idToken: string): Promise<ClienteSesionResponseDTO> {

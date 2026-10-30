@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { Scissors } from 'lucide-react';
 import '../../Home/home.css';
 import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
@@ -33,6 +33,8 @@ const ServiceSkeleton: React.FC = () => (
 /* ─── Página principal ─────────────────────────────────────────────────────── */
 const CatalogoServiciosPage: React.FC = () => {
   const navigate = useNavigate();
+  const { slug } = useParams<{ slug?: string }>();
+  const basePrefix = slug ? `/${slug}` : '';
   const { isAuthenticated, nombre } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
@@ -100,7 +102,7 @@ const CatalogoServiciosPage: React.FC = () => {
           <nav aria-label="Ruta de navegación" className="mb-3">
             <ol className="d-flex align-items-center gap-1 list-unstyled mb-0" style={{ fontSize: '0.8rem' }}>
               <li>
-                <Link to="/" className="kyrios-footer-link">Inicio</Link>
+                <Link to={basePrefix || "/"} className="kyrios-footer-link">Inicio</Link>
               </li>
               <li aria-hidden="true" className="text-surface-muted">/</li>
               <li className="text-surface-muted" aria-current="page">Servicios</li>
@@ -173,7 +175,7 @@ const CatalogoServiciosPage: React.FC = () => {
                       <ServiceCard
                         servicio={servicio}
                         onReservar={(s) => {
-                          navigate('/reservar', {
+                          navigate(`${basePrefix}/reservar`, {
                             state: { servicioId: s.id, origen: 'servicio' },
                           });
                         }}

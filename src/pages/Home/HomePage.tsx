@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import { esRolApp } from '../../shared/lib/autorizacion/roles';
 import type { Servicio } from '../../features/servicios/types/servicios.types';
@@ -16,6 +16,9 @@ import LocationSection from './components/LocationSection';
 import HomeFooter from './components/HomeFooter';
 
 export const HomePage: React.FC = () => {
+  const { slug } = useParams<{ slug?: string }>();
+  const basePrefix = slug ? `/${slug}` : '';
+
   const { isAuthenticated, isInitializing, nombre, roles, usuarioDb } = useAuth();
   const navigate = useNavigate();
 
@@ -29,13 +32,13 @@ export const HomePage: React.FC = () => {
     }
   }, [isInitializing, isAuthenticated, tienePermiso, usuarioDb, navigate]);
 
-  const handleReservarGeneral = () => navigate('/reservar');
+  const handleReservarGeneral = () => navigate(`${basePrefix}/reservar`);
 
   const handleReservarServicio = (servicio: Servicio) =>
-    navigate('/reservar', { state: { servicioId: servicio.id, origen: 'servicio' } });
+    navigate(`${basePrefix}/reservar`, { state: { servicioId: servicio.id, origen: 'servicio' } });
 
   const handleReservarBarbero = (barbero: BarberoCatalogo, servicioId?: number) =>
-    navigate('/reservar', {
+    navigate(`${basePrefix}/reservar`, {
       state: {
         barberoId: barbero.id,
         origen: 'barbero',
@@ -45,16 +48,16 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="kyrios-home min-vh-100 d-flex flex-column">
-      {/* ── Navbar público con marca Kyrios Studio y estado de sesión ── */}
+      {/* ── Navbar público con marca y estado de sesión ── */}
       <HomeNavbar
         isAuthenticated={isAuthenticated}
         nombre={nombre}
-        onLogin={() => navigate('/login')}
+        onLogin={() => navigate(`${basePrefix}/login`)}
       />
 
       {/* ── Contenido público principal ── */}
       <main className="flex-grow-1 position-relative">
-        {/* Hero visual con banner oficial de Kyrios y CTAs */}
+        {/* Hero visual con banner y CTAs */}
         <HeroSection onReservar={handleReservarGeneral} />
 
         {/* Bloque de confianza con atributos de calidad no cuantitativos */}

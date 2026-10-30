@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
 import type { Servicio } from '../../../features/servicios/types/servicios.types';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
@@ -13,6 +13,8 @@ interface ServicesSectionProps {
 export const ServicesSection: React.FC<ServicesSectionProps> = ({
   onReservarServicio,
 }) => {
+  const { slug } = useParams<{ slug?: string }>();
+  const basePrefix = slug ? `/${slug}` : '';
   const { data: servicios = [], isLoading, error, refetch } = useServiciosCatalogo();
 
   // REGLA DE NEGOCIO PÚBLICA: Los servicios inactivos (estado !== 'ACTIVO') NUNCA
@@ -118,7 +120,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
             {serviciosActivos.length > 3 && (
               <div className="text-center mt-5">
                 <Link
-                  to="/catalogo/servicios"
+                  to={`${basePrefix}/catalogo/servicios`}
                   className="btn-kyrios-outline d-inline-flex align-items-center gap-2"
                 >
                   Ver catálogo completo

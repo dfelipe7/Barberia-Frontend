@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { Users } from 'lucide-react';
 import '../../Home/home.css';
 import { useBarberosCatalogo } from '../../../features/barberos/api/barberos.facade';
@@ -32,6 +32,8 @@ const BarberSkeleton: React.FC = () => (
 /* ─── Página principal ─────────────────────────────────────────────────────── */
 const CatalogoBarberosPage: React.FC = () => {
   const navigate = useNavigate();
+  const { slug } = useParams<{ slug?: string }>();
+  const basePrefix = slug ? `/${slug}` : '';
   const { isAuthenticated, nombre } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
@@ -94,7 +96,7 @@ const CatalogoBarberosPage: React.FC = () => {
           <nav aria-label="Ruta de navegación" className="mb-3">
             <ol className="d-flex align-items-center gap-1 list-unstyled mb-0" style={{ fontSize: '0.8rem' }}>
               <li>
-                <Link to="/" className="kyrios-footer-link">Inicio</Link>
+                <Link to={basePrefix || "/"} className="kyrios-footer-link">Inicio</Link>
               </li>
               <li aria-hidden="true" className="text-surface-muted">/</li>
               <li className="text-surface-muted" aria-current="page">Barberos</li>
@@ -167,7 +169,7 @@ const CatalogoBarberosPage: React.FC = () => {
                       <BarberCard
                         barbero={barbero}
                         onReservar={(b, servicioId) => {
-                          navigate('/reservar', {
+                          navigate(`${basePrefix}/reservar`, {
                             state: {
                               barberoId: b.id,
                               origen: 'barbero',

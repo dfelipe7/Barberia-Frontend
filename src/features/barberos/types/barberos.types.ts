@@ -10,6 +10,7 @@ export interface BarberoCatalogo {
 
 export interface BarberoGestion {
   id: number;
+  barberoId?: number;
   nombre: string;
   apellido: string;
   email: string;

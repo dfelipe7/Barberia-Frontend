@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate, Link, NavLink, useLocation } from 'react-router-dom';
+import { useNavigate, Link, NavLink, useLocation, useParams } from 'react-router-dom';
 import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut, User } from 'lucide-react';
 import BrandLogo from '../../../shared/ui/BrandLogo';
 import { BRAND } from '../../../config/brand';
@@ -55,18 +55,21 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
   const [productosModalOpen, setProductosModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const enHome = location.pathname === '/';
+  const { slug } = useParams<{ slug?: string }>();
+  const basePrefix = slug ? `/${slug}` : '';
+  const rutaHome = slug ? `/${slug}` : '/';
+  const enHome = location.pathname === '/' || (Boolean(slug) && location.pathname === `/${slug}`);
 
   const navLinks = useMemo(() => {
     const base = [
-      { id: 'servicios', to: '/catalogo/servicios', label: 'Servicios' },
-      { id: 'barberos',  to: '/catalogo/barberos',  label: 'Barberos'  },
-      { id: 'productos', to: null,                  label: 'Productos' },
+      { id: 'servicios', to: `${basePrefix}/catalogo/servicios`, label: 'Servicios' },
+      { id: 'barberos',  to: `${basePrefix}/catalogo/barberos`,  label: 'Barberos'  },
+      { id: 'productos', to: null,                                label: 'Productos' },
     ];
     return enHome
       ? base
-      : [{ id: 'inicio', to: '/', label: 'Inicio' }, ...base];
-  }, [enHome]);
+      : [{ id: 'inicio', to: rutaHome, label: 'Inicio' }, ...base];
+  }, [enHome, basePrefix, rutaHome]);
 
   const { theme, setTheme, isDark } = useTheme();
   const {
@@ -82,7 +85,8 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
   const isAuthenticated = propIsAuthenticated !== undefined ? propIsAuthenticated : authIsAuthenticated;
   const nombre = propNombre !== undefined ? propNombre : authNombre;
   const apellido = authApellido;
-  const onLogin = propOnLogin || (() => navigate('/login'));
+  const rutaLogin = slug ? `/${slug}/login` : '/login';
+  const onLogin = propOnLogin || (() => navigate(rutaLogin));
   const tieneAcceso = roles.some(esRolApp) && usuarioDb?.estado === 'ACTIVO';
 
   // Solo mostramos avatar si la sesión está resuelta Y autenticada Y el
@@ -132,7 +136,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 
         {/* ── Logo ── */}
         <Link
-          to="/"
+          to={rutaHome}
           className="d-flex align-items-center gap-2 text-decoration-none flex-shrink-0"
           onClick={closeMobileMenu}
           aria-label={`Ir al inicio de ${BRAND.name}`}

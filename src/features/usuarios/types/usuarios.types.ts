@@ -4,6 +4,7 @@ export interface AdministradorPerfil {
   id: number;
   usuarioId: number;
   estado: EstadoEntidad;
+  superadmin?: boolean;
 }
 
 export interface BarberoPerfil {

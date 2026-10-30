@@ -58,11 +58,17 @@ export function AuthContextProvider({
   // Resuelve todos los roles activos combinando la sesión JWT y el perfil cargado de BD
   const rolesFromSesion = Array.isArray(usuarioSesion?.roles) && usuarioSesion.roles.length > 0
     ? usuarioSesion.roles
-    : (usuarioSesion?.rol ? [usuarioSesion.rol] : []);
+    : (usuarioSesion?.rol && usuarioSesion.rol !== 'PERSONAL' ? [usuarioSesion.rol] : []);
 
   const rolesFromDb: string[] = [];
   if (usuarioDb) {
-    if (usuarioDb.rol === 'SUPERADMIN') rolesFromDb.push('SUPERADMIN');
+    if (
+      usuarioDb.rol === 'SUPERADMIN' ||
+      usuarioDb.administrador?.superadmin ||
+      rolesFromSesion.includes('SUPERADMIN')
+    ) {
+      rolesFromDb.push('SUPERADMIN');
+    }
     if (usuarioDb.administrador?.estado === 'ACTIVO' || (usuarioDb.rol === 'ADMINISTRADOR' && !usuarioDb.administrador)) {
       if (!rolesFromDb.includes('ADMINISTRADOR')) rolesFromDb.push('ADMINISTRADOR');
     }
@@ -71,15 +77,19 @@ export function AuthContextProvider({
     }
   }
 
-  // Resuelve los roles activos: si ya cargó el perfil real de la BD, la BD es la fuente de verdad.
-  // Si aún está en la carga inicial, se usa temporalmente la sesión local para evitar parpadeos visuales.
-  const roles = usuarioDb ? rolesFromDb : rolesFromSesion;
+  // Resuelve los roles activos: si la BD tiene roles identificados, se usan; de lo contrario se preserva la sesión JWT
+  const roles = rolesFromDb.length > 0 ? rolesFromDb : rolesFromSesion;
   const nombre = usuarioSesion?.nombre;
   const apellido = usuarioSesion?.apellido;
   const email = usuarioSesion?.email;
   const fotoUrl = usuarioSesion?.fotoUrl;
 
   const cerrarSesion = useCallback(() => {
+    const slugDestino =
+      localStorage.getItem('negocio_slug') ||
+      localStorage.getItem('negocio_sesion_slug') ||
+      '';
+
     localStorage.removeItem('token_barberia');
     localStorage.removeItem('usuario_barberia');
     window.localStorage.setItem('barberia_logout_event', Date.now().toString());
@@ -87,7 +97,7 @@ export function AuthContextProvider({
     setToken(null);
     setUsuarioSesion(null);
     setUsuarioDb(null);
-    window.location.href = '/';
+    window.location.href = slugDestino ? `/${slugDestino}` : '/';
   }, []);
 
   const isRefreshingRef = useRef(false);
@@ -129,7 +139,8 @@ export function AuthContextProvider({
   const loginConGoogle = useCallback(async (idToken: string) => {
     try {
       const response = await apiClient.post('/auth/google', { idToken });
-      const { accessToken, usuario } = response.data;
+      const { accessToken, usuario, negocio } = response.data;
+      if (negocio?.slug) localStorage.setItem('negocio_slug', negocio.slug);
       localStorage.setItem('token_barberia', accessToken);
       localStorage.setItem('usuario_barberia', JSON.stringify(usuario));
       queryClient.clear();

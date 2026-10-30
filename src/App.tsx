@@ -51,7 +51,28 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Route>
 
-        {/* Rutas públicas fuera de MainLayout (sin sidebar, con HomeNavbar) */}
+        {/* Rutas dinámicas por barbería (/:slug) */}
+        <Route path="/:slug" element={<HomePage />} />
+        <Route path="/:slug/reservar" element={<ReservaClientePage />} />
+        <Route path="/:slug/login" element={<LoginPage />} />
+        <Route
+          path="/:slug/catalogo/servicios"
+          element={
+            <Suspense fallback={<div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}><KyriosSpinner /></div>}>
+              <CatalogoServiciosPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/:slug/catalogo/barberos"
+          element={
+            <Suspense fallback={<div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}><KyriosSpinner /></div>}>
+              <CatalogoBarberosPage />
+            </Suspense>
+          }
+        />
+
+        {/* Rutas públicas directas (compatibilidad) */}
         <Route path="/" element={<HomePage />} />
         <Route path="/reservar" element={<ReservaClientePage />} />
         <Route path="/cliente/registro" element={<ClienteAccesoPage modo="registro" />} />
