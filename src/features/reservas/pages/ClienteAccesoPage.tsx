@@ -35,6 +35,7 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(false);
   const registro = modo === 'registro';
+  const tieneSesionStaff = Boolean(localStorage.getItem('token_barberia'));
 
   const returnToState = (location.state as { returnTo?: unknown } | null)?.returnTo;
   const returnToQuery = searchParams.get('returnTo');
@@ -54,7 +55,7 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
     setError(null);
     try {
       const sesion = await clientesService.iniciarSesionGoogle(respuesta.credential);
-      clientesService.guardarSesion(sesion);
+      clientesService.guardarSesion(sesion, slug);
       navigate(returnTo, { replace: true, state: { desdeLogin: true } });
     } catch (errorDesconocido: unknown) {
       setError(mapApiError(errorDesconocido));
@@ -160,6 +161,24 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
             </p>
           </div>
 
+          {tieneSesionStaff && (
+            <div
+              className="d-flex align-items-center justify-content-between p-2 mb-3 rounded-2"
+              style={{
+                background: 'rgba(59, 130, 246, 0.12)',
+                border: '1px solid rgba(59, 130, 246, 0.3)',
+                fontSize: '0.84rem',
+              }}
+            >
+              <div className="d-flex align-items-center gap-2" style={{ color: '#60a5fa' }}>
+                <ShieldCheck size={16} />
+                <span>Sesión activa como <strong>Personal</strong></span>
+              </div>
+              <Link to="/dashboard" className="btn btn-sm btn-primary py-0 px-2" style={{ fontSize: '0.78rem' }}>
+                Ir al Dashboard
+              </Link>
+            </div>
+          )}
           {error && <ErrorMessage message={error} />}
 
           {/* Tarjeta de Inicio de Sesión de Google */}

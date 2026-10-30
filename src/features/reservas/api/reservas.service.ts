@@ -23,10 +23,24 @@ import type {
   ReservaModificadaDTO,
 } from './reservas.dto';
 
-const TOKEN_CLIENTE_KEY = 'token_cliente_barberia';
-const SESION_CLIENTE_KEY = 'cliente_barberia';
+const TOKEN_CLIENTE_KEY_LEGACY = 'token_cliente_barberia';
+const SESION_CLIENTE_KEY_LEGACY = 'cliente_barberia';
 const TOKEN_INVITADO_PREFIX = 'reserva_invitado_gestion_';
 const TOKEN_GESTION_HEADER = 'X-Reservation-Management-Token';
+
+/**
+ * Resuelve las claves de localStorage aisladas por cada barbería para evitar
+ * que el token o la sesión de una sede colisione o contamine a otra.
+ */
+function resolverClavesCliente(slugParam?: string | null) {
+  const rawSlug = slugParam || obtenerNegocioSlugActivo();
+  const slug = (rawSlug && rawSlug.trim() !== '') ? rawSlug.toLowerCase().trim() : 'global';
+  return {
+    tokenKey: `token_cliente_${slug}`,
+    sesionKey: `cliente_${slug}`,
+    slug,
+  };
+}
 
 const reservasApiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -40,10 +54,12 @@ reservasApiClient.interceptors.request.use((config) => {
     config.headers['X-Negocio-Slug'] = slug;
   }
 
-  // 2. Adjuntar el JWT de cliente (si existe)
-  const tokenCliente = localStorage.getItem(TOKEN_CLIENTE_KEY);
+  // 2. Adjuntar el JWT de cliente específico para esta barbería
+  const tokenCliente = clientesService.obtenerToken(slug);
   if (tokenCliente) {
     config.headers.Authorization = 'Bearer ' + tokenCliente;
+  } else {
+    delete config.headers.Authorization;
   }
   return config;
 });
@@ -56,8 +72,8 @@ reservasApiClient.interceptors.response.use(
     if (error?.response?.status === 401 || error?.response?.status === 403) {
       const url = error.config?.url || '';
       if (url.includes('/reservas/me') || url.includes('/auth/clientes')) {
-        localStorage.removeItem(TOKEN_CLIENTE_KEY);
-        localStorage.removeItem(SESION_CLIENTE_KEY);
+        const slug = obtenerNegocioSlugActivo();
+        clientesService.cerrarSesion(slug);
       }
     }
     return Promise.reject(error);
@@ -73,20 +89,54 @@ export const clientesService = {
     return response.data;
   },
 
-  guardarSesion(sesion: ClienteSesionResponseDTO) {
-    localStorage.setItem(TOKEN_CLIENTE_KEY, sesion.accessToken);
-    localStorage.setItem(SESION_CLIENTE_KEY, JSON.stringify(sesion.cliente));
+  guardarSesion(sesion: ClienteSesionResponseDTO, slugParam?: string | null) {
+    const { tokenKey, sesionKey, slug } = resolverClavesCliente(slugParam);
+    const clienteConSlug = { ...sesion.cliente, negocioSlug: slug };
+    localStorage.setItem(tokenKey, sesion.accessToken);
+    localStorage.setItem(sesionKey, JSON.stringify(clienteConSlug));
+    // Guardar también en llaves legacy por compatibilidad
+    localStorage.setItem(TOKEN_CLIENTE_KEY_LEGACY, sesion.accessToken);
+    localStorage.setItem(SESION_CLIENTE_KEY_LEGACY, JSON.stringify(clienteConSlug));
   },
 
-  obtenerSesion(): ClienteSesionDTO | null {
-    if (!localStorage.getItem(TOKEN_CLIENTE_KEY)) return null;
-    const guardada = localStorage.getItem(SESION_CLIENTE_KEY);
-    if (!guardada) return null;
+  obtenerSesion(slugParam?: string | null): ClienteSesionDTO | null {
+    const { tokenKey, sesionKey, slug } = resolverClavesCliente(slugParam);
+    let raw = localStorage.getItem(sesionKey);
+    let token = localStorage.getItem(tokenKey);
+
+    // Si no está con clave propia de sede, verificar fallback legacy
+    if (!token || !raw) {
+      raw = localStorage.getItem(SESION_CLIENTE_KEY_LEGACY);
+      token = localStorage.getItem(TOKEN_CLIENTE_KEY_LEGACY);
+    }
+
+    if (!token || !raw) return null;
+
     try {
-      return JSON.parse(guardada) as ClienteSesionDTO;
+      const parsed = JSON.parse(raw);
+      // Aislamiento: Si la sesión fue guardada con otro slug distinto al activo, NO es válida aquí
+      if (parsed.negocioSlug && parsed.negocioSlug !== slug && slug !== 'global') {
+        return null;
+      }
+      return parsed;
     } catch {
       return null;
     }
+  },
+
+  obtenerToken(slugParam?: string | null): string | null {
+    const { tokenKey, slug } = resolverClavesCliente(slugParam);
+    const sesion = this.obtenerSesion(slug);
+    if (!sesion) return null;
+    return localStorage.getItem(tokenKey) || localStorage.getItem(TOKEN_CLIENTE_KEY_LEGACY);
+  },
+
+  cerrarSesion(slugParam?: string | null) {
+    const { tokenKey, sesionKey } = resolverClavesCliente(slugParam);
+    localStorage.removeItem(tokenKey);
+    localStorage.removeItem(sesionKey);
+    localStorage.removeItem(TOKEN_CLIENTE_KEY_LEGACY);
+    localStorage.removeItem(SESION_CLIENTE_KEY_LEGACY);
   },
 
   async obtenerPerfil(): Promise<PerfilClienteDTO> {
@@ -96,24 +146,22 @@ export const clientesService = {
 
   async actualizarPerfil(datos: ActualizarPerfilClienteDTO): Promise<PerfilClienteDTO> {
     const response = await reservasApiClient.patch<PerfilClienteDTO>('/auth/clientes/perfil', datos);
-    const sesionActual = this.obtenerSesion();
+    const slug = obtenerNegocioSlugActivo();
+    const sesionActual = this.obtenerSesion(slug);
     if (sesionActual) {
+      const { tokenKey } = resolverClavesCliente(slug);
+      const token = localStorage.getItem(tokenKey) || localStorage.getItem(TOKEN_CLIENTE_KEY_LEGACY) || '';
       this.guardarSesion({
-        accessToken: localStorage.getItem(TOKEN_CLIENTE_KEY) || '',
+        accessToken: token,
         cliente: {
           ...sesionActual,
           nombre: response.data.nombre,
           apellido: response.data.apellido,
           email: response.data.email,
         },
-      });
+      }, slug);
     }
     return response.data;
-  },
-
-  cerrarSesion() {
-    localStorage.removeItem(TOKEN_CLIENTE_KEY);
-    localStorage.removeItem(SESION_CLIENTE_KEY);
   },
 };
 

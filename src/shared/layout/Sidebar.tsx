@@ -21,6 +21,7 @@ import { useBodyScrollLock } from '../lib/useBodyScrollLock';
 import BrandLogo from '../ui/BrandLogo';
 import { BRAND } from '../../config/brand';
 import { useUi } from '../contexts/UiContext';
+import { obtenerNegocioSlugActivo } from '../lib/http/axios';
 
 interface NavItem {
   to: string;
@@ -44,6 +45,7 @@ export default function Sidebar() {
   const systemTheme = useSystemTheme();
   const isDark = systemTheme === 'dark';
   const location = useLocation();
+  const slugActivo = obtenerNegocioSlugActivo();
 
   const { isSidebarOpen, closeSidebar, isCollapsed, toggleCollapse } = useUi();
 
@@ -149,6 +151,12 @@ export default function Sidebar() {
           to: '/mi-perfil',
           label: 'Mi Perfil',
           icon: User,
+          permiso: true,
+        },
+        {
+          to: slugActivo ? `/${slugActivo}/cliente/mi-cuenta` : '/cliente/mi-cuenta',
+          label: 'Portal Cliente',
+          icon: Sparkles,
           permiso: true,
         },
       ],

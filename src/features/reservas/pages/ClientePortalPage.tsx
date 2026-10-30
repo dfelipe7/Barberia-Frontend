@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
+  ShieldCheck,
   Calendar,
   CalendarDays,
   Clock3,
@@ -75,7 +76,8 @@ export default function ClientePortalPage() {
   const { theme, setTheme, isDark } = useTheme();
 
   const slugActivo = paramSlug || obtenerNegocioSlugActivo() || '';
-  const sesion = clientesService.obtenerSesion();
+  const sesion = clientesService.obtenerSesion(slugActivo);
+  const tieneSesionStaff = Boolean(localStorage.getItem("token_barberia"));
 
   // Si no hay sesión de cliente activa, redirigir a inicio de sesión
   useEffect(() => {
@@ -208,6 +210,26 @@ export default function ClientePortalPage() {
             </Link>
           </div>
           <div className="d-flex align-items-center gap-2 gap-sm-3">
+            {tieneSesionStaff && (
+              <Link
+                to="/dashboard"
+                className="btn btn-sm d-flex align-items-center gap-1"
+                style={{
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  color: '#f59e0b',
+                  background: 'rgba(245, 158, 11, 0.15)',
+                  border: '1px solid rgba(245, 158, 11, 0.35)',
+                  borderRadius: '6px',
+                  padding: '4px 10px',
+                  textDecoration: 'none',
+                }}
+                title="Volver a tu panel de administración (Staff)"
+              >
+                <ShieldCheck size={14} />
+                <span className="d-none d-sm-inline">Panel Staff</span>
+              </Link>
+            )}
             <BrandLogo variant={isDark ? 'white' : 'black'} height={28} alt="Kyrios Barber Studio" />
             
             {/* Toggle de Modo Claro / Modo Oscuro */}

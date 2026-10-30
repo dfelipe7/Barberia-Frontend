@@ -9,9 +9,11 @@ import {
   Layers,
   Scissors,
   ShieldCheck,
+  UserCheck,
   TrendingUp,
 } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
+import { clientesService } from '../../features/reservas/api/reservas.service';
 import BrandLogo from '../../shared/ui/BrandLogo';
 import KyriosSpinner from '../../shared/ui/KyriosSpinner';
 import heroImg from '../../assets/hero.png';
@@ -24,6 +26,7 @@ export const LoginPage: React.FC = () => {
   const { loginConGoogle, isAuthenticated, isInitializing } = useAuth();
   const [errorMensaje, setErrorMensaje] = useState<string | null>(null);
   const [isCargando, setIsCargando] = useState(false);
+  const sesionCliente = slug ? clientesService.obtenerSesion(slug) : null;
 
   useEffect(() => {
     if (paramSlug && !RUTAS_RESERVADAS.has(paramSlug.toLowerCase().trim())) {
@@ -161,6 +164,24 @@ export const LoginPage: React.FC = () => {
             </p>
           </div>
 
+                    {sesionCliente && (
+            <div
+              className="d-flex align-items-center justify-content-between p-2 mb-3 rounded-2"
+              style={{
+                background: 'rgba(234, 179, 8, 0.12)',
+                border: '1px solid rgba(234, 179, 8, 0.3)',
+                fontSize: '0.84rem',
+              }}
+            >
+              <div className="d-flex align-items-center gap-2" style={{ color: '#facc15' }}>
+                <UserCheck size={16} />
+                <span>Sesión activa como <strong>Cliente</strong></span>
+              </div>
+              <Link to={slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta'} className="btn btn-sm btn-warning py-0 px-2" style={{ fontSize: '0.78rem' }}>
+                Ir a Mi Cuenta
+              </Link>
+            </div>
+          )}
           {errorMensaje && (
             <div
               className="alert d-flex align-items-start gap-2 py-2.5 px-3 mb-4 rounded-3 small"
