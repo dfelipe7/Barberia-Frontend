@@ -119,8 +119,23 @@ export const reservasService = {
     return response.data;
   },
 
+  guardarTokenGestionInvitado(id: number, token: string) {
+    sessionStorage.setItem(TOKEN_INVITADO_PREFIX + id, token);
+  },
+
   obtenerTokenGestionInvitado(id: number): string | null {
     return sessionStorage.getItem(TOKEN_INVITADO_PREFIX + id);
+  },
+
+  async obtenerReservaInvitado(id: number, token: string): Promise<ReservaClienteDTO> {
+    const response = await reservasApiClient.get<ReservaClienteDTO>(
+      '/reservas/invitado/' + id,
+      {
+        headers: { [TOKEN_GESTION_HEADER]: token },
+        params: { token },
+      },
+    );
+    return response.data;
   },
 
   eliminarTokenGestionInvitado(id: number) {

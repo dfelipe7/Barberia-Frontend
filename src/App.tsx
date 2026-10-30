@@ -6,6 +6,7 @@ import { ErrorBoundary } from './shared/components/ErrorBoundary';
 import NotFound from './pages/NotFound/NotFound';
 import HomePage from './pages/Home/HomePage';
 import ReservaClientePage from './features/reservas/pages/ReservaClientePage';
+import ReservaGestionInvitadoPage from './features/reservas/pages/ReservaGestionInvitadoPage';
 import ClienteAccesoPage from './features/reservas/pages/ClienteAccesoPage';
 import SinAcceso from './pages/SinAcceso/SinAcceso';
 import LoginPage from './pages/Login/LoginPage';
@@ -54,6 +55,8 @@ function App() {
         {/* Rutas dinámicas por barbería (/:slug) */}
         <Route path="/:slug" element={<HomePage />} />
         <Route path="/:slug/reservar" element={<ReservaClientePage />} />
+        <Route path="/:slug/reserva/gestion" element={<ReservaGestionInvitadoPage />} />
+        <Route path="/:slug/c/:id/:token" element={<ReservaGestionInvitadoPage />} />
         <Route path="/:slug/login" element={<LoginPage />} />
         <Route
           path="/:slug/catalogo/servicios"
@@ -75,6 +78,8 @@ function App() {
         {/* Rutas públicas directas (compatibilidad) */}
         <Route path="/" element={<HomePage />} />
         <Route path="/reservar" element={<ReservaClientePage />} />
+        <Route path="/reserva/gestion" element={<ReservaGestionInvitadoPage />} />
+        <Route path="/c/:id/:token" element={<ReservaGestionInvitadoPage />} />
         <Route path="/cliente/registro" element={<ClienteAccesoPage modo="registro" />} />
         <Route path="/cliente/iniciar-sesion" element={<ClienteAccesoPage modo="iniciar-sesion" />} />
         <Route path="/login" element={<LoginPage />} />
