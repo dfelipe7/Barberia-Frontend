@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, Link, NavLink, useLocation, useParams } from 'react-router-dom';
-import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut, User } from 'lucide-react';
+import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut, User, Calendar } from 'lucide-react';
+import { clientesService } from '../../../features/reservas/api/reservas.service';
 import BrandLogo from '../../../shared/ui/BrandLogo';
 import { BRAND } from '../../../config/brand';
 import { MenuIcon, CloseIcon } from './HomeIcons';
@@ -9,6 +10,7 @@ import { useAuth } from '../../../auth/AuthContext';
 import { useBodyScrollLock } from '../../../shared/lib/useBodyScrollLock';
 import { esRolApp } from '../../../shared/lib/autorizacion/roles';
 import { ProductosEnDesarrolloModal } from './ProductosEnDesarrolloModal';
+import { SelectorAccesoModal } from './SelectorAccesoModal';
 
 /* ─── Hook: detecta si el usuario hizo scroll más allá de un umbral ─────── */
 function useScrolled(threshold = 40): boolean {
@@ -53,6 +55,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [productosModalOpen, setProductosModalOpen] = useState(false);
+  const [accesoModalOpen, setAccesoModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { slug: paramSlug } = useParams<{ slug?: string }>();
@@ -72,6 +75,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
       : [{ id: 'inicio', to: rutaHome, label: 'Inicio' }, ...base];
   }, [enHome, basePrefix, rutaHome]);
 
+  const [clienteSesion, setClienteSesion] = useState(() => clientesService.obtenerSesion());
   const { theme, setTheme, isDark } = useTheme();
   const {
     isAuthenticated: authIsAuthenticated,
@@ -87,7 +91,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
   const nombre = propNombre !== undefined ? propNombre : authNombre;
   const apellido = authApellido;
   const rutaLogin = slug ? `/${slug}/login` : '/login';
-  const onLogin = propOnLogin || (() => navigate(rutaLogin));
+  const onLogin = propOnLogin || (() => setAccesoModalOpen(true));
   const tieneAcceso = roles.some(esRolApp) && usuarioDb?.estado === 'ACTIVO';
 
   // Solo mostramos avatar si la sesión está resuelta Y autenticada Y el
@@ -231,11 +235,40 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                 Salir
               </button>
             </div>
+          ) : clienteSesion ? (
+            <div className="d-flex align-items-center gap-2">
+              <UserAvatar nombre={clienteSesion.nombre} apellido={clienteSesion.apellido} online />
+              <span className="kyrios-nav-greeting">{clienteSesion.nombre}</span>
+              <button
+                type="button"
+                className="btn-kyrios-primary d-inline-flex align-items-center gap-1"
+                onClick={() => navigate(slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta')}
+              >
+                <Calendar size={14} strokeWidth={2} />
+                Mis Citas
+              </button>
+              <button
+                type="button"
+                className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
+                onClick={() => {
+                  clientesService.cerrarSesion();
+                  setClienteSesion(null);
+                  navigate(slug ? `/${slug}` : '/');
+                }}
+                aria-label="Cerrar sesión"
+              >
+                <LogOut size={14} strokeWidth={2} />
+                Salir
+              </button>
+            </div>
           ) : (
             <button
               type="button"
               className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
-              onClick={onLogin}
+              onClick={() => {
+                const rutaCliente = slug ? `/${slug}/cliente/iniciar-sesion?returnTo=${encodeURIComponent(location.pathname)}` : `/cliente/iniciar-sesion?returnTo=${encodeURIComponent(location.pathname)}`;
+                navigate(rutaCliente);
+              }}
             >
               Iniciar sesión
               <ArrowUpRight size={14} strokeWidth={2} className="kyrios-nav-cta-arrow" />
@@ -268,6 +301,16 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
               title="Mi panel"
             >
               <UserAvatar nombre={nombre} apellido={apellido} online />
+            </button>
+          ) : clienteSesion ? (
+            <button
+              type="button"
+              className="p-0 border-0 bg-transparent d-inline-flex align-items-center rounded-circle"
+              onClick={() => navigate(slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta')}
+              aria-label="Ir a mis citas"
+              title="Mis Citas"
+            >
+              <UserAvatar nombre={clienteSesion.nombre} apellido={clienteSesion.apellido} online />
             </button>
           ) : (
             <button
@@ -370,15 +413,61 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                     Cerrar sesión
                   </button>
                 </>
+              ) : clienteSesion ? (
+                <>
+                  <div className="kyrios-nav-greeting d-flex align-items-center gap-2 mb-1">
+                    <UserAvatar nombre={clienteSesion.nombre} apellido={clienteSesion.apellido} online />
+                    <span>Hola, <strong>{clienteSesion.nombre}</strong></span>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-kyrios-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
+                    onClick={() => {
+                      closeMobileMenu();
+                      navigate(slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta');
+                    }}
+                  >
+                    <Calendar size={15} strokeWidth={2} />
+                    Mis Citas y Datos
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-kyrios-outline w-100 d-inline-flex align-items-center justify-content-center gap-2"
+                    onClick={() => {
+                      closeMobileMenu();
+                      clientesService.cerrarSesion();
+                      setClienteSesion(null);
+                      navigate(slug ? `/${slug}` : '/');
+                    }}
+                  >
+                    <LogOut size={15} strokeWidth={2} />
+                    Cerrar sesión
+                  </button>
+                </>
               ) : (
-                <button
-                  type="button"
-                  className="btn-kyrios-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
-                  onClick={() => { closeMobileMenu(); onLogin(); }}
-                >
-                  Iniciar sesión
-                  <ArrowUpRight size={15} strokeWidth={2} />
-                </button>
+                <>
+                  <button
+                    type="button"
+                    className="btn-kyrios-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
+                    onClick={() => {
+                      closeMobileMenu();
+                      onLogin();
+                    }}
+                  >
+                    Iniciar sesión
+                    <ArrowUpRight size={15} strokeWidth={2} />
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-link text-surface-muted text-decoration-none small text-center w-100 mt-1"
+                    onClick={() => {
+                      closeMobileMenu();
+                      navigate(rutaLogin);
+                    }}
+                  >
+                    ¿Eres del equipo o barbero? Acceso al panel
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -386,6 +475,11 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
       )}
 
       {/* Modal de Productos en Desarrollo */}
+      <SelectorAccesoModal
+        isOpen={accesoModalOpen}
+        onClose={() => setAccesoModalOpen(false)}
+        slug={slug}
+      />
       <ProductosEnDesarrolloModal
         isOpen={productosModalOpen}
         onClose={() => setProductosModalOpen(false)}

@@ -13,4 +13,5 @@ export const reservasKeys = {
   clientesAdministrativos: (busqueda: string) => ['clientes', 'gestion', busqueda] as const,
   listadoAdministrativo: (filtro: unknown) => [...reservasKeys.all, 'admin', filtro] as const,
   detalleAdministrativo: (id: number | null) => [...reservasKeys.all, 'admin', 'detalle', id] as const,
+  perfilCliente: () => ['clientes', 'perfil'] as const,
 };

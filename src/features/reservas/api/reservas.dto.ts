@@ -187,3 +187,17 @@ export interface ClienteSesionResponseDTO {
   accessToken: string;
   cliente: ClienteSesionDTO;
 }
+
+export interface PerfilClienteDTO {
+  id: number;
+  nombre: string;
+  apellido: string | null;
+  email: string | null;
+  telefono: string | null;
+}
+
+export interface ActualizarPerfilClienteDTO {
+  telefono?: string;
+  nombre?: string;
+  apellido?: string;
+}

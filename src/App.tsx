@@ -8,6 +8,7 @@ import HomePage from './pages/Home/HomePage';
 import ReservaClientePage from './features/reservas/pages/ReservaClientePage';
 import ReservaGestionInvitadoPage from './features/reservas/pages/ReservaGestionInvitadoPage';
 import ClienteAccesoPage from './features/reservas/pages/ClienteAccesoPage';
+import ClientePortalPage from './features/reservas/pages/ClientePortalPage';
 import SinAcceso from './pages/SinAcceso/SinAcceso';
 import LoginPage from './pages/Login/LoginPage';
 import { routeConfig } from './shared/routes/routeConfig';
@@ -58,6 +59,9 @@ function App() {
         <Route path="/:slug/reserva/gestion" element={<ReservaGestionInvitadoPage />} />
         <Route path="/:slug/c/:id/:token" element={<ReservaGestionInvitadoPage />} />
         <Route path="/:slug/login" element={<LoginPage />} />
+        <Route path="/:slug/cliente/registro" element={<ClienteAccesoPage modo="registro" />} />
+        <Route path="/:slug/cliente/iniciar-sesion" element={<ClienteAccesoPage modo="iniciar-sesion" />} />
+        <Route path="/:slug/cliente/mi-cuenta" element={<ClientePortalPage />} />
         <Route
           path="/:slug/catalogo/servicios"
           element={
@@ -82,6 +86,7 @@ function App() {
         <Route path="/c/:id/:token" element={<ReservaGestionInvitadoPage />} />
         <Route path="/cliente/registro" element={<ClienteAccesoPage modo="registro" />} />
         <Route path="/cliente/iniciar-sesion" element={<ClienteAccesoPage modo="iniciar-sesion" />} />
+        <Route path="/cliente/mi-cuenta" element={<ClientePortalPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/sin-acceso" element={<SinAcceso />} />
         <Route

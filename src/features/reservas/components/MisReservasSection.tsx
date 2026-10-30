@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import { isAxiosError } from 'axios';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import Button from '../../../shared/ui/Button';
@@ -28,6 +29,9 @@ const reservaGestionable = (estado: string) =>
   estado === 'PENDING' || estado === 'CONFIRMED';
 
 export const MisReservasSection = () => {
+  const { slug: paramSlug } = useParams<{ slug?: string }>();
+  const slugActivo = paramSlug || obtenerNegocioSlugActivo() || '';
+  const rutaReservar = slugActivo ? `/${slugActivo}/reservar` : '/reservar';
   const consulta = useMisReservas(true);
   const cancelarReserva = useCancelarMiReserva();
 
@@ -117,7 +121,7 @@ export const MisReservasSection = () => {
                       <>
                         <Link
                           className="btn btn-sm btn-outline-primary"
-                          to="/reservar"
+                          to={rutaReservar}
                           state={{
                             reservaId: reserva.id,
                             servicioId: reserva.servicio.id,

@@ -2,6 +2,8 @@ import axios from 'axios';
 import apiClient, { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import type {
   ClienteSesionDTO,
+  PerfilClienteDTO,
+  ActualizarPerfilClienteDTO,
   ClienteSesionResponseDTO,
   BarberoDisponibleReservaDTO,
   CrearReservaDTO,
@@ -85,6 +87,28 @@ export const clientesService = {
     } catch {
       return null;
     }
+  },
+
+  async obtenerPerfil(): Promise<PerfilClienteDTO> {
+    const response = await reservasApiClient.get<PerfilClienteDTO>('/auth/clientes/perfil');
+    return response.data;
+  },
+
+  async actualizarPerfil(datos: ActualizarPerfilClienteDTO): Promise<PerfilClienteDTO> {
+    const response = await reservasApiClient.patch<PerfilClienteDTO>('/auth/clientes/perfil', datos);
+    const sesionActual = this.obtenerSesion();
+    if (sesionActual) {
+      this.guardarSesion({
+        accessToken: localStorage.getItem(TOKEN_CLIENTE_KEY) || '',
+        cliente: {
+          ...sesionActual,
+          nombre: response.data.nombre,
+          apellido: response.data.apellido,
+          email: response.data.email,
+        },
+      });
+    }
+    return response.data;
   },
 
   cerrarSesion() {

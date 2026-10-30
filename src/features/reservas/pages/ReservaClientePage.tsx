@@ -26,6 +26,8 @@ import {
   useModificarMiReserva,
   useModificarReservaInvitado,
   useCancelarReservaInvitado,
+  usePerfilCliente,
+  useCancelarMiReserva,
 } from '../api/reservas.facade';
 import type {
   ClienteSesionDTO,
@@ -352,6 +354,14 @@ export const ReservaClientePage = () => {
   const [clienteSesion, setClienteSesion] = useState<ClienteSesionDTO | null>(
     () => clientesService.obtenerSesion(),
   );
+  const { data: perfilCliente } = usePerfilCliente(Boolean(clienteSesion));
+  const cancelarMiReserva = useCancelarMiReserva();
+
+  useEffect(() => {
+    if (perfilCliente?.telefono && !telefonoInvitado) {
+      setTelefonoInvitado(perfilCliente.telefono);
+    }
+  }, [perfilCliente?.telefono]);
   const [nombreInvitado, setNombreInvitado] = useState(
     () => borradorSesion?.nombreInvitado ?? '',
   );
@@ -729,7 +739,74 @@ export const ReservaClientePage = () => {
   const conflictoReserva = isAxiosError(errorConfirmacion) && errorConfirmacion.response?.status === 409;
   const rutaActual = location.pathname + location.search;
 
-      const cancelarReservaDeInvitado = async () => {
+        const cancelarReservaDeClienteAutenticado = async () => {
+    const idCita = reservaCreada?.id ?? reservaId;
+    if (!idCita) return;
+
+    const nombreServicio = servicioSeleccionado?.nombre ?? reservaCreada?.servicio?.nombre ?? 'Cita agendada';
+    const fechaTexto = fechaSeleccionada ?? reservaCreada?.fecha ?? '';
+    const horaTexto = horaSeleccionada ?? reservaCreada?.hora ?? '';
+
+    const confirmado = await confirm({
+      title: 'Cancelar cita',
+      message: (
+        <div>
+          <p className="mb-2">¿Estás seguro de que deseas cancelar tu cita?</p>
+          <div
+            className="p-3 rounded mb-2 border"
+            style={{
+              backgroundColor: 'var(--surface-app-bg)',
+              borderColor: 'var(--surface-card-border)',
+            }}
+          >
+            <div className="fw-bold text-surface-primary mb-1">{nombreServicio}</div>
+            {fechaTexto && horaTexto && (
+              <div className="small text-surface-muted">Fecha y hora: {fechaTexto} · {horaTexto}</div>
+            )}
+          </div>
+          <p className="small text-danger mb-0">
+            El horario quedará liberado inmediatamente para otros clientes.
+          </p>
+        </div>
+      ),
+      confirmLabel: 'Sí, cancelar cita',
+      cancelLabel: 'Conservar cita',
+      variant: 'danger',
+    });
+
+    if (!confirmado) return;
+
+    try {
+      await cancelarMiReserva.mutateAsync(idCita);
+      limpiarBorradorStorage();
+      setReservaCreada(null);
+      setReservaModificada(false);
+      setReservaId(undefined);
+      setReservaCancelada(true);
+      setBarberoFijoId(null);
+      setFechaSeleccionada(null);
+      setHoraSeleccionada(null);
+      irAPaso(1, false, {
+        paso: '1',
+        reservaId: null,
+        servicioId: null,
+        barberoId: null,
+        barberoFijo: null,
+        fecha: null,
+        hora: null,
+        token: null,
+      });
+    } catch (error: unknown) {
+      await confirm({
+        title: 'Error al cancelar',
+        message: mapApiError(error),
+        confirmLabel: 'Entendido',
+        variant: 'danger',
+      });
+    }
+  };
+
+  const cancelarReservaDeInvitado = async () => {
     const idCita = reservaCreada?.id ?? reservaId;
     if (!idCita || clienteSesion) return;
 
@@ -890,7 +967,7 @@ export const ReservaClientePage = () => {
     <main className="booking-flow container py-4 py-lg-5" style={{ maxWidth: '1080px' }}>
       <header className="mb-4">
         <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-          <BackLink to="/" onClick={limpiarBorradorStorage}>Volver al sitio público</BackLink>
+          <BackLink to={`/${slugActivo}`} onClick={limpiarBorradorStorage}>Volver al sitio público</BackLink>
           {paso > 1 && (
             <Button type="button" variant="outline-secondary" onClick={volverPaso} icon={<ArrowLeft size={16} />}>
               Paso anterior
@@ -1847,7 +1924,7 @@ export const ReservaClientePage = () => {
               {/* Botones de Acción con Jerarquía Visual Limpia */}
               <div className="booking-voucher__actions">
                 <div className="d-flex flex-wrap justify-content-center gap-2 gap-sm-3 mb-3">
-                  <Link to="/" className="btn btn-primary px-3 px-sm-4 py-2 fw-semibold d-inline-flex align-items-center justify-content-center gap-2 flex-grow-1 flex-sm-grow-0">
+                  <Link to={`/${slugActivo}`} className="btn btn-primary px-3 px-sm-4 py-2 fw-semibold d-inline-flex align-items-center justify-content-center gap-2 flex-grow-1 flex-sm-grow-0">
                     <ArrowLeft size={16} /> Volver al inicio
                   </Link>
                   <Button
@@ -1882,6 +1959,59 @@ export const ReservaClientePage = () => {
                 </div>
 
                 {/* Gestión de cita (Cambiar / Cancelar) agrupada sutilmente abajo */}
+                                {clienteSesion && (reservaCreada || reservaModificada) && (
+                  <div className="booking-voucher__management text-center pt-3 border-top">
+                    <div
+                      className="p-3 rounded-3 border mb-3 text-start"
+                      style={{
+                        backgroundColor: 'var(--surface-app-bg)',
+                        borderColor: 'var(--surface-card-border)',
+                      }}
+                    >
+                      <div className="d-flex align-items-center gap-2 mb-1">
+                        <Check size={16} className="text-success" />
+                        <strong className="small text-surface-primary">Cita asociada a tu cuenta</strong>
+                      </div>
+                      <p className="small text-surface-muted mb-3" style={{ fontSize: '0.82rem' }}>
+                        Esta cita está guardada en tu perfil. Puedes consultarla o cambiarla en cualquier momento desde tu panel personal.
+                      </p>
+                      <Link
+                        to={`/${slugActivo}/cliente/mi-cuenta`}
+                        className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1.5"
+                      >
+                        <Calendar size={14} /> Ir a Mis Citas
+                      </Link>
+                    </div>
+
+                    <span className="small text-surface-muted d-block mb-2">
+                      ¿Necesitas realizar algún cambio inmediato en tu cita?
+                    </span>
+                    <div className="d-flex justify-content-center gap-2">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={cambiarReservaDeInvitado}
+                      >
+                        Cambiar fecha u hora
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={cambiarBarberoDeInvitado}
+                      >
+                        Cambiar barbero
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-danger"
+                        disabled={cancelarMiReserva.isPending}
+                        onClick={() => void cancelarReservaDeClienteAutenticado()}
+                      >
+                        {cancelarMiReserva.isPending ? 'Cancelando...' : 'Cancelar cita'}
+                      </button>
+                    </div>
+                  </div>
+                )}
                 {((reservaCreada && reservaCreada.tokenGestion) || (reservaModificada && reservaId && reservasService.obtenerTokenGestionInvitado(reservaId))) && !clienteSesion && (
                   <div className="booking-voucher__management text-center pt-3 border-top">
                     {/* Caja destacada con el enlace de autogestión de invitado */}
