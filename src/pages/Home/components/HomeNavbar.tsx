@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, Link, NavLink, useLocation, useParams } from 'react-router-dom';
-import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut, User, Calendar } from 'lucide-react';
+import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut, User, Calendar, ShieldCheck } from 'lucide-react';
 import { clientesService } from '../../../features/reservas/api/reservas.service';
 import BrandLogo from '../../../shared/ui/BrandLogo';
 import { BRAND } from '../../../config/brand';
@@ -11,6 +11,7 @@ import { useBodyScrollLock } from '../../../shared/lib/useBodyScrollLock';
 import { esRolApp } from '../../../shared/lib/autorizacion/roles';
 import { ProductosEnDesarrolloModal } from './ProductosEnDesarrolloModal';
 import { SelectorAccesoModal } from './SelectorAccesoModal';
+import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 
 /* ─── Hook: detecta si el usuario hizo scroll más allá de un umbral ─────── */
 function useScrolled(threshold = 40): boolean {
@@ -59,7 +60,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { slug: paramSlug } = useParams<{ slug?: string }>();
-  const slug = paramSlug || localStorage.getItem('negocio_slug') || undefined;
+  const slug = paramSlug || obtenerNegocioSlugActivo() || undefined;
   const basePrefix = slug ? `/${slug}` : '';
   const rutaHome = slug ? `/${slug}` : '/';
   const enHome = location.pathname === '/' || (Boolean(slug) && location.pathname === `/${slug}`);
@@ -75,7 +76,11 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
       : [{ id: 'inicio', to: rutaHome, label: 'Inicio' }, ...base];
   }, [enHome, basePrefix, rutaHome]);
 
-  const [clienteSesion, setClienteSesion] = useState(() => clientesService.obtenerSesion());
+  const [clienteSesion, setClienteSesion] = useState(() => clientesService.obtenerSesion(slug));
+
+  useEffect(() => {
+    setClienteSesion(clientesService.obtenerSesion(slug));
+  }, [slug]);
   const { theme, setTheme, isDark } = useTheme();
   const {
     isAuthenticated: authIsAuthenticated,
@@ -85,7 +90,13 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
     cerrarSesion,
     roles,
     usuarioDb,
+    negocioSesionSlug,
+    negocioSesionNombre,
+    esStaffDeSede,
   } = useAuth();
+
+  const esStaffLocal = esStaffDeSede(slug);
+  const tieneSesionEnOtraSede = authIsAuthenticated && !esStaffLocal && Boolean(negocioSesionSlug);
 
   const isAuthenticated = propIsAuthenticated !== undefined ? propIsAuthenticated : authIsAuthenticated;
   const nombre = propNombre !== undefined ? propNombre : authNombre;
@@ -99,6 +110,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
   const mostrarAvatar =
     !isInitializing &&
     isAuthenticated === true &&
+    esStaffLocal &&
     Boolean(usuarioDb);
 
   const displayName =
@@ -137,6 +149,32 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
       className={`kyrios-nav${scrolled ? ' is-scrolled' : ''}`}
       role="banner"
     >
+      {tieneSesionEnOtraSede && (
+        <div
+          className="d-flex align-items-center justify-content-between px-3 py-1.5"
+          style={{
+            background: 'rgba(234, 179, 8, 0.14)',
+            borderBottom: '1px solid rgba(234, 179, 8, 0.28)',
+            color: '#fde047',
+            fontSize: '0.8rem',
+            backdropFilter: 'blur(8px)',
+          }}
+        >
+          <div className="d-flex align-items-center gap-2">
+            <ShieldCheck size={14} className="text-warning flex-shrink-0" />
+            <span>
+              Estás viendo <strong>{slug}</strong> · Sesión de personal activa en <strong>{negocioSesionNombre || negocioSesionSlug}</strong>
+            </span>
+          </div>
+          <Link
+            to="/dashboard"
+            className="btn btn-warning btn-sm py-0 px-2 fw-semibold text-dark d-inline-flex align-items-center gap-1"
+            style={{ fontSize: '0.74rem' }}
+          >
+            Ir a mi panel ({negocioSesionNombre || negocioSesionSlug})
+          </Link>
+        </div>
+      )}
       <div className="container py-2 d-flex align-items-center justify-content-between gap-3">
 
         {/* ── Logo ── */}
@@ -251,7 +289,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                 type="button"
                 className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
                 onClick={() => {
-                  clientesService.cerrarSesion();
+                  clientesService.cerrarSesion(slug);
                   setClienteSesion(null);
                   navigate(slug ? `/${slug}` : '/');
                 }}
@@ -296,7 +334,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
             <button
               type="button"
               className="p-0 border-0 bg-transparent d-inline-flex align-items-center rounded-circle"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate(slug ? `/${slug}/dashboard` : '/dashboard')}
               aria-label="Ir a mi panel administrativo"
               title="Mi panel"
             >
@@ -435,7 +473,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                     className="btn-kyrios-outline w-100 d-inline-flex align-items-center justify-content-center gap-2"
                     onClick={() => {
                       closeMobileMenu();
-                      clientesService.cerrarSesion();
+                      clientesService.cerrarSesion(slug);
                       setClienteSesion(null);
                       navigate(slug ? `/${slug}` : '/');
                     }}

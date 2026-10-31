@@ -382,6 +382,7 @@ export default function PlataformaHubPage() {
           onClose={() => setModalCrearOpen(false)}
           title="Crear Nueva Barbería en el Tenant"
           size="md"
+          className="hub-plataforma-modal"
         >
           <form onSubmit={handleCrearBarberia} className="p-1">
             <p className="small text-muted mb-3">

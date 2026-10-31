@@ -28,22 +28,32 @@ function esRutaLocalSegura(valor: unknown): valor is string {
 
 export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente }) {
   const { slug: paramSlug } = useParams<{ slug?: string }>();
-  const slug = paramSlug || obtenerNegocioSlugActivo() || '';
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(false);
   const registro = modo === 'registro';
-  const tieneSesionStaff = Boolean(localStorage.getItem('token_barberia'));
 
   const returnToState = (location.state as { returnTo?: unknown } | null)?.returnTo;
   const returnToQuery = searchParams.get('returnTo');
-  const returnTo = esRutaLocalSegura(returnToState)
+  const returnToCandidato = esRutaLocalSegura(returnToState)
     ? returnToState
     : esRutaLocalSegura(returnToQuery)
       ? returnToQuery
-      : slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta';
+      : '';
+
+  const slugFromReturnTo = (() => {
+    if (!returnToCandidato) return null;
+    const primerSeg = returnToCandidato.split('/')[1];
+    return primerSeg && !['cliente', 'login', 'dashboard', 'reserva', 'sin-acceso'].includes(primerSeg) ? primerSeg : null;
+  })();
+
+  const slug = paramSlug || slugFromReturnTo || obtenerNegocioSlugActivo() || '';
+  const tokenStaff = slug ? localStorage.getItem(`token_barberia_${slug}`) : localStorage.getItem('token_barberia');
+  const tieneSesionStaff = Boolean(tokenStaff);
+
+  const returnTo = returnToCandidato || (slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta');
 
   const iniciarSesion = async (respuesta: CredentialResponse) => {
     if (!respuesta.credential) {
@@ -54,7 +64,7 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
     setCargando(true);
     setError(null);
     try {
-      const sesion = await clientesService.iniciarSesionGoogle(respuesta.credential);
+      const sesion = await clientesService.iniciarSesionGoogle(respuesta.credential, slug);
       clientesService.guardarSesion(sesion, slug);
       navigate(returnTo, { replace: true, state: { desdeLogin: true } });
     } catch (errorDesconocido: unknown) {
@@ -136,7 +146,7 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
       {/* ── PANEL DERECHO: FORMULARIO Y ACCESO GOOGLE ── */}
       <main className="auth-split__form-panel">
         <div className="auth-split__form-box">
-          <Link to={returnTo} className="auth-split__top-link">
+          <Link to={slug ? `/${slug}` : '/'} className="auth-split__top-link">
             <ArrowLeft size={16} /> Volver a la barbería
           </Link>
 
@@ -174,7 +184,7 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
                 <ShieldCheck size={16} />
                 <span>Sesión activa como <strong>Personal</strong></span>
               </div>
-              <Link to="/dashboard" className="btn btn-sm btn-primary py-0 px-2" style={{ fontSize: '0.78rem' }}>
+              <Link to={slug ? `/${slug}/dashboard` : '/dashboard'} className="btn btn-sm btn-primary py-0 px-2" style={{ fontSize: '0.78rem' }}>
                 Ir al Dashboard
               </Link>
             </div>

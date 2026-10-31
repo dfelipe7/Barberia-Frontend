@@ -438,3 +438,19 @@
   color: #ffffff;
 }
 
+/* ─── Modal para Crear Barbería (siempre oscuro y coherente con el Hub) ───── */
+.hub-plataforma-modal .kyrios-modal-content {
+  background-color: #121215 !important;
+  color: #f4f4f5 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.75) !important;
+}
+
+.hub-plataforma-modal .kyrios-modal-title {
+  color: #ffffff !important;
+}
+
+.hub-plataforma-modal .btn-close {
+  filter: invert(1) brightness(1.6);
+}
+

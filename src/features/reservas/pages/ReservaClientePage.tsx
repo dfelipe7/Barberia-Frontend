@@ -584,7 +584,7 @@ export const ReservaClientePage = () => {
   };
 
   const cerrarSesionCliente = () => {
-    clientesService.cerrarSesion();
+    clientesService.cerrarSesion(slugActivo);
     setClienteSesion(null);
     setReservaCreada(null);
     setReservaModificada(false);
@@ -1023,14 +1023,14 @@ export const ReservaClientePage = () => {
             <div className="d-flex flex-wrap gap-2">
               <Link
                 className="btn btn-outline-secondary"
-                to={'/cliente/iniciar-sesion?returnTo=' + encodeURIComponent(rutaActual)}
+                to={'/' + slugActivo + '/cliente/iniciar-sesion?returnTo=' + encodeURIComponent(rutaActual)}
                 state={{ returnTo: rutaActual }}
               >
                 Iniciar sesión
               </Link>
               <Link
                 className="btn btn-primary"
-                to={'/cliente/registro?returnTo=' + encodeURIComponent(rutaActual)}
+                to={'/' + slugActivo + '/cliente/registro?returnTo=' + encodeURIComponent(rutaActual)}
                 state={{ returnTo: rutaActual }}
               >
                 Crear cuenta

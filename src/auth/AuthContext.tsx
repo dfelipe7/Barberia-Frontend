@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef } f
 import { usuariosService } from '../features/usuarios/api/usuarios.service';
 import { usuariosMapper } from '../features/usuarios/api/usuarios.mapper';
 import type { Usuario } from '../features/usuarios/types/usuarios.types';
-import apiClient from '../shared/lib/http/axios';
+import apiClient, { obtenerNegocioSlugActivo } from '../shared/lib/http/axios';
 import { queryClient } from '../shared/lib/queryClient';
 
 interface UsuarioSesion {
@@ -17,7 +17,7 @@ interface UsuarioSesion {
 }
 
 interface AuthContextType {
-  cerrarSesion: () => void;
+  cerrarSesion: (slugParam?: unknown) => void;
   isAuthenticated: boolean;
   isInitializing: boolean;
   token: string | null;
@@ -27,6 +27,9 @@ interface AuthContextType {
   fotoUrl?: string | null;
   roles: string[];
   usuarioDb: Usuario | null;
+  negocioSesionSlug: string | null;
+  negocioSesionNombre: string | null;
+  esStaffDeSede: (slugRuta?: string | null) => boolean;
   loginConGoogle: (idToken: string) => Promise<{ success: boolean; error?: string }>;
   refrescarPerfil: () => Promise<void>;
 }
@@ -40,8 +43,26 @@ export function AuthContextProvider({
   children: React.ReactNode;
   isInitializing: boolean;
 }) {
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem('token_barberia'));
+  const [token, setToken] = useState<string | null>(() => {
+    const slug = obtenerNegocioSlugActivo();
+    if (slug) {
+      // Aislamiento estricto: Si la URL pertenece a una barbería, SOLO usar el token de esa barbería
+      return localStorage.getItem(`token_barberia_${slug}`) || null;
+    }
+    return localStorage.getItem('token_barberia');
+  });
+
   const [usuarioSesion, setUsuarioSesion] = useState<UsuarioSesion | null>(() => {
+    const slug = obtenerNegocioSlugActivo();
+    if (slug) {
+      const specific = localStorage.getItem(`usuario_barberia_${slug}`);
+      if (specific) {
+        try {
+          return JSON.parse(specific);
+        } catch {}
+      }
+      return null;
+    }
     const saved = localStorage.getItem('usuario_barberia');
     if (!saved) return null;
     try {
@@ -52,6 +73,28 @@ export function AuthContextProvider({
   });
 
   const [usuarioDb, setUsuarioDb] = useState<Usuario | null>(null);
+  const [negocioSesionSlug, setNegocioSesionSlug] = useState<string | null>(() => {
+    const slug = obtenerNegocioSlugActivo();
+    if (slug) {
+      return localStorage.getItem(`token_barberia_${slug}`) ? slug : null;
+    }
+    return localStorage.getItem('negocio_sesion_slug');
+  });
+  const [negocioSesionNombre, setNegocioSesionNombre] = useState<string | null>(() => {
+    const slug = obtenerNegocioSlugActivo();
+    if (slug) {
+      return localStorage.getItem(`negocio_sesion_nombre_${slug}`) || null;
+    }
+    return localStorage.getItem('negocio_sesion_nombre');
+  });
+
+  const esStaffDeSede = useCallback((slugRuta?: string | null) => {
+    if (!token) return false;
+    if (!slugRuta) return true;
+    const normalized = slugRuta.toLowerCase().trim();
+    if (!negocioSesionSlug) return true;
+    return negocioSesionSlug.toLowerCase().trim() === normalized;
+  }, [token, negocioSesionSlug]);
 
   const isAuthenticated = !!token;
 
@@ -84,26 +127,58 @@ export function AuthContextProvider({
   const email = usuarioSesion?.email;
   const fotoUrl = usuarioSesion?.fotoUrl;
 
-  const cerrarSesion = useCallback(() => {
+  const cerrarSesion = useCallback((slugParam?: unknown) => {
+    const rawSlug = typeof slugParam === 'string' && slugParam.trim() !== '' ? slugParam.trim() : null;
     const slugDestino =
-      localStorage.getItem('negocio_slug') ||
+      rawSlug ||
+      obtenerNegocioSlugActivo() ||
+      negocioSesionSlug ||
       localStorage.getItem('negocio_sesion_slug') ||
+      localStorage.getItem('negocio_slug') ||
       '';
 
-    localStorage.removeItem('token_barberia');
-    localStorage.removeItem('usuario_barberia');
-    window.localStorage.setItem('barberia_logout_event', Date.now().toString());
+    if (slugDestino) {
+      // 1. Limpiar credenciales de Personal para esta sede específica
+      localStorage.removeItem(`token_barberia_${slugDestino}`);
+      localStorage.removeItem(`usuario_barberia_${slugDestino}`);
+      localStorage.removeItem(`negocio_sesion_nombre_${slugDestino}`);
+
+      // 2. Limpiar también credenciales de Cliente para esta sede (evita que el navbar siga mostrando "Hola Felipe")
+      localStorage.removeItem(`token_cliente_${slugDestino}`);
+      localStorage.removeItem(`cliente_${slugDestino}`);
+
+      // 3. Notificar SOLO a las otras pestañas de ESTA MISMA SEDE
+      window.localStorage.setItem(
+        'barberia_logout_event',
+        JSON.stringify({ slug: slugDestino, timestamp: Date.now() })
+      );
+    }
+
+    // 4. Si el token general pertenecía a esta sede (o ya no hay sede), limpiar las llaves generales
+    const activeSesionSlug = localStorage.getItem('negocio_sesion_slug');
+    if (!activeSesionSlug || activeSesionSlug === slugDestino) {
+      localStorage.removeItem('token_barberia');
+      localStorage.removeItem('usuario_barberia');
+      localStorage.removeItem('negocio_sesion_slug');
+      localStorage.removeItem('negocio_sesion_nombre');
+    }
+
     queryClient.clear();
     setToken(null);
     setUsuarioSesion(null);
     setUsuarioDb(null);
-    window.location.href = slugDestino ? `/${slugDestino}` : '/';
-  }, []);
+    setNegocioSesionSlug(null);
+    setNegocioSesionNombre(null);
+
+    // Redirigir a la landing de esa barbería limpia
+    window.location.href = slugDestino ? `/${slugDestino}` : (window.location.pathname !== '/' ? window.location.pathname : '/');
+  }, [negocioSesionSlug]);
 
   const isRefreshingRef = useRef(false);
 
   const refrescarPerfil = useCallback(async () => {
-    const currentToken = localStorage.getItem('token_barberia');
+    const slug = obtenerNegocioSlugActivo();
+    const currentToken = slug ? localStorage.getItem(`token_barberia_${slug}`) : localStorage.getItem('token_barberia');
     if (!currentToken || isRefreshingRef.current) return;
     isRefreshingRef.current = true;
     try {
@@ -111,36 +186,63 @@ export function AuthContextProvider({
       try {
         const refreshRes = await apiClient.post('/auth/refresh');
         if (refreshRes.data?.accessToken) {
-          const { accessToken, usuario } = refreshRes.data;
+          const { accessToken, usuario, negocio } = refreshRes.data;
+          const targetSlug = negocio?.slug || slug;
+          if (targetSlug) {
+            localStorage.setItem(`token_barberia_${targetSlug}`, accessToken);
+            localStorage.setItem(`usuario_barberia_${targetSlug}`, JSON.stringify(usuario));
+            localStorage.setItem('negocio_sesion_slug', targetSlug);
+            setNegocioSesionSlug(targetSlug);
+          }
+          if (negocio?.nombre) {
+            localStorage.setItem('negocio_sesion_nombre', negocio.nombre);
+            if (targetSlug) {
+              localStorage.setItem(`negocio_sesion_nombre_${targetSlug}`, negocio.nombre);
+            }
+            setNegocioSesionNombre(negocio.nombre);
+          }
           localStorage.setItem('token_barberia', accessToken);
           localStorage.setItem('usuario_barberia', JSON.stringify(usuario));
           setToken(accessToken);
           setUsuarioSesion(usuario);
         }
       } catch (err: any) {
-        // Si la cuenta fue suspendida o el token es inválido, cerrar sesión de inmediato
-        if (err?.response?.status === 401 || err?.response?.status === 403) {
-          cerrarSesion();
-          return;
-        }
+        // En caso de fallo en segundo plano, NO cerrar sesión agresivamente para no desconectar otras pestañas
+        console.warn('Renovación pasiva en segundo plano omitida:', err?.message);
       }
 
       // 2. Traer perfil completo de dominio de la BD
-      const perfilDTO = await usuariosService.obtenerMiPerfil();
-      const domainUser = usuariosMapper.toDomain(perfilDTO);
-      setUsuarioDb(domainUser);
-    } catch (error) {
-      console.error('Error obteniendo perfil de BD:', error);
+      try {
+        const perfilDTO = await usuariosService.obtenerMiPerfil();
+        const domainUser = usuariosMapper.toDomain(perfilDTO);
+        setUsuarioDb(domainUser);
+      } catch (e) {
+        console.warn('Perfil de BD pasivo no actualizado:', e);
+      }
     } finally {
       isRefreshingRef.current = false;
     }
-  }, [cerrarSesion]);
+  }, []);
 
   const loginConGoogle = useCallback(async (idToken: string) => {
     try {
       const response = await apiClient.post('/auth/google', { idToken });
       const { accessToken, usuario, negocio } = response.data;
-      if (negocio?.slug) localStorage.setItem('negocio_slug', negocio.slug);
+      const slugNegocio = negocio?.slug ? negocio.slug.toLowerCase().trim() : '';
+      if (slugNegocio) {
+        localStorage.setItem(`token_barberia_${slugNegocio}`, accessToken);
+        localStorage.setItem(`usuario_barberia_${slugNegocio}`, JSON.stringify(usuario));
+        localStorage.setItem('negocio_slug', slugNegocio);
+        localStorage.setItem('negocio_sesion_slug', slugNegocio);
+        setNegocioSesionSlug(slugNegocio);
+      }
+      if (negocio?.nombre) {
+        localStorage.setItem('negocio_sesion_nombre', negocio.nombre);
+        if (slugNegocio) {
+          localStorage.setItem(`negocio_sesion_nombre_${slugNegocio}`, negocio.nombre);
+        }
+        setNegocioSesionNombre(negocio.nombre);
+      }
       localStorage.setItem('token_barberia', accessToken);
       localStorage.setItem('usuario_barberia', JSON.stringify(usuario));
       queryClient.clear();
@@ -215,16 +317,24 @@ export function AuthContextProvider({
     return () => clearInterval(interval);
   }, [token, refrescarPerfil]);
 
-  // 4. Sincronización pasiva entre pestañas (adopta el token sin repetir llamadas a la API)
+  // 4. Sincronización pasiva entre pestañas (SOLO para la misma sede)
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'token_barberia' && e.newValue) {
+      const currentSlug = obtenerNegocioSlugActivo();
+      const expectedKey = currentSlug ? `token_barberia_${currentSlug}` : 'token_barberia';
+      const expectedUserKey = currentSlug ? `usuario_barberia_${currentSlug}` : 'usuario_barberia';
+
+      if (e.key === expectedKey) {
         setToken(e.newValue);
-        const userStr = localStorage.getItem('usuario_barberia');
+        const userStr = e.newValue ? localStorage.getItem(expectedUserKey) : null;
         if (userStr) {
           try {
             setUsuarioSesion(JSON.parse(userStr));
-          } catch {}
+          } catch {
+            setUsuarioSesion(null);
+          }
+        } else {
+          setUsuarioSesion(null);
         }
       }
     };
@@ -245,6 +355,9 @@ export function AuthContextProvider({
         fotoUrl,
         roles,
         usuarioDb,
+        negocioSesionSlug,
+        negocioSesionNombre,
+        esStaffDeSede,
         loginConGoogle,
         refrescarPerfil,
       }}

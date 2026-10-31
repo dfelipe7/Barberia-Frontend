@@ -23,7 +23,9 @@ export const LoginPage: React.FC = () => {
   const { slug: paramSlug } = useParams<{ slug?: string }>();
   const slug = paramSlug || obtenerNegocioSlugActivo() || '';
   const navigate = useNavigate();
-  const { loginConGoogle, isAuthenticated, isInitializing } = useAuth();
+  const { loginConGoogle, isAuthenticated, isInitializing, esStaffDeSede, negocioSesionSlug, negocioSesionNombre } = useAuth();
+  const esStaffDeEstaSede = esStaffDeSede(paramSlug);
+  const tieneSesionEnOtraSede = isAuthenticated && !esStaffDeEstaSede && Boolean(negocioSesionSlug);
   const [errorMensaje, setErrorMensaje] = useState<string | null>(null);
   const [isCargando, setIsCargando] = useState(false);
   const sesionCliente = slug ? clientesService.obtenerSesion(slug) : null;
@@ -35,10 +37,11 @@ export const LoginPage: React.FC = () => {
   }, [paramSlug]);
 
   useEffect(() => {
-    if (!isInitializing && isAuthenticated) {
-      navigate('/dashboard', { replace: true });
+    if (!isInitializing && isAuthenticated && esStaffDeEstaSede) {
+      const targetSlug = paramSlug || localStorage.getItem('negocio_sesion_slug') || 'kyrios-studio';
+      navigate(`/${targetSlug}/dashboard`, { replace: true });
     }
-  }, [isInitializing, isAuthenticated, navigate]);
+  }, [isInitializing, isAuthenticated, esStaffDeEstaSede, paramSlug, navigate]);
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     if (!credentialResponse?.credential) {
@@ -54,7 +57,8 @@ export const LoginPage: React.FC = () => {
     setIsCargando(false);
 
     if (resultado.success) {
-      navigate('/dashboard', { replace: true });
+      const targetSlug = slug || localStorage.getItem('negocio_sesion_slug') || 'kyrios-studio';
+      navigate(`/${targetSlug}/dashboard`, { replace: true });
     } else {
       let texto = 'Acceso denegado: Tu correo no se encuentra registrado en el personal autorizado de la barbería.';
       if (typeof resultado.error === 'string') {
@@ -164,7 +168,27 @@ export const LoginPage: React.FC = () => {
             </p>
           </div>
 
-                    {sesionCliente && (
+                    {tieneSesionEnOtraSede && (
+            <div
+              className="d-flex align-items-center justify-content-between p-2 mb-3 rounded-2"
+              style={{
+                background: 'rgba(59, 130, 246, 0.12)',
+                border: '1px solid rgba(59, 130, 246, 0.3)',
+                fontSize: '0.84rem',
+              }}
+            >
+              <div className="d-flex align-items-center gap-2" style={{ color: '#60a5fa' }}>
+                <ShieldCheck size={16} />
+                <span>
+                  Sesión activa en <strong>{negocioSesionNombre || negocioSesionSlug}</strong>
+                </span>
+              </div>
+              <Link to={slug ? `/${slug}/dashboard` : '/dashboard'} className="btn btn-sm btn-primary py-0 px-2" style={{ fontSize: '0.78rem' }}>
+                Ir a mi panel
+              </Link>
+            </div>
+          )}
+          {sesionCliente && (
             <div
               className="d-flex align-items-center justify-content-between p-2 mb-3 rounded-2"
               style={{

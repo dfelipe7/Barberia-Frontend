@@ -144,7 +144,7 @@ export default function Header() {
               roles={roles}
               fotoUrl={fotoUrl}
               isDark={isDark}
-              onCerrarSesion={cerrarSesion}
+              onCerrarSesion={() => cerrarSesion(slugActivo)}
             />
           </div>
         </div>

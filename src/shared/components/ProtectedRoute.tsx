@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useParams } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import KyriosSpinner from '../ui/KyriosSpinner';
 
@@ -14,7 +14,8 @@ interface ProtectedRouteProps {
  * de autenticación (Google OAuth + JWT) y de autorización RBAC (rolesPermitidos).
  */
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ rolesPermitidos }) => {
-  const { roles, isAuthenticated, isInitializing, usuarioDb } = useAuth();
+  const { roles, isAuthenticated, isInitializing, usuarioDb, esStaffDeSede } = useAuth();
+  const { slug } = useParams<{ slug?: string }>();
 
   // Mientras se inicializa el estado de autenticación, mostrar un fallback NO bloqueante
   if (isInitializing) {
@@ -26,7 +27,20 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ rolesPermitidos 
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={slug ? `/${slug}/login` : '/login'} replace />;
+  }
+
+  // Verificación multitenant: Si la URL indica una sede específica, verificar que la sesión pertenezca a esa sede
+  if (slug && !esStaffDeSede(slug)) {
+    return (
+      <Navigate
+        to={`/${slug}/login`}
+        replace
+        state={{
+          avisoAcceso: 'Tu cuenta actual no pertenece al personal de esta barbería. Inicia sesión con la cuenta autorizada.',
+        }}
+      />
+    );
   }
 
   // 1. Cuenta bloqueada globalmente

@@ -50,6 +50,7 @@ function App() {
           {routeConfig.map(({ path, element, roles }) => (
             <Route key={path} element={<ProtectedRoute rolesPermitidos={[...roles]} />}>
               <Route path={path} element={element} />
+              <Route path={`/:slug${path}`} element={element} />
             </Route>
           ))}
           <Route path="*" element={<NotFound />} />

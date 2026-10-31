@@ -23,8 +23,6 @@ import type {
   ReservaModificadaDTO,
 } from './reservas.dto';
 
-const TOKEN_CLIENTE_KEY_LEGACY = 'token_cliente_barberia';
-const SESION_CLIENTE_KEY_LEGACY = 'cliente_barberia';
 const TOKEN_INVITADO_PREFIX = 'reserva_invitado_gestion_';
 const TOKEN_GESTION_HEADER = 'X-Reservation-Management-Token';
 
@@ -81,10 +79,15 @@ reservasApiClient.interceptors.response.use(
 );
 
 export const clientesService = {
-  async iniciarSesionGoogle(idToken: string): Promise<ClienteSesionResponseDTO> {
+  async iniciarSesionGoogle(idToken: string, slugParam?: string | null): Promise<ClienteSesionResponseDTO> {
+    const headers: Record<string, string> = {};
+    if (slugParam) {
+      headers['X-Negocio-Slug'] = slugParam;
+    }
     const response = await reservasApiClient.post<ClienteSesionResponseDTO>(
       '/auth/clientes/google',
       { idToken },
+      { headers },
     );
     return response.data;
   },
@@ -94,49 +97,31 @@ export const clientesService = {
     const clienteConSlug = { ...sesion.cliente, negocioSlug: slug };
     localStorage.setItem(tokenKey, sesion.accessToken);
     localStorage.setItem(sesionKey, JSON.stringify(clienteConSlug));
-    // Guardar también en llaves legacy por compatibilidad
-    localStorage.setItem(TOKEN_CLIENTE_KEY_LEGACY, sesion.accessToken);
-    localStorage.setItem(SESION_CLIENTE_KEY_LEGACY, JSON.stringify(clienteConSlug));
   },
 
   obtenerSesion(slugParam?: string | null): ClienteSesionDTO | null {
-    const { tokenKey, sesionKey, slug } = resolverClavesCliente(slugParam);
-    let raw = localStorage.getItem(sesionKey);
-    let token = localStorage.getItem(tokenKey);
-
-    // Si no está con clave propia de sede, verificar fallback legacy
-    if (!token || !raw) {
-      raw = localStorage.getItem(SESION_CLIENTE_KEY_LEGACY);
-      token = localStorage.getItem(TOKEN_CLIENTE_KEY_LEGACY);
-    }
+    const { tokenKey, sesionKey } = resolverClavesCliente(slugParam);
+    const raw = localStorage.getItem(sesionKey);
+    const token = localStorage.getItem(tokenKey);
 
     if (!token || !raw) return null;
 
     try {
-      const parsed = JSON.parse(raw);
-      // Aislamiento: Si la sesión fue guardada con otro slug distinto al activo, NO es válida aquí
-      if (parsed.negocioSlug && parsed.negocioSlug !== slug && slug !== 'global') {
-        return null;
-      }
-      return parsed;
+      return JSON.parse(raw);
     } catch {
       return null;
     }
   },
 
   obtenerToken(slugParam?: string | null): string | null {
-    const { tokenKey, slug } = resolverClavesCliente(slugParam);
-    const sesion = this.obtenerSesion(slug);
-    if (!sesion) return null;
-    return localStorage.getItem(tokenKey) || localStorage.getItem(TOKEN_CLIENTE_KEY_LEGACY);
+    const { tokenKey } = resolverClavesCliente(slugParam);
+    return localStorage.getItem(tokenKey);
   },
 
   cerrarSesion(slugParam?: string | null) {
     const { tokenKey, sesionKey } = resolverClavesCliente(slugParam);
     localStorage.removeItem(tokenKey);
     localStorage.removeItem(sesionKey);
-    localStorage.removeItem(TOKEN_CLIENTE_KEY_LEGACY);
-    localStorage.removeItem(SESION_CLIENTE_KEY_LEGACY);
   },
 
   async obtenerPerfil(): Promise<PerfilClienteDTO> {
@@ -150,7 +135,7 @@ export const clientesService = {
     const sesionActual = this.obtenerSesion(slug);
     if (sesionActual) {
       const { tokenKey } = resolverClavesCliente(slug);
-      const token = localStorage.getItem(tokenKey) || localStorage.getItem(TOKEN_CLIENTE_KEY_LEGACY) || '';
+      const token = localStorage.getItem(tokenKey) || '';
       this.guardarSesion({
         accessToken: token,
         cliente: {

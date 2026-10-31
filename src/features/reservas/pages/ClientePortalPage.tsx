@@ -77,7 +77,8 @@ export default function ClientePortalPage() {
 
   const slugActivo = paramSlug || obtenerNegocioSlugActivo() || '';
   const sesion = clientesService.obtenerSesion(slugActivo);
-  const tieneSesionStaff = Boolean(localStorage.getItem("token_barberia"));
+  const tokenStaffLocal = slugActivo ? localStorage.getItem(`token_barberia_${slugActivo}`) : null;
+  const tieneSesionStaff = Boolean(tokenStaffLocal);
 
   // Si no hay sesión de cliente activa, redirigir a inicio de sesión
   useEffect(() => {
@@ -129,7 +130,7 @@ export default function ClientePortalPage() {
   }, [perfil?.telefono]);
 
   const handleCerrarSesion = () => {
-    clientesService.cerrarSesion();
+    clientesService.cerrarSesion(slugActivo);
     navigate(slugActivo ? `/${slugActivo}` : '/', { replace: true });
   };
 
@@ -212,7 +213,7 @@ export default function ClientePortalPage() {
           <div className="d-flex align-items-center gap-2 gap-sm-3">
             {tieneSesionStaff && (
               <Link
-                to="/dashboard"
+                to={slugActivo ? `/${slugActivo}/dashboard` : '/dashboard'}
                 className="btn btn-sm d-flex align-items-center gap-1"
                 style={{
                   fontSize: '0.8rem',
