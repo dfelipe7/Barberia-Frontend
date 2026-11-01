@@ -56,6 +56,7 @@ export const usuariosMapper = {
       estadoAdmin: dto.estadoAdmin,
       esBarbero: Boolean(dto.esBarbero),
       estadoBarbero: dto.estadoBarbero,
+      esSuperAdmin: Boolean(dto.esSuperAdmin),
     };
   },
 

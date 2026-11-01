@@ -12,6 +12,8 @@ import { esRolApp } from '../../../shared/lib/autorizacion/roles';
 import { ProductosEnDesarrolloModal } from './ProductosEnDesarrolloModal';
 import { SelectorAccesoModal } from './SelectorAccesoModal';
 import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
+import TenantThemeSelector from '../../../shared/layout/TenantThemeSelector';
+import UserDropdown from '../../../shared/layout/UserDropdown';
 
 /* ─── Hook: detecta si el usuario hizo scroll más allá de un umbral ─────── */
 function useScrolled(threshold = 40): boolean {
@@ -175,7 +177,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           </Link>
         </div>
       )}
-      <div className="container py-2 d-flex align-items-center justify-content-between gap-3">
+      <div className="container-fluid px-3 px-xl-4 py-2 d-flex align-items-center justify-content-between gap-2 gap-lg-3">
 
         {/* ── Logo ── */}
         <Link
@@ -184,47 +186,48 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           onClick={closeMobileMenu}
           aria-label={`Ir al inicio de ${BRAND.name}`}
         >
-          <BrandLogo variant={isDark ? 'white' : 'black'} height={34} alt={BRAND.name} />
+          <BrandLogo variant={isDark ? 'white' : 'black'} height={28} alt={BRAND.name} />
         </Link>
 
         {/* ── Navegación Desktop ── */}
         <nav
-          className="d-none d-xl-flex align-items-center gap-1 flex-grow-1 justify-content-center"
+          className="d-none d-xl-flex align-items-center flex-grow-1 justify-content-center"
           aria-label="Navegación principal"
         >
-          {navLinks.map((item) =>
-            item.to ? (
-              <NavLink
-                key={item.id}
-                to={item.to}
-                end
-                className={({ isActive }) =>
-                  `kyrios-nav-link${isActive ? ' is-active' : ''}`
-                }
-                onClick={closeMobileMenu}
-              >
-                <span className="kyrios-nav-link__label">{item.label}</span>
-                <span className="kyrios-nav-link__underline" aria-hidden="true" />
-              </NavLink>
-            ) : (
-              <button
-                key={item.id}
-                type="button"
-                className="kyrios-nav-link"
-                onClick={() => {
-                  closeMobileMenu();
-                  setProductosModalOpen(true);
-                }}
-              >
-                <span className="kyrios-nav-link__label">{item.label}</span>
-                <span className="kyrios-nav-link__underline" aria-hidden="true" />
-              </button>
-            )
-          )}
+          <div className="kyrios-nav-capsule">
+            {navLinks.map((item) =>
+              item.to ? (
+                <NavLink
+                  key={item.id}
+                  to={item.to}
+                  end
+                  className={({ isActive }) =>
+                    `kyrios-nav-link${isActive ? ' is-active' : ''}`
+                  }
+                  onClick={closeMobileMenu}
+                >
+                  <span className="kyrios-nav-link__label">{item.label}</span>
+                </NavLink>
+              ) : (
+                <button
+                  key={item.id}
+                  type="button"
+                  className="kyrios-nav-link"
+                  onClick={() => {
+                    closeMobileMenu();
+                    setProductosModalOpen(true);
+                  }}
+                >
+                  <span className="kyrios-nav-link__label">{item.label}</span>
+                </button>
+              )
+            )}
+          </div>
         </nav>
 
         {/* ── CTA Desktop ── */}
         <div className="d-none d-xl-flex align-items-center gap-2 flex-shrink-0">
+          <TenantThemeSelector isDark={isDark} />
           {/* Toggle de tema */}
           <button
             type="button"
@@ -241,37 +244,25 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
             <div style={{ width: 32, height: 32 }} aria-hidden="true" />
           ) : mostrarAvatar ? (
             <div className="d-flex align-items-center gap-2">
-              <UserAvatar nombre={nombre} apellido={apellido} online />
-              <span className="kyrios-nav-greeting">{displayName}</span>
               <button
                 type="button"
-                className="btn-kyrios-primary d-inline-flex align-items-center gap-1"
-                onClick={() => navigate('/dashboard')}
+                className="btn-kyrios-primary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 rounded-pill fw-semibold text-nowrap"
+                onClick={() => navigate(slug ? `/${slug}/dashboard` : '/dashboard')}
                 aria-label="Ir a mi panel administrativo"
+                style={{ fontSize: '0.82rem' }}
               >
                 <LayoutDashboard size={14} strokeWidth={2} />
                 Mi panel
               </button>
-              {tieneAcceso && (
-                <button
-                  type="button"
-                  className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
-                  onClick={() => navigate('/mi-perfil')}
-                  aria-label="Ir a mi perfil"
-                >
-                  <User size={14} strokeWidth={2} />
-                  Mi Perfil
-                </button>
-              )}
-              <button
-                type="button"
-                className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
-                onClick={handleLogout}
-                aria-label="Cerrar sesión"
-              >
-                <LogOut size={14} strokeWidth={2} />
-                Salir
-              </button>
+              <UserDropdown
+                nombre={nombre || usuarioDb?.nombre}
+                apellido={usuarioDb?.apellido}
+                email={usuarioDb?.email}
+                roles={roles}
+                fotoUrl={usuarioDb?.barbero?.fotoUrl}
+                isDark={isDark}
+                onCerrarSesion={handleLogout}
+              />
             </div>
           ) : clienteSesion ? (
             <div className="d-flex align-items-center gap-2">

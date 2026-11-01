@@ -15,6 +15,7 @@ import ScrollToTop from './shared/components/ScrollToTop';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 import './shared/styles/theme.css';
+import './shared/styles/tenant-themes.css';
 import './shared/styles/responsive.css';
 
 // Auto-recarga limpia si un despliegue en producción reemplaza los chunks dinámicos en el servidor

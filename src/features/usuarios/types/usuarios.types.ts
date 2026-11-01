@@ -43,6 +43,7 @@ export interface AdministradorGestion {
   estadoAdmin?: EstadoEntidad;
   esBarbero: boolean;
   estadoBarbero?: EstadoEntidad;
+  esSuperAdmin?: boolean;
 }
 
 export interface UsuarioDetalle {

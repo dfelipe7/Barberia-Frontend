@@ -18,6 +18,7 @@ import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import BackLink from '../../../shared/ui/BackLink';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import { mapApiError } from '../../../shared/lib/mapApiError';
+import { useTenantBrand } from '../../negocio/context/TenantBrandContext';
 
 const formatearFecha = (valor: string) => {
   const [anio, mes, dia] = valor.split('-').map(Number);
@@ -47,6 +48,7 @@ export default function ReservaGestionInvitadoPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const confirm = useConfirm();
+  const { nombreNegocio } = useTenantBrand();
 
   const slugActivo = slug || obtenerNegocioSlugActivo() || 'kyrios-studio';
   const idRaw = idParamFromRoute || searchParams.get('id');
@@ -229,7 +231,7 @@ export default function ReservaGestionInvitadoPage() {
       <header className="mb-4">
         <BackLink to={`/${slugActivo}`}>Volver al sitio de la barbería</BackLink>
         <span className="text-eyebrow d-block mt-3 mb-1">AUTOGESTIÓN DE CITA</span>
-        <h1 className="h2 fw-bold mb-1">Tu Cita en Kyrios Barber</h1>
+        <h1 className="h2 fw-bold mb-1">Tu Cita en {nombreNegocio || 'la Barbería'}</h1>
         <p className="text-surface-muted small mb-0">
           Desde aquí puedes consultar los detalles, reprogramar fecha u hora, o cancelarla si no puedes asistir.
         </p>

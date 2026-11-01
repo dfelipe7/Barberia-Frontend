@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BRAND } from '../../config/brand';
 import { useSystemTheme } from '../lib/useSystemTheme';
+import { useTenantBrand } from '../../features/negocio/context/TenantBrandContext';
 
 export type BrandLogoVariant = 'auto' | 'black' | 'white';
 
@@ -19,20 +20,23 @@ export interface BrandLogoProps {
   maxWidth?: number | string;
   /** Clase CSS adicional */
   className?: string;
-  /** Texto alternativo descriptivo. Por defecto: nombre de la marca */
+  /** Texto alternativo descriptivo. Por defecto: nombre de la barbería */
   alt?: string;
   style?: React.CSSProperties;
+  /**
+   * Controla si se muestra el nombre de la barbería al lado del isotipo.
+   * Si es undefined, se muestra automáticamente cuando la sede tiene un logo
+   * personalizado o su nombre es diferente a la marca predeterminada.
+   */
+  showName?: boolean;
 }
 
 /**
- * Logo oficial de Kyrios Studio.
+ * Logo oficial de la barbería.
  *
- * Con `variant="auto"` (por defecto) detecta el tema del sistema y usa
- * físicamente el archivo vectorial correcto: logo-black sobre fondos claros y
- * logo-white sobre fondos oscuros.
- *
- * Incluye dimensiones responsivas fluidas que evitan desbordamiento en
- * pantallas móviles pequeñas (320px, 375px, 425px).
+ * Muestra el logo personalizado subido por la sede activa junto con el nombre
+ * de la barbería al lado. Si la sede aún no ha configurado sus logos o si la
+ * imagen falla, recurre de forma transparente a los assets predeterminados de BRAND.
  */
 export const BrandLogo: React.FC<BrandLogoProps> = ({
   variant = 'auto',
@@ -40,41 +44,108 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   maxHeight,
   maxWidth = '100%',
   className = '',
-  alt = BRAND.name,
+  alt,
   style,
+  showName,
 }) => {
   const systemTheme = useSystemTheme();
+  const { nombreNegocio, logoBlancoUrl, logoNegroUrl } = useTenantBrand();
+  const [imageError, setImageError] = useState(false);
+
+  // Reiniciar estado de error si cambian las URLs del logo
+  useEffect(() => {
+    setImageError(false);
+  }, [logoBlancoUrl, logoNegroUrl]);
 
   const resolvedVariant: 'black' | 'white' =
     variant === 'auto'
       ? systemTheme === 'dark' ? 'white' : 'black'
       : variant;
 
-  const src =
+  const fallbackSrc =
     resolvedVariant === 'white'
       ? BRAND.assets.logoWhite
       : BRAND.assets.logoBlack;
 
-  const effectiveMaxHeight = maxHeight ?? height;
+  const isCustomLogo = !imageError && Boolean(
+    (resolvedVariant === 'white' && logoBlancoUrl) ||
+    (resolvedVariant === 'black' && logoNegroUrl)
+  );
 
-  return (
+  const isDifferentTenant = Boolean(
+    nombreNegocio &&
+    nombreNegocio.toLowerCase().trim() !== BRAND.name.toLowerCase().trim()
+  );
+
+  let src = fallbackSrc;
+  if (isCustomLogo) {
+    if (resolvedVariant === 'white' && logoBlancoUrl) {
+      src = logoBlancoUrl;
+    } else if (resolvedVariant === 'black' && logoNegroUrl) {
+      src = logoNegroUrl;
+    }
+  } else if (isDifferentTenant) {
+    src = BRAND.assets.iconKyrios;
+  }
+
+  const effectiveMaxHeight = maxHeight ?? height;
+  const effectiveAlt = alt || nombreNegocio || BRAND.name;
+
+  const shouldShowName =
+    showName !== undefined
+      ? showName
+      : isCustomLogo || isDifferentTenant;
+
+  const textColor = resolvedVariant === 'white' ? '#FFFFFF' : '#0C0C0C';
+
+  const imageElement = (
     <img
       src={src}
-      alt={alt}
+      alt={effectiveAlt}
       height={height}
-      className={`brand-logo-img ${className}`.trim()}
+      className={`brand-logo-img ${!shouldShowName ? className : ''}`.trim()}
+      onError={() => setImageError(true)}
       style={{
         display: 'inline-block',
         width: 'auto',
         maxWidth,
         maxHeight: `${effectiveMaxHeight}px`,
-        height: 'auto',
+        height: `${height}px`,
         objectFit: 'contain',
         verticalAlign: 'middle',
-        ...style,
+        ...(!shouldShowName ? style : {}),
       }}
       draggable={false}
     />
+  );
+
+  if (!shouldShowName) {
+    return imageElement;
+  }
+
+  return (
+    <div
+      className={`brand-logo-container d-inline-flex align-items-center gap-2 ${className}`.trim()}
+      style={{
+        verticalAlign: 'middle',
+        textDecoration: 'none',
+        ...style,
+      }}
+    >
+      {imageElement}
+      <span
+        className="brand-logo-name fw-bold text-nowrap"
+        style={{
+          fontSize: '0.92rem',
+          letterSpacing: '-0.01em',
+          lineHeight: 1.1,
+          color: textColor,
+          fontFamily: BRAND.typography.body,
+        }}
+      >
+        {nombreNegocio || effectiveAlt}
+      </span>
+    </div>
   );
 };
 

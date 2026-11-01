@@ -46,6 +46,7 @@ import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import BackLink from '../../../shared/ui/BackLink';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
+import { useTenantBrand } from '../../negocio/context/TenantBrandContext';
 import './ReservaClientePage.css';
 
 interface ReservaLocationState {
@@ -209,6 +210,8 @@ export const ReservaClientePage = () => {
   const location = useLocation();
   const { slug } = useParams<{ slug?: string }>();
   const [searchParams] = useSearchParams();
+  const { nombreNegocio } = useTenantBrand();
+  const effectiveName = nombreNegocio || 'Kyrios Barber Studio';
   const slugActivo = slug || obtenerNegocioSlugActivo() || 'kyrios-studio';
   const initialState = (location.state ?? {}) as ReservaLocationState;
   const queryClient = useQueryClient();
@@ -1768,7 +1771,7 @@ export const ReservaClientePage = () => {
               <div className="booking-voucher__header text-center mb-3">
                 <div className="booking-voucher__brand-badge d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2">
                   <Scissors size={13} className="text-primary" />
-                  <span className="font-brand small tracking-wider text-uppercase">Kyrios Barber Studio</span>
+                  <span className="font-brand small tracking-wider text-uppercase">{effectiveName}</span>
                 </div>
 
                 <div className="booking-voucher__check-ring mx-auto mb-2" aria-hidden="true">
@@ -1911,7 +1914,7 @@ export const ReservaClientePage = () => {
               <div className="booking-voucher__notice p-2.5 p-sm-3 rounded-3 mb-3 d-flex align-items-center gap-2 gap-sm-3">
                 <MapPin size={18} className="text-primary flex-shrink-0" aria-hidden="true" />
                 <div className="small">
-                  <strong className="booking-voucher__title me-1">Kyrios Barber Studio:</strong>
+                  <strong className="booking-voucher__title me-1">{effectiveName}:</strong>
                   <span className="text-surface-muted">
                     Te agradecemos llegar con <strong>5 minutos de anticipación</strong>.
                   </span>
@@ -2100,7 +2103,7 @@ export const ReservaClientePage = () => {
                 <div className="booking-ticket card-surface rounded-4 p-4 mb-4">
                   <div className="booking-ticket__header d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom">
                     <div>
-                      <span className="font-brand fs-5 tracking-wide text-primary">KYRIOS BARBER</span>
+                      <span className="font-brand fs-5 tracking-wide text-primary">{effectiveName.toUpperCase()}</span>
                       <span className="small text-surface-muted d-block">Comprobante de Reserva</span>
                     </div>
                     <Scissors size={22} className="text-primary" />

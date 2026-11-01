@@ -487,21 +487,18 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
                           aria-describedby="barberos-help"
                         >
                           {barberosFiltrados.map((b) => {
-                            const id = Number(b.barberoId ?? b.id);
-                            const usuarioId = Number(b.id);
-                            const seleccionado =
-                              seleccionados.includes(id) ||
-                              (b.barberoId !== undefined && seleccionados.includes(usuarioId));
+                            const barberoId = Number(b.barberoId ?? b.id);
+                            const seleccionado = seleccionados.includes(barberoId);
 
                             return (
                               <button
-                                key={id}
+                                key={barberoId}
                                 type="button"
                                 onClick={() => {
                                   field.onChange(
                                     seleccionado
-                                      ? seleccionados.filter((x) => x !== id && x !== usuarioId)
-                                      : [...seleccionados.filter((x) => x !== usuarioId), id],
+                                      ? seleccionados.filter((x) => x !== barberoId)
+                                      : [...seleccionados, barberoId],
                                   );
                                 }}
                                 aria-pressed={seleccionado}

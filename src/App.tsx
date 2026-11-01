@@ -1,5 +1,5 @@
-import { lazy, Suspense } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import MainLayout from './shared/layout/MainLayout';
 import ProtectedRoute from './shared/components/ProtectedRoute';
 import { ErrorBoundary } from './shared/components/ErrorBoundary';
@@ -15,6 +15,9 @@ import PlataformaHubPage from './pages/Plataforma/PlataformaHubPage';
 import LandingPlataformaPage from './pages/Plataforma/LandingPlataformaPage';
 import { routeConfig } from './shared/routes/routeConfig';
 import KyriosSpinner from './shared/ui/KyriosSpinner';
+import { obtenerNegocioSlugActivo } from './shared/lib/http/axios';
+import { resolverTemaTenant } from './config/tenantTheme';
+import { TenantBrandProvider } from './features/negocio/context/TenantBrandContext';
 
 // Helper para recargar la página automáticamente si falla la descarga de un chunk dinámico tras un despliegue
 function lazyWithRetry<T extends React.ComponentType<any>>(
@@ -43,9 +46,18 @@ const CatalogoBarberosPage = lazyWithRetry(
 );
 
 function App() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const slug = obtenerNegocioSlugActivo();
+    const tema = resolverTemaTenant(slug);
+    document.documentElement.setAttribute('data-tenant-theme', tema);
+  }, [location.pathname]);
+
   return (
     <ErrorBoundary>
-      <Routes>
+      <TenantBrandProvider>
+        <Routes>
         <Route element={<MainLayout />}>
           {routeConfig.map(({ path, element, roles }) => (
             <Route key={path} element={<ProtectedRoute rolesPermitidos={[...roles]} />}>
@@ -111,7 +123,8 @@ function App() {
           }
         />
       </Routes>
-    </ErrorBoundary>
+    </TenantBrandProvider>
+  </ErrorBoundary>
   );
 }
 

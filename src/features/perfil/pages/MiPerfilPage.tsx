@@ -11,7 +11,7 @@ import { useSubirFotoPropia, useEliminarFotoPropia } from '../../barberos';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
-import { ShieldCheck, ExternalLink } from 'lucide-react';
+import { ShieldCheck, ExternalLink, Scissors } from 'lucide-react';
 import RoleBadge from '../../../shared/ui/atoms/RoleBadge';
 import {
   miPerfilSchema,
@@ -21,6 +21,8 @@ import {
 
 export const MiPerfilPage: React.FC = () => {
   const { usuarioDb, refrescarPerfil, roles } = useAuth();
+  const esPersonalAdministrativo = roles.includes('SUPERADMIN') || roles.includes('ADMINISTRADOR');
+  const esBarberoActivo = Boolean(usuarioDb?.barbero && usuarioDb.barbero.estado === 'ACTIVO');
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [editando, setEditando] = useState(false);
@@ -444,19 +446,30 @@ export const MiPerfilPage: React.FC = () => {
             </div>
           </div>
 
-          {usuarioDb?.rol === 'SUPERADMIN' && (
-            <div className="card shadow-sm border-danger card-surface mt-4">
-              <div className="card-body text-center">
-                <h5 className="card-title text-danger mb-3">Gestión Avanzada</h5>
-                <p className="card-text text-surface-muted small mb-4">
-                  Como Superadmin, puedes modificar tus propios roles y privilegios en el sistema.
+          {esPersonalAdministrativo && (
+            <div className="card shadow-sm border card-surface mt-4">
+              <div className="card-body p-3 p-md-4">
+                <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-2">
+                  <div className="d-flex align-items-center gap-2">
+                    <Scissors size={20} className="text-primary" />
+                    <h5 className="fw-bold mb-0">Gestión de Roles y Perfil de Barbero</h5>
+                  </div>
+                  <span className={`badge ${esBarberoActivo ? 'bg-success' : 'bg-secondary-subtle text-secondary-emphasis border'}`}>
+                    {esBarberoActivo ? 'Perfil Barbero Activo' : 'Sin perfil de barbero'}
+                  </span>
+                </div>
+                <p className="card-text text-surface-muted small mb-3">
+                  {esBarberoActivo
+                    ? 'Tienes el perfil de Barbero habilitado para atender citas, configurar tus horarios y asociarte a servicios del catálogo.'
+                    : 'Como parte del equipo administrativo, puedes activar tu perfil de Barbero para atender clientes en la barbería, configurar tus turnos y aparecer en el catálogo.'}
                 </p>
                 <button
                   type="button"
                   onClick={handleGestionAvanzada}
-                  className="btn btn-outline-danger w-100"
+                  className="btn btn-outline-primary w-100 w-sm-auto d-inline-flex align-items-center justify-content-center gap-2"
                 >
-                  Gestionar mis roles
+                  <Scissors size={15} />
+                  {esBarberoActivo ? 'Gestionar roles / Editar perfil de Barbero' : 'Gestionar roles / Habilitar perfil de Barbero'}
                 </button>
               </div>
             </div>

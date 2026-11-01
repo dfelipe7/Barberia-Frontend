@@ -12,6 +12,7 @@ import {
     LogOut,
 } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
+import { useTenantBrand } from '../../features/negocio/context/TenantBrandContext';
 import { obtenerNegocioSlugActivo } from '../../shared/lib/http/axios';
 import { ROLES_APP } from '../../shared/constants/roles';
 
@@ -86,6 +87,7 @@ export default function Dashboard() {
         negocioSesionSlug,
     } = useAuth();
 
+    const { nombreNegocio } = useTenantBrand();
     const { showToast } = useToastContext();
     const location = useLocation();
     const navigate = useNavigate();
@@ -201,7 +203,7 @@ export default function Dashboard() {
                             Hola, {nombre || 'Usuario'}
                         </h1>
                         <p className="text-muted mb-0">
-                            Bienvenido de nuevo. Este es el resumen de tu actividad en Kyrios Studio.
+                            Bienvenido de nuevo. Este es el resumen de tu actividad en {nombreNegocio || 'tu barbería'}.
                         </p>
                     </div>
                     <div className="d-flex flex-wrap gap-2">

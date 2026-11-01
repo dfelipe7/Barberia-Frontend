@@ -50,11 +50,7 @@ const CatalogoBarberosPage: React.FC = () => {
     setSearchParams(params, { replace: true });
   }, [debouncedQuery, setSearchParams, searchParams]);
 
-  // SEO: título dinámico de la pestaña
-  useEffect(() => {
-    document.title = 'Barberos | Kyrios Studio';
-    return () => { document.title = 'Kyrios Studio'; };
-  }, []);
+  // Título dinámico gestionado por TenantBrandContext
 
   const { data: barberos = [], isLoading, error, refetch } = useBarberosCatalogo();
 

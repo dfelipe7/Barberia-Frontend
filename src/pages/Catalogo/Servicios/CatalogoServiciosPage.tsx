@@ -51,11 +51,7 @@ const CatalogoServiciosPage: React.FC = () => {
     setSearchParams(params, { replace: true });
   }, [debouncedQuery, setSearchParams, searchParams]);
 
-  // SEO: título dinámico de la pestaña
-  useEffect(() => {
-    document.title = 'Catálogo de Servicios | Kyrios Studio';
-    return () => { document.title = 'Kyrios Studio'; };
-  }, []);
+  // Título dinámico gestionado por TenantBrandContext
 
   const { data: servicios = [], isLoading, error, refetch } = useServiciosCatalogo();
 

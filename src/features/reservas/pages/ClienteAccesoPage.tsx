@@ -18,6 +18,7 @@ import BrandLogo from '../../../shared/ui/BrandLogo';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import heroImg from '../../../assets/hero.png';
+import { useTenantBrand } from '../../negocio/context/TenantBrandContext';
 import './AuthSplitLayout.css';
 
 type ModoAccesoCliente = 'registro' | 'iniciar-sesion';
@@ -33,6 +34,8 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
   const [searchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(false);
+  const { nombreNegocio, bannerUrl } = useTenantBrand();
+  const effectiveName = nombreNegocio || 'Kyrios Barber Studio';
   const registro = modo === 'registro';
 
   const returnToState = (location.state as { returnTo?: unknown } | null)?.returnTo;
@@ -98,7 +101,7 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
       <aside className="auth-split__brand-panel" aria-label="Información de la membresía">
         <div
           className="auth-split__brand-bg"
-          style={{ backgroundImage: `url(${heroImg})` }}
+          style={{ backgroundImage: `url(${bannerUrl || heroImg})` }}
           aria-hidden="true"
         />
         <div className="auth-split__brand-overlay" aria-hidden="true" />
@@ -107,7 +110,7 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
         <div className="auth-split__brand-content">
           <div>
             <div className="d-flex align-items-center gap-3 mb-4">
-              <BrandLogo variant="white" height={40} alt="Kyrios Barber Studio" />
+              <BrandLogo variant="white" height={40} alt={effectiveName} />
             </div>
 
             <div className="mb-4">
@@ -138,7 +141,7 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
           </div>
 
           <div className="auth-split__brand-footer">
-            <span>© {new Date().getFullYear()} Kyrios Barber Studio. Todos los derechos reservados.</span>
+            <span>© {new Date().getFullYear()} {effectiveName}. Todos los derechos reservados.</span>
           </div>
         </div>
       </aside>
@@ -151,7 +154,7 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
           </Link>
 
           <div className="auth-split__mobile-brand">
-            <BrandLogo variant="white" height={34} alt="Kyrios Barber Studio" />
+            <BrandLogo variant="white" height={34} alt={effectiveName} />
           </div>
 
           <div className="auth-split__header">

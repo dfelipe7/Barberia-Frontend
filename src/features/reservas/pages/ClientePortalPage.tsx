@@ -37,6 +37,7 @@ import BrandLogo from '../../../shared/ui/BrandLogo';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
+import { useTenantBrand } from '../../negocio/context/TenantBrandContext';
 import './ClientePortalPage.css';
 
 const formatearFecha = (valor: string) => {
@@ -74,6 +75,8 @@ export default function ClientePortalPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const confirm = useConfirm();
   const { theme, setTheme, isDark } = useTheme();
+  const { nombreNegocio } = useTenantBrand();
+  const effectiveName = nombreNegocio || 'Kyrios Barber Studio';
 
   const slugActivo = paramSlug || obtenerNegocioSlugActivo() || '';
   const sesion = clientesService.obtenerSesion(slugActivo);
@@ -231,7 +234,7 @@ export default function ClientePortalPage() {
                 <span className="d-none d-sm-inline">Panel Staff</span>
               </Link>
             )}
-            <BrandLogo variant={isDark ? 'white' : 'black'} height={28} alt="Kyrios Barber Studio" />
+            <BrandLogo variant={isDark ? 'white' : 'black'} height={28} alt={effectiveName} />
             
             {/* Toggle de Modo Claro / Modo Oscuro */}
             <button
@@ -658,7 +661,7 @@ export default function ClientePortalPage() {
                 Programa de Puntos y Fidelización
               </h2>
               <p className="small text-muted mb-4" style={{ maxWidth: '460px', margin: '0 auto 1.5rem' }}>
-                Estamos preparando tu tarjeta de sellos digital. Muy pronto acumularás cortes para canjear servicios gratuitos y beneficios exclusivos en Kyrios Studio.
+                Estamos preparando tu tarjeta de sellos digital. Muy pronto acumularás cortes para canjear servicios gratuitos y beneficios exclusivos en {effectiveName}.
               </p>
               <button
                 type="button"

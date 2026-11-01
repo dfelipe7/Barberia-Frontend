@@ -30,6 +30,7 @@ export interface AdministradorGestionDTO {
   estadoAdmin?: 'ACTIVO' | 'INACTIVO';
   esBarbero: boolean;
   estadoBarbero?: 'ACTIVO' | 'INACTIVO';
+  esSuperAdmin?: boolean;
 }
 
 export interface CrearAdministradorDTO {

@@ -17,6 +17,7 @@ import { clientesService } from '../../features/reservas/api/reservas.service';
 import BrandLogo from '../../shared/ui/BrandLogo';
 import KyriosSpinner from '../../shared/ui/KyriosSpinner';
 import heroImg from '../../assets/hero.png';
+import { useTenantBrand } from '../../features/negocio/context/TenantBrandContext';
 import '../../features/reservas/pages/AuthSplitLayout.css';
 
 export const LoginPage: React.FC = () => {
@@ -29,6 +30,8 @@ export const LoginPage: React.FC = () => {
   const [errorMensaje, setErrorMensaje] = useState<string | null>(null);
   const [isCargando, setIsCargando] = useState(false);
   const sesionCliente = slug ? clientesService.obtenerSesion(slug) : null;
+  const { nombreNegocio, bannerUrl } = useTenantBrand();
+  const effectiveName = nombreNegocio || 'Kyrios Barber Studio';
 
   useEffect(() => {
     if (paramSlug && !RUTAS_RESERVADAS.has(paramSlug.toLowerCase().trim())) {
@@ -98,7 +101,7 @@ export const LoginPage: React.FC = () => {
       <aside className="auth-split__brand-panel" aria-label="Portal administrativo">
         <div
           className="auth-split__brand-bg"
-          style={{ backgroundImage: `url(${heroImg})` }}
+          style={{ backgroundImage: `url(${bannerUrl || heroImg})` }}
           aria-hidden="true"
         />
         <div className="auth-split__brand-overlay" aria-hidden="true" />
@@ -107,7 +110,7 @@ export const LoginPage: React.FC = () => {
         <div className="auth-split__brand-content">
           <div>
             <div className="d-flex align-items-center gap-3 mb-4">
-              <BrandLogo variant="white" height={40} alt="Kyrios Barber Studio" />
+              <BrandLogo variant="white" height={40} alt={effectiveName} />
             </div>
 
             <div className="mb-4">
@@ -151,7 +154,7 @@ export const LoginPage: React.FC = () => {
           </Link>
 
           <div className="auth-split__mobile-brand">
-            <BrandLogo variant="white" height={34} alt="Kyrios Barber Studio" />
+            <BrandLogo variant="white" height={34} alt={effectiveName} />
           </div>
 
           <div className="auth-split__header">

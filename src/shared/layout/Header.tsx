@@ -11,6 +11,7 @@ import { useUi } from '../contexts/UiContext';
 import { ROLES_APP, ROL_HIERARCHY } from '../constants/roles';
 import UserAvatar from '../ui/atoms/UserAvatar';
 import RoleBadge from '../ui/atoms/RoleBadge';
+import TenantThemeSelector from './TenantThemeSelector';
 
 export default function Header() {
   const { cerrarSesion, nombre, apellido, email, roles, usuarioDb, fotoUrl: fotoGoogle } = useAuth();
@@ -73,7 +74,7 @@ export default function Header() {
             </button>
 
             <Link
-              to="/dashboard"
+              to={slugActivo ? `/${slugActivo}/dashboard` : "/dashboard"}
               className="navbar-brand d-flex align-items-center py-0 me-0"
               aria-label={`Ir al dashboard de ${BRAND.name}`}
             >
@@ -115,6 +116,7 @@ export default function Header() {
 
           {/* ── Zona derecha — Acciones ── */}
           <div className="d-flex align-items-center gap-2">
+            <TenantThemeSelector isDark={isDark} />
             <button
               type="button"
               onClick={cycleTheme}
