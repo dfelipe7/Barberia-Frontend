@@ -12,13 +12,20 @@ export const LocationSection: React.FC = () => {
   const effectiveMapsUrl = mapsUrl || BRAND.contact.mapsUrl;
   const locationSubtitle = [ciudad, departamento].filter(Boolean).join(', ') || 'Popayán, Cauca';
 
-  // Si hay coordenadas GPS configuradas, centrar exactamente en ellas.
-  // De lo contrario, centrar en la dirección y ciudad en Colombia.
-  const queryEmbed =
-    latitud && longitud
-      ? `${latitud},${longitud}`
-      : encodeURIComponent(`${effectiveAddress}, ${effectiveCity}, Colombia`);
-  const mapEmbedUrl = `https://maps.google.com/maps?q=${queryEmbed}&hl=es&z=16&output=embed`;
+  // Coordenadas base: Si la sede tiene coordenadas configuradas, usarlas;
+  // de lo contrario Popayán Centro por defecto.
+  const latNum = latitud != null && !isNaN(Number(latitud)) ? Number(latitud) : 2.4419;
+  const lngNum = longitud != null && !isNaN(Number(longitud)) ? Number(longitud) : -76.6063;
+
+  // OpenStreetMap Embed: 100% público, libre de X-Frame-Options y sin redirecciones a consent.google.com
+  const deltaLat = 0.0035;
+  const deltaLng = 0.006;
+  const minLng = (lngNum - deltaLng).toFixed(5);
+  const minLat = (latNum - deltaLat).toFixed(5);
+  const maxLng = (lngNum + deltaLng).toFixed(5);
+  const maxLat = (latNum + deltaLat).toFixed(5);
+
+  const mapEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${minLng}%2C${minLat}%2C${maxLng}%2C${maxLat}&layer=mapnik&marker=${latNum.toFixed(5)}%2C${lngNum.toFixed(5)}`;
 
   return (
     <section id="ubicacion" className="kyrios-section" aria-labelledby="ubicacion-heading">
