@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useLocation } from 'react-router-dom';
 import { perfilNegocioApi } from '../services/perfilNegocioApi';
 import type { PerfilNegocioPublicoResponse } from '../types/perfilNegocio.types';
+import { redesSocialesApi } from '../services/redesSocialesApi';
+import type { RedSocial } from '../types/redesSociales.types';
 import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import { BRAND } from '../../../config/brand';
 import { resolverTemaTenant, type TenantThemeId } from '../../../config/tenantTheme';
@@ -23,6 +25,7 @@ export interface TenantBrandContextValue {
   mapsUrl: string | null;
   temaKey: string;
   configurado: boolean;
+  redesSociales: RedSocial[];
   recargarPerfil: () => Promise<void>;
 }
 
@@ -92,26 +95,34 @@ const TenantBrandContext = createContext<TenantBrandContextValue>({
   mapsUrl: null,
   temaKey: 'clasico-azul',
   configurado: false,
+  redesSociales: [],
   recargarPerfil: async () => {},
 });
 
 export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   const [perfil, setPerfil] = useState<PerfilNegocioPublicoResponse | null>(null);
+  const [redesSociales, setRedesSociales] = useState<RedSocial[]>([]);
   const slug = obtenerNegocioSlugActivo();
 
   const cargarPerfil = useCallback(async () => {
     if (!slug || slug === 'plataforma' || slug === 'explorar') {
       setPerfil(null);
+      setRedesSociales([]);
       return;
     }
 
     try {
-      const data = await perfilNegocioApi.obtenerPerfilPublico();
-      setPerfil(data);
+      const [perfilData, redesData] = await Promise.all([
+        perfilNegocioApi.obtenerPerfilPublico().catch(() => null),
+        redesSocialesApi.listar().catch(() => []),
+      ]);
+      setPerfil(perfilData);
+      setRedesSociales(redesData || []);
     } catch {
       // Si falla o no tiene perfil configurado, queda en null y usará los fallbacks
       setPerfil(null);
+      setRedesSociales([]);
     }
   }, [slug]);
 
@@ -173,6 +184,7 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
     mapsUrl: perfil?.mapsUrl || null,
     temaKey: perfil?.temaKey || resolverTemaTenant(slug),
     configurado: perfil?.configurado ?? false,
+    redesSociales,
     recargarPerfil: cargarPerfil,
   };
 

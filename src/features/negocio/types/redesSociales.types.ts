@@ -21,3 +21,4 @@ export interface ActualizarRedSocialDto {
   nombre?: string;
   orden?: number;
 }
+

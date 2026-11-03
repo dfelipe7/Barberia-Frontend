@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import BrandLogo from '../../../shared/ui/BrandLogo';
 import { BRAND } from '../../../config/brand';
-import { InstagramIcon, FacebookIcon, MapPinIcon } from './HomeIcons';
+import { InstagramIcon, FacebookIcon, MapPinIcon, WhatsAppIcon, TikTokIcon, GlobeIcon } from './HomeIcons';
+import type { TipoRedSocial } from '../../../features/negocio/types/redesSociales.types';
 import { ProductosEnDesarrolloModal } from './ProductosEnDesarrolloModal';
 import { useTenantBrand } from '../../../features/negocio/context/TenantBrandContext';
 import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
@@ -14,7 +15,7 @@ export const HomeFooter: React.FC = () => {
   const slug = paramSlug || obtenerNegocioSlugActivo() || undefined;
   const basePrefix = slug ? `/${slug}` : '';
 
-  const { nombreNegocio, frasePrincipal, direccion, ciudad, departamento } = useTenantBrand();
+  const { nombreNegocio, frasePrincipal, direccion, ciudad, departamento, redesSociales } = useTenantBrand();
 
   const effectiveName = nombreNegocio || BRAND.name;
   const effectiveAddress = direccion || BRAND.contact.address;
@@ -34,25 +35,62 @@ export const HomeFooter: React.FC = () => {
               {effectiveName} es un concepto de barbería contemporánea{ciudad ? ` en ${ciudad}` : ''}, 
               enfocado en la precisión, la técnica y una experiencia de alto nivel para el cliente actual.
             </p>
-            <div className="d-flex align-items-center gap-2">
-              <a
-                href={BRAND.social.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="kyrios-social-btn"
-                aria-label={`Seguir a ${effectiveName} en Instagram (abre en pestaña nueva)`}
-              >
-                <InstagramIcon size={18} />
-              </a>
-              <a
-                href={BRAND.social.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="kyrios-social-btn"
-                aria-label={`Seguir a ${effectiveName} en Facebook (abre en pestaña nueva)`}
-              >
-                <FacebookIcon size={18} />
-              </a>
+            <div className="d-flex align-items-center flex-wrap gap-2">
+              {redesSociales && redesSociales.filter((r) => r.activo).length > 0 ? (
+                redesSociales
+                  .filter((r) => r.activo)
+                  .map((red) => {
+                    const renderIconoRed = (t: TipoRedSocial) => {
+                      switch (t) {
+                        case 'INSTAGRAM':
+                          return <InstagramIcon size={18} />;
+                        case 'FACEBOOK':
+                          return <FacebookIcon size={18} />;
+                        case 'WHATSAPP':
+                          return <WhatsAppIcon size={18} />;
+                        case 'TIKTOK':
+                          return <TikTokIcon size={18} />;
+                        default:
+                          return <GlobeIcon size={18} />;
+                      }
+                    };
+
+                    return (
+                      <a
+                        key={red.id}
+                        href={red.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="kyrios-social-btn"
+                        title={red.nombre}
+                        aria-label={`Visitar ${red.nombre} de ${effectiveName} (abre en pestaña nueva)`}
+                      >
+                        {renderIconoRed(red.tipo)}
+                      </a>
+                    );
+                  })
+              ) : (
+                <>
+                  <a
+                    href={BRAND.social.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="kyrios-social-btn"
+                    aria-label={`Seguir a ${effectiveName} en Instagram (abre en pestaña nueva)`}
+                  >
+                    <InstagramIcon size={18} />
+                  </a>
+                  <a
+                    href={BRAND.social.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="kyrios-social-btn"
+                    aria-label={`Seguir a ${effectiveName} en Facebook (abre en pestaña nueva)`}
+                  >
+                    <FacebookIcon size={18} />
+                  </a>
+                </>
+              )}
             </div>
           </div>
 

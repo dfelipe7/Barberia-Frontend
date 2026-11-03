@@ -50,3 +50,4 @@ export const redesSocialesApi = {
     return response.data;
   },
 };
+
