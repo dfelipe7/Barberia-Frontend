@@ -32,6 +32,8 @@ import {
 import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import { useToastContext } from '../../../shared/ui/ToastContext';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
+import { Share2 } from 'lucide-react';
+import { RedesSocialesSection } from '../components/RedesSocialesSection';
 
 function extraerCoordenadas(texto: string): { lat: number; lng: number } | null {
   if (!texto) return null;
@@ -107,6 +109,8 @@ export default function ConfiguracionNegocioPage() {
 
   // Estado del tema visual
   const [temaActual, setTemaActual] = useState<TenantThemeId>(() => resolverTemaTenant(slugActivo));
+  type TabConfiguracion = 'general' | 'marca' | 'redes';
+  const [tabActiva, setTabActiva] = useState<TabConfiguracion>('general');
 
   // Refs de inputs de tipo file
   const inputBannerRef = useRef<HTMLInputElement>(null);
@@ -368,10 +372,50 @@ export default function ConfiguracionNegocioPage() {
         </div>
       </div>
 
-      <div className="row g-4">
-        {/* Columna Izquierda: Información Comercial y Ubicación */}
-        <div className="col-12 col-xl-7">
-          <div className="card shadow-sm border-0 card-surface h-100">
+      {/* Pestañas de Configuración SaaS */}
+      <div className="d-flex flex-wrap gap-2 mb-4 border-bottom pb-2">
+        <button
+          type="button"
+          onClick={() => setTabActiva('general')}
+          className={`btn btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill fw-semibold transition-all ${
+            tabActiva === 'general'
+              ? 'btn-primary shadow-sm'
+              : 'btn-outline-secondary border-0 text-body'
+          }`}
+        >
+          <MapPin size={16} /> Información Comercial y Ubicación
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setTabActiva('marca')}
+          className={`btn btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill fw-semibold transition-all ${
+            tabActiva === 'marca'
+              ? 'btn-primary shadow-sm'
+              : 'btn-outline-secondary border-0 text-body'
+          }`}
+        >
+          <Palette size={16} /> Diseño y Recursos de Marca
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setTabActiva('redes')}
+          className={`btn btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill fw-semibold transition-all ${
+            tabActiva === 'redes'
+              ? 'btn-primary shadow-sm'
+              : 'btn-outline-secondary border-0 text-body'
+          }`}
+        >
+          <Share2 size={16} /> Redes Sociales Oficiales
+        </button>
+      </div>
+
+      {/* Pestaña 1: Información Comercial y Ubicación */}
+      {tabActiva === 'general' && (
+        <div className="row justify-content-center">
+          <div className="col-12 col-xl-10">
+            <div className="card shadow-sm border-0 card-surface h-100">
             <div className="card-header bg-transparent border-0 pt-4 px-4 pb-0">
               <div className="d-flex align-items-center gap-2">
                 <MapPin className="text-primary" size={20} />
@@ -617,10 +661,15 @@ export default function ConfiguracionNegocioPage() {
             </div>
           </div>
         </div>
+        </div>
+      )}
 
-        {/* Columna Derecha: Tema Visual de la Barbería */}
-        <div className="col-12 col-xl-5">
-          <div className="card shadow-sm border-0 card-surface mb-4">
+      {/* Pestaña 2: Diseño y Recursos de Marca */}
+      {tabActiva === 'marca' && (
+        <div className="d-flex flex-column gap-4">
+          <div className="row g-4">
+            <div className="col-12 col-xl-12">
+              <div className="card shadow-sm border-0 card-surface mb-4">
             <div className="card-header bg-transparent border-0 pt-4 px-4 pb-0">
               <div className="d-flex align-items-center gap-2">
                 <Palette className="text-primary" size={20} />
@@ -683,12 +732,11 @@ export default function ConfiguracionNegocioPage() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+            </div>
+          </div>
 
-      {/* Sección Inferior: Identidad Visual y Archivos de Marca */}
-      <div className="mt-4">
-        <div className="card shadow-sm border-0 card-surface">
+          <div>
+            <div className="card shadow-sm border-0 card-surface">
           <div className="card-header bg-transparent border-0 pt-4 px-4 pb-0">
             <div className="d-flex align-items-center gap-2">
               <ImageIcon className="text-primary" size={20} />
@@ -995,7 +1043,18 @@ export default function ConfiguracionNegocioPage() {
             </div>
           </div>
         </div>
+        </div>
       </div>
+    )}
+
+      {/* Pestaña 3: Redes Sociales Oficiales */}
+      {tabActiva === 'redes' && (
+        <div className="row justify-content-center">
+          <div className="col-12 col-xl-10">
+            <RedesSocialesSection slugNegocio={slugActivo} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
