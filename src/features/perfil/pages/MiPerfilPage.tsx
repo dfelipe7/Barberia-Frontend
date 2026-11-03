@@ -72,7 +72,6 @@ export const MiPerfilPage: React.FC = () => {
         datos: {
           nombre: data.nombre,
           apellido: data.apellido,
-          email: data.email,
           ...(usuarioDb.barbero && { telefono: data.telefono }),
         },
       });
@@ -344,17 +343,19 @@ export const MiPerfilPage: React.FC = () => {
 
                   <div className="col-12 col-sm-6">
                     <label htmlFor="emailPerfil" className="form-label small fw-semibold">
-                      Correo Electrónico
+                      Correo Electrónico <span className="text-muted small fw-normal">(Identidad global)</span>
                     </label>
                     <input
                       id="emailPerfil"
                       type="email"
-                      className={`form-control ${errorsDatos.email ? 'is-invalid' : ''}`}
+                      className="form-control bg-body-secondary text-secondary"
+                      disabled
+                      readOnly
                       {...registerDatos('email')}
                     />
-                    {errorsDatos.email && (
-                      <div className="invalid-feedback">{errorsDatos.email.message}</div>
-                    )}
+                    <div className="form-text small text-muted">
+                      El correo electrónico no es editable a nivel de sede.
+                    </div>
                   </div>
 
                   {usuarioDb?.barbero && (

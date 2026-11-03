@@ -40,7 +40,10 @@ export const barberosService = {
     id: number,
     datos: CambiarEstadoBarberoDTO
   ): Promise<{ mensaje: string }> {
-    const response = await apiClient.patch(`/usuarios/${id}/estado`, datos);
+    const response = await apiClient.patch(`/usuarios/${id}/estado`, {
+      ...datos,
+      tipo: 'barbero',
+    });
     return response.data;
   },
 

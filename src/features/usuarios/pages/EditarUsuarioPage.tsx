@@ -173,7 +173,7 @@ export const EditarUsuarioPage: React.FC = () => {
       const resumen = (
         <div className="d-flex flex-column gap-2 small">
           <div><strong>Nombre:</strong> {data.nombre} {data.apellido}</div>
-          <div><strong>Email:</strong> {data.email}</div>
+          <div><strong>Email:</strong> {data.email} <span className="text-muted">(identidad global)</span></div>
           {data.esAdministrador && <div>✓ Rol Administrador activo</div>}
           {data.esBarbero && (
             <>
@@ -204,7 +204,6 @@ export const EditarUsuarioPage: React.FC = () => {
         datos: {
           nombre: data.nombre,
           apellido: data.apellido,
-          email: data.email,
           ...(data.esBarbero && {
             telefono: data.telefono,
             porcentajeComision: data.porcentajeComision,
@@ -289,17 +288,19 @@ export const EditarUsuarioPage: React.FC = () => {
 
             <div className="col-12">
               <label htmlFor="email" className="form-label fw-semibold">
-                Correo Electrónico <span className="text-danger">*</span>
+                Correo Electrónico <span className="text-muted small fw-normal">(Identidad global - Solo lectura)</span>
               </label>
               <input
                 id="email"
                 type="email"
-                className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                className="form-control bg-body-secondary text-secondary"
+                disabled
+                readOnly
                 {...register('email')}
               />
-              {errors.email && (
-                <div className="invalid-feedback">{errors.email.message}</div>
-              )}
+              <div className="form-text small text-muted">
+                El correo identifica al usuario globalmente en la plataforma y no puede modificarse por sede.
+              </div>
             </div>
 
             {/* Configuración de Roles / Perfiles */}

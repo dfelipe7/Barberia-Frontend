@@ -15,6 +15,7 @@ import {
   AlertTriangle,
   ArrowLeft,
   ShieldCheck,
+  Globe,
 } from 'lucide-react';
 import BrandLogo from '../../shared/ui/BrandLogo';
 import KyriosSpinner from '../../shared/ui/KyriosSpinner';
@@ -23,28 +24,22 @@ import Button from '../../shared/ui/Button';
 import bannerImg from '../../assets/brand/banner.png';
 import './PlataformaHubPage.css';
 
-interface NegocioPlataforma {
+/**
+ * DTO Público del Hub de Negocios de Plataforma
+ * Respaldado por GET /plataforma/negocios/publico
+ */
+interface NegocioPublico {
   id: number;
   nombre: string;
   slug: string;
-  estado: 'ACTIVO' | 'INACTIVO';
-  zonaHoraria: string;
-  perfil?: {
-    direccion?: string | null;
-    ciudad?: string | null;
-    frasePrincipal?: string | null;
-    bannerUrl?: string | null;
-  } | null;
-  estadisticas: {
-    totalBarberos: number;
-    totalServicios: number;
-    totalReservas: number;
-    totalClientes: number;
-  };
+  ciudad?: string | null;
+  logoBlancoUrl?: string | null;
+  bannerUrl?: string | null;
+  frasePrincipal?: string | null;
 }
 
 export default function PlataformaHubPage() {
-  const [negocios, setNegocios] = useState<NegocioPlataforma[]>([]);
+  const [negocios, setNegocios] = useState<NegocioPublico[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busqueda, setBusqueda] = useState('');
@@ -60,16 +55,18 @@ export default function PlataformaHubPage() {
   const [creando, setCreando] = useState(false);
   const [errorCreacion, setErrorCreacion] = useState<string | null>(null);
 
-  // Cargar lista de barberías de la plataforma
+  // Cargar lista pública de barberías de la plataforma
   const cargarNegocios = async () => {
     setCargando(true);
     setError(null);
     try {
-      const url = `${import.meta.env.VITE_API_URL}/plataforma/negocios`;
-      const res = await axios.get<NegocioPlataforma[]>(url);
+      const url = `${import.meta.env.VITE_API_URL}/plataforma/negocios/publico`;
+      const res = await axios.get<NegocioPublico[]>(url);
       setNegocios(res.data);
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'No fue posible cargar las barberías de la plataforma.');
+      setError(
+        err?.response?.data?.message || 'No fue posible cargar las barberías de la plataforma.'
+      );
     } finally {
       setCargando(false);
     }
@@ -86,13 +83,13 @@ export default function PlataformaHubPage() {
       .toLowerCase()
       .trim()
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[̀-ͯ]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
     setNuevoSlug(slugAutogenerado);
   };
 
-  // Crear nueva barbería
+  // Crear nueva barbería (requiere credenciales de plataforma admin)
   const handleCrearBarberia = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreando(true);
@@ -116,36 +113,41 @@ export default function PlataformaHubPage() {
       setNuevoAdminApellido('');
       void cargarNegocios();
     } catch (err: any) {
-      setErrorCreacion(err?.response?.data?.message || 'Error al crear la barbería.');
+      if (err?.response?.status === 403) {
+        setErrorCreacion(
+          'Acción restringida: Crear barberías requiere permisos de Administrador de Plataforma autorizados en backend (PLATFORM_ADMIN_EMAILS).'
+        );
+      } else {
+        setErrorCreacion(err?.response?.data?.message || 'Error al crear la barbería.');
+      }
     } finally {
       setCreando(false);
     }
   };
 
-  // Alternar estado ACTIVO / INACTIVO
-  const handleToggleEstado = async (negocio: NegocioPlataforma) => {
-    const nuevoEstado = negocio.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO';
+  // Alternar estado ACTIVO / INACTIVO (requiere credenciales de plataforma admin)
+  const handleToggleEstado = async (negocio: NegocioPublico) => {
     try {
       const url = `${import.meta.env.VITE_API_URL}/plataforma/negocios/${negocio.id}/estado`;
-      await axios.patch(url, { estado: nuevoEstado });
-      setNegocios((prev) =>
-        prev.map((n) => (n.id === negocio.id ? { ...n, estado: nuevoEstado } : n))
-      );
+      await axios.patch(url, { estado: 'INACTIVO' });
+      void cargarNegocios();
     } catch (err: any) {
-      alert(err?.response?.data?.message || 'No se pudo cambiar el estado de la barbería.');
+      if (err?.response?.status === 403) {
+        alert(
+          'Acción restringida: Suspender o activar barberías requiere permisos de Administrador de Plataforma autorizados en backend (PLATFORM_ADMIN_EMAILS).'
+        );
+      } else {
+        alert(err?.response?.data?.message || 'No se pudo cambiar el estado de la barbería.');
+      }
     }
   };
 
-  // Métricas globales
-  const totalActivas = negocios.filter((n) => n.estado === 'ACTIVO').length;
-  const totalBarberos = negocios.reduce((acc, n) => acc + (n.estadisticas?.totalBarberos || 0), 0);
-  const totalCitas = negocios.reduce((acc, n) => acc + (n.estadisticas?.totalReservas || 0), 0);
-
-  // Filtrado
+  // Filtrado de búsqueda
   const negociosFiltrados = negocios.filter(
     (n) =>
       n.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      n.slug.toLowerCase().includes(busqueda.toLowerCase())
+      n.slug.toLowerCase().includes(busqueda.toLowerCase()) ||
+      (n.ciudad && n.ciudad.toLowerCase().includes(busqueda.toLowerCase()))
   );
 
   return (
@@ -183,11 +185,10 @@ export default function PlataformaHubPage() {
 
         {/* Hero Central */}
         <div className="hub-plataforma__hero">
-          <h1 className="hub-plataforma__title">
-            Directorio de Barberías
-          </h1>
+          <h1 className="hub-plataforma__title">Directorio de Barberías</h1>
           <p className="hub-plataforma__subtitle">
-            Explora las sedes activas en el tenant. Cada barbería cuenta con catálogo, agenda, equipo y portal de clientes totalmente aislado.
+            Explora las sedes activas en la red SaaS. Cada barbería cuenta con catálogo, agenda,
+            equipo y portal de clientes totalmente aislado.
           </p>
 
           {/* Estadísticas de la red */}
@@ -198,37 +199,46 @@ export default function PlataformaHubPage() {
               </div>
               <div className="text-start">
                 <div className="hub-plataforma__stat-value">{negocios.length}</div>
-                <div className="hub-plataforma__stat-label">Sedes Totales</div>
+                <div className="hub-plataforma__stat-label">Sedes Registradas</div>
               </div>
             </div>
 
             <div className="hub-plataforma__stat-pill">
-              <div className="hub-plataforma__stat-icon" style={{ color: '#4ade80', background: 'rgba(34, 197, 94, 0.15)' }}>
+              <div
+                className="hub-plataforma__stat-icon"
+                style={{ color: '#4ade80', background: 'rgba(34, 197, 94, 0.15)' }}
+              >
                 <CheckCircle2 size={18} />
               </div>
               <div className="text-start">
-                <div className="hub-plataforma__stat-value">{totalActivas}</div>
-                <div className="hub-plataforma__stat-label">Sedes Activas</div>
+                <div className="hub-plataforma__stat-value">Aislamiento</div>
+                <div className="hub-plataforma__stat-label">100% Multitenant</div>
               </div>
             </div>
 
             <div className="hub-plataforma__stat-pill">
-              <div className="hub-plataforma__stat-icon" style={{ color: '#c29752', background: 'rgba(194, 151, 82, 0.15)' }}>
-                <Scissors size={18} />
+              <div
+                className="hub-plataforma__stat-icon"
+                style={{ color: '#c29752', background: 'rgba(194, 151, 82, 0.15)' }}
+              >
+                <Globe size={18} />
               </div>
               <div className="text-start">
-                <div className="hub-plataforma__stat-value">{totalBarberos}</div>
-                <div className="hub-plataforma__stat-label">Barberos en Red</div>
+                <div className="hub-plataforma__stat-value">Público</div>
+                <div className="hub-plataforma__stat-label">Catálogo Abierto</div>
               </div>
             </div>
 
             <div className="hub-plataforma__stat-pill">
-              <div className="hub-plataforma__stat-icon" style={{ color: '#a855f7', background: 'rgba(168, 85, 247, 0.15)' }}>
-                <Calendar size={18} />
+              <div
+                className="hub-plataforma__stat-icon"
+                style={{ color: '#a855f7', background: 'rgba(168, 85, 247, 0.15)' }}
+              >
+                <ShieldCheck size={18} />
               </div>
               <div className="text-start">
-                <div className="hub-plataforma__stat-value">{totalCitas}</div>
-                <div className="hub-plataforma__stat-label">Citas Agendadas</div>
+                <div className="hub-plataforma__stat-value">Seguro</div>
+                <div className="hub-plataforma__stat-label">Red Blindada</div>
               </div>
             </div>
           </div>
@@ -241,7 +251,7 @@ export default function PlataformaHubPage() {
             <input
               type="text"
               className="hub-plataforma__search-input"
-              placeholder="Buscar barbería por nombre o slug..."
+              placeholder="Buscar barbería por nombre, ciudad o slug..."
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
             />
@@ -267,28 +277,23 @@ export default function PlataformaHubPage() {
           </div>
         )}
 
-        {/* Grid de Barberías (Tipo Posters Netflix) */}
+        {/* Grid de Barberías */}
         {!cargando && !error && (
-          <div className="hub-grid">
+          <div className="hub-plataforma__cards-grid">
             {negociosFiltrados.map((negocio) => {
-              const urlSitio = `${window.location.origin}/${negocio.slug}`;
-              const urlReservas = `${window.location.origin}/${negocio.slug}/reservar`;
-              const urlLogin = `${window.location.origin}/${negocio.slug}/login`;
+              const urlSitio = `/${negocio.slug}`;
+              const urlReservas = `/${negocio.slug}/reservar`;
+              const urlLogin = `/${negocio.slug}/login`;
 
               return (
-                <article
-                  key={negocio.id}
-                  className={`hub-card ${negocio.estado === 'INACTIVO' ? 'hub-card--inactiva' : ''}`}
-                >
+                <article key={negocio.id} className="hub-card">
                   {/* Banner superior */}
                   <div
                     className="hub-card__banner"
-                    style={{ backgroundImage: `url(${bannerImg})` }}
+                    style={{ backgroundImage: `url(${negocio.bannerUrl || bannerImg})` }}
                   >
                     <div className="hub-card__banner-overlay" />
-                    <span className={`hub-card__status-chip chip--${negocio.estado}`}>
-                      ● {negocio.estado}
-                    </span>
+                    <span className="hub-card__status-chip chip--ACTIVO">● ACTIVO</span>
                   </div>
 
                   {/* Cuerpo de la tarjeta */}
@@ -300,25 +305,15 @@ export default function PlataformaHubPage() {
                       <div className="hub-card__location">
                         <MapPin size={14} className="text-primary flex-shrink-0" />
                         <span className="text-truncate">
-                          {negocio.perfil?.direccion || 'Popayán, Cauca'}
+                          {negocio.ciudad || 'Colombia'}
                         </span>
                       </div>
 
-                      {/* Métricas rápidas */}
-                      <div className="hub-card__metrics">
-                        <div className="hub-card__metric-item">
-                          <span className="hub-card__metric-val">
-                            {negocio.estadisticas?.totalBarberos || 0}
-                          </span>
-                          <span className="hub-card__metric-lbl">Barberos</span>
-                        </div>
-                        <div className="hub-card__metric-item">
-                          <span className="hub-card__metric-val">
-                            {negocio.estadisticas?.totalServicios || 0}
-                          </span>
-                          <span className="hub-card__metric-lbl">Servicios</span>
-                        </div>
-                      </div>
+                      {negocio.frasePrincipal && (
+                        <p className="small text-muted mb-3 fst-italic text-truncate" title={negocio.frasePrincipal}>
+                          "{negocio.frasePrincipal}"
+                        </p>
+                      )}
                     </div>
 
                     {/* Acciones para Abrir en otra pestaña */}
@@ -359,13 +354,9 @@ export default function PlataformaHubPage() {
                           type="button"
                           className="hub-card__toggle-btn"
                           onClick={() => void handleToggleEstado(negocio)}
-                          title={
-                            negocio.estado === 'ACTIVO'
-                              ? 'Desactivar barbería'
-                              : 'Activar barbería'
-                          }
+                          title="Alternar estado (Requiere credenciales de plataforma)"
                         >
-                          <Power size={14} className={negocio.estado === 'ACTIVO' ? 'text-success' : 'text-danger'} />
+                          <Power size={14} className="text-success" />
                         </button>
                       </div>
                     </div>
@@ -386,7 +377,8 @@ export default function PlataformaHubPage() {
         >
           <form onSubmit={handleCrearBarberia} className="p-1">
             <p className="small text-muted mb-3">
-              Registra una nueva sede o sucursal. Se creará de forma aislada en la base de datos con su propia URL y configuración.
+              Registra una nueva sede o sucursal. Se creará de forma aislada en la base de datos con su
+              propia URL y configuración.
             </p>
 
             {errorCreacion && (
@@ -401,8 +393,8 @@ export default function PlataformaHubPage() {
               </label>
               <input
                 type="text"
-                className="form-control bg-dark border-secondary text-white"
-                placeholder="Ej. Barbería El Bosque"
+                className="form-control"
+                placeholder="Ej. Kyrios Studio Centro"
                 value={nuevoNombre}
                 onChange={(e) => handleNombreChange(e.target.value)}
                 required
@@ -411,57 +403,51 @@ export default function PlataformaHubPage() {
 
             <div className="mb-3">
               <label className="form-label small fw-semibold text-white">
-                Slug en URL <span className="text-danger">*</span>
+                Slug (Ruta Web Única) <span className="text-danger">*</span>
               </label>
               <div className="input-group">
-                <span className="input-group-text bg-secondary border-secondary text-white small">
-                  /
-                </span>
+                <span className="input-group-text bg-dark border-secondary text-muted small">/</span>
                 <input
                   type="text"
-                  className="form-control bg-dark border-secondary text-white font-monospace"
-                  placeholder="barberia-el-bosque"
+                  className="form-control"
+                  placeholder="kyrios-centro"
                   value={nuevoSlug}
                   onChange={(e) => setNuevoSlug(e.target.value)}
+                  pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                  title="Solo letras minúsculas, números y guiones sencillos"
                   required
                 />
               </div>
               <div className="form-text small text-muted">
-                Este slug definirá la URL de acceso: <code>/{nuevoSlug || 'mi-barberia'}</code>
+                Identificador URL: barberia.com/<strong>{nuevoSlug || 'tu-slug'}</strong>
               </div>
             </div>
 
             <div className="mb-3">
               <label className="form-label small fw-semibold text-white">
-                Dirección / Ubicación (Opcional)
+                Dirección Física (Opcional)
               </label>
               <input
                 type="text"
-                className="form-control bg-dark border-secondary text-white"
-                placeholder="Ej. Transversal 9A Norte # 15-32"
+                className="form-control"
+                placeholder="Ej. Calle 4 # 5-20, Centro Histórico"
                 value={nuevaDireccion}
                 onChange={(e) => setNuevaDireccion(e.target.value)}
               />
             </div>
 
-            {/* Asignación de Dueño / Superadministrador */}
-            <div className="p-3 rounded-3 mb-4" style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-              <div className="d-flex align-items-center gap-2 mb-1">
-                <ShieldCheck size={16} className="text-info" />
-                <span className="small fw-bold text-white">Dueño / Superadministrador Inicial</span>
-              </div>
-              <p className="small text-muted mb-2">
-                Asigna el correo de Google de la persona que administrará esta barbería con permisos totales.
+            <div className="border-top border-secondary pt-3 mt-3">
+              <h6 className="small fw-bold text-white mb-2">Administrador Inicial (Opcional)</h6>
+              <p className="small text-muted mb-3" style={{ fontSize: '0.8rem' }}>
+                Si especificas un correo existente, será asignado como Administrador Fundador
+                (superadmin) de esta nueva sede.
               </p>
 
               <div className="mb-2">
-                <label className="form-label small fw-semibold text-white">
-                  Correo de Google del Dueño <span className="text-info small">(Recomendado)</span>
-                </label>
                 <input
                   type="email"
-                  className="form-control form-control-sm bg-dark border-secondary text-white"
-                  placeholder="ejemplo@gmail.com"
+                  className="form-control form-control-sm"
+                  placeholder="correo.admin@ejemplo.com"
                   value={nuevoAdminEmail}
                   onChange={(e) => setNuevoAdminEmail(e.target.value)}
                 />
@@ -469,21 +455,19 @@ export default function PlataformaHubPage() {
 
               <div className="row g-2">
                 <div className="col-6">
-                  <label className="form-label small fw-semibold text-white">Nombre</label>
                   <input
                     type="text"
-                    className="form-control form-control-sm bg-dark border-secondary text-white"
-                    placeholder="Carlos"
+                    className="form-control form-control-sm"
+                    placeholder="Nombre"
                     value={nuevoAdminNombre}
                     onChange={(e) => setNuevoAdminNombre(e.target.value)}
                   />
                 </div>
                 <div className="col-6">
-                  <label className="form-label small fw-semibold text-white">Apellido</label>
                   <input
                     type="text"
-                    className="form-control form-control-sm bg-dark border-secondary text-white"
-                    placeholder="Pérez"
+                    className="form-control form-control-sm"
+                    placeholder="Apellido"
                     value={nuevoAdminApellido}
                     onChange={(e) => setNuevoAdminApellido(e.target.value)}
                   />
@@ -491,20 +475,17 @@ export default function PlataformaHubPage() {
               </div>
             </div>
 
-            <div className="d-flex justify-content-end gap-2 pt-2 border-top border-secondary">
+            <div className="d-flex justify-content-end gap-2 mt-4">
               <Button
                 type="button"
                 variant="outline-secondary"
+                size="sm"
                 onClick={() => setModalCrearOpen(false)}
+                disabled={creando}
               >
                 Cancelar
               </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                isLoading={creando}
-                loadingText="Creando..."
-              >
+              <Button type="submit" variant="primary" size="sm" isLoading={creando}>
                 Crear Barbería
               </Button>
             </div>
