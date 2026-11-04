@@ -441,22 +441,20 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
                           </div>
                         </div>
 
-                        {/* Switch de activación limpio en la esquina superior */}
-                        <div
-                          className="form-check form-switch m-0 flex-shrink-0"
+                        {/* Switch de visibilidad personalizado (100% visible en modo oscuro y claro) */}
+                        <label
+                          className="redes-switch"
                           title={red.activo ? 'Pausar (ocultar de la web pública)' : 'Activar (hacer visible en la web)'}
                         >
                           <input
-                            className="form-check-input cursor-pointer"
                             type="checkbox"
-                            role="switch"
                             id={`switch-red-${red.id}`}
                             checked={red.activo}
                             disabled={cambiandoEstadoId === red.id}
                             onChange={() => handleToggleVisibilidad(red)}
-                            style={{ cursor: 'pointer', transform: 'scale(1.2)' }}
                           />
-                        </div>
+                          <span className="redes-switch__slider" />
+                        </label>
                       </div>
 
                       {/* 2. Cuerpo: Enlace de la red social */}
