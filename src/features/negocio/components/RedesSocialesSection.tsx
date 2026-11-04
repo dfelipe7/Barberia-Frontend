@@ -372,7 +372,7 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
             variant="primary"
             size="sm"
             onClick={abrirModalCrear}
-            className="d-inline-flex align-items-center gap-1.5 shadow-sm"
+            className="d-inline-flex align-items-center gap-1.5 shadow-sm flex-shrink-0 text-nowrap"
           >
             <Plus size={16} /> Conectar Nueva Red
           </Button>

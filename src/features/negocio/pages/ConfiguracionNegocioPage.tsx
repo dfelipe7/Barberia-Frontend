@@ -379,8 +379,8 @@ export default function ConfiguracionNegocioPage() {
           onClick={() => setTabActiva('general')}
           className={`btn btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill fw-semibold transition-all ${
             tabActiva === 'general'
-              ? 'btn-primary shadow-sm'
-              : 'btn-outline-secondary border-0 text-body'
+              ? 'btn-dark text-white shadow-sm'
+              : 'btn-light border text-body-secondary bg-body-tertiary'
           }`}
         >
           <MapPin size={16} /> Información Comercial y Ubicación
@@ -391,8 +391,8 @@ export default function ConfiguracionNegocioPage() {
           onClick={() => setTabActiva('marca')}
           className={`btn btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill fw-semibold transition-all ${
             tabActiva === 'marca'
-              ? 'btn-primary shadow-sm'
-              : 'btn-outline-secondary border-0 text-body'
+              ? 'btn-dark text-white shadow-sm'
+              : 'btn-light border text-body-secondary bg-body-tertiary'
           }`}
         >
           <Palette size={16} /> Diseño y Recursos de Marca
@@ -403,8 +403,8 @@ export default function ConfiguracionNegocioPage() {
           onClick={() => setTabActiva('redes')}
           className={`btn btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill fw-semibold transition-all ${
             tabActiva === 'redes'
-              ? 'btn-primary shadow-sm'
-              : 'btn-outline-secondary border-0 text-body'
+              ? 'btn-dark text-white shadow-sm'
+              : 'btn-light border text-body-secondary bg-body-tertiary'
           }`}
         >
           <Share2 size={16} /> Redes Sociales Oficiales

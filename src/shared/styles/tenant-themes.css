@@ -2095,6 +2095,28 @@
   color: #0f172a !important;
 }
 
+/* Botones secundarios en Modo Claro Midnight Cyan */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] button.btn-outline-secondary {
+  border-radius: 9999px !important;
+  border: 1.5px solid #0284c7 !important;
+  color: #0369a1 !important;
+  background: rgba(2, 132, 199, 0.08) !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1.1rem !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover {
+  background-color: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+
 
 /* ══════════════════════════════════════════════════════════════════════════
    4. TEMA: MIDNIGHT CYAN (Cyber Tech / Azul Medianoche + Cian Eléctrico)
@@ -2674,6 +2696,28 @@
   color: #0f172a !important;
 }
 
+/* Botones secundarios en Modo Claro Midnight Cyan */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] button.btn-outline-secondary {
+  border-radius: 9999px !important;
+  border: 1.5px solid #0284c7 !important;
+  color: #0369a1 !important;
+  background: rgba(2, 132, 199, 0.08) !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1.1rem !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover {
+  background-color: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+
 
 /* ══════════════════════════════════════════════════════════════════════════
    5. TEMA: CRIMSON VELVET (Red Luxury / Rojo Rubí + Terciopelo Oscuro)
@@ -3212,6 +3256,28 @@
   border-color: #e11d48 !important;
   color: #ffffff !important;
   box-shadow: 0 4px 16px rgba(225, 29, 72, 0.35) !important;
+}
+
+/* Botones secundarios en Modo Claro Crimson Velvet */
+[data-theme="light"][data-tenant-theme="crimson-velvet"] a.btn-outline-secondary,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] button.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] a.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] button.btn-outline-secondary {
+  border-radius: 9999px !important;
+  border: 1.5px solid #be123c !important;
+  color: #9f1239 !important;
+  background: rgba(190, 18, 60, 0.06) !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1.1rem !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] a.btn-outline-secondary:hover,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] button.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] a.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] button.btn-outline-secondary:hover {
+  background-color: #be123c !important;
+  border-color: #be123c !important;
+  color: #ffffff !important;
 }
 
 [data-theme="light"][data-tenant-theme="crimson-velvet"] .sidebar-nav-link.active,
@@ -3819,6 +3885,52 @@
   border-color: #27272a !important;
   color: #ffffff !important;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Botones secundarios / outline en Modo Claro Monochrome Noir */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] a.btn-outline-secondary,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] button.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] a.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] button.btn-outline-secondary {
+  border-radius: 9999px !important;
+  border: 1.5px solid #d4d4d8 !important;
+  color: #18181b !important;
+  background: #f4f4f5 !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1.1rem !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] a.btn-outline-secondary:hover,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] button.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] a.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] button.btn-outline-secondary:hover {
+  background-color: #18181b !important;
+  border-color: #18181b !important;
+  color: #ffffff !important;
+}
+
+/* Tabs de usuarios en Modo Claro Monochrome Noir */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .usuarios-tabs-container,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .usuarios-tabs-container {
+  background: #f4f4f5 !important;
+  border-color: #e4e4e7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .usuarios-tabs-container button[aria-selected="true"],
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .usuarios-tabs-container .btn-dark,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .usuarios-tabs-container button[aria-selected="true"],
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .usuarios-tabs-container .btn-dark {
+  background-color: #000000 !important;
+  border-color: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .usuarios-tabs-container button[aria-selected="true"] .badge,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .usuarios-tabs-container button[aria-selected="true"] .badge {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
 }
 
 /* Cápsulas de Fecha en Modo Claro (14 Sat = Negro sólido con letras blancas) */
