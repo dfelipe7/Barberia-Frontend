@@ -11,10 +11,12 @@ import type {
  */
 export const redesSocialesApi = {
   /**
-   * Obtiene la lista pública de redes sociales activas del negocio del contexto.
+   * Obtiene la lista de redes sociales del negocio del contexto.
+   * Por defecto devuelve solo las activas (público). Si `todas` es true, devuelve activas e inactivas (admin).
    */
-  async listar(): Promise<RedSocial[]> {
-    const response = await apiClient.get<RedSocial[]>('/perfil-negocio/redes-sociales');
+  async listar(todas = false): Promise<RedSocial[]> {
+    const params = todas ? { todas: 'true' } : undefined;
+    const response = await apiClient.get<RedSocial[]>('/perfil-negocio/redes-sociales', { params });
     return response.data;
   },
 
@@ -35,10 +37,20 @@ export const redesSocialesApi = {
   },
 
   /**
-   * Desactiva (soft-delete) una red social.
+   * Desactiva (oculta de la web pública) una red social conservando su URL e historial.
    */
   async desactivar(id: number): Promise<RedSocial> {
     const response = await apiClient.delete<RedSocial>(`/perfil-negocio/redes-sociales/${id}`);
+    return response.data;
+  },
+
+  /**
+   * Elimina definitivamente una red social de la base de datos.
+   */
+  async eliminarDefinitivo(id: number): Promise<RedSocial> {
+    const response = await apiClient.delete<RedSocial>(`/perfil-negocio/redes-sociales/${id}`, {
+      params: { definitivo: 'true' },
+    });
     return response.data;
   },
 
