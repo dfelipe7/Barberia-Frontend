@@ -83,12 +83,9 @@ apiClient.interceptors.request.use(
     const sesionSlug = localStorage.getItem('negocio_sesion_slug');
 
     // Multi-Tenant Isolation Estricto: Si la ruta tiene sede, SOLO usar el token de esa sede
-    let token: string | null = null;
-    if (slugRuta) {
-      token = localStorage.getItem(`token_barberia_${slugRuta}`);
-    } else {
-      token = localStorage.getItem('token_barberia');
-    }
+    const token = slugRuta
+      ? localStorage.getItem(`token_barberia_${slugRuta}`)
+      : localStorage.getItem('token_barberia');
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
