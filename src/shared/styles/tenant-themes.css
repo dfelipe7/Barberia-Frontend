@@ -423,6 +423,38 @@
   --portal-primary-glow: rgba(22, 163, 74, 0.2) !important;
 }
 
+/* Dashboard en Modo Claro para Cyber Lime */
+[data-theme="light"][data-tenant-theme="cyber-lime"] .dash-shortcut-card,
+[data-bs-theme="light"][data-tenant-theme="cyber-lime"] .dash-shortcut-card,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .dash-shortcut-card,
+[data-bs-theme="light"] [data-tenant-theme="cyber-lime"] .dash-shortcut-card {
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(22, 163, 74, 0.18) !important;
+  border-left: 4px solid #16a34a !important;
+  color: #0f172a !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .dash-shortcut-card:hover,
+[data-bs-theme="light"][data-tenant-theme="cyber-lime"] .dash-shortcut-card:hover,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .dash-shortcut-card:hover,
+[data-bs-theme="light"] [data-tenant-theme="cyber-lime"] .dash-shortcut-card:hover {
+  transform: translateY(-3px);
+  border-color: #16a34a !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08), 0 0 16px rgba(22, 163, 74, 0.15) !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .dash-shortcut-card__icon,
+[data-bs-theme="light"][data-tenant-theme="cyber-lime"] .dash-shortcut-card__icon,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .dash-shortcut-card__icon,
+[data-bs-theme="light"] [data-tenant-theme="cyber-lime"] .dash-shortcut-card__icon {
+  border-radius: 50% !important;
+  background: rgba(22, 163, 74, 0.12) !important;
+  color: #16a34a !important;
+}
+
 /* Tarjetas de Barberos en modo claro */
 [data-theme="light"][data-tenant-theme="cyber-lime"] .kyrios-barber-card,
 [data-theme="light"] [data-tenant-theme="cyber-lime"] .kyrios-barber-card {
@@ -701,6 +733,67 @@
 [data-tenant-theme="oro-vip"] .form-check-input:checked {
   background-color: #D4AF37 !important;
   border-color: #D4AF37 !important;
+}
+
+/* Dashboard: Atajos y Tarjetas en Oro VIP (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="oro-vip"] .dash-shortcut-card,
+[data-bs-theme="dark"][data-tenant-theme="oro-vip"] .dash-shortcut-card,
+[data-tenant-theme="oro-vip"]:not([data-theme="light"]):not([data-bs-theme="light"]) .dash-shortcut-card {
+  border-radius: 20px !important;
+  background: #141311 !important;
+  border: 1px solid rgba(212, 175, 55, 0.22) !important;
+  border-left: 4px solid #D4AF37 !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-theme="dark"][data-tenant-theme="oro-vip"] .dash-shortcut-card:hover,
+[data-bs-theme="dark"][data-tenant-theme="oro-vip"] .dash-shortcut-card:hover,
+[data-tenant-theme="oro-vip"]:not([data-theme="light"]):not([data-bs-theme="light"]) .dash-shortcut-card:hover {
+  transform: translateY(-3px);
+  border-color: #D4AF37 !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.2) !important;
+}
+
+[data-theme="dark"][data-tenant-theme="oro-vip"] .dash-shortcut-card__icon,
+[data-bs-theme="dark"][data-tenant-theme="oro-vip"] .dash-shortcut-card__icon,
+[data-tenant-theme="oro-vip"]:not([data-theme="light"]):not([data-bs-theme="light"]) .dash-shortcut-card__icon {
+  border-radius: 12px !important;
+  background: rgba(212, 175, 55, 0.15) !important;
+  color: #D4AF37 !important;
+}
+
+/* Dashboard en Modo Claro para Oro VIP */
+[data-theme="light"][data-tenant-theme="oro-vip"] .dash-shortcut-card,
+[data-bs-theme="light"][data-tenant-theme="oro-vip"] .dash-shortcut-card,
+[data-theme="light"] [data-tenant-theme="oro-vip"] .dash-shortcut-card,
+[data-bs-theme="light"] [data-tenant-theme="oro-vip"] .dash-shortcut-card {
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(212, 175, 55, 0.22) !important;
+  border-left: 4px solid #D4AF37 !important;
+  color: #1c1917 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-theme="light"][data-tenant-theme="oro-vip"] .dash-shortcut-card:hover,
+[data-bs-theme="light"][data-tenant-theme="oro-vip"] .dash-shortcut-card:hover,
+[data-theme="light"] [data-tenant-theme="oro-vip"] .dash-shortcut-card:hover,
+[data-bs-theme="light"] [data-tenant-theme="oro-vip"] .dash-shortcut-card:hover {
+  transform: translateY(-3px);
+  border-color: #D4AF37 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08), 0 0 20px rgba(212, 175, 55, 0.15) !important;
+}
+
+[data-theme="light"][data-tenant-theme="oro-vip"] .dash-shortcut-card__icon,
+[data-bs-theme="light"][data-tenant-theme="oro-vip"] .dash-shortcut-card__icon,
+[data-theme="light"] [data-tenant-theme="oro-vip"] .dash-shortcut-card__icon,
+[data-bs-theme="light"] [data-tenant-theme="oro-vip"] .dash-shortcut-card__icon {
+  border-radius: 12px !important;
+  background: rgba(212, 175, 55, 0.15) !important;
+  color: #b59226 !important;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -2095,6 +2188,43 @@
   color: #0f172a !important;
 }
 
+/* Dashboard en Modo Claro para Midnight Cyan */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .dash-shortcut-card,
+[data-bs-theme="light"] [data-tenant-theme="midnight-cyan"] .dash-shortcut-card {
+  border-radius: 22px !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.18) !important;
+  border-left: 5px solid #0284c7 !important;
+  color: #0f172a !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card:hover,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card:hover,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .dash-shortcut-card:hover,
+[data-bs-theme="light"] [data-tenant-theme="midnight-cyan"] .dash-shortcut-card:hover {
+  transform: translateY(-3px);
+  border-color: #0284c7 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08), 0 0 20px rgba(2, 132, 199, 0.15) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card__icon,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card__icon,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .dash-shortcut-card__icon,
+[data-bs-theme="light"] [data-tenant-theme="midnight-cyan"] .dash-shortcut-card__icon {
+  border-radius: 16px !important;
+  background: rgba(2, 132, 199, 0.12) !important;
+  color: #0284c7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card .dash-shortcut-card__arrow,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card .dash-shortcut-card__arrow {
+  color: #0284c7 !important;
+}
+
 /* Botones secundarios en Modo Claro Midnight Cyan */
 [data-theme="light"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
 [data-theme="light"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary,
@@ -3258,6 +3388,43 @@
   box-shadow: 0 4px 16px rgba(225, 29, 72, 0.35) !important;
 }
 
+/* Dashboard en Modo Claro para Crimson Velvet */
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .dash-shortcut-card,
+[data-bs-theme="light"][data-tenant-theme="crimson-velvet"] .dash-shortcut-card,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .dash-shortcut-card,
+[data-bs-theme="light"] [data-tenant-theme="crimson-velvet"] .dash-shortcut-card {
+  border-radius: 24px !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(225, 29, 72, 0.16) !important;
+  border-left: 5px solid #e11d48 !important;
+  color: #1c1917 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .dash-shortcut-card:hover,
+[data-bs-theme="light"][data-tenant-theme="crimson-velvet"] .dash-shortcut-card:hover,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .dash-shortcut-card:hover,
+[data-bs-theme="light"] [data-tenant-theme="crimson-velvet"] .dash-shortcut-card:hover {
+  transform: translateY(-3px);
+  border-color: #e11d48 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08), 0 0 20px rgba(225, 29, 72, 0.15) !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .dash-shortcut-card__icon,
+[data-bs-theme="light"][data-tenant-theme="crimson-velvet"] .dash-shortcut-card__icon,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .dash-shortcut-card__icon,
+[data-bs-theme="light"] [data-tenant-theme="crimson-velvet"] .dash-shortcut-card__icon {
+  border-radius: 16px !important;
+  background: rgba(225, 29, 72, 0.1) !important;
+  color: #e11d48 !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .dash-shortcut-card .dash-shortcut-card__arrow,
+[data-bs-theme="light"][data-tenant-theme="crimson-velvet"] .dash-shortcut-card .dash-shortcut-card__arrow {
+  color: #e11d48 !important;
+}
+
 /* Botones secundarios en Modo Claro Crimson Velvet */
 [data-theme="light"][data-tenant-theme="crimson-velvet"] a.btn-outline-secondary,
 [data-theme="light"][data-tenant-theme="crimson-velvet"] button.btn-outline-secondary,
@@ -3359,14 +3526,19 @@
   text-transform: none !important;
 }
 
-/* Título de Hero con resplandor limpio */
-[data-tenant-theme="monochrome-noir"] .kyrios-hero-title span {
+/* Título de Hero con resplandor limpio (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .kyrios-hero-title span,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .kyrios-hero-title span,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .kyrios-hero-title span {
   color: #ffffff !important;
   text-shadow: 0 0 24px rgba(255, 255, 255, 0.6) !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
-/* Hero Eyebrow estilo Badge Ejecutivo */
-[data-tenant-theme="monochrome-noir"] .kyrios-eyebrow {
+/* Hero Eyebrow estilo Badge Ejecutivo (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .kyrios-eyebrow,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .kyrios-eyebrow,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .kyrios-eyebrow {
   border-radius: 9999px !important;
   background: rgba(255, 255, 255, 0.1) !important;
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
@@ -3378,8 +3550,10 @@
   font-size: 0.72rem !important;
 }
 
-/* Hero Overlay monocromático */
-[data-tenant-theme="monochrome-noir"] .kyrios-hero-overlay {
+/* Hero Overlay monocromático (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .kyrios-hero-overlay,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .kyrios-hero-overlay,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .kyrios-hero-overlay {
   background: radial-gradient(circle at 75% 25%, rgba(255, 255, 255, 0.12) 0%, transparent 65%),
               linear-gradient(180deg, var(--home-hero-overlay-from) 0%, var(--home-hero-overlay-to) 100%) !important;
 }
@@ -3612,25 +3786,45 @@
   color: #000000 !important;
 }
 
-/* Dashboard: Atajos y Tarjetas */
-[data-tenant-theme="monochrome-noir"] .dash-shortcut-card {
+/* Dashboard: Atajos y Tarjetas (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .dash-shortcut-card {
   border-radius: 20px !important;
   background: #111114 !important;
   border: 1px solid rgba(255, 255, 255, 0.14) !important;
   border-left: 4px solid #ffffff !important;
+  color: #ffffff !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
   transition: all 0.25s ease !important;
 }
 
-[data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover {
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .dash-shortcut-card:hover {
   transform: translateY(-3px);
   border-color: rgba(255, 255, 255, 0.6) !important;
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.6) !important;
 }
 
-[data-tenant-theme="monochrome-noir"] .dash-shortcut-card__icon {
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card__icon,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card__icon,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .dash-shortcut-card__icon {
   border-radius: 14px !important;
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .dash-shortcut-card__arrow,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .dash-shortcut-card__arrow {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .badge,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .badge {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
   color: #ffffff !important;
 }
 
@@ -3793,11 +3987,14 @@
    Fiel a la maqueta de referencia: fondo blanco puro, botones negro sólido
    ────────────────────────────────────────────────────────────────────────── */
 [data-theme="light"][data-tenant-theme="monochrome-noir"],
-[data-theme="light"] [data-tenant-theme="monochrome-noir"] {
+[data-theme="light"] [data-tenant-theme="monochrome-noir"],
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"],
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] {
   --bs-primary: #000000 !important;
   --bs-primary-rgb: 0, 0, 0 !important;
   --bs-primary-hover: #18181b !important;
 
+  --tenant-color-primario: #000000 !important;
   --k-blue: #000000 !important;
   --k-blue-hover: #18181b !important;
   --k-blue-glow: rgba(0, 0, 0, 0.2) !important;
@@ -3805,12 +4002,259 @@
   --portal-primary: #000000 !important;
   --portal-primary-hover: #18181b !important;
   --portal-primary-glow: rgba(0, 0, 0, 0.15) !important;
+
+  /* Variables semánticas de Home para modo claro */
+  --home-bg: #ffffff !important;
+  --home-fg: #09090b !important;
+  --home-fg-muted: #52525b !important;
+  --home-surface: #ffffff !important;
+  --home-surface-alt: #f4f4f5 !important;
+  --home-surface-border: #e4e4e7 !important;
+  --home-meta-border: #e4e4e7 !important;
 }
 
 [data-theme="light"][data-tenant-theme="monochrome-noir"] body,
 [data-theme="light"][data-tenant-theme="monochrome-noir"] .app-main,
-[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-home-page {
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-home,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] body,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .app-main,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-home {
   background-color: #ffffff !important;
+  color: #09090b !important;
+}
+
+/* ── Hero en Modo Claro (Monochrome Noir) ── */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e4e4e7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-bg,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-bg,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-bg,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-bg {
+  opacity: 0.35 !important;
+  filter: grayscale(100%) contrast(105%) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-overlay,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-overlay,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-overlay,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-overlay {
+  background: radial-gradient(circle at 75% 25%, rgba(0, 0, 0, 0.02) 0%, transparent 65%),
+              linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.88) 70%, #ffffff 100%) !important;
+}
+
+/* Título de Hero: "Cada cliente. Una obra maestra." 100% visible y con contraste perfecto */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-title,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-title,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-title,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-title {
+  color: #09090b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-title span,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-title span,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-title span,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-title span {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  background: none !important;
+  text-shadow: none !important;
+}
+
+/* Eyebrow / Slogan en cápsula negra con texto blanco nítido */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-eyebrow,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-eyebrow,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-eyebrow,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-eyebrow {
+  border-radius: 9999px !important;
+  background: #09090b !important;
+  border: 1px solid #09090b !important;
+  color: #ffffff !important;
+  padding: 0.35rem 0.95rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  font-size: 0.72rem !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-eyebrow::before,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-eyebrow::before,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-eyebrow::before,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-eyebrow::before {
+  background-color: #a1a1aa !important;
+}
+
+/* Subtítulo del Hero */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-subtitle,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-subtitle,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-subtitle,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-subtitle {
+  color: #3f3f46 !important;
+}
+
+/* ── Diferenciación y Separación de Secciones en Modo Claro ── */
+
+/* Bloque de Confianza (Trust Section) */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-trust-section,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-trust-section,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-trust-section,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-trust-section {
+  background-color: #fafafa !important;
+  border-top: 1px solid #e4e4e7 !important;
+  border-bottom: 1px solid #e4e4e7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-trust-icon-box,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-trust-icon-box,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-trust-icon-box,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-trust-icon-box {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #18181b !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Sección de Servicios / Catálogo: Fondo con tono contrastante (#f4f4f5) para destacar tarjetas */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] #servicios,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] #servicios,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios {
+  background-color: #f4f4f5 !important;
+  border-bottom: 1px solid #e4e4e7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] #servicios .kyrios-section-title,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] #servicios .kyrios-section-title,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios .kyrios-section-title,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios .kyrios-section-title {
+  color: #09090b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card:hover,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card:hover,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card:hover,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card:hover {
+  border-color: #09090b !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-4px);
+}
+
+/* Sección de Barberos / Equipo */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] #barberos,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-section--alt,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] #barberos,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-section--alt,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] #barberos,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-section--alt,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] #barberos,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-section--alt {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e4e4e7 !important;
+}
+
+/* Sección de Visión / Nosotros */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] #vision,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] #vision,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] #vision,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] #vision {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e4e4e7 !important;
+}
+
+/* Sección de Ubicación */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] #ubicacion,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] #ubicacion,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] #ubicacion,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] #ubicacion {
+  background-color: #f4f4f5 !important;
+  border-bottom: 1px solid #e4e4e7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-location-card,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-location-card,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-location-card,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-location-card {
+  background-color: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Dashboard: Atajos y Tarjetas en Modo Claro (Monochrome Noir) */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card {
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  border-left: 4px solid #18181b !important;
+  color: #18181b !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover {
+  transform: translateY(-3px);
+  border-color: #18181b !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card__icon,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card__icon,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card__icon,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card__icon {
+  border-radius: 14px !important;
+  background: #18181b !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover .dash-shortcut-card__icon,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover .dash-shortcut-card__icon,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover .dash-shortcut-card__icon,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover .dash-shortcut-card__icon {
+  background: #000000 !important;
+  transform: scale(1.08);
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card h3,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card h3 {
+  color: #18181b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card p,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card p {
+  color: #71717a !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .dash-shortcut-card__arrow,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .dash-shortcut-card__arrow {
+  color: #18181b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .badge,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .badge {
+  background: #f4f4f5 !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #18181b !important;
 }
 
 /* Tarjetas de Barberos en Modo Claro (Círculos limpios con nombre debajo) */
@@ -4051,4 +4495,157 @@
   border-color: #18181b !important;
   border-left: 5px solid #000000 !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07) !important;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   NORMALIZACIÓN DE BOTONES OUTLINE EN MODO CLARO Y CONTRASTE MULTITEMA
+   Evita botones invisibles o con texto blanco sobre fondos claros
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* 1. MONOCHROME NOIR: Botones outline en Modo Claro */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .btn-outline-primary,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .btn-kyrios-outline,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .btn-outline-primary,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .btn-kyrios-outline,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .btn-outline-primary,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .btn-kyrios-outline,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .btn-outline-primary,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .btn-kyrios-outline,
+[data-tenant-theme="monochrome-noir"] .bg-body-tertiary .btn-outline-primary,
+[data-tenant-theme="monochrome-noir"] .bg-white .btn-outline-primary,
+[data-tenant-theme="monochrome-noir"] .card .btn-outline-primary {
+  border: 1.5px solid #18181b !important;
+  color: #18181b !important;
+  background: transparent !important;
+  border-radius: 9999px !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .btn-outline-primary:hover,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .btn-kyrios-outline:hover,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .btn-outline-primary:hover,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .btn-kyrios-outline:hover,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .btn-outline-primary:hover,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .btn-kyrios-outline:hover,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .btn-outline-primary:hover,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .btn-kyrios-outline:hover,
+[data-tenant-theme="monochrome-noir"] .bg-body-tertiary .btn-outline-primary:hover,
+[data-tenant-theme="monochrome-noir"] .bg-white .btn-outline-primary:hover,
+[data-tenant-theme="monochrome-noir"] .card .btn-outline-primary:hover {
+  background-color: #18181b !important;
+  border-color: #18181b !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* 2. ORO CHAMPAGNE (Luxury): Botones outline */
+[data-tenant-theme="oro-vip"] .btn-outline-primary,
+[data-tenant-theme="oro-vip"] .btn-kyrios-outline {
+  border: 1.5px solid #D4AF37 !important;
+  color: #D4AF37 !important;
+  background: transparent !important;
+  border-radius: 9999px !important;
+  font-weight: 700 !important;
+}
+[data-tenant-theme="oro-vip"] .btn-outline-primary:hover,
+[data-tenant-theme="oro-vip"] .btn-kyrios-outline:hover {
+  background-color: #D4AF37 !important;
+  border-color: #D4AF37 !important;
+  color: #000000 !important;
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4) !important;
+}
+[data-theme="light"][data-tenant-theme="oro-vip"] .btn-outline-primary,
+[data-theme="light"] [data-tenant-theme="oro-vip"] .btn-outline-primary,
+[data-bs-theme="light"][data-tenant-theme="oro-vip"] .btn-outline-primary,
+[data-bs-theme="light"] [data-tenant-theme="oro-vip"] .btn-outline-primary,
+[data-tenant-theme="oro-vip"] .bg-body-tertiary .btn-outline-primary,
+[data-tenant-theme="oro-vip"] .bg-white .btn-outline-primary,
+[data-tenant-theme="oro-vip"] .card .btn-outline-primary {
+  border: 1.5px solid #967417 !important;
+  color: #967417 !important;
+  background: transparent !important;
+}
+[data-theme="light"][data-tenant-theme="oro-vip"] .btn-outline-primary:hover,
+[data-theme="light"] [data-tenant-theme="oro-vip"] .btn-outline-primary:hover,
+[data-bs-theme="light"][data-tenant-theme="oro-vip"] .btn-outline-primary:hover,
+[data-bs-theme="light"] [data-tenant-theme="oro-vip"] .btn-outline-primary:hover,
+[data-tenant-theme="oro-vip"] .bg-body-tertiary .btn-outline-primary:hover,
+[data-tenant-theme="oro-vip"] .bg-white .btn-outline-primary:hover,
+[data-tenant-theme="oro-vip"] .card .btn-outline-primary:hover {
+  background-color: #967417 !important;
+  border-color: #967417 !important;
+  color: #ffffff !important;
+}
+
+/* 3. MIDNIGHT CYAN: Botones outline en Modo Claro */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .btn-outline-primary,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .btn-outline-primary,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .btn-outline-primary,
+[data-bs-theme="light"] [data-tenant-theme="midnight-cyan"] .btn-outline-primary,
+[data-tenant-theme="midnight-cyan"] .bg-body-tertiary .btn-outline-primary,
+[data-tenant-theme="midnight-cyan"] .bg-white .btn-outline-primary,
+[data-tenant-theme="midnight-cyan"] .card .btn-outline-primary {
+  border: 1.5px solid #0369a1 !important;
+  color: #0369a1 !important;
+  background: transparent !important;
+}
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .btn-outline-primary:hover,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .btn-outline-primary:hover,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .btn-outline-primary:hover,
+[data-bs-theme="light"] [data-tenant-theme="midnight-cyan"] .btn-outline-primary:hover,
+[data-tenant-theme="midnight-cyan"] .bg-body-tertiary .btn-outline-primary:hover,
+[data-tenant-theme="midnight-cyan"] .bg-white .btn-outline-primary:hover,
+[data-tenant-theme="midnight-cyan"] .card .btn-outline-primary:hover {
+  background-color: #0369a1 !important;
+  border-color: #0369a1 !important;
+  color: #ffffff !important;
+}
+
+/* 4. SUNSET AMBER: Botones outline en Modo Claro */
+[data-theme="light"][data-tenant-theme="sunset-amber"] .btn-outline-primary,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .btn-outline-primary,
+[data-bs-theme="light"][data-tenant-theme="sunset-amber"] .btn-outline-primary,
+[data-bs-theme="light"] [data-tenant-theme="sunset-amber"] .btn-outline-primary,
+[data-tenant-theme="sunset-amber"] .bg-body-tertiary .btn-outline-primary,
+[data-tenant-theme="sunset-amber"] .bg-white .btn-outline-primary,
+[data-tenant-theme="sunset-amber"] .card .btn-outline-primary {
+  border: 1.5px solid #c2410c !important;
+  color: #c2410c !important;
+  background: transparent !important;
+}
+[data-theme="light"][data-tenant-theme="sunset-amber"] .btn-outline-primary:hover,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .btn-outline-primary:hover,
+[data-bs-theme="light"][data-tenant-theme="sunset-amber"] .btn-outline-primary:hover,
+[data-bs-theme="light"] [data-tenant-theme="sunset-amber"] .btn-outline-primary:hover,
+[data-tenant-theme="sunset-amber"] .bg-body-tertiary .btn-outline-primary:hover,
+[data-tenant-theme="sunset-amber"] .bg-white .btn-outline-primary:hover,
+[data-tenant-theme="sunset-amber"] .card .btn-outline-primary:hover {
+  background-color: #c2410c !important;
+  border-color: #c2410c !important;
+  color: #ffffff !important;
+}
+
+/* 5. CRIMSON VELVET: Botones outline en Modo Claro */
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .btn-outline-primary,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .btn-outline-primary,
+[data-bs-theme="light"][data-tenant-theme="crimson-velvet"] .btn-outline-primary,
+[data-bs-theme="light"] [data-tenant-theme="crimson-velvet"] .btn-outline-primary,
+[data-tenant-theme="crimson-velvet"] .bg-body-tertiary .btn-outline-primary,
+[data-tenant-theme="crimson-velvet"] .bg-white .btn-outline-primary,
+[data-tenant-theme="crimson-velvet"] .card .btn-outline-primary {
+  border: 1.5px solid #b91c1c !important;
+  color: #b91c1c !important;
+  background: transparent !important;
+}
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .btn-outline-primary:hover,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .btn-outline-primary:hover,
+[data-bs-theme="light"][data-tenant-theme="crimson-velvet"] .btn-outline-primary:hover,
+[data-bs-theme="light"] [data-tenant-theme="crimson-velvet"] .btn-outline-primary:hover,
+[data-tenant-theme="crimson-velvet"] .bg-body-tertiary .btn-outline-primary:hover,
+[data-tenant-theme="crimson-velvet"] .bg-white .btn-outline-primary:hover,
+[data-tenant-theme="crimson-velvet"] .card .btn-outline-primary:hover {
+  background-color: #b91c1c !important;
+  border-color: #b91c1c !important;
+  color: #ffffff !important;
 }

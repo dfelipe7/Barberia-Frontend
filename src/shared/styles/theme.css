@@ -521,6 +521,12 @@ body {
   --dash-public-icon-bg: rgba(12, 12, 12, 0.08);
 }
 
+[data-theme="dark"],
+[data-bs-theme="dark"] {
+  --dash-public-color: #f4f4f5;
+  --dash-public-icon-bg: rgba(255, 255, 255, 0.12);
+}
+
 .dash-shortcut-link {
   text-decoration: none !important;
   color: inherit !important;
