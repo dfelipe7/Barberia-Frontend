@@ -1,10 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { BRAND } from '../../../config/brand';
+import { useTenantBrand } from '../../../features/negocio/context/TenantBrandContext';
 
 export const VisionSection: React.FC = () => {
+  const { nombreNegocio, bannerUrl, ciudad } = useTenantBrand();
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  const effectiveName = nombreNegocio || BRAND.name;
+  const effectiveBanner = bannerUrl || BRAND.assets.banner;
+  const effectiveCity = ciudad || 'Popayán';
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -43,13 +49,15 @@ export const VisionSection: React.FC = () => {
           <div className="col-12 col-lg-6">
             <div className="kyrios-vision-media">
               <img
-                src={BRAND.assets.banner}
-                alt="Ambiente y atención de alto estándar en Kyrios Studio"
+                src={effectiveBanner}
+                alt={`Ambiente y atención de alto estándar en ${effectiveName}`}
                 className="kyrios-vision-img"
                 loading="lazy"
               />
               <div className="kyrios-vision-badge" aria-hidden="true">
-                <span className="kyrios-vision-badge__text">EST. 2026 · POPAYÁN COLOMBIA</span>
+                <span className="kyrios-vision-badge__text">
+                  EST. 2026 · {effectiveCity.toUpperCase()} COLOMBIA
+                </span>
               </div>
             </div>
           </div>
@@ -66,14 +74,13 @@ export const VisionSection: React.FC = () => {
               </h2>
 
               <p className="kyrios-vision-text mb-3">
-                Consolidar a Kyrios Studio como un universo de marca referente en Colombia y con proyección internacional,
-                 integrando barberías, educación, productos, eventos y nuevas unidades de negocio bajo una misma identidad.
+                Consolidar a {effectiveName} como un referente en barbería de calidad,
+                integrando servicio personalizado, educación, productos de primer nivel y una experiencia única para cada cliente.
               </p>
 
               <p className="kyrios-vision-text mb-4">
-                Buscamos transformar la manera de vivir, aprender y desarrollar el arte de la barbería, creando experiencias diferenciadas,
-                 formando nuevas generaciones de artistas e impulsando oportunidades de crecimiento para el gremio.
-
+                Buscamos transformar la manera de vivir el arte de la barbería, creando momentos de relajación y estilo,
+                formando nuevas generaciones de artistas e impulsando el profesionalismo del oficio.
               </p>
 
               <blockquote className="kyrios-vision-quote mb-4">

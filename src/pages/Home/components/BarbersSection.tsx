@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useBarberosCatalogo } from '../../../features/barberos/api/barberos.facade';
 import type { BarberoCatalogo } from '../../../features/barberos/types/barberos.types';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
@@ -13,6 +13,8 @@ interface BarbersSectionProps {
 export const BarbersSection: React.FC<BarbersSectionProps> = ({
   onReservarBarbero,
 }) => {
+  const { slug } = useParams<{ slug?: string }>();
+  const basePrefix = slug ? `/${slug}` : '';
   const { data: barberos = [], isLoading, error, refetch } = useBarberosCatalogo();
 
   return (
@@ -34,14 +36,13 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
             Nuestros Barberos
           </h2>
           <p className="kyrios-section-desc mx-auto">
-            Profesionales comprometidos con el detalle, la higiene y la satisfacción 
-            absoluta en cada sesión.
+            Profesionales apasionados por la estética masculina, dedicados a brindar una experiencia de corte y cuidado personalizada.
           </p>
         </div>
 
         {/* Estado: Cargando */}
         {isLoading && (
-          <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col justify-content-center" aria-busy="true" aria-label="Cargando barberos">
+          <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col justify-content-center" aria-busy="true" aria-label="Cargando equipo de barberos">
             {[1, 2, 3].map((n) => (
               <div key={n} className="col-6 col-sm-6 col-lg-4">
                 <div
@@ -54,14 +55,14 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
                   >
                     <KyriosSpinner size="sm" aria-hidden="true" />
                   </div>
-                  <div className="p-3">
+                  <div className="p-3 text-center">
                     <div
-                      className="placeholder-glow mb-2"
-                      style={{ height: '22px', width: '70%', background: 'var(--home-surface-border)' }}
+                      className="placeholder-glow mb-2 mx-auto"
+                      style={{ height: '18px', width: '60%', background: 'var(--home-surface-border)' }}
                     />
                     <div
-                      className="placeholder-glow"
-                      style={{ height: '14px', width: '40%', background: 'var(--home-meta-border)' }}
+                      className="placeholder-glow mx-auto"
+                      style={{ height: '13px', width: '40%', background: 'var(--home-meta-border)' }}
                     />
                   </div>
                 </div>
@@ -70,15 +71,15 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
           </div>
         )}
 
-        {/* Estado: Error */}
-        {!isLoading && error && (
-          <div className="text-center py-5">
+        {/* Estado: Error de red */}
+        {error && !isLoading && (
+          <div className="text-center py-5 border border-dashed rounded p-4" style={{ borderColor: 'var(--home-surface-border)' }}>
             <p className="kyrios-section-desc mb-3 mx-auto">
               No fue posible cargar el equipo de barberos en este momento.
             </p>
             <button
               type="button"
-              className="btn-kyrios-dark px-3 py-1"
+              className="btn-kyrios-outline btn-sm"
               onClick={() => refetch()}
             >
               Reintentar
@@ -86,7 +87,7 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
           </div>
         )}
 
-        {/* Estado: Vacío */}
+        {/* Estado: Sin barberos disponibles */}
         {!isLoading && !error && barberos.length === 0 && (
           <div
             className="text-center py-5 border border-dashed rounded p-4"
@@ -116,7 +117,7 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
             {barberos.length > 3 && (
               <div className="text-center mt-5">
                 <Link
-                  to="/catalogo/barberos"
+                  to={`${basePrefix}/catalogo/barberos`}
                   className="btn-kyrios-outline d-inline-flex align-items-center gap-2"
                 >
                   Ver catálogo completo

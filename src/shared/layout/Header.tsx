@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Globe, User, Menu, Moon, Sun, Monitor } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import { obtenerUrlFoto } from '../lib/obtenerUrlFoto';
+import { obtenerNegocioSlugActivo } from '../lib/http/axios';
 import BrandLogo from '../ui/BrandLogo';
 import { useTheme } from '../context/ThemeContext';
 import { BRAND } from '../../config/brand';
@@ -10,9 +11,12 @@ import { useUi } from '../contexts/UiContext';
 import { ROLES_APP, ROL_HIERARCHY } from '../constants/roles';
 import UserAvatar from '../ui/atoms/UserAvatar';
 import RoleBadge from '../ui/atoms/RoleBadge';
+import TenantThemeSelector from './TenantThemeSelector';
 
 export default function Header() {
   const { cerrarSesion, nombre, apellido, email, roles, usuarioDb, fotoUrl: fotoGoogle } = useAuth();
+  const slugActivo = obtenerNegocioSlugActivo() || localStorage.getItem('negocio_slug') || 'kyrios-studio';
+  const rutaSitioPublico = `/${slugActivo}`;
   const { theme, setTheme, isDark } = useTheme();
   const { toggleSidebar, isSidebarOpen } = useUi();
 
@@ -70,7 +74,7 @@ export default function Header() {
             </button>
 
             <Link
-              to="/dashboard"
+              to={slugActivo ? `/${slugActivo}/dashboard` : "/dashboard"}
               className="navbar-brand d-flex align-items-center py-0 me-0"
               aria-label={`Ir al dashboard de ${BRAND.name}`}
             >
@@ -83,7 +87,7 @@ export default function Header() {
             </Link>
 
             <Link
-              to="/"
+              to={rutaSitioPublico}
               className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-inline-flex align-items-center gap-1 header-action-btn`}
               title="Ir al sitio público"
               aria-label="Ir al sitio público"
@@ -112,6 +116,7 @@ export default function Header() {
 
           {/* ── Zona derecha — Acciones ── */}
           <div className="d-flex align-items-center gap-2">
+            <TenantThemeSelector isDark={isDark} />
             <button
               type="button"
               onClick={cycleTheme}
@@ -141,7 +146,7 @@ export default function Header() {
               roles={roles}
               fotoUrl={fotoUrl}
               isDark={isDark}
-              onCerrarSesion={cerrarSesion}
+              onCerrarSesion={() => cerrarSesion(slugActivo)}
             />
           </div>
         </div>

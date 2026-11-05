@@ -4,6 +4,7 @@ on:
     branches:
       - master
       - main
+      - feature/multitenant-core-fixes
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -22,6 +23,8 @@ jobs:
         run: npm ci
       - name: Build project
         run: npm run build
+      - name: Run tests with coverage
+        run: npm run test:coverage
       - name: Cache SonarQube packages
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:

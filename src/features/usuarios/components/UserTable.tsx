@@ -56,7 +56,11 @@ export const UserTable: React.FC<UserTableProps> = ({
       className: 'text-center',
       render: (admin) => (
         <div className="d-flex flex-wrap justify-content-center gap-1">
-          <span className="badge bg-warning text-dark">ADMINISTRADOR</span>
+          {admin.esSuperAdmin ? (
+            <span className="badge bg-danger text-white fw-bold">SUPERADMIN</span>
+          ) : (
+            <span className="badge bg-warning text-dark">ADMINISTRADOR</span>
+          )}
           {admin.esBarbero && (
             <span className="badge bg-info text-dark">BARBERO</span>
           )}
@@ -106,7 +110,7 @@ export const UserTable: React.FC<UserTableProps> = ({
             title: 'Editar datos del perfil',
           },
           !admin.esBarbero &&
-            esSuperAdmin && {
+            (esSuperAdmin || esMismoUsuario) && {
               key: 'barbero',
               label: 'Habilitar rol de barbero',
               icon: <Scissors size={15} className="text-info" />,
@@ -129,16 +133,18 @@ export const UserTable: React.FC<UserTableProps> = ({
                 ) : (
                   <UserCheck size={15} className="text-success" />
                 ),
+              disabled: isCurrentUpdating || Boolean(admin.esSuperAdmin),
               isLoading: isCurrentUpdating,
               onClick: () =>
                 onCambiarEstado(
                   admin.id,
                   admin.estadoAdmin === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
                 ),
-              title:
-                admin.estadoAdmin === 'ACTIVO'
-                  ? 'Desactivar rol (el usuario sigue activo)'
-                  : 'Activar rol de administrador',
+              title: admin.esSuperAdmin
+                ? 'No se pueden modificar los privilegios de un Superadministrador'
+                : admin.estadoAdmin === 'ACTIVO'
+                ? 'Desactivar rol (el usuario sigue activo)'
+                : 'Activar rol de administrador',
             },
           esSuperAdmin && {
             key: 'global',
@@ -154,7 +160,7 @@ export const UserTable: React.FC<UserTableProps> = ({
               ),
             variant:
               admin.estado === 'ACTIVO' ? ('danger' as const) : ('success' as const),
-            disabled: esMismoUsuario,
+            disabled: esMismoUsuario || isCurrentUpdatingGlobal || Boolean(admin.esSuperAdmin),
             isLoading: isCurrentUpdatingGlobal,
             onClick: () =>
               onCambiarEstadoGlobal(
@@ -163,6 +169,8 @@ export const UserTable: React.FC<UserTableProps> = ({
               ),
             title: esMismoUsuario
               ? 'No puedes bloquear tu propia cuenta'
+              : admin.esSuperAdmin
+              ? 'No se puede bloquear la cuenta de un Superadministrador'
               : admin.estado === 'ACTIVO'
               ? 'Bloquear cuenta completa (no podrá iniciar sesión)'
               : 'Desbloquear cuenta global',
@@ -242,9 +250,15 @@ export const UserTable: React.FC<UserTableProps> = ({
 
               {/* 2. Badges de Rol */}
               <div className="d-flex flex-wrap align-items-center gap-1 mb-2">
-                <span className="badge bg-warning text-dark" style={{ fontSize: '0.7rem' }}>
-                  ADMINISTRADOR
-                </span>
+                {admin.esSuperAdmin ? (
+                  <span className="badge bg-danger text-white fw-bold" style={{ fontSize: '0.7rem' }}>
+                    SUPERADMIN
+                  </span>
+                ) : (
+                  <span className="badge bg-warning text-dark" style={{ fontSize: '0.7rem' }}>
+                    ADMINISTRADOR
+                  </span>
+                )}
                 {admin.esBarbero && (
                   <span className="badge bg-info text-dark" style={{ fontSize: '0.7rem' }}>
                     BARBERO
@@ -288,7 +302,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   </Link>
                 )}
 
-                {!admin.esBarbero && esSuperAdmin && (
+                {!admin.esBarbero && (esSuperAdmin || esMismoUsuario) && (
                   <button
                     type="button"
                     className="btn btn-outline-info mobile-action-btn"
@@ -304,14 +318,20 @@ export const UserTable: React.FC<UserTableProps> = ({
                   <button
                     type="button"
                     className="btn btn-outline-warning mobile-action-btn"
-                    disabled={isCurrentUpdating}
+                    disabled={isCurrentUpdating || Boolean(admin.esSuperAdmin)}
                     onClick={() =>
                       onCambiarEstado(
                         admin.id,
                         admin.estadoAdmin === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
                       )
                     }
-                    title={admin.estadoAdmin === 'ACTIVO' ? 'Desactivar rol' : 'Activar rol de administrador'}
+                    title={
+                      admin.esSuperAdmin
+                        ? 'No se pueden modificar los privilegios de un Superadministrador'
+                        : admin.estadoAdmin === 'ACTIVO'
+                        ? 'Desactivar rol'
+                        : 'Activar rol de administrador'
+                    }
                     aria-label={admin.estadoAdmin === 'ACTIVO' ? 'Desactivar rol de administrador' : 'Activar rol de administrador'}
                   >
                     {isCurrentUpdating ? (
@@ -328,7 +348,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   <button
                     type="button"
                     className={`btn ${isActivo ? 'btn-outline-danger' : 'btn-outline-success'} mobile-action-btn`}
-                    disabled={esMismoUsuario || isCurrentUpdatingGlobal}
+                    disabled={esMismoUsuario || isCurrentUpdatingGlobal || Boolean(admin.esSuperAdmin)}
                     onClick={() =>
                       onCambiarEstadoGlobal(
                         admin.id,
@@ -338,6 +358,8 @@ export const UserTable: React.FC<UserTableProps> = ({
                     title={
                       esMismoUsuario
                         ? 'No puedes bloquear tu propia cuenta'
+                        : admin.esSuperAdmin
+                        ? 'No se puede bloquear la cuenta de un Superadministrador'
                         : isActivo
                         ? 'Bloquear cuenta completa'
                         : 'Desbloquear cuenta global'

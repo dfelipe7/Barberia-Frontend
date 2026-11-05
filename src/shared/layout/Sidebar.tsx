@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ComponentType } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useParams } from 'react-router-dom';
 import {
   LayoutDashboard,
   User,
@@ -11,6 +11,7 @@ import {
   Package,
   Percent,
   MessageSquare,
+  Settings,
   ChevronLeft,
   ChevronRight,
   X,
@@ -21,6 +22,7 @@ import { useBodyScrollLock } from '../lib/useBodyScrollLock';
 import BrandLogo from '../ui/BrandLogo';
 import { BRAND } from '../../config/brand';
 import { useUi } from '../contexts/UiContext';
+import { obtenerNegocioSlugActivo } from '../lib/http/axios';
 
 interface NavItem {
   to: string;
@@ -44,6 +46,9 @@ export default function Sidebar() {
   const systemTheme = useSystemTheme();
   const isDark = systemTheme === 'dark';
   const location = useLocation();
+  const { slug: paramSlug } = useParams<{ slug?: string }>();
+  const slugActivo = paramSlug || obtenerNegocioSlugActivo();
+  const basePrefix = slugActivo ? `/${slugActivo}` : '';
 
   const { isSidebarOpen, closeSidebar, isCollapsed, toggleCollapse } = useUi();
 
@@ -140,15 +145,21 @@ export default function Sidebar() {
       titulo: 'PRINCIPAL',
       items: [
         {
-          to: '/dashboard',
+          to: `${basePrefix}/dashboard`,
           label: 'Dashboard',
           icon: LayoutDashboard,
           permiso: true,
         },
         {
-          to: '/mi-perfil',
+          to: `${basePrefix}/mi-perfil`,
           label: 'Mi Perfil',
           icon: User,
+          permiso: true,
+        },
+        {
+          to: slugActivo ? `/${slugActivo}/cliente/mi-cuenta` : '/cliente/mi-cuenta',
+          label: 'Portal Cliente',
+          icon: Sparkles,
           permiso: true,
         },
       ],
@@ -158,19 +169,19 @@ export default function Sidebar() {
       titulo: 'OPERATIVO',
       items: [
         {
-          to: '/barberos',
+          to: `${basePrefix}/barberos`,
           label: 'Barberos',
           icon: Scissors,
           permiso: esSuperAdmin || esAdministrador || esBarbero,
         },
         {
-          to: '/reservas',
+          to: `${basePrefix}/reservas`,
           label: 'Reservas',
           icon: Calendar,
           permiso: esSuperAdmin || esAdministrador || esBarbero,
         },
         {
-          to: '/horarios',
+          to: `${basePrefix}/horarios`,
           label: 'Horarios',
           icon: Clock,
           permiso: esBarbero,
@@ -182,33 +193,39 @@ export default function Sidebar() {
       titulo: 'GESTIÓN',
       items: [
         {
-          to: '/usuarios',
+          to: `${basePrefix}/usuarios`,
           label: 'Usuarios',
           icon: Users,
           permiso: esSuperAdmin || esAdministrador,
         },
         {
-          to: '/servicios',
+          to: `${basePrefix}/servicios`,
           label: 'Servicios',
           icon: Sparkles,
           permiso: esSuperAdmin || esAdministrador,
         },
         {
-          to: '/productos',
+          to: `${basePrefix}/productos`,
           label: 'Productos',
           icon: Package,
           permiso: esSuperAdmin || esAdministrador,
         },
         {
-          to: '/descuentos',
+          to: `${basePrefix}/descuentos`,
           label: 'Descuentos',
           icon: Percent,
           permiso: esSuperAdmin || esAdministrador,
         },
         {
-          to: '/whatsapp',
+          to: `${basePrefix}/whatsapp`,
           label: 'WhatsApp',
           icon: MessageSquare,
+          permiso: esSuperAdmin || esAdministrador,
+        },
+        {
+          to: `${basePrefix}/configuracion`,
+          label: 'Configuración',
+          icon: Settings,
           permiso: esSuperAdmin || esAdministrador,
         },
       ],

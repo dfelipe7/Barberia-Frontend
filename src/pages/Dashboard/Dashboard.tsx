@@ -1,5 +1,5 @@
 import { useEffect, type ComponentType } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useToastContext } from '../../shared/ui/ToastContext';
 import {
     Calendar,
@@ -12,6 +12,8 @@ import {
     LogOut,
 } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
+import { useTenantBrand } from '../../features/negocio/context/TenantBrandContext';
+import { obtenerNegocioSlugActivo } from '../../shared/lib/http/axios';
 import { ROLES_APP } from '../../shared/constants/roles';
 
 interface ShortcutItem {
@@ -75,23 +77,35 @@ const SHORTCUTS_GESTION: ShortcutItem[] = [
 
 
 export default function Dashboard() {
+    const { slug: paramSlug } = useParams<{ slug?: string }>();
     const {
         cerrarSesion,
         nombre,
         apellido,
         email,
         roles,
+        negocioSesionSlug,
     } = useAuth();
 
+    const { nombreNegocio } = useTenantBrand();
     const { showToast } = useToastContext();
     const location = useLocation();
     const navigate = useNavigate();
+    const activeSlug = paramSlug || negocioSesionSlug || obtenerNegocioSlugActivo() || 'kyrios-studio';
+    const basePrefix = `/${activeSlug}`;
+
+    // Redirección canónica: si entran a /dashboard sin slug, redirigir a /:slug/dashboard
+    useEffect(() => {
+        if (!paramSlug && activeSlug) {
+            void navigate(`/${activeSlug}/dashboard`, { replace: true });
+        }
+    }, [paramSlug, activeSlug, navigate]);
 
     useEffect(() => {
         const aviso = (location.state as { avisoAcceso?: string } | null)?.avisoAcceso;
         if (aviso) {
             showToast('warning', aviso);
-            navigate(location.pathname, { replace: true, state: null });
+            void navigate(location.pathname, { replace: true, state: null });
         }
     }, [location.state, location.pathname, navigate, showToast]);
 
@@ -108,7 +122,7 @@ export default function Dashboard() {
         return (
             <div key={label} className="col-12 col-md-6 col-xl-3">
                 <NavLink
-                    to={to}
+                    to={to === '/' ? `/${activeSlug}` : `${basePrefix}${to}`}
                     className="dash-shortcut-link"
                 >
                     <div
@@ -189,7 +203,7 @@ export default function Dashboard() {
                             Hola, {nombre || 'Usuario'}
                         </h1>
                         <p className="text-muted mb-0">
-                            Bienvenido de nuevo. Este es el resumen de tu actividad en Kyrios Studio.
+                            Bienvenido de nuevo. Este es el resumen de tu actividad en {nombreNegocio || 'tu barbería'}.
                         </p>
                     </div>
                     <div className="d-flex flex-wrap gap-2">
@@ -275,7 +289,7 @@ export default function Dashboard() {
                         <div className="d-flex align-items-center gap-2 flex-shrink-0">
                             <button
                                 type="button"
-                                onClick={cerrarSesion}
+                                onClick={() => cerrarSesion(activeSlug)}
                                 className="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold"
                                 style={{
                                     borderRadius: '4px',

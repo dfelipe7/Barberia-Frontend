@@ -1,0 +1,326 @@
+/* ─── Layout Split-Screen de Autenticación ────────────────────────── */
+
+.auth-split {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  background-color: #09090b;
+  color: #f4f4f5;
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+  overflow-x: hidden;
+}
+
+/* ── Panel Izquierdo: Presentación y Beneficios de Marca ── */
+.auth-split__brand-panel {
+  position: relative;
+  display: none;
+  flex: 1 1 50%;
+  max-width: 50%;
+  padding: 3.5rem 3.5rem;
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (min-width: 992px) {
+  .auth-split__brand-panel {
+    display: flex;
+  }
+}
+
+/* Imagen de fondo ambiental con gradiente oscuro */
+.auth-split__brand-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.28) contrast(1.15) saturate(1.2);
+  transform: scale(1.04);
+  transition: transform 12s ease-out;
+  z-index: 0;
+}
+
+.auth-split:hover .auth-split__brand-bg {
+  transform: scale(1.08);
+}
+
+.auth-split__brand-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    145deg,
+    rgba(9, 9, 11, 0.88) 0%,
+    rgba(9, 9, 11, 0.65) 50%,
+    rgba(9, 9, 11, 0.92) 100%
+  );
+  z-index: 1;
+}
+
+/* Luces de acento ambiental */
+.auth-split__brand-glow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Variante Cliente: Acento Oro / Ámbar */
+.auth-split--cliente .auth-split__brand-glow {
+  top: -100px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(194, 151, 82, 0.22) 0%, transparent 70%);
+}
+
+/* Variante Personal: Acento Azul Cobalto */
+.auth-split--staff .auth-split__brand-glow {
+  top: -100px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.22) 0%, transparent 70%);
+}
+
+.auth-split__brand-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.auth-split__brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.auth-split--cliente .auth-split__brand-badge {
+  background: rgba(194, 151, 82, 0.15);
+  border: 1px solid rgba(194, 151, 82, 0.35);
+  color: #e5b974;
+}
+
+.auth-split--staff .auth-split__brand-badge {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: #60a5fa;
+}
+
+.auth-split__brand-title {
+  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.auth-split__brand-subtitle {
+  font-size: 1rem;
+  color: #a1a1aa;
+  line-height: 1.5;
+  max-width: 480px;
+  margin-bottom: 2rem;
+}
+
+/* Lista de Beneficios */
+.auth-split__perks {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  max-width: 460px;
+}
+
+.auth-split__perk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+.auth-split__perk-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.auth-split--cliente .auth-split__perk-icon {
+  background: rgba(194, 151, 82, 0.15);
+  color: #e5b974;
+  border: 1px solid rgba(194, 151, 82, 0.3);
+}
+
+.auth-split--staff .auth-split__perk-icon {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.auth-split__perk-text strong {
+  display: block;
+  font-size: 0.92rem;
+  color: #ffffff;
+  margin-bottom: 0.15rem;
+}
+
+.auth-split__perk-text span {
+  font-size: 0.82rem;
+  color: #a1a1aa;
+  line-height: 1.4;
+}
+
+.auth-split__brand-footer {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.82rem;
+  color: #71717a;
+}
+
+/* ── Panel Derecho: Formulario / Acceso ── */
+.auth-split__form-panel {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2.5rem 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+@media (min-width: 992px) {
+  .auth-split__form-panel {
+    flex: 1 1 50%;
+    max-width: 50%;
+    padding: 3rem 4rem;
+  }
+}
+
+.auth-split__form-box {
+  width: 100%;
+  max-width: 440px;
+}
+
+.auth-split__top-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: #a1a1aa;
+  text-decoration: none;
+  margin-bottom: 2rem;
+  transition: color 0.2s ease;
+}
+
+.auth-split__top-link:hover {
+  color: #ffffff;
+}
+
+.auth-split__header {
+  margin-bottom: 2rem;
+}
+
+.auth-split__mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 992px) {
+  .auth-split__mobile-brand {
+    display: none;
+  }
+}
+
+.auth-split__heading {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.auth-split__desc {
+  font-size: 0.92rem;
+  color: #a1a1aa;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+/* Google Login Card Container */
+.auth-split__action-card {
+  background: rgba(24, 24, 27, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  padding: 1.75rem 1.5rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(16px);
+}
+
+.auth-split__google-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.auth-split__security-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 1.25rem;
+  font-size: 0.78rem;
+  color: #71717a;
+}
+
+/* Footer / Switch link */
+.auth-split__cross-access {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.9rem;
+  padding: 1rem 1.25rem;
+  text-align: center;
+}
+
+.auth-split__cross-access p {
+  font-size: 0.82rem;
+  color: #a1a1aa;
+  margin-bottom: 0.35rem;
+}
+
+.auth-split__cross-link {
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: opacity 0.2s ease;
+}
+
+.auth-split__cross-link:hover {
+  text-decoration: underline;
+}
+
+.auth-split--cliente .auth-split__cross-link {
+  color: #60a5fa;
+}
+
+.auth-split--staff .auth-split__cross-link {
+  color: #e5b974;
+}
+

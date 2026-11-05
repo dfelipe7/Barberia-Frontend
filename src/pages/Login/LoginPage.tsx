@@ -1,23 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useParams } from 'react-router-dom';
+import { obtenerNegocioSlugActivo, RUTAS_RESERVADAS } from '../../shared/lib/http/axios';
 import { GoogleLogin } from '@react-oauth/google';
-import { AlertCircle, ArrowLeft, ShieldCheck } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowLeft,
+  Calendar,
+  Layers,
+  Scissors,
+  ShieldCheck,
+  UserCheck,
+  TrendingUp,
+} from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
+import { clientesService } from '../../features/reservas/api/reservas.service';
 import BrandLogo from '../../shared/ui/BrandLogo';
 import KyriosSpinner from '../../shared/ui/KyriosSpinner';
-import './LoginPage.css';
+import heroImg from '../../assets/hero.png';
+import { useTenantBrand } from '../../features/negocio/context/TenantBrandContext';
+import '../../features/reservas/pages/AuthSplitLayout.css';
 
 export const LoginPage: React.FC = () => {
+  const { slug: paramSlug } = useParams<{ slug?: string }>();
+  const slug = paramSlug || obtenerNegocioSlugActivo() || '';
   const navigate = useNavigate();
-  const { loginConGoogle, isAuthenticated, isInitializing } = useAuth();
+  const { loginConGoogle, isAuthenticated, isInitializing, esStaffDeSede, negocioSesionSlug, negocioSesionNombre } = useAuth();
+  const esStaffDeEstaSede = esStaffDeSede(paramSlug);
+  const tieneSesionEnOtraSede = isAuthenticated && !esStaffDeEstaSede && Boolean(negocioSesionSlug);
   const [errorMensaje, setErrorMensaje] = useState<string | null>(null);
   const [isCargando, setIsCargando] = useState(false);
+  const sesionCliente = slug ? clientesService.obtenerSesion(slug) : null;
+  const { nombreNegocio, bannerUrl } = useTenantBrand();
+  const effectiveName = nombreNegocio || 'Kyrios Barber Studio';
 
   useEffect(() => {
-    if (!isInitializing && isAuthenticated) {
-      navigate('/dashboard', { replace: true });
+    if (paramSlug && !RUTAS_RESERVADAS.has(paramSlug.toLowerCase().trim())) {
+      localStorage.setItem('negocio_slug', paramSlug.toLowerCase().trim());
     }
-  }, [isInitializing, isAuthenticated, navigate]);
+  }, [paramSlug]);
+
+  useEffect(() => {
+    if (!isInitializing && isAuthenticated && esStaffDeEstaSede) {
+      const targetSlug = paramSlug || localStorage.getItem('negocio_sesion_slug') || 'kyrios-studio';
+      void navigate(`/${targetSlug}/dashboard`, { replace: true });
+    }
+  }, [isInitializing, isAuthenticated, esStaffDeEstaSede, paramSlug, navigate]);
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     if (!credentialResponse?.credential) {
@@ -33,7 +60,8 @@ export const LoginPage: React.FC = () => {
     setIsCargando(false);
 
     if (resultado.success) {
-      navigate('/dashboard', { replace: true });
+      const targetSlug = slug || localStorage.getItem('negocio_sesion_slug') || 'kyrios-studio';
+      void navigate(`/${targetSlug}/dashboard`, { replace: true });
     } else {
       let texto = 'Acceso denegado: Tu correo no se encuentra registrado en el personal autorizado de la barbería.';
       if (typeof resultado.error === 'string') {
@@ -49,58 +77,161 @@ export const LoginPage: React.FC = () => {
     setErrorMensaje('Ocurrió un error al conectar con Google. Por favor intenta de nuevo.');
   };
 
+  const perksStaff = [
+    {
+      icon: <Calendar size={18} />,
+      title: 'Control total de agenda',
+      desc: 'Visualiza tus turnos diarios y semanales con actualizaciones en tiempo real.',
+    },
+    {
+      icon: <Layers size={18} />,
+      title: 'Estados de cita y recepción',
+      desc: 'Gestiona la llegada del cliente, citas en progreso o finalizadas con un toque.',
+    },
+    {
+      icon: <TrendingUp size={18} />,
+      title: 'Métricas y rendimiento',
+      desc: 'Consulta tus servicios realizados, clientes atendidos y facturación del negocio.',
+    },
+  ];
+
   return (
-    <div className="kyrios-login-container">
-      {/* Luces y texturas ambientales de la marca */}
-      <div className="kyrios-login-glow-top" aria-hidden="true" />
-      <div className="kyrios-login-glow-bottom" aria-hidden="true" />
-      <div className="kyrios-login-grid" aria-hidden="true" />
+    <div className="auth-split auth-split--staff">
+      {/* ── PANEL IZQUIERDO: MARCA Y HERRAMIENTAS DEL EQUIPO ── */}
+      <aside className="auth-split__brand-panel" aria-label="Portal administrativo">
+        <div
+          className="auth-split__brand-bg"
+          style={{ backgroundImage: `url(${bannerUrl || heroImg})` }}
+          aria-hidden="true"
+        />
+        <div className="auth-split__brand-overlay" aria-hidden="true" />
+        <div className="auth-split__brand-glow" aria-hidden="true" />
 
-      {/* Tarjeta de Inicio de Sesión de Alta Gama */}
-      <div className="kyrios-login-card">
-        {/* Cabecera de la marca */}
-        <div className="text-center mb-4">
-          <div className="mb-3 d-inline-block">
-            <BrandLogo variant="white" height={44} alt="Kyrios Studio" />
-          </div>
-
-          <div className="d-flex justify-content-center mb-2">
-            <span className="kyrios-login-badge">
-              <span className="kyrios-login-badge-dot" />
-              Portal de Personal
-            </span>
-          </div>
-
-          <p className="text-secondary small mb-0 mt-2" style={{ color: '#94a3b8' }}>
-            Barbería de alto estándar · Popayán
-          </p>
-        </div>
-
-        {/* Alerta de Error */}
-        {errorMensaje && (
-          <div
-            className="alert d-flex align-items-start gap-2 py-2 px-3 mb-4 rounded-3 small"
-            style={{
-              backgroundColor: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.35)',
-              color: '#fca5a5',
-            }}
-            role="alert"
-          >
-            <AlertCircle size={18} className="flex-shrink-0 mt-1" style={{ color: '#ef4444' }} />
-            <div className="flex-grow-1">{errorMensaje}</div>
-          </div>
-        )}
-
-        {/* Botón de Autenticación con Google */}
-        <div className="text-center py-2 mb-3">
-          {isCargando ? (
-            <div className="py-3">
-              <KyriosSpinner size="md" mensaje="Verificando credenciales..." />
+        <div className="auth-split__brand-content">
+          <div>
+            <div className="d-flex align-items-center gap-3 mb-4">
+              <BrandLogo variant="white" height={40} alt={effectiveName} />
             </div>
-          ) : (
-            <div className="d-flex justify-content-center">
-              <div className="kyrios-google-btn-wrapper">
+
+            <div className="mb-4">
+              <span className="auth-split__brand-badge">
+                <Scissors size={13} /> Sistema de Gestión Profesional
+              </span>
+            </div>
+
+            <h1 className="auth-split__brand-title">
+              La plataforma operativa de <br />
+              tu estudio de barbería.
+            </h1>
+            <p className="auth-split__brand-subtitle">
+              Herramienta exclusiva para superadministradores, gerentes y barberos del equipo. Administra tu flujo de trabajo diario sin fricciones.
+            </p>
+
+            <div className="auth-split__perks">
+              {perksStaff.map((perk, i) => (
+                <div key={i} className="auth-split__perk-item">
+                  <div className="auth-split__perk-icon">{perk.icon}</div>
+                  <div className="auth-split__perk-text">
+                    <strong>{perk.title}</strong>
+                    <span>{perk.desc}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="auth-split__brand-footer">
+            <span>Kyrios OS Enterprise · Infraestructura Multitenant Segura</span>
+          </div>
+        </div>
+      </aside>
+
+      {/* ── PANEL DERECHO: ACCESO DE PERSONAL ── */}
+      <main className="auth-split__form-panel">
+        <div className="auth-split__form-box">
+          <Link to={slug ? `/${slug}` : '/'} className="auth-split__top-link">
+            <ArrowLeft size={16} /> Volver al sitio principal
+          </Link>
+
+          <div className="auth-split__mobile-brand">
+            <BrandLogo variant="white" height={34} alt={effectiveName} />
+          </div>
+
+          <div className="auth-split__header">
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <span className="auth-split__brand-badge">
+                <ShieldCheck size={13} /> Acceso al Equipo y Barberos
+              </span>
+            </div>
+            <h2 className="auth-split__heading">
+              Panel Administrativo
+            </h2>
+            <p className="auth-split__desc">
+              Inicia sesión con tu correo institucional o personal autorizado para acceder a tu panel de control.
+            </p>
+          </div>
+
+                    {tieneSesionEnOtraSede && (
+            <div
+              className="d-flex align-items-center justify-content-between p-2 mb-3 rounded-2"
+              style={{
+                background: 'rgba(59, 130, 246, 0.12)',
+                border: '1px solid rgba(59, 130, 246, 0.3)',
+                fontSize: '0.84rem',
+              }}
+            >
+              <div className="d-flex align-items-center gap-2" style={{ color: '#60a5fa' }}>
+                <ShieldCheck size={16} />
+                <span>
+                  Sesión activa en <strong>{negocioSesionNombre || negocioSesionSlug}</strong>
+                </span>
+              </div>
+              <Link to={slug ? `/${slug}/dashboard` : '/dashboard'} className="btn btn-sm btn-primary py-0 px-2" style={{ fontSize: '0.78rem' }}>
+                Ir a mi panel
+              </Link>
+            </div>
+          )}
+          {sesionCliente && (
+            <div
+              className="d-flex align-items-center justify-content-between p-2 mb-3 rounded-2"
+              style={{
+                background: 'rgba(234, 179, 8, 0.12)',
+                border: '1px solid rgba(234, 179, 8, 0.3)',
+                fontSize: '0.84rem',
+              }}
+            >
+              <div className="d-flex align-items-center gap-2" style={{ color: '#facc15' }}>
+                <UserCheck size={16} />
+                <span>Sesión activa como <strong>Cliente</strong></span>
+              </div>
+              <Link to={slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta'} className="btn btn-sm btn-warning py-0 px-2" style={{ fontSize: '0.78rem' }}>
+                Ir a Mi Cuenta
+              </Link>
+            </div>
+          )}
+          {errorMensaje && (
+            <div
+              className="alert d-flex align-items-start gap-2 py-2.5 px-3 mb-4 rounded-3 small"
+              style={{
+                backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                border: '1px solid rgba(239, 68, 68, 0.35)',
+                color: '#fca5a5',
+              }}
+              role="alert"
+            >
+              <AlertCircle size={18} className="flex-shrink-0 mt-0.5" style={{ color: '#ef4444' }} />
+              <div>{errorMensaje}</div>
+            </div>
+          )}
+
+          {/* Tarjeta de Inicio de Sesión de Google */}
+          <div className="auth-split__action-card">
+            {isCargando ? (
+              <div className="py-4 text-center">
+                <KyriosSpinner size="md" mensaje="Verificando permisos de personal..." />
+              </div>
+            ) : (
+              <div className="auth-split__google-wrap">
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={handleGoogleError}
@@ -111,31 +242,26 @@ export const LoginPage: React.FC = () => {
                   text="continue_with"
                 />
               </div>
+            )}
+
+            <div className="auth-split__security-note">
+              <ShieldCheck size={14} className="text-info" />
+              <span>Acceso restringido · Validación RBAC por roles</span>
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* Insignia de Seguridad */}
-        <div className="text-center mb-4">
-          <span className="kyrios-security-pill">
-            <ShieldCheck size={14} style={{ color: '#38bdf8' }} />
-            Autenticación segura con Google OAuth 2.0
-          </span>
+          {/* Enlace alterno cruzado a Clientes */}
+          <div className="auth-split__cross-access">
+            <p>¿Eres un cliente buscando ver o agendar tus citas?</p>
+            <Link
+              to={slug ? `/${slug}/cliente/iniciar-sesion` : '/cliente/iniciar-sesion'}
+              className="auth-split__cross-link"
+            >
+              Iniciar sesión como Cliente VIP →
+            </Link>
+          </div>
         </div>
-
-        {/* Pie de la tarjeta */}
-        <div
-          className="pt-3 border-top text-center"
-          style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}
-        >
-          <p className="small mb-3" style={{ color: '#64748b', fontSize: '0.8rem' }}>
-            Acceso exclusivo para Superadministradores, Administradores y Barberos registrados.
-          </p>
-          <Link to="/" className="kyrios-login-back-btn">
-            <ArrowLeft size={14} /> Volver al Inicio
-          </Link>
-        </div>
-      </div>
+      </main>
     </div>
   );
 };

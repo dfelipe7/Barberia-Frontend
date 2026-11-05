@@ -8,6 +8,7 @@ export interface BarberoCatalogoDTO {
 
 export interface BarberoGestionDTO {
   id: number;
+  barberoId?: number;
   nombre: string;
   apellido: string;
   email: string;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate, Link, NavLink, useLocation } from 'react-router-dom';
-import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut, User } from 'lucide-react';
+import { useNavigate, Link, NavLink, useLocation, useParams } from 'react-router-dom';
+import { ArrowUpRight, LayoutDashboard, Moon, Sun, Monitor, LogOut, User, Calendar, ShieldCheck } from 'lucide-react';
+import { clientesService } from '../../../features/reservas/api/reservas.service';
 import BrandLogo from '../../../shared/ui/BrandLogo';
 import { BRAND } from '../../../config/brand';
 import { MenuIcon, CloseIcon } from './HomeIcons';
@@ -9,6 +10,10 @@ import { useAuth } from '../../../auth/AuthContext';
 import { useBodyScrollLock } from '../../../shared/lib/useBodyScrollLock';
 import { esRolApp } from '../../../shared/lib/autorizacion/roles';
 import { ProductosEnDesarrolloModal } from './ProductosEnDesarrolloModal';
+import { SelectorAccesoModal } from './SelectorAccesoModal';
+import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
+import TenantThemeSelector from '../../../shared/layout/TenantThemeSelector';
+import UserDropdown from '../../../shared/layout/UserDropdown';
 
 /* ─── Hook: detecta si el usuario hizo scroll más allá de un umbral ─────── */
 function useScrolled(threshold = 40): boolean {
@@ -53,21 +58,31 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [productosModalOpen, setProductosModalOpen] = useState(false);
+  const [accesoModalOpen, setAccesoModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const enHome = location.pathname === '/';
+  const { slug: paramSlug } = useParams<{ slug?: string }>();
+  const slug = paramSlug || obtenerNegocioSlugActivo() || undefined;
+  const basePrefix = slug ? `/${slug}` : '';
+  const rutaHome = slug ? `/${slug}` : '/';
+  const enHome = location.pathname === '/' || (Boolean(slug) && location.pathname === `/${slug}`);
 
   const navLinks = useMemo(() => {
     const base = [
-      { id: 'servicios', to: '/catalogo/servicios', label: 'Servicios' },
-      { id: 'barberos',  to: '/catalogo/barberos',  label: 'Barberos'  },
-      { id: 'productos', to: null,                  label: 'Productos' },
+      { id: 'servicios', to: `${basePrefix}/catalogo/servicios`, label: 'Servicios' },
+      { id: 'barberos',  to: `${basePrefix}/catalogo/barberos`,  label: 'Barberos'  },
+      { id: 'productos', to: null,                                label: 'Productos' },
     ];
     return enHome
       ? base
-      : [{ id: 'inicio', to: '/', label: 'Inicio' }, ...base];
-  }, [enHome]);
+      : [{ id: 'inicio', to: rutaHome, label: 'Inicio' }, ...base];
+  }, [enHome, basePrefix, rutaHome]);
 
+  const [clienteSesion, setClienteSesion] = useState(() => clientesService.obtenerSesion(slug));
+
+  useEffect(() => {
+    setClienteSesion(clientesService.obtenerSesion(slug));
+  }, [slug]);
   const { theme, setTheme, isDark } = useTheme();
   const {
     isAuthenticated: authIsAuthenticated,
@@ -77,12 +92,19 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
     cerrarSesion,
     roles,
     usuarioDb,
+    negocioSesionSlug,
+    negocioSesionNombre,
+    esStaffDeSede,
   } = useAuth();
+
+  const esStaffLocal = esStaffDeSede(slug);
+  const tieneSesionEnOtraSede = authIsAuthenticated && !esStaffLocal && Boolean(negocioSesionSlug);
 
   const isAuthenticated = propIsAuthenticated !== undefined ? propIsAuthenticated : authIsAuthenticated;
   const nombre = propNombre !== undefined ? propNombre : authNombre;
   const apellido = authApellido;
-  const onLogin = propOnLogin || (() => navigate('/login'));
+  const rutaLogin = slug ? `/${slug}/login` : '/login';
+  const onLogin = propOnLogin || (() => setAccesoModalOpen(true));
   const tieneAcceso = roles.some(esRolApp) && usuarioDb?.estado === 'ACTIVO';
 
   // Solo mostramos avatar si la sesión está resuelta Y autenticada Y el
@@ -90,6 +112,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
   const mostrarAvatar =
     !isInitializing &&
     isAuthenticated === true &&
+    esStaffLocal &&
     Boolean(usuarioDb);
 
   const displayName =
@@ -128,56 +151,83 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
       className={`kyrios-nav${scrolled ? ' is-scrolled' : ''}`}
       role="banner"
     >
-      <div className="container py-2 d-flex align-items-center justify-content-between gap-3">
+      {tieneSesionEnOtraSede && (
+        <div
+          className="d-flex align-items-center justify-content-between px-3 py-1.5"
+          style={{
+            background: 'rgba(234, 179, 8, 0.14)',
+            borderBottom: '1px solid rgba(234, 179, 8, 0.28)',
+            color: '#fde047',
+            fontSize: '0.8rem',
+            backdropFilter: 'blur(8px)',
+          }}
+        >
+          <div className="d-flex align-items-center gap-2">
+            <ShieldCheck size={14} className="text-warning flex-shrink-0" />
+            <span>
+              Estás viendo <strong>{slug}</strong> · Sesión de personal activa en <strong>{negocioSesionNombre || negocioSesionSlug}</strong>
+            </span>
+          </div>
+          <Link
+            to="/dashboard"
+            className="btn btn-warning btn-sm py-0 px-2 fw-semibold text-dark d-inline-flex align-items-center gap-1"
+            style={{ fontSize: '0.74rem' }}
+          >
+            Ir a mi panel ({negocioSesionNombre || negocioSesionSlug})
+          </Link>
+        </div>
+      )}
+      <div className="container-fluid px-3 px-xl-4 py-2 d-flex align-items-center justify-content-between gap-2 gap-lg-3">
 
         {/* ── Logo ── */}
         <Link
-          to="/"
+          to={rutaHome}
           className="d-flex align-items-center gap-2 text-decoration-none flex-shrink-0"
           onClick={closeMobileMenu}
           aria-label={`Ir al inicio de ${BRAND.name}`}
         >
-          <BrandLogo variant={isDark ? 'white' : 'black'} height={34} alt={BRAND.name} />
+          <BrandLogo variant={isDark ? 'white' : 'black'} height={28} alt={BRAND.name} />
         </Link>
 
         {/* ── Navegación Desktop ── */}
         <nav
-          className="d-none d-xl-flex align-items-center gap-1 flex-grow-1 justify-content-center"
+          className="d-none d-xl-flex align-items-center flex-grow-1 justify-content-center"
           aria-label="Navegación principal"
         >
-          {navLinks.map((item) =>
-            item.to ? (
-              <NavLink
-                key={item.id}
-                to={item.to}
-                end
-                className={({ isActive }) =>
-                  `kyrios-nav-link${isActive ? ' is-active' : ''}`
-                }
-                onClick={closeMobileMenu}
-              >
-                <span className="kyrios-nav-link__label">{item.label}</span>
-                <span className="kyrios-nav-link__underline" aria-hidden="true" />
-              </NavLink>
-            ) : (
-              <button
-                key={item.id}
-                type="button"
-                className="kyrios-nav-link"
-                onClick={() => {
-                  closeMobileMenu();
-                  setProductosModalOpen(true);
-                }}
-              >
-                <span className="kyrios-nav-link__label">{item.label}</span>
-                <span className="kyrios-nav-link__underline" aria-hidden="true" />
-              </button>
-            )
-          )}
+          <div className="kyrios-nav-capsule">
+            {navLinks.map((item) =>
+              item.to ? (
+                <NavLink
+                  key={item.id}
+                  to={item.to}
+                  end
+                  className={({ isActive }) =>
+                    `kyrios-nav-link${isActive ? ' is-active' : ''}`
+                  }
+                  onClick={closeMobileMenu}
+                >
+                  <span className="kyrios-nav-link__label">{item.label}</span>
+                </NavLink>
+              ) : (
+                <button
+                  key={item.id}
+                  type="button"
+                  className="kyrios-nav-link"
+                  onClick={() => {
+                    closeMobileMenu();
+                    setProductosModalOpen(true);
+                  }}
+                >
+                  <span className="kyrios-nav-link__label">{item.label}</span>
+                </button>
+              )
+            )}
+          </div>
         </nav>
 
         {/* ── CTA Desktop ── */}
         <div className="d-none d-xl-flex align-items-center gap-2 flex-shrink-0">
+          <TenantThemeSelector isDark={isDark} />
           {/* Toggle de tema */}
           <button
             type="button"
@@ -194,32 +244,46 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
             <div style={{ width: 32, height: 32 }} aria-hidden="true" />
           ) : mostrarAvatar ? (
             <div className="d-flex align-items-center gap-2">
-              <UserAvatar nombre={nombre} apellido={apellido} online />
-              <span className="kyrios-nav-greeting">{displayName}</span>
               <button
                 type="button"
-                className="btn-kyrios-primary d-inline-flex align-items-center gap-1"
-                onClick={() => navigate('/dashboard')}
+                className="btn-kyrios-primary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 rounded-pill fw-semibold text-nowrap"
+                onClick={() => navigate(slug ? `/${slug}/dashboard` : '/dashboard')}
                 aria-label="Ir a mi panel administrativo"
+                style={{ fontSize: '0.82rem' }}
               >
                 <LayoutDashboard size={14} strokeWidth={2} />
                 Mi panel
               </button>
-              {tieneAcceso && (
-                <button
-                  type="button"
-                  className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
-                  onClick={() => navigate('/mi-perfil')}
-                  aria-label="Ir a mi perfil"
-                >
-                  <User size={14} strokeWidth={2} />
-                  Mi Perfil
-                </button>
-              )}
+              <UserDropdown
+                nombre={nombre || usuarioDb?.nombre}
+                apellido={usuarioDb?.apellido}
+                email={usuarioDb?.email}
+                roles={roles}
+                fotoUrl={usuarioDb?.barbero?.fotoUrl}
+                isDark={isDark}
+                onCerrarSesion={handleLogout}
+              />
+            </div>
+          ) : clienteSesion ? (
+            <div className="d-flex align-items-center gap-2">
+              <UserAvatar nombre={clienteSesion.nombre} apellido={clienteSesion.apellido} online />
+              <span className="kyrios-nav-greeting">{clienteSesion.nombre}</span>
+              <button
+                type="button"
+                className="btn-kyrios-primary d-inline-flex align-items-center gap-1"
+                onClick={() => navigate(slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta')}
+              >
+                <Calendar size={14} strokeWidth={2} />
+                Mis Citas
+              </button>
               <button
                 type="button"
                 className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
-                onClick={handleLogout}
+                onClick={() => {
+                  clientesService.cerrarSesion(slug);
+                  setClienteSesion(null);
+                  void navigate(slug ? `/${slug}` : '/');
+                }}
                 aria-label="Cerrar sesión"
               >
                 <LogOut size={14} strokeWidth={2} />
@@ -230,7 +294,10 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
             <button
               type="button"
               className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
-              onClick={onLogin}
+              onClick={() => {
+                const rutaCliente = slug ? `/${slug}/cliente/iniciar-sesion?returnTo=${encodeURIComponent(location.pathname)}` : `/cliente/iniciar-sesion?returnTo=${encodeURIComponent(location.pathname)}`;
+                void navigate(rutaCliente);
+              }}
             >
               Iniciar sesión
               <ArrowUpRight size={14} strokeWidth={2} className="kyrios-nav-cta-arrow" />
@@ -258,11 +325,21 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
             <button
               type="button"
               className="p-0 border-0 bg-transparent d-inline-flex align-items-center rounded-circle"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate(slug ? `/${slug}/dashboard` : '/dashboard')}
               aria-label="Ir a mi panel administrativo"
               title="Mi panel"
             >
               <UserAvatar nombre={nombre} apellido={apellido} online />
+            </button>
+          ) : clienteSesion ? (
+            <button
+              type="button"
+              className="p-0 border-0 bg-transparent d-inline-flex align-items-center rounded-circle"
+              onClick={() => navigate(slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta')}
+              aria-label="Ir a mis citas"
+              title="Mis Citas"
+            >
+              <UserAvatar nombre={clienteSesion.nombre} apellido={clienteSesion.apellido} online />
             </button>
           ) : (
             <button
@@ -365,15 +442,61 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                     Cerrar sesión
                   </button>
                 </>
+              ) : clienteSesion ? (
+                <>
+                  <div className="kyrios-nav-greeting d-flex align-items-center gap-2 mb-1">
+                    <UserAvatar nombre={clienteSesion.nombre} apellido={clienteSesion.apellido} online />
+                    <span>Hola, <strong>{clienteSesion.nombre}</strong></span>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-kyrios-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
+                    onClick={() => {
+                      closeMobileMenu();
+                      void navigate(slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta');
+                    }}
+                  >
+                    <Calendar size={15} strokeWidth={2} />
+                    Mis Citas y Datos
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-kyrios-outline w-100 d-inline-flex align-items-center justify-content-center gap-2"
+                    onClick={() => {
+                      closeMobileMenu();
+                      clientesService.cerrarSesion(slug);
+                      setClienteSesion(null);
+                      void navigate(slug ? `/${slug}` : '/');
+                    }}
+                  >
+                    <LogOut size={15} strokeWidth={2} />
+                    Cerrar sesión
+                  </button>
+                </>
               ) : (
-                <button
-                  type="button"
-                  className="btn-kyrios-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
-                  onClick={() => { closeMobileMenu(); onLogin(); }}
-                >
-                  Iniciar sesión
-                  <ArrowUpRight size={15} strokeWidth={2} />
-                </button>
+                <>
+                  <button
+                    type="button"
+                    className="btn-kyrios-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
+                    onClick={() => {
+                      closeMobileMenu();
+                      onLogin();
+                    }}
+                  >
+                    Iniciar sesión
+                    <ArrowUpRight size={15} strokeWidth={2} />
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-link text-surface-muted text-decoration-none small text-center w-100 mt-1"
+                    onClick={() => {
+                      closeMobileMenu();
+                      void navigate(rutaLogin);
+                    }}
+                  >
+                    ¿Eres del equipo o barbero? Acceso al panel
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -381,6 +504,11 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
       )}
 
       {/* Modal de Productos en Desarrollo */}
+      <SelectorAccesoModal
+        isOpen={accesoModalOpen}
+        onClose={() => setAccesoModalOpen(false)}
+        slug={slug}
+      />
       <ProductosEnDesarrolloModal
         isOpen={productosModalOpen}
         onClose={() => setProductosModalOpen(false)}

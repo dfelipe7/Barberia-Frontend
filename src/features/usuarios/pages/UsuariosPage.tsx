@@ -176,12 +176,15 @@ export const UsuariosPage: React.FC = () => {
     }
 
     try {
-      await cambiarEstadoGlobalAdminMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
+      await cambiarEstadoGlobalAdminMutation.mutateAsync({
+        id,
+        datos: { estado: nuevoEstado, tipo: 'administrador' },
+      });
       showToast(
         'success',
         nuevoEstado === 'ACTIVO'
-          ? 'Cuenta desbloqueada correctamente.'
-          : 'Cuenta bloqueada globalmente.',
+          ? 'Perfil de administrador activado correctamente.'
+          : 'Perfil de administrador desactivado en esta sede.',
       );
     } catch (err) {
       showToast('danger', mapApiError(err));

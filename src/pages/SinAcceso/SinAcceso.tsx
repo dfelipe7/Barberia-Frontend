@@ -78,7 +78,7 @@ export default function SinAcceso() {
                     <button
                         type="button"
                         className={tieneRolApp && !cuentaBloqueada ? 'btn btn-outline-secondary' : 'btn btn-primary'}
-                        onClick={cerrarSesion}
+                        onClick={() => cerrarSesion()}
                     >
                         Cerrar sesión
                     </button>

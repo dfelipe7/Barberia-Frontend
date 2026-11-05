@@ -22,6 +22,7 @@ export const barberosMapper = {
   toGestionDomain(dto: BarberoGestionDTO): BarberoGestion {
     return {
       id: dto.id,
+      barberoId: dto.barberoId,
       nombre: dto.nombre,
       apellido: dto.apellido,
       email: dto.email,

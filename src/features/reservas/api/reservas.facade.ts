@@ -6,7 +6,8 @@ import type {
   FiltroReservasAdministrativasDTO,
 } from './reservas.dto';
 import { reservasKeys } from './reservas.keys';
-import { reservasService } from './reservas.service';
+import { clientesService, reservasService } from './reservas.service';
+import type { ActualizarPerfilClienteDTO } from './reservas.dto';
 
 export function useDisponibilidadReserva(filtro?: FiltroDisponibilidadReservaDTO) {
   return useQuery({
@@ -152,5 +153,23 @@ export function useModificarReservaAdministrativa() {
     mutationFn: ({ id, datos }: { id: number; datos: ActualizarReservaDTO }) =>
       reservasService.modificarReservaAdministrativa(id, datos),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: reservasKeys.all }),
+  });
+}
+
+export function usePerfilCliente(enabled: boolean = true) {
+  return useQuery({
+    queryKey: reservasKeys.perfilCliente(),
+    queryFn: () => clientesService.obtenerPerfil(),
+    enabled,
+  });
+}
+
+export function useActualizarPerfilCliente() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (datos: ActualizarPerfilClienteDTO) => clientesService.actualizarPerfil(datos),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: reservasKeys.perfilCliente() });
+    },
   });
 }

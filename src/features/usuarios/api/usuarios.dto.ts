@@ -30,6 +30,7 @@ export interface AdministradorGestionDTO {
   estadoAdmin?: 'ACTIVO' | 'INACTIVO';
   esBarbero: boolean;
   estadoBarbero?: 'ACTIVO' | 'INACTIVO';
+  esSuperAdmin?: boolean;
 }
 
 export interface CrearAdministradorDTO {
@@ -41,7 +42,6 @@ export interface CrearAdministradorDTO {
 export interface ActualizarUsuarioDTO {
   nombre?: string;
   apellido?: string;
-  email?: string;
   telefono?: string;
   porcentajeComision?: number;
   esAdministrador?: boolean;
@@ -50,10 +50,12 @@ export interface ActualizarUsuarioDTO {
 
 export interface CambiarEstadoDTO {
   estado: 'ACTIVO' | 'INACTIVO';
+  tipo?: 'administrador' | 'barbero' | 'ambos';
 }
 
 export interface CambiarEstadoUsuarioDTO {
   estado: 'ACTIVO' | 'INACTIVO';
+  tipo: 'administrador' | 'barbero' | 'ambos';
 }
 
 export interface ConfigurarBarberoDTO {

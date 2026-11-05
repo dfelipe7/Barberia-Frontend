@@ -35,3 +35,5 @@ dist-ssr
 .gemini/
 .impeccable/
 skills-lock.json
+
+coverage/

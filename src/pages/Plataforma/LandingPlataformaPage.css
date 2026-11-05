@@ -1,0 +1,390 @@
+/* ─── Landing de la Plataforma SaaS (Kyrios Platform) ───────────────────── */
+
+.saas-landing {
+  min-height: 100vh;
+  min-height: 100svh;
+  background-color: #08080a;
+  color: #f8fafc;
+  font-family: var(--font-body, 'Inter', system-ui, sans-serif);
+  position: relative;
+  overflow-x: hidden;
+  padding-bottom: 5rem;
+}
+
+/* Ambient glow multicapa de alta gama */
+.saas-landing__glow-top {
+  position: absolute;
+  top: -180px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1000px;
+  height: 520px;
+  background: radial-gradient(ellipse at center, rgba(0, 113, 188, 0.3) 0%, rgba(0, 113, 188, 0.08) 50%, transparent 75%);
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.saas-landing__glow-bottom {
+  position: absolute;
+  top: 900px;
+  right: -100px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(194, 151, 82, 0.12) 0%, transparent 70%);
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.saas-landing__grid-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 46px 46px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(circle at 50% 20%, black 40%, transparent 85%);
+  -webkit-mask-image: radial-gradient(circle at 50% 20%, black 40%, transparent 85%);
+}
+
+.saas-landing__container {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 1.75rem 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Navbar de la Plataforma ── */
+.saas-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 2rem;
+  margin-bottom: 3.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.saas-nav__logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.saas-nav__platform-tag {
+  background: rgba(0, 113, 188, 0.15);
+  border: 1px solid rgba(0, 113, 188, 0.35);
+  color: #38bdf8;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.saas-nav__links {
+  display: none;
+  align-items: center;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .saas-nav__links {
+    display: flex;
+  }
+}
+
+.saas-nav__link {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.saas-nav__link:hover {
+  color: #ffffff;
+}
+
+.btn-saas-outline {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  padding: 0.55rem 1.15rem;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.2s ease;
+}
+
+.btn-saas-outline:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.btn-saas-primary {
+  background: #0071BC;
+  color: #ffffff !important;
+  padding: 0.7rem 1.45rem;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 113, 188, 0.4);
+}
+
+.btn-saas-primary:hover {
+  background: #005fa0;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(0, 113, 188, 0.55);
+}
+
+/* ── Hero Principal ── */
+.saas-hero {
+  text-align: center;
+  max-width: 860px;
+  margin: 0 auto 5.5rem;
+}
+
+.saas-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 1.5rem;
+}
+
+.saas-hero__title {
+  font-size: clamp(2.4rem, 4.5vw, 4rem);
+  font-weight: 850;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+}
+
+.saas-hero__title-gradient {
+  background: linear-gradient(135deg, #ffffff 40%, #0071BC 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.saas-hero__subtitle {
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  color: #94a3b8;
+  line-height: 1.6;
+  max-width: 680px;
+  margin: 0 auto 2.5rem;
+}
+
+.saas-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* ── Preview Mockup del Sistema ── */
+.saas-preview {
+  position: relative;
+  max-width: 1040px;
+  margin: 0 auto 6rem;
+  border-radius: 24px;
+  padding: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 100%);
+  box-shadow: 
+    0 30px 80px -20px rgba(0, 0, 0, 0.95),
+    0 0 40px rgba(0, 113, 188, 0.15);
+}
+
+.saas-preview__inner {
+  background: #111115;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.saas-preview__window-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.saas-preview__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.saas-preview__url-pill {
+  margin-left: 1rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  padding: 0.2rem 1rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-family: var(--font-body, monospace);
+}
+
+.saas-preview__content {
+  padding: 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .saas-preview__content {
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+}
+
+/* ── Grilla de Pilares / Características ── */
+.saas-features {
+  margin-bottom: 6rem;
+}
+
+.saas-section-header {
+  text-align: center;
+  max-width: 620px;
+  margin: 0 auto 3.5rem;
+}
+
+.saas-section-header h2 {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin-bottom: 0.75rem;
+}
+
+.saas-section-header p {
+  color: #94a3b8;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.saas-features__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.75rem;
+}
+
+.saas-feature-card {
+  background: rgba(18, 18, 22, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 2rem 1.75rem;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.saas-feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 113, 188, 0.4);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 113, 188, 0.12);
+}
+
+.saas-feature-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(0, 113, 188, 0.12);
+  border: 1px solid rgba(0, 113, 188, 0.25);
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.saas-feature-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.6rem;
+}
+
+.saas-feature-card p {
+  font-size: 0.92rem;
+  color: #94a3b8;
+  line-height: 1.55;
+  margin-bottom: 0;
+}
+
+/* ── Banner CTA Final ── */
+.saas-cta-banner {
+  background: linear-gradient(145deg, rgba(20, 20, 26, 0.9) 0%, rgba(14, 14, 18, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 28px;
+  padding: clamp(2.5rem, 5vw, 4rem) 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 25px 60px -20px rgba(0, 0, 0, 0.9);
+}
+
+.saas-cta-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #0071BC, transparent);
+}
+
+.saas-cta-banner h2 {
+  font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.saas-cta-banner p {
+  color: #94a3b8;
+  max-width: 580px;
+  margin: 0 auto 2rem;
+  font-size: 1.05rem;
+}
+
+/* Footer simple */
+.saas-footer {
+  margin-top: 5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+

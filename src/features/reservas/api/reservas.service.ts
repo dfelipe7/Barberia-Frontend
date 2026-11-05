@@ -1,7 +1,9 @@
 import axios from 'axios';
-import apiClient from '../../../shared/lib/http/axios';
+import apiClient, { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import type {
   ClienteSesionDTO,
+  PerfilClienteDTO,
+  ActualizarPerfilClienteDTO,
   ClienteSesionResponseDTO,
   BarberoDisponibleReservaDTO,
   CrearReservaDTO,
@@ -21,52 +23,130 @@ import type {
   ReservaModificadaDTO,
 } from './reservas.dto';
 
-const TOKEN_CLIENTE_KEY = 'token_cliente_barberia';
-const SESION_CLIENTE_KEY = 'cliente_barberia';
 const TOKEN_INVITADO_PREFIX = 'reserva_invitado_gestion_';
 const TOKEN_GESTION_HEADER = 'X-Reservation-Management-Token';
+
+/**
+ * Resuelve las claves de localStorage aisladas por cada barbería para evitar
+ * que el token o la sesión de una sede colisione o contamine a otra.
+ */
+function resolverClavesCliente(slugParam?: string | null) {
+  const rawSlug = slugParam || obtenerNegocioSlugActivo();
+  const slug = (rawSlug && rawSlug.trim() !== '') ? rawSlug.toLowerCase().trim() : 'global';
+  return {
+    tokenKey: `token_cliente_${slug}`,
+    sesionKey: `cliente_${slug}`,
+    slug,
+  };
+}
 
 const reservasApiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-// Este cliente solo adjunta el JWT de cliente. Nunca envía por accidente el JWT del personal.
+// Este cliente gestiona las peticiones del portal público y del flujo de reservas.
 reservasApiClient.interceptors.request.use((config) => {
-  const tokenCliente = localStorage.getItem(TOKEN_CLIENTE_KEY);
+  // 1. Multitenant: Inyectar la cabecera X-Negocio-Slug para resolver la barbería activa
+  const slug = obtenerNegocioSlugActivo();
+  if (slug) {
+    config.headers['X-Negocio-Slug'] = slug;
+  }
+
+  // 2. Adjuntar el JWT de cliente específico para esta barbería
+  const tokenCliente = clientesService.obtenerToken(slug);
   if (tokenCliente) {
     config.headers.Authorization = 'Bearer ' + tokenCliente;
+  } else {
+    delete config.headers.Authorization;
   }
   return config;
 });
 
+reservasApiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Si la sesión de cliente es rechazada (401 expirada o 403 sesión de otra barbería / inválida),
+    // limpiamos automáticamente los datos locales de cliente para que la UI no quede bloqueada.
+    if (error?.response?.status === 401 || error?.response?.status === 403) {
+      const url = error.config?.url || '';
+      if (url.includes('/reservas/me') || url.includes('/auth/clientes')) {
+        const slug = obtenerNegocioSlugActivo();
+        clientesService.cerrarSesion(slug);
+      }
+    }
+    return Promise.reject(error);
+  },
+);
+
 export const clientesService = {
-  async iniciarSesionGoogle(idToken: string): Promise<ClienteSesionResponseDTO> {
+  async iniciarSesionGoogle(idToken: string, slugParam?: string | null): Promise<ClienteSesionResponseDTO> {
+    const headers: Record<string, string> = {};
+    if (slugParam) {
+      headers['X-Negocio-Slug'] = slugParam;
+    }
     const response = await reservasApiClient.post<ClienteSesionResponseDTO>(
       '/auth/clientes/google',
       { idToken },
+      { headers },
     );
     return response.data;
   },
 
-  guardarSesion(sesion: ClienteSesionResponseDTO) {
-    localStorage.setItem(TOKEN_CLIENTE_KEY, sesion.accessToken);
-    localStorage.setItem(SESION_CLIENTE_KEY, JSON.stringify(sesion.cliente));
+  guardarSesion(sesion: ClienteSesionResponseDTO, slugParam?: string | null) {
+    const { tokenKey, sesionKey, slug } = resolverClavesCliente(slugParam);
+    const clienteConSlug = { ...sesion.cliente, negocioSlug: slug };
+    localStorage.setItem(tokenKey, sesion.accessToken);
+    localStorage.setItem(sesionKey, JSON.stringify(clienteConSlug));
   },
 
-  obtenerSesion(): ClienteSesionDTO | null {
-    if (!localStorage.getItem(TOKEN_CLIENTE_KEY)) return null;
-    const guardada = localStorage.getItem(SESION_CLIENTE_KEY);
-    if (!guardada) return null;
+  obtenerSesion(slugParam?: string | null): ClienteSesionDTO | null {
+    const { tokenKey, sesionKey } = resolverClavesCliente(slugParam);
+    const raw = localStorage.getItem(sesionKey);
+    const token = localStorage.getItem(tokenKey);
+
+    if (!token || !raw) return null;
+
     try {
-      return JSON.parse(guardada) as ClienteSesionDTO;
+      return JSON.parse(raw);
     } catch {
       return null;
     }
   },
 
-  cerrarSesion() {
-    localStorage.removeItem(TOKEN_CLIENTE_KEY);
-    localStorage.removeItem(SESION_CLIENTE_KEY);
+  obtenerToken(slugParam?: string | null): string | null {
+    const { tokenKey } = resolverClavesCliente(slugParam);
+    return localStorage.getItem(tokenKey);
+  },
+
+  cerrarSesion(slugParam?: string | null) {
+    const { tokenKey, sesionKey } = resolverClavesCliente(slugParam);
+    localStorage.removeItem(tokenKey);
+    localStorage.removeItem(sesionKey);
+  },
+
+  async obtenerPerfil(): Promise<PerfilClienteDTO> {
+    const response = await reservasApiClient.get<PerfilClienteDTO>('/auth/clientes/perfil');
+    return response.data;
+  },
+
+  async actualizarPerfil(datos: ActualizarPerfilClienteDTO): Promise<PerfilClienteDTO> {
+    const response = await reservasApiClient.patch<PerfilClienteDTO>('/auth/clientes/perfil', datos);
+    const slug = obtenerNegocioSlugActivo();
+    const sesionActual = this.obtenerSesion(slug);
+    if (sesionActual) {
+      const { tokenKey } = resolverClavesCliente(slug);
+      const token = localStorage.getItem(tokenKey) || '';
+      this.guardarSesion({
+        accessToken: token,
+        cliente: {
+          ...sesionActual,
+          nombre: response.data.nombre,
+          apellido: response.data.apellido,
+          email: response.data.email,
+        },
+      }, slug);
+    }
+    return response.data;
   },
 };
 
@@ -96,8 +176,23 @@ export const reservasService = {
     return response.data;
   },
 
+  guardarTokenGestionInvitado(id: number, token: string) {
+    sessionStorage.setItem(TOKEN_INVITADO_PREFIX + id, token);
+  },
+
   obtenerTokenGestionInvitado(id: number): string | null {
     return sessionStorage.getItem(TOKEN_INVITADO_PREFIX + id);
+  },
+
+  async obtenerReservaInvitado(id: number, token: string): Promise<ReservaClienteDTO> {
+    const response = await reservasApiClient.get<ReservaClienteDTO>(
+      '/reservas/invitado/' + id,
+      {
+        headers: { [TOKEN_GESTION_HEADER]: token },
+        params: { token },
+      },
+    );
+    return response.data;
   },
 
   eliminarTokenGestionInvitado(id: number) {

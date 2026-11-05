@@ -439,7 +439,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
                           type="button"
                           className="btn btn-sm btn-outline-primary barbero-action-btn py-1 px-2.5"
                           onClick={() =>
-                            field.onChange(barberos.map((b) => Number(b.id)))
+                            field.onChange(barberos.map((b) => Number(b.barberoId ?? b.id)))
                           }
                           disabled={total === 0 || count === total}
                           aria-label="Seleccionar todos los barberos"
@@ -487,18 +487,18 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
                           aria-describedby="barberos-help"
                         >
                           {barberosFiltrados.map((b) => {
-                            const id = Number(b.id);
-                            const seleccionado = seleccionados.includes(id);
+                            const barberoId = Number(b.barberoId ?? b.id);
+                            const seleccionado = seleccionados.includes(barberoId);
 
                             return (
                               <button
-                                key={id}
+                                key={barberoId}
                                 type="button"
                                 onClick={() => {
                                   field.onChange(
                                     seleccionado
-                                      ? seleccionados.filter((x) => x !== id)
-                                      : [...seleccionados, id],
+                                      ? seleccionados.filter((x) => x !== barberoId)
+                                      : [...seleccionados, barberoId],
                                   );
                                 }}
                                 aria-pressed={seleccionado}

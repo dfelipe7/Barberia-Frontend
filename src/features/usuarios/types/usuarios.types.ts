@@ -4,6 +4,7 @@ export interface AdministradorPerfil {
   id: number;
   usuarioId: number;
   estado: EstadoEntidad;
+  superadmin?: boolean;
 }
 
 export interface BarberoPerfil {
@@ -42,6 +43,7 @@ export interface AdministradorGestion {
   estadoAdmin?: EstadoEntidad;
   esBarbero: boolean;
   estadoBarbero?: EstadoEntidad;
+  esSuperAdmin?: boolean;
 }
 
 export interface UsuarioDetalle {

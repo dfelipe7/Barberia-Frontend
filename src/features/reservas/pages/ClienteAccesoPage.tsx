@@ -1,13 +1,25 @@
 import { useState } from 'react';
 import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
-import { ArrowLeft, LogIn, ShieldCheck, UserRoundPlus } from 'lucide-react';
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import {
+  ArrowLeft,
+  CalendarCheck,
+  Clock,
+  LogIn,
+  MessageSquare,
+  ShieldCheck,
+  Sparkles,
+  UserRoundPlus,
+} from 'lucide-react';
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { clientesService } from '../api/reservas.service';
 import { mapApiError } from '../../../shared/lib/mapApiError';
+import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import BrandLogo from '../../../shared/ui/BrandLogo';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
-import './ClienteAccesoPage.css';
+import heroImg from '../../../assets/hero.png';
+import { useTenantBrand } from '../../negocio/context/TenantBrandContext';
+import './AuthSplitLayout.css';
 
 type ModoAccesoCliente = 'registro' | 'iniciar-sesion';
 
@@ -16,19 +28,35 @@ function esRutaLocalSegura(valor: unknown): valor is string {
 }
 
 export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente }) {
+  const { slug: paramSlug } = useParams<{ slug?: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(false);
+  const { nombreNegocio, bannerUrl } = useTenantBrand();
+  const effectiveName = nombreNegocio || 'Kyrios Barber Studio';
   const registro = modo === 'registro';
+
   const returnToState = (location.state as { returnTo?: unknown } | null)?.returnTo;
   const returnToQuery = searchParams.get('returnTo');
-  const returnTo = esRutaLocalSegura(returnToState)
+  const returnToCandidato = esRutaLocalSegura(returnToState)
     ? returnToState
     : esRutaLocalSegura(returnToQuery)
       ? returnToQuery
-      : '/reservar';
+      : '';
+
+  const slugFromReturnTo = (() => {
+    if (!returnToCandidato) return null;
+    const primerSeg = returnToCandidato.split('/')[1];
+    return primerSeg && !['cliente', 'login', 'dashboard', 'reserva', 'sin-acceso'].includes(primerSeg) ? primerSeg : null;
+  })();
+
+  const slug = paramSlug || slugFromReturnTo || obtenerNegocioSlugActivo() || '';
+  const tokenStaff = slug ? localStorage.getItem(`token_barberia_${slug}`) : localStorage.getItem('token_barberia');
+  const tieneSesionStaff = Boolean(tokenStaff);
+
+  const returnTo = returnToCandidato || (slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta');
 
   const iniciarSesion = async (respuesta: CredentialResponse) => {
     if (!respuesta.credential) {
@@ -39,9 +67,9 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
     setCargando(true);
     setError(null);
     try {
-      const sesion = await clientesService.iniciarSesionGoogle(respuesta.credential);
-      clientesService.guardarSesion(sesion);
-      navigate(returnTo, { replace: true, state: { desdeLogin: true } });
+      const sesion = await clientesService.iniciarSesionGoogle(respuesta.credential, slug);
+      clientesService.guardarSesion(sesion, slug);
+      void navigate(returnTo, { replace: true, state: { desdeLogin: true } });
     } catch (errorDesconocido: unknown) {
       setError(mapApiError(errorDesconocido));
     } finally {
@@ -49,72 +77,161 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
     }
   };
 
+  const perksCliente = [
+    {
+      icon: <CalendarCheck size={18} />,
+      title: 'Tus citas siempre organizadas',
+      desc: 'Consulta próximos turnos, reprograma o cancela en segundos desde un solo lugar.',
+    },
+    {
+      icon: <MessageSquare size={18} />,
+      title: 'Notificaciones a tu WhatsApp',
+      desc: 'Recibe confirmaciones automáticas y recordatorios antes de que empiece tu cita.',
+    },
+    {
+      icon: <Clock size={18} />,
+      title: 'Reserva sin contraseñas',
+      desc: 'Accede con un clic usando tu cuenta de Google. Sin recordar claves complejas.',
+    },
+  ];
+
   return (
-    <main className="client-access">
-      <div className="client-access__glow" aria-hidden="true" />
-      <section className="client-access__card card card-surface">
-        <Link to={returnTo} className="client-access__back">
-          <ArrowLeft size={16} aria-hidden="true" /> Volver a la reserva
-        </Link>
+    <div className="auth-split auth-split--cliente">
+      {/* ── PANEL IZQUIERDO: MARCA Y BENEFICIOS VIP ── */}
+      <aside className="auth-split__brand-panel" aria-label="Información de la membresía">
+        <div
+          className="auth-split__brand-bg"
+          style={{ backgroundImage: `url(${bannerUrl || heroImg})` }}
+          aria-hidden="true"
+        />
+        <div className="auth-split__brand-overlay" aria-hidden="true" />
+        <div className="auth-split__brand-glow" aria-hidden="true" />
 
-        <div className="client-access__brand">
-          <BrandLogo variant="white" height={42} alt="Kyrios Studio" />
-          <span className="client-access__eyebrow">PORTAL DE CLIENTES</span>
+        <div className="auth-split__brand-content">
+          <div>
+            <div className="d-flex align-items-center gap-3 mb-4">
+              <BrandLogo variant="white" height={40} alt={effectiveName} />
+            </div>
+
+            <div className="mb-4">
+              <span className="auth-split__brand-badge">
+                <Sparkles size={13} /> Experiencia de Cliente VIP
+              </span>
+            </div>
+
+            <h1 className="auth-split__brand-title">
+              Tu corte y estilo, <br />
+              gestionados sin complicaciones.
+            </h1>
+            <p className="auth-split__brand-subtitle">
+              Disfruta de una atención personalizada en cada visita. Gestiona tus reservas con facilidad y sin perder tus enlaces.
+            </p>
+
+            <div className="auth-split__perks">
+              {perksCliente.map((perk, i) => (
+                <div key={i} className="auth-split__perk-item">
+                  <div className="auth-split__perk-icon">{perk.icon}</div>
+                  <div className="auth-split__perk-text">
+                    <strong>{perk.title}</strong>
+                    <span>{perk.desc}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="auth-split__brand-footer">
+            <span>© {new Date().getFullYear()} {effectiveName}. Todos los derechos reservados.</span>
+          </div>
         </div>
+      </aside>
 
-        <span className="client-access__icon" aria-hidden="true">
-          {registro ? <UserRoundPlus size={24} /> : <LogIn size={24} />}
-        </span>
-        <h1>{registro ? 'Crea tu cuenta' : 'Bienvenido de nuevo'}</h1>
-        <p className="client-access__description">
-          {registro
-            ? 'Regístrate con Google para guardar y consultar tus próximas citas desde aquí.'
-            : 'Inicia sesión con Google para consultar y administrar tus citas.'}
-        </p>
+      {/* ── PANEL DERECHO: FORMULARIO Y ACCESO GOOGLE ── */}
+      <main className="auth-split__form-panel">
+        <div className="auth-split__form-box">
+          <Link to={slug ? `/${slug}` : '/'} className="auth-split__top-link">
+            <ArrowLeft size={16} /> Volver a la barbería
+          </Link>
 
-        {registro && (
-          <p className="client-access__note">
-            Tu cuenta se crea al continuar con Google. No necesitas crear una contraseña.
-          </p>
-        )}
+          <div className="auth-split__mobile-brand">
+            <BrandLogo variant="white" height={34} alt={effectiveName} />
+          </div>
 
-        {error && <ErrorMessage message={error} />}
+          <div className="auth-split__header">
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <span className="auth-split__brand-badge">
+                {registro ? <UserRoundPlus size={13} /> : <LogIn size={13} />}
+                Portal de Clientes
+              </span>
+            </div>
+            <h2 className="auth-split__heading">
+              {registro ? 'Crea tu cuenta de cliente' : 'Bienvenido de nuevo'}
+            </h2>
+            <p className="auth-split__desc">
+              {registro
+                ? 'Conéctate con Google para sincronizar tus reservas y recibir avisos por WhatsApp.'
+                : 'Inicia sesión con Google para administrar tus citas y perfil.'}
+            </p>
+          </div>
 
-        <div className="client-access__google">
-          {cargando ? (
-            <KyriosSpinner size="md" mensaje="Conectando tu cuenta..." />
-          ) : (
-            <GoogleLogin
-              onSuccess={(credencial) => void iniciarSesion(credencial)}
-              onError={() => setError('No fue posible conectar con Google. Inténtalo de nuevo.')}
-              useOneTap={false}
-              theme="outline"
-              shape="pill"
-              size="large"
-              text={registro ? 'signup_with' : 'continue_with'}
-            />
+          {tieneSesionStaff && (
+            <div
+              className="d-flex align-items-center justify-content-between p-2 mb-3 rounded-2"
+              style={{
+                background: 'rgba(59, 130, 246, 0.12)',
+                border: '1px solid rgba(59, 130, 246, 0.3)',
+                fontSize: '0.84rem',
+              }}
+            >
+              <div className="d-flex align-items-center gap-2" style={{ color: '#60a5fa' }}>
+                <ShieldCheck size={16} />
+                <span>Sesión activa como <strong>Personal</strong></span>
+              </div>
+              <Link to={slug ? `/${slug}/dashboard` : '/dashboard'} className="btn btn-sm btn-primary py-0 px-2" style={{ fontSize: '0.78rem' }}>
+                Ir al Dashboard
+              </Link>
+            </div>
           )}
-        </div>
+          {error && <ErrorMessage message={error} />}
 
-        <div className="client-access__security">
-          <ShieldCheck size={16} aria-hidden="true" />
-          <span>Acceso seguro con Google</span>
-        </div>
+          {/* Tarjeta de Inicio de Sesión de Google */}
+          <div className="auth-split__action-card">
+            {cargando ? (
+              <div className="py-4 text-center">
+                <KyriosSpinner size="md" mensaje="Verificando cuenta con Google..." />
+              </div>
+            ) : (
+              <div className="auth-split__google-wrap">
+                <GoogleLogin
+                  onSuccess={(credencial) => void iniciarSesion(credencial)}
+                  onError={() => setError('No fue posible conectar con Google. Inténtalo de nuevo.')}
+                  useOneTap={false}
+                  theme="outline"
+                  shape="pill"
+                  size="large"
+                  text={registro ? 'signup_with' : 'continue_with'}
+                />
+              </div>
+            )}
 
-        <div className="client-access__switch">
-          {registro ? (
-            <>
-              ¿Ya tienes cuenta?{' '}
-              <Link to={'/cliente/iniciar-sesion?returnTo=' + encodeURIComponent(returnTo)} state={{ returnTo }}>Inicia sesión</Link>
-            </>
-          ) : (
-            <>
-              ¿Es tu primera vez?{' '}
-              <Link to={'/cliente/registro?returnTo=' + encodeURIComponent(returnTo)} state={{ returnTo }}>Crear cuenta</Link>
-            </>
-          )}
+            <div className="auth-split__security-note">
+              <ShieldCheck size={14} className="text-success" />
+              <span>Autenticación oficial y cifrada con Google OAuth 2.0</span>
+            </div>
+          </div>
+
+          {/* Enlace alterno cruzado a Personal / Barberos */}
+          <div className="auth-split__cross-access">
+            <p>¿Eres barbero o administras este negocio?</p>
+            <Link
+              to={slug ? `/${slug}/login` : '/login'}
+              className="auth-split__cross-link"
+            >
+              Acceder al Panel de Personal y Barberos →
+            </Link>
+          </div>
         </div>
-      </section>
-    </main>
+      </main>
+    </div>
   );
 }

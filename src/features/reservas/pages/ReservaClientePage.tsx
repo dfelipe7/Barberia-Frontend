@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { isAxiosError } from 'axios';
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { useQueries, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
@@ -26,6 +26,8 @@ import {
   useModificarMiReserva,
   useModificarReservaInvitado,
   useCancelarReservaInvitado,
+  usePerfilCliente,
+  useCancelarMiReserva,
 } from '../api/reservas.facade';
 import type {
   ClienteSesionDTO,
@@ -37,12 +39,14 @@ import type {
 import { clientesService, reservasService } from '../api/reservas.service';
 import { MisReservasSection } from '../components/MisReservasSection';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
+import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import BackLink from '../../../shared/ui/BackLink';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
+import { useTenantBrand } from '../../negocio/context/TenantBrandContext';
 import './ReservaClientePage.css';
 
 interface ReservaLocationState {
@@ -204,8 +208,11 @@ const mensajeErrorConfirmacion = (error: unknown) => {
 export const ReservaClientePage = () => {
   const confirm = useConfirm();
   const location = useLocation();
-  const navigate = useNavigate();
+  const { slug } = useParams<{ slug?: string }>();
   const [searchParams] = useSearchParams();
+  const { nombreNegocio } = useTenantBrand();
+  const effectiveName = nombreNegocio || 'Kyrios Barber Studio';
+  const slugActivo = slug || obtenerNegocioSlugActivo() || 'kyrios-studio';
   const initialState = (location.state ?? {}) as ReservaLocationState;
   const queryClient = useQueryClient();
   const { data: servicios = [], isLoading, error, refetch } = useServiciosCatalogo();
@@ -221,7 +228,9 @@ export const ReservaClientePage = () => {
   const totalPaginasFechas = Math.ceil(fechasDelRango.length / 7);
 
   const idReservaUrl = numeroPositivo(searchParams.get('reservaId'));
-  const reservaId = idReservaUrl ?? numeroPositivo(initialState.reservaId?.toString() ?? null) ?? undefined;
+  const [reservaId, setReservaId] = useState<number | undefined>(
+    () => idReservaUrl ?? numeroPositivo(initialState.reservaId?.toString() ?? null) ?? undefined,
+  );
 
   // Detección de barbero preseleccionado (cuando el usuario inició el flujo eligiendo al barbero)
   const esOrigenBarbero = initialState.origen === 'barbero' || (Boolean(initialState.barberoId) && !initialState.servicioId);
@@ -327,6 +336,13 @@ export const ReservaClientePage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [paso]);
 
+  useEffect(() => {
+    const tokenUrl = searchParams.get('token') || (location.state as any)?.token;
+    if (reservaId && tokenUrl) {
+      reservasService.guardarTokenGestionInvitado(reservaId, tokenUrl);
+    }
+  }, [reservaId, searchParams, location.state]);
+
   const [paginaFechas, setPaginaFechas] = useState(() => {
     const fecha = searchParams.get('fecha') || initialState.fecha || borradorSesion?.fechaSeleccionada;
     if (!fecha) return 0;
@@ -341,6 +357,14 @@ export const ReservaClientePage = () => {
   const [clienteSesion, setClienteSesion] = useState<ClienteSesionDTO | null>(
     () => clientesService.obtenerSesion(),
   );
+  const { data: perfilCliente } = usePerfilCliente(Boolean(clienteSesion));
+  const cancelarMiReserva = useCancelarMiReserva();
+
+  useEffect(() => {
+    if (perfilCliente?.telefono && !telefonoInvitado) {
+      setTelefonoInvitado(perfilCliente.telefono);
+    }
+  }, [perfilCliente?.telefono]);
   const [nombreInvitado, setNombreInvitado] = useState(
     () => borradorSesion?.nombreInvitado ?? '',
   );
@@ -352,6 +376,7 @@ export const ReservaClientePage = () => {
   );
   const [errorContacto, setErrorContacto] = useState<string | null>(null);
   const [codigoCopiado, setCodigoCopiado] = useState(false);
+  const [enlaceCopiado, setEnlaceCopiado] = useState(false);
 
   const copiarCodigoCita = (codigo: string | number) => {
     if (!codigo) return;
@@ -525,6 +550,9 @@ export const ReservaClientePage = () => {
   }, [paso, fechaSeleccionada, consultasDisponibilidadFechas, fechasDeLaPagina]);
 
   const actualizarParametros = (actualizaciones: Record<string, string | null>) => {
+    if ('reservaId' in actualizaciones) {
+      setReservaId(numeroPositivo(actualizaciones.reservaId) ?? undefined);
+    }
     if ('servicioId' in actualizaciones) {
       setServicioId(numeroPositivo(actualizaciones.servicioId));
     }
@@ -559,7 +587,7 @@ export const ReservaClientePage = () => {
   };
 
   const cerrarSesionCliente = () => {
-    clientesService.cerrarSesion();
+    clientesService.cerrarSesion(slugActivo);
     setClienteSesion(null);
     setReservaCreada(null);
     setReservaModificada(false);
@@ -631,7 +659,11 @@ export const ReservaClientePage = () => {
       return;
     }
 
-    const tokenInvitado = reservaId ? reservasService.obtenerTokenGestionInvitado(reservaId) : null;
+    const tokenInvitado = reservaId
+      ? reservasService.obtenerTokenGestionInvitado(reservaId) ||
+        searchParams.get('token') ||
+        (location.state as any)?.token
+      : null;
     if (reservaId && !clienteSesion && !tokenInvitado) {
       setErrorContacto('Para cambiar esta cita, inicia sesión con la cuenta que la reservó o abre esta pestaña donde la creaste.');
       return;
@@ -673,6 +705,9 @@ export const ReservaClientePage = () => {
       } else {
         const resultado = await crearReserva.mutateAsync(datos);
         limpiarBorradorStorage();
+        if (resultado.tokenGestion) {
+          reservasService.guardarTokenGestionInvitado(resultado.id, resultado.tokenGestion);
+        }
         setReservaCreada(resultado);
         actualizarParametros({ reservaId: String(resultado.id) });
       }
@@ -707,13 +742,101 @@ export const ReservaClientePage = () => {
   const conflictoReserva = isAxiosError(errorConfirmacion) && errorConfirmacion.response?.status === 409;
   const rutaActual = location.pathname + location.search;
 
+        const cancelarReservaDeClienteAutenticado = async () => {
+    const idCita = reservaCreada?.id ?? reservaId;
+    if (!idCita) return;
+
+    const nombreServicio = servicioSeleccionado?.nombre ?? reservaCreada?.servicio?.nombre ?? 'Cita agendada';
+    const fechaTexto = fechaSeleccionada ?? reservaCreada?.fecha ?? '';
+    const horaTexto = horaSeleccionada ?? reservaCreada?.hora ?? '';
+
+    const confirmado = await confirm({
+      title: 'Cancelar cita',
+      message: (
+        <div>
+          <p className="mb-2">¿Estás seguro de que deseas cancelar tu cita?</p>
+          <div
+            className="p-3 rounded mb-2 border"
+            style={{
+              backgroundColor: 'var(--surface-app-bg)',
+              borderColor: 'var(--surface-card-border)',
+            }}
+          >
+            <div className="fw-bold text-surface-primary mb-1">{nombreServicio}</div>
+            {fechaTexto && horaTexto && (
+              <div className="small text-surface-muted">Fecha y hora: {fechaTexto} · {horaTexto}</div>
+            )}
+          </div>
+          <p className="small text-danger mb-0">
+            El horario quedará liberado inmediatamente para otros clientes.
+          </p>
+        </div>
+      ),
+      confirmLabel: 'Sí, cancelar cita',
+      cancelLabel: 'Conservar cita',
+      variant: 'danger',
+    });
+
+    if (!confirmado) return;
+
+    try {
+      await cancelarMiReserva.mutateAsync(idCita);
+      limpiarBorradorStorage();
+      setReservaCreada(null);
+      setReservaModificada(false);
+      setReservaId(undefined);
+      setReservaCancelada(true);
+      setBarberoFijoId(null);
+      setFechaSeleccionada(null);
+      setHoraSeleccionada(null);
+      irAPaso(1, false, {
+        paso: '1',
+        reservaId: null,
+        servicioId: null,
+        barberoId: null,
+        barberoFijo: null,
+        fecha: null,
+        hora: null,
+        token: null,
+      });
+    } catch (error: unknown) {
+      await confirm({
+        title: 'Error al cancelar',
+        message: mapApiError(error),
+        confirmLabel: 'Entendido',
+        variant: 'danger',
+      });
+    }
+  };
+
   const cancelarReservaDeInvitado = async () => {
-    if (!reservaCreada || clienteSesion) return;
-    const token = reservasService.obtenerTokenGestionInvitado(reservaCreada.id);
+    const idCita = reservaCreada?.id ?? reservaId;
+    if (!idCita || clienteSesion) return;
+
+    const token =
+      reservaCreada?.tokenGestion ||
+      reservasService.obtenerTokenGestionInvitado(idCita) ||
+      searchParams.get('token');
+
     if (!token) {
-      setErrorContacto('No encontramos los datos de gestión de esta cita en esta pestaña.');
+      await confirm({
+        title: 'No se puede cancelar',
+        message: 'No se encontró la credencial de seguridad en esta pestaña para cancelar la cita. Puedes abrir el enlace enviado por WhatsApp para gestionarla.',
+        confirmLabel: 'Entendido',
+        variant: 'danger',
+      });
       return;
     }
+
+    const nombreServicio =
+      servicioSeleccionado?.nombre ?? reservaCreada?.servicio?.nombre ?? 'Cita agendada';
+    const nombreBarbero = barberoSeleccionado
+      ? `${barberoSeleccionado.nombre} ${barberoSeleccionado.apellido}`
+      : reservaCreada?.barbero
+        ? `${reservaCreada.barbero.nombre} ${reservaCreada.barbero.apellido}`
+        : 'Barbero asignado';
+    const fechaTexto = fechaSeleccionada ?? reservaCreada?.fecha ?? '';
+    const horaTexto = horaSeleccionada ?? reservaCreada?.hora ?? '';
 
     const confirmado = await confirm({
       title: 'Cancelar cita',
@@ -728,16 +851,14 @@ export const ReservaClientePage = () => {
             }}
           >
             <div className="fw-bold text-surface-primary mb-1">
-              {servicioSeleccionado?.nombre ?? 'Cita agendada'}
+              {nombreServicio}
             </div>
-            {barberoSeleccionado && (
-              <div className="small text-surface-muted mb-1">
-                Barbero: <strong>{barberoSeleccionado.nombre}</strong>
-              </div>
-            )}
-            {fechaSeleccionada && horaSeleccionada && (
+            <div className="small text-surface-muted mb-1">
+              Barbero: <strong>{nombreBarbero}</strong>
+            </div>
+            {fechaTexto && horaTexto && (
               <div className="small text-surface-muted">
-                Fecha y hora: {fechaSeleccionada} · {horaSeleccionada}
+                Fecha y hora: {fechaTexto} · {horaTexto}
               </div>
             )}
           </div>
@@ -754,13 +875,17 @@ export const ReservaClientePage = () => {
     if (!confirmado) return;
 
     try {
-      await cancelarInvitado.mutateAsync({ id: reservaCreada.id, token });
-      reservasService.eliminarTokenGestionInvitado(reservaCreada.id);
+      await cancelarInvitado.mutateAsync({ id: idCita, token });
+      reservasService.eliminarTokenGestionInvitado(idCita);
       limpiarBorradorStorage();
-      setReservaCancelada(true);
       setReservaCreada(null);
+      setReservaModificada(false);
+      setReservaId(undefined);
+      setReservaCancelada(true);
       setBarberoFijoId(null);
-      actualizarParametros({
+      setFechaSeleccionada(null);
+      setHoraSeleccionada(null);
+      irAPaso(1, false, {
         paso: '1',
         reservaId: null,
         servicioId: null,
@@ -768,30 +893,76 @@ export const ReservaClientePage = () => {
         barberoFijo: null,
         fecha: null,
         hora: null,
+        token: null,
       });
     } catch (error: unknown) {
-      setErrorContacto(mapApiError(error));
+      await confirm({
+        title: 'Error al cancelar',
+        message: mapApiError(error),
+        confirmLabel: 'Entendido',
+        variant: 'danger',
+      });
     }
   };
 
   const cambiarReservaDeInvitado = () => {
-    if (!reservaCreada || clienteSesion || !servicioSeleccionado || !barberoSeleccionado) return;
-    const query = new URLSearchParams({
+    const idCita = reservaId ?? reservaCreada?.id;
+    if (!idCita) return;
+    const token =
+      reservaCreada?.tokenGestion ||
+      reservasService.obtenerTokenGestionInvitado(idCita);
+    if (token) {
+      reservasService.guardarTokenGestionInvitado(idCita, token);
+    }
+    const servId = servicioSeleccionado?.id ?? reservaCreada?.servicio?.id;
+    const barbId = barberoSeleccionado?.id ?? reservaCreada?.barbero?.id;
+
+    setReservaId(idCita);
+    setReservaCreada(null);
+    setReservaModificada(false);
+    setReservaCancelada(false);
+    setHoraSeleccionada(null);
+
+    irAPaso(3, false, {
       paso: '3',
-      reservaId: String(reservaCreada.id),
-      servicioId: String(servicioSeleccionado.id),
-      barberoId: String(barberoSeleccionado.id),
-      fecha: reservaCreada.fecha,
-      hora: reservaCreada.hora,
+      reservaId: String(idCita),
+      servicioId: servId ? String(servId) : null,
+      barberoId: barbId ? String(barbId) : null,
+      token: token ?? null,
+      fecha: fechaSeleccionada ?? reservaCreada?.fecha ?? null,
+      hora: null,
     });
-    navigate({ pathname: '/reservar', search: query.toString() }, {
-      state: {
-        reservaId: reservaCreada.id,
-        servicioId: servicioSeleccionado.id,
-        barberoId: barberoSeleccionado.id,
-        fecha: reservaCreada.fecha,
-        hora: reservaCreada.hora,
-      },
+  };
+
+  const cambiarBarberoDeInvitado = () => {
+    const idCita = reservaId ?? reservaCreada?.id;
+    if (!idCita) return;
+    const token =
+      reservaCreada?.tokenGestion ||
+      reservasService.obtenerTokenGestionInvitado(idCita);
+    if (token) {
+      reservasService.guardarTokenGestionInvitado(idCita, token);
+    }
+    const servId = servicioSeleccionado?.id ?? reservaCreada?.servicio?.id;
+
+    setReservaId(idCita);
+    setReservaCreada(null);
+    setReservaModificada(false);
+    setReservaCancelada(false);
+    setBarberoId(null);
+    setBarberoFijoId(null);
+    setFechaSeleccionada(null);
+    setHoraSeleccionada(null);
+
+    irAPaso(2, false, {
+      paso: '2',
+      reservaId: String(idCita),
+      servicioId: servId ? String(servId) : null,
+      barberoId: null,
+      barberoFijo: null,
+      token: token ?? null,
+      fecha: null,
+      hora: null,
     });
   };
 
@@ -799,7 +970,7 @@ export const ReservaClientePage = () => {
     <main className="booking-flow container py-4 py-lg-5" style={{ maxWidth: '1080px' }}>
       <header className="mb-4">
         <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-          <BackLink to="/" onClick={limpiarBorradorStorage}>Volver al sitio público</BackLink>
+          <BackLink to={`/${slugActivo}`} onClick={limpiarBorradorStorage}>Volver al sitio público</BackLink>
           {paso > 1 && (
             <Button type="button" variant="outline-secondary" onClick={volverPaso} icon={<ArrowLeft size={16} />}>
               Paso anterior
@@ -810,6 +981,16 @@ export const ReservaClientePage = () => {
         <h1 className="h2 fw-bold mb-1">{reservaId && !reservaCreada ? 'Modifica tu reserva' : 'Reserva tu cita'}</h1>
         <p className="text-surface-muted mb-0">Elige un servicio, un barbero y una fecha con horario disponible.</p>
       </header>
+
+      {reservaCancelada && (
+        <div className="alert alert-success d-flex align-items-center justify-content-between p-3 rounded-3 mb-4 shadow-sm" role="status">
+          <div>
+            <strong className="d-block">✓ Tu cita fue cancelada exitosamente</strong>
+            <span className="small">La franja horaria fue liberada. Si deseas, puedes agendar un nuevo turno a continuación.</span>
+          </div>
+          <button type="button" className="btn-close" onClick={() => setReservaCancelada(false)} aria-label="Cerrar" />
+        </div>
+      )}
 
       <section className="card card-surface border-0 shadow-sm mb-4">
         <div className="card-body d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -845,14 +1026,14 @@ export const ReservaClientePage = () => {
             <div className="d-flex flex-wrap gap-2">
               <Link
                 className="btn btn-outline-secondary"
-                to={'/cliente/iniciar-sesion?returnTo=' + encodeURIComponent(rutaActual)}
+                to={'/' + slugActivo + '/cliente/iniciar-sesion?returnTo=' + encodeURIComponent(rutaActual)}
                 state={{ returnTo: rutaActual }}
               >
                 Iniciar sesión
               </Link>
               <Link
                 className="btn btn-primary"
-                to={'/cliente/registro?returnTo=' + encodeURIComponent(rutaActual)}
+                to={'/' + slugActivo + '/cliente/registro?returnTo=' + encodeURIComponent(rutaActual)}
                 state={{ returnTo: rutaActual }}
               >
                 Crear cuenta
@@ -1245,7 +1426,7 @@ export const ReservaClientePage = () => {
                     setBarberoFijoId(null);
                     irAPaso(2, false, { barberoFijo: null, barberoId: null, fecha: null, hora: null });
                   } else {
-                    irAPaso(2, false, { fecha: null, hora: null });
+                    irAPaso(2, false, { barberoId: null, barberoFijo: null, fecha: null, hora: null });
                   }
                 }}
               >
@@ -1590,7 +1771,7 @@ export const ReservaClientePage = () => {
               <div className="booking-voucher__header text-center mb-3">
                 <div className="booking-voucher__brand-badge d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2">
                   <Scissors size={13} className="text-primary" />
-                  <span className="font-brand small tracking-wider text-uppercase">Kyrios Barber Studio</span>
+                  <span className="font-brand small tracking-wider text-uppercase">{effectiveName}</span>
                 </div>
 
                 <div className="booking-voucher__check-ring mx-auto mb-2" aria-hidden="true">
@@ -1733,7 +1914,7 @@ export const ReservaClientePage = () => {
               <div className="booking-voucher__notice p-2.5 p-sm-3 rounded-3 mb-3 d-flex align-items-center gap-2 gap-sm-3">
                 <MapPin size={18} className="text-primary flex-shrink-0" aria-hidden="true" />
                 <div className="small">
-                  <strong className="booking-voucher__title me-1">Kyrios Barber Studio:</strong>
+                  <strong className="booking-voucher__title me-1">{effectiveName}:</strong>
                   <span className="text-surface-muted">
                     Te agradecemos llegar con <strong>5 minutos de anticipación</strong>.
                   </span>
@@ -1746,7 +1927,7 @@ export const ReservaClientePage = () => {
               {/* Botones de Acción con Jerarquía Visual Limpia */}
               <div className="booking-voucher__actions">
                 <div className="d-flex flex-wrap justify-content-center gap-2 gap-sm-3 mb-3">
-                  <Link to="/" className="btn btn-primary px-3 px-sm-4 py-2 fw-semibold d-inline-flex align-items-center justify-content-center gap-2 flex-grow-1 flex-sm-grow-0">
+                  <Link to={`/${slugActivo}`} className="btn btn-primary px-3 px-sm-4 py-2 fw-semibold d-inline-flex align-items-center justify-content-center gap-2 flex-grow-1 flex-sm-grow-0">
                     <ArrowLeft size={16} /> Volver al inicio
                   </Link>
                   <Button
@@ -1781,8 +1962,110 @@ export const ReservaClientePage = () => {
                 </div>
 
                 {/* Gestión de cita (Cambiar / Cancelar) agrupada sutilmente abajo */}
-                {reservaCreada && !clienteSesion && reservaCreada.tokenGestion && (
+                                {clienteSesion && (reservaCreada || reservaModificada) && (
                   <div className="booking-voucher__management text-center pt-3 border-top">
+                    <div
+                      className="p-3 rounded-3 border mb-3 text-start"
+                      style={{
+                        backgroundColor: 'var(--surface-app-bg)',
+                        borderColor: 'var(--surface-card-border)',
+                      }}
+                    >
+                      <div className="d-flex align-items-center gap-2 mb-1">
+                        <Check size={16} className="text-success" />
+                        <strong className="small text-surface-primary">Cita asociada a tu cuenta</strong>
+                      </div>
+                      <p className="small text-surface-muted mb-3" style={{ fontSize: '0.82rem' }}>
+                        Esta cita está guardada en tu perfil. Puedes consultarla o cambiarla en cualquier momento desde tu panel personal.
+                      </p>
+                      <Link
+                        to={`/${slugActivo}/cliente/mi-cuenta`}
+                        className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1.5"
+                      >
+                        <Calendar size={14} /> Ir a Mis Citas
+                      </Link>
+                    </div>
+
+                    <span className="small text-surface-muted d-block mb-2">
+                      ¿Necesitas realizar algún cambio inmediato en tu cita?
+                    </span>
+                    <div className="d-flex justify-content-center gap-2">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={cambiarReservaDeInvitado}
+                      >
+                        Cambiar fecha u hora
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={cambiarBarberoDeInvitado}
+                      >
+                        Cambiar barbero
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-danger"
+                        disabled={cancelarMiReserva.isPending}
+                        onClick={() => void cancelarReservaDeClienteAutenticado()}
+                      >
+                        {cancelarMiReserva.isPending ? 'Cancelando...' : 'Cancelar cita'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {((reservaCreada && reservaCreada.tokenGestion) || (reservaModificada && reservaId && reservasService.obtenerTokenGestionInvitado(reservaId))) && !clienteSesion && (
+                  <div className="booking-voucher__management text-center pt-3 border-top">
+                    {/* Caja destacada con el enlace de autogestión de invitado */}
+                    <div
+                      className="p-3 rounded-3 border mb-3 text-start"
+                      style={{
+                        backgroundColor: 'var(--surface-app-bg)',
+                        borderColor: 'var(--surface-card-border)',
+                      }}
+                    >
+                      <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                        <strong className="small text-surface-primary d-flex align-items-center gap-1.5">
+                          🔗 Enlace personal de tu cita:
+                        </strong>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-primary py-0.5 px-2.5 d-inline-flex align-items-center gap-1"
+                          onClick={() => {
+                            const idCita = reservaCreada?.id ?? reservaId;
+                            const tokenCita = reservaCreada?.tokenGestion || (reservaId ? reservasService.obtenerTokenGestionInvitado(reservaId) : '');
+                            const enlace = `${window.location.origin}/${slugActivo}/c/${idCita}/${tokenCita}`;
+                            void navigator.clipboard.writeText(enlace).then(() => {
+                              setEnlaceCopiado(true);
+                              setTimeout(() => setEnlaceCopiado(false), 2500);
+                            });
+                          }}
+                        >
+                          {enlaceCopiado ? (
+                            <span className="text-success fw-bold">¡Enlace copiado!</span>
+                          ) : (
+                            <>
+                              <Copy size={13} />
+                              <span>Copiar enlace</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <div
+                        className="small font-monospace p-2 rounded mb-2 text-truncate border"
+                        style={{
+                          backgroundColor: 'var(--surface-card-bg)',
+                          fontSize: '0.78rem',
+                          color: 'var(--surface-muted)',
+                        }}
+                      >
+                        {`${window.location.origin}/${slugActivo}/c/${reservaCreada?.id ?? reservaId}/${reservaCreada?.tokenGestion || (reservaId ? reservasService.obtenerTokenGestionInvitado(reservaId) : '')}`}
+                      </div>
+                      <p className="small text-surface-muted mb-0" style={{ fontSize: '0.78rem' }}>
+                        💡 <strong>Consejo:</strong> Guarda este enlace. Con él podrás ver, reprogramar o cancelar tu cita en cualquier momento sin necesidad de registrarte.
+                      </p>
+                    </div>
                     <span className="small text-surface-muted d-block mb-2">
                       ¿Necesitas realizar algún cambio en tu cita?
                     </span>
@@ -1793,6 +2076,13 @@ export const ReservaClientePage = () => {
                         onClick={cambiarReservaDeInvitado}
                       >
                         Cambiar fecha u hora
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={cambiarBarberoDeInvitado}
+                      >
+                        Cambiar barbero
                       </button>
                       <button
                         type="button"
@@ -1813,7 +2103,7 @@ export const ReservaClientePage = () => {
                 <div className="booking-ticket card-surface rounded-4 p-4 mb-4">
                   <div className="booking-ticket__header d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom">
                     <div>
-                      <span className="font-brand fs-5 tracking-wide text-primary">KYRIOS BARBER</span>
+                      <span className="font-brand fs-5 tracking-wide text-primary">{effectiveName.toUpperCase()}</span>
                       <span className="small text-surface-muted d-block">Comprobante de Reserva</span>
                     </div>
                     <Scissors size={22} className="text-primary" />
@@ -1964,11 +2254,7 @@ export const ReservaClientePage = () => {
         </section>
       )}
 
-      {reservaCancelada && (
-        <div className="alert alert-success" role="status">
-          <strong>Tu cita fue cancelada.</strong> Si deseas, puedes reservar otro horario.
-        </div>
-      )}
+      
 
       {/* Barra flotante inferior de acción continua */}
       {paso === 1 && (

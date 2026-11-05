@@ -1,18 +1,25 @@
 import React from 'react';
 import { BRAND } from '../../../config/brand';
 import { ArrowUpRightIcon } from './HomeIcons';
+import { useTenantBrand } from '../../../features/negocio/context/TenantBrandContext';
 
 interface HeroSectionProps {
   onReservar: () => void;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onReservar }) => {
+  const { nombreNegocio, frasePrincipal, bannerUrl } = useTenantBrand();
+
+  const bgImage = bannerUrl || BRAND.assets.banner;
+  const effectiveTagline = frasePrincipal || BRAND.tagline;
+  const effectiveName = nombreNegocio || BRAND.name;
+
   return (
     <section id="inicio" className="kyrios-hero position-relative">
-      {/* Imagen de fondo / Banner oficial de Kyrios */}
+      {/* Imagen de fondo / Banner dinámico del negocio */}
       <img
-        src={BRAND.assets.banner}
-        alt="Kyrios Studio Barbería en Popayán"
+        src={bgImage}
+        alt={`${effectiveName} - Portada oficial`}
         className="kyrios-hero-bg"
         loading="eager"
         width={1920}
@@ -27,7 +34,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReservar }) => {
         <div className="kyrios-hero-content kyrios-fade-in">
           <div className="mb-3">
             <span className="kyrios-eyebrow">
-              {BRAND.tagline}
+              {effectiveTagline}
             </span>
           </div>
 
@@ -46,7 +53,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReservar }) => {
               type="button"
               className="btn-kyrios-primary"
               onClick={onReservar}
-              aria-label="Reservar cita en Kyrios Studio"
+              aria-label={`Reservar cita en ${effectiveName}`}
             >
               Reservar cita
             </button>
@@ -54,7 +61,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReservar }) => {
             <a
               href="#servicios"
               className="btn-kyrios-outline"
-              aria-label="Ver el catálogo de servicios de Kyrios"
+              aria-label={`Ver el catálogo de servicios de ${effectiveName}`}
             >
               Ver servicios
               <ArrowUpRightIcon size={16} />

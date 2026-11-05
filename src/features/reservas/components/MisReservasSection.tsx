@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
+import { isAxiosError } from 'axios';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
@@ -27,8 +29,21 @@ const reservaGestionable = (estado: string) =>
   estado === 'PENDING' || estado === 'CONFIRMED';
 
 export const MisReservasSection = () => {
+  const { slug: paramSlug } = useParams<{ slug?: string }>();
+  const slugActivo = paramSlug || obtenerNegocioSlugActivo() || '';
+  const rutaReservar = slugActivo ? `/${slugActivo}/reservar` : '/reservar';
   const consulta = useMisReservas(true);
   const cancelarReserva = useCancelarMiReserva();
+
+  useEffect(() => {
+    if (consulta.error && isAxiosError(consulta.error)) {
+      const status = consulta.error.response?.status;
+      if (status === 401 || status === 403) {
+        localStorage.removeItem('token_cliente_barberia');
+        localStorage.removeItem('cliente_barberia');
+      }
+    }
+  }, [consulta.error]);
   const [reservaSeleccionadaId, setReservaSeleccionadaId] = useState<number | null>(null);
   const [reservaCancelarId, setReservaCancelarId] = useState<number | null>(null);
   const [avisoCancelacion, setAvisoCancelacion] = useState<string | null>(null);
@@ -61,7 +76,26 @@ export const MisReservasSection = () => {
           {consulta.isLoading ? (
             <p className="small text-surface-muted" role="status">Cargando tus reservas...</p>
           ) : consulta.error ? (
-            <ErrorMessage message={mapApiError(consulta.error)} />
+            isAxiosError(consulta.error) &&
+            (consulta.error.response?.status === 401 || consulta.error.response?.status === 403) ? (
+              <p className="small text-surface-muted mb-0">
+                Tu sesión de cliente no está activa en esta barbería.{' '}
+                <button
+                  type="button"
+                  className="btn btn-link p-0 text-primary text-decoration-none small align-baseline fw-semibold"
+                  onClick={() => {
+                    localStorage.removeItem('token_cliente_barberia');
+                    localStorage.removeItem('cliente_barberia');
+                    window.location.reload();
+                  }}
+                >
+                  Haz clic aquí para refrescar
+                </button>{' '}
+                y agendar como invitado o iniciar sesión con una cuenta de este negocio.
+              </p>
+            ) : (
+              <ErrorMessage message={mapApiError(consulta.error)} />
+            )
           ) : (consulta.data?.reservas ?? []).length === 0 ? (
             <p className="small text-surface-muted mb-0">
               {consulta.data?.mensaje || 'No tienes reservas registradas.'}
@@ -87,7 +121,7 @@ export const MisReservasSection = () => {
                       <>
                         <Link
                           className="btn btn-sm btn-outline-primary"
-                          to="/reservar"
+                          to={rutaReservar}
                           state={{
                             reservaId: reserva.id,
                             servicioId: reserva.servicio.id,
