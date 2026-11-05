@@ -97,7 +97,7 @@ export default function Dashboard() {
     // Redirección canónica: si entran a /dashboard sin slug, redirigir a /:slug/dashboard
     useEffect(() => {
         if (!paramSlug && activeSlug) {
-            navigate(`/${activeSlug}/dashboard`, { replace: true });
+            void navigate(`/${activeSlug}/dashboard`, { replace: true });
         }
     }, [paramSlug, activeSlug, navigate]);
 
@@ -105,7 +105,7 @@ export default function Dashboard() {
         const aviso = (location.state as { avisoAcceso?: string } | null)?.avisoAcceso;
         if (aviso) {
             showToast('warning', aviso);
-            navigate(location.pathname, { replace: true, state: null });
+            void navigate(location.pathname, { replace: true, state: null });
         }
     }, [location.state, location.pathname, navigate, showToast]);
 

@@ -42,7 +42,7 @@ export const LoginPage: React.FC = () => {
   useEffect(() => {
     if (!isInitializing && isAuthenticated && esStaffDeEstaSede) {
       const targetSlug = paramSlug || localStorage.getItem('negocio_sesion_slug') || 'kyrios-studio';
-      navigate(`/${targetSlug}/dashboard`, { replace: true });
+      void navigate(`/${targetSlug}/dashboard`, { replace: true });
     }
   }, [isInitializing, isAuthenticated, esStaffDeEstaSede, paramSlug, navigate]);
 
@@ -61,7 +61,7 @@ export const LoginPage: React.FC = () => {
 
     if (resultado.success) {
       const targetSlug = slug || localStorage.getItem('negocio_sesion_slug') || 'kyrios-studio';
-      navigate(`/${targetSlug}/dashboard`, { replace: true });
+      void navigate(`/${targetSlug}/dashboard`, { replace: true });
     } else {
       let texto = 'Acceso denegado: Tu correo no se encuentra registrado en el personal autorizado de la barbería.';
       if (typeof resultado.error === 'string') {

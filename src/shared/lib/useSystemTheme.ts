@@ -1,4 +1,5 @@
-import { useTheme } from '../context/ThemeContext';
+import { useContext } from 'react';
+import { ThemeContext } from '../context/ThemeContext';
 
 export type SystemTheme = 'light' | 'dark';
 
@@ -11,14 +12,13 @@ const DARK_QUERY = '(prefers-color-scheme: dark)';
  * @returns 'light' | 'dark'
  */
 export function useSystemTheme(): SystemTheme {
-  try {
-    const { resolvedTheme } = useTheme();
-    return resolvedTheme;
-  } catch {
-    if (typeof window !== 'undefined' && window.matchMedia(DARK_QUERY).matches) {
-      return 'dark';
-    }
-    return 'light';
+  const context = useContext(ThemeContext);
+  if (context?.resolvedTheme) {
+    return context.resolvedTheme;
   }
-}
 
+  if (typeof window !== 'undefined' && window.matchMedia(DARK_QUERY).matches) {
+    return 'dark';
+  }
+  return 'light';
+}

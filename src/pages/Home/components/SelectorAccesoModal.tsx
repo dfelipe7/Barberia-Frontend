@@ -25,7 +25,7 @@ export const SelectorAccesoModal: React.FC<SelectorAccesoModalProps> = ({ isOpen
 
   const handleSelect = (ruta: string) => {
     onClose();
-    navigate(ruta);
+    void navigate(ruta);
   };
 
   return (

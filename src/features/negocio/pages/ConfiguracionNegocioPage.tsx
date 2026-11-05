@@ -146,7 +146,7 @@ export default function ConfiguracionNegocioPage() {
   };
 
   useEffect(() => {
-    cargarDatos();
+    void cargarDatos();
     setTemaActual(resolverTemaTenant(slugActivo));
   }, [slugActivo]);
 
@@ -787,7 +787,7 @@ export default function ConfiguracionNegocioPage() {
                       accept="image/png"
                       className="d-none"
                       onChange={(e) => {
-                        if (e.target.files?.[0]) handleSubirArchivo('banner', e.target.files[0]);
+                        if (e.target.files?.[0]) void handleSubirArchivo('banner', e.target.files[0]);
                       }}
                     />
                     <div className="d-flex gap-2">
@@ -860,7 +860,7 @@ export default function ConfiguracionNegocioPage() {
                       accept=".svg,image/svg+xml"
                       className="d-none"
                       onChange={(e) => {
-                        if (e.target.files?.[0]) handleSubirArchivo('logo-blanco', e.target.files[0]);
+                        if (e.target.files?.[0]) void handleSubirArchivo('logo-blanco', e.target.files[0]);
                       }}
                     />
                     <div className="d-flex gap-2">
@@ -933,7 +933,7 @@ export default function ConfiguracionNegocioPage() {
                       accept=".svg,image/svg+xml"
                       className="d-none"
                       onChange={(e) => {
-                        if (e.target.files?.[0]) handleSubirArchivo('logo-negro', e.target.files[0]);
+                        if (e.target.files?.[0]) void handleSubirArchivo('logo-negro', e.target.files[0]);
                       }}
                     />
                     <div className="d-flex gap-2">
@@ -1006,7 +1006,7 @@ export default function ConfiguracionNegocioPage() {
                       accept=".svg,image/svg+xml"
                       className="d-none"
                       onChange={(e) => {
-                        if (e.target.files?.[0]) handleSubirArchivo('favicon', e.target.files[0]);
+                        if (e.target.files?.[0]) void handleSubirArchivo('favicon', e.target.files[0]);
                       }}
                     />
                     <div className="d-flex gap-2">

@@ -154,7 +154,7 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
   };
 
   useEffect(() => {
-    cargarRedes();
+    void cargarRedes();
   }, [slugNegocio]);
 
   const abrirModalCrear = () => {

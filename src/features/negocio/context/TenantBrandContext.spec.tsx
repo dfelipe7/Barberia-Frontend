@@ -104,7 +104,7 @@ describe('TenantBrandContext y resolverUrlRecurso', () => {
       });
 
       expect(result.current.ciudad).toBe('Popayán');
-      expect(result.current.redesSociales.length).toBe(1);
+      expect(result.current.redesSociales).toHaveLength(1);
       expect(result.current.configurado).toBe(true);
     });
   });

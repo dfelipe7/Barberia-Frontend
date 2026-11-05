@@ -127,7 +127,7 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }, [slug]);
 
   useEffect(() => {
-    cargarPerfil();
+    void cargarPerfil();
   }, [cargarPerfil, location.pathname]);
 
   // Actualizar dinámicamente el título y el favicon de la pestaña del navegador
@@ -161,7 +161,7 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
   // Escuchar evento global cuando se actualice la configuración en ConfiguracionNegocioPage
   useEffect(() => {
     const handleActualizado = () => {
-      cargarPerfil();
+      void cargarPerfil();
     };
     window.addEventListener('tenant-perfil-actualizado', handleActualizado);
     return () => window.removeEventListener('tenant-perfil-actualizado', handleActualizado);

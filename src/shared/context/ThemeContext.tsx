@@ -16,7 +16,7 @@ interface ThemeContextType {
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 const STORAGE_KEY = 'app-theme';
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 function getSystemTheme(): Theme {
   if (typeof window === 'undefined') return 'light';

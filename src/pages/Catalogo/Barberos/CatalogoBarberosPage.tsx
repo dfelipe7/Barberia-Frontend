@@ -165,7 +165,7 @@ const CatalogoBarberosPage: React.FC = () => {
                       <BarberCard
                         barbero={barbero}
                         onReservar={(b, servicioId) => {
-                          navigate(`${basePrefix}/reservar`, {
+                          void navigate(`${basePrefix}/reservar`, {
                             state: {
                               barberoId: b.id,
                               origen: 'barbero',

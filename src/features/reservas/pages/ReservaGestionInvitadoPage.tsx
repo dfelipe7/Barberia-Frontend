@@ -136,7 +136,7 @@ export default function ReservaGestionInvitadoPage() {
     if (!reserva) return;
     reservasService.guardarTokenGestionInvitado(reserva.id, token!);
 
-    navigate(
+    void navigate(
       `/${slugActivo}/reservar?paso=3&reservaId=${reserva.id}&servicioId=${reserva.servicio.id}&barberoId=${reserva.barbero.id}&token=${encodeURIComponent(token!)}&fecha=${encodeURIComponent(reserva.fecha)}`,
       {
         state: {
@@ -155,7 +155,7 @@ export default function ReservaGestionInvitadoPage() {
     if (!reserva) return;
     reservasService.guardarTokenGestionInvitado(reserva.id, token!);
 
-    navigate(
+    void navigate(
       `/${slugActivo}/reservar?paso=2&reservaId=${reserva.id}&servicioId=${reserva.servicio.id}&token=${encodeURIComponent(token!)}`,
       {
         state: {

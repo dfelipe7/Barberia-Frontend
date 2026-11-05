@@ -171,7 +171,7 @@ const CatalogoServiciosPage: React.FC = () => {
                       <ServiceCard
                         servicio={servicio}
                         onReservar={(s) => {
-                          navigate(`${basePrefix}/reservar`, {
+                          void navigate(`${basePrefix}/reservar`, {
                             state: { servicioId: s.id, origen: 'servicio' },
                           });
                         }}

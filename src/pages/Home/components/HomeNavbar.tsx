@@ -282,7 +282,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                 onClick={() => {
                   clientesService.cerrarSesion(slug);
                   setClienteSesion(null);
-                  navigate(slug ? `/${slug}` : '/');
+                  void navigate(slug ? `/${slug}` : '/');
                 }}
                 aria-label="Cerrar sesión"
               >
@@ -296,7 +296,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
               className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
               onClick={() => {
                 const rutaCliente = slug ? `/${slug}/cliente/iniciar-sesion?returnTo=${encodeURIComponent(location.pathname)}` : `/cliente/iniciar-sesion?returnTo=${encodeURIComponent(location.pathname)}`;
-                navigate(rutaCliente);
+                void navigate(rutaCliente);
               }}
             >
               Iniciar sesión
@@ -453,7 +453,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                     className="btn-kyrios-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
                     onClick={() => {
                       closeMobileMenu();
-                      navigate(slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta');
+                      void navigate(slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta');
                     }}
                   >
                     <Calendar size={15} strokeWidth={2} />
@@ -466,7 +466,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                       closeMobileMenu();
                       clientesService.cerrarSesion(slug);
                       setClienteSesion(null);
-                      navigate(slug ? `/${slug}` : '/');
+                      void navigate(slug ? `/${slug}` : '/');
                     }}
                   >
                     <LogOut size={15} strokeWidth={2} />
@@ -491,7 +491,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                     className="btn btn-link text-surface-muted text-decoration-none small text-center w-100 mt-1"
                     onClick={() => {
                       closeMobileMenu();
-                      navigate(rutaLogin);
+                      void navigate(rutaLogin);
                     }}
                   >
                     ¿Eres del equipo o barbero? Acceso al panel
