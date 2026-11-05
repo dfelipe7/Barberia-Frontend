@@ -39,7 +39,7 @@ export function useCrearReserva() {
   return useMutation({
     mutationFn: (datos: CrearReservaDTO) => reservasService.crearReserva(datos),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: reservasKeys.all });
+      void queryClient.invalidateQueries({ queryKey: reservasKeys.all });
     },
   });
 }
@@ -169,7 +169,7 @@ export function useActualizarPerfilCliente() {
   return useMutation({
     mutationFn: (datos: ActualizarPerfilClienteDTO) => clientesService.actualizarPerfil(datos),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: reservasKeys.perfilCliente() });
+      void queryClient.invalidateQueries({ queryKey: reservasKeys.perfilCliente() });
     },
   });
 }

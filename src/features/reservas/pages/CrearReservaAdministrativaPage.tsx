@@ -44,7 +44,7 @@ export default function CrearReservaAdministrativaPage() {
   const [creada, setCreada] = useState<Awaited<ReturnType<typeof reservasService.crearReservaAdministrativa>> | null>(null);
   const crearReserva = useCrearReservaAdministrativa();
   const emailInvitadoInvalido = Boolean(
-    emailInvitado.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInvitado.trim()),
+    emailInvitado.trim() && !/^\S+@\S+\.\S+$/.test(emailInvitado.trim()),
   );
   const servicioSeleccionado = servicios.find((servicio) => servicio.id === servicioId);
   const consultaBarberos = useQuery({

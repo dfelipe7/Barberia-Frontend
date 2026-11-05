@@ -41,7 +41,7 @@ interface RedConfigItem {
    ========================================================================= */
 
 const InstagramBrandIcon: React.FC<{ size?: number; color?: string }> = ({ size = 20, color = 'currentColor' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg aria-hidden="true" focusable="false" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
@@ -49,25 +49,25 @@ const InstagramBrandIcon: React.FC<{ size?: number; color?: string }> = ({ size 
 );
 
 const WhatsAppBrandIcon: React.FC<{ size?: number; color?: string }> = ({ size = 20, color = 'currentColor' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg aria-hidden="true" focusable="false" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
   </svg>
 );
 
 const TikTokBrandIcon: React.FC<{ size?: number; color?: string }> = ({ size = 20, color = 'currentColor' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+  <svg aria-hidden="true" focusable="false" width={size} height={size} viewBox="0 0 24 24" fill={color}>
     <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.86.12V9.42a6.33 6.33 0 0 0-.86-.06 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.92a8.28 8.28 0 0 0 4.82 1.52V7c-.37 0-.73-.11-1.05-.31z" />
   </svg>
 );
 
 const FacebookBrandIcon: React.FC<{ size?: number; color?: string }> = ({ size = 20, color = 'currentColor' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+  <svg aria-hidden="true" focusable="false" width={size} height={size} viewBox="0 0 24 24" fill={color}>
     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
   </svg>
 );
 
 const OtherBrandIcon: React.FC<{ size?: number; color?: string }> = ({ size = 20, color = 'currentColor' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg aria-hidden="true" focusable="false" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10" />
     <line x1="2" y1="12" x2="22" y2="12" />
     <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
@@ -382,7 +382,7 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
       <div className="card-body p-4">
         {cargando ? (
           <div className="text-center py-5 text-muted small">
-            <span className="spinner-border spinner-border-sm me-2 text-primary" role="status" />
+            <span className="spinner-border spinner-border-sm me-2 text-primary" role="status" />{' '}
             Cargando redes sociales de la sede...
           </div>
         ) : redes.length === 0 ? (
@@ -443,6 +443,8 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
 
                         {/* Switch de visibilidad personalizado (100% visible en modo oscuro y claro) */}
                         <label
+                          htmlFor={`switch-red-${red.id}`}
+                          aria-label={red.activo ? `Desactivar ${red.nombre}` : `Activar ${red.nombre}`}
                           className="redes-switch"
                           title={red.activo ? 'Pausar (ocultar de la web pública)' : 'Activar (hacer visible en la web)'}
                         >
@@ -535,9 +537,9 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
           {/* 1. Selector Visual con Iconos Auténticos */}
           {!redEditando ? (
             <div className="mb-4">
-              <label className="form-label small fw-bold text-uppercase tracking-wider text-muted mb-2" style={{ fontSize: '0.75rem' }}>
+              <span className="form-label d-block small fw-bold text-uppercase tracking-wider text-muted mb-2" style={{ fontSize: '0.75rem' }}>
                 1. Selecciona la Plataforma
-              </label>
+              </span>
 
               <div className="redes-selector-grid">
                 {(Object.keys(REDES_CONFIG) as TipoRedSocial[]).map((tId) => {
@@ -606,10 +608,11 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
           {/* 2. Nombre Personalizado (solo para OTRO) */}
           {(tipo === 'OTRO' || redEditando?.tipo === 'OTRO') && (
             <div className="mb-3">
-              <label className="form-label small fw-semibold">
+              <label htmlFor="input-nombre-canal" className="form-label small fw-semibold">
                 Nombre del Canal o Enlace <span className="text-danger">*</span>
               </label>
               <input
+                id="input-nombre-canal"
                 type="text"
                 className="form-control"
                 placeholder="Ej. Canal de YouTube, Blog de Estilo, Twitter / X"
@@ -625,7 +628,7 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
           {/* 3. URL Oficial con Botón Pegar */}
           <div className="mb-3">
             <div className="d-flex justify-content-between align-items-center mb-1">
-              <label className="form-label small fw-semibold mb-0">
+              <label htmlFor="input-url-canal" className="form-label small fw-semibold mb-0">
                 URL Oficial del Perfil <span className="text-danger">*</span>
               </label>
 
@@ -645,6 +648,7 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
                 <LinkIcon size={14} className="text-muted" />
               </span>
               <input
+                id="input-url-canal"
                 type="url"
                 className={`form-control border-start-0 ${errorUrl ? 'is-invalid' : ''} ${
                   urlValida ? 'is-valid' : ''

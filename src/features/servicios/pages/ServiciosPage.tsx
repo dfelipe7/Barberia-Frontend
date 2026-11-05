@@ -355,7 +355,7 @@ export const ServiciosPage: React.FC = () => {
                         style={{ borderRadius: '2px', transition: 'all 150ms ease' }}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleCambiarEstado(s);
+                          void handleCambiarEstado(s);
                         }}
                         disabled={cambiarEstadoMutation.isPending && idServicioCambiando === s.id}
                         aria-label={s.estado === 'ACTIVO' ? `Desactivar ${s.nombre}` : `Activar ${s.nombre}`}

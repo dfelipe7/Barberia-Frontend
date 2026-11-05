@@ -21,6 +21,7 @@ import BrandLogo from '../../shared/ui/BrandLogo';
 import KyriosSpinner from '../../shared/ui/KyriosSpinner';
 import Modal from '../../shared/ui/Modal';
 import Button from '../../shared/ui/Button';
+import { useConfirm } from '../../shared/contexts/ConfirmContext';
 import bannerImg from '../../assets/brand/banner.png';
 import './PlataformaHubPage.css';
 
@@ -39,6 +40,7 @@ interface NegocioPublico {
 }
 
 export default function PlataformaHubPage() {
+  const confirm = useConfirm();
   const [negocios, setNegocios] = useState<NegocioPublico[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -85,7 +87,7 @@ export default function PlataformaHubPage() {
       .normalize('NFD')
       .replace(/[̀-ͯ]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+      .replace(/^-+/, '').replace(/-+$/, '');
     setNuevoSlug(slugAutogenerado);
   };
 
@@ -125,19 +127,36 @@ export default function PlataformaHubPage() {
     }
   };
 
-  // Alternar estado ACTIVO / INACTIVO (requiere credenciales de plataforma admin)
+    // Alternar estado ACTIVO / INACTIVO (requiere credenciales de plataforma admin)
   const handleToggleEstado = async (negocio: NegocioPublico) => {
+    const confirmado = await confirm({
+      title: 'Suspender Barbería',
+      message: `¿Estás seguro de cambiar el estado de "${negocio.nombre}" a INACTIVO?`,
+      confirmLabel: 'Suspender barbería',
+      cancelLabel: 'Cancelar',
+      variant: 'warning',
+    });
+    if (!confirmado) return;
+
     try {
       const url = `${import.meta.env.VITE_API_URL}/plataforma/negocios/${negocio.id}/estado`;
       await axios.patch(url, { estado: 'INACTIVO' });
       void cargarNegocios();
     } catch (err: any) {
       if (err?.response?.status === 403) {
-        alert(
-          'Acción restringida: Suspender o activar barberías requiere permisos de Administrador de Plataforma autorizados en backend (PLATFORM_ADMIN_EMAILS).'
-        );
+        void confirm({
+          title: 'Acción Restringida',
+          message: 'Suspender o activar barberías requiere permisos de Administrador de Plataforma autorizados en backend (PLATFORM_ADMIN_EMAILS).',
+          confirmLabel: 'Entendido',
+          variant: 'primary',
+        });
       } else {
-        alert(err?.response?.data?.message || 'No se pudo cambiar el estado de la barbería.');
+        void confirm({
+          title: 'Error de Plataforma',
+          message: err?.response?.data?.message || 'No se pudo cambiar el estado de la barbería.',
+          confirmLabel: 'Cerrar',
+          variant: 'danger',
+        });
       }
     }
   };
@@ -388,12 +407,13 @@ export default function PlataformaHubPage() {
             )}
 
             <div className="mb-3">
-              <label className="form-label small fw-semibold text-white">
+              <label htmlFor="hub-nombre-barberia" className="form-label small fw-semibold text-white">
                 Nombre de la Barbería <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
                 className="form-control"
+                id="hub-nombre-barberia"
                 placeholder="Ej. Kyrios Studio Centro"
                 value={nuevoNombre}
                 onChange={(e) => handleNombreChange(e.target.value)}
@@ -402,7 +422,7 @@ export default function PlataformaHubPage() {
             </div>
 
             <div className="mb-3">
-              <label className="form-label small fw-semibold text-white">
+              <label htmlFor="hub-slug-barberia" className="form-label small fw-semibold text-white">
                 Slug (Ruta Web Única) <span className="text-danger">*</span>
               </label>
               <div className="input-group">
@@ -410,6 +430,7 @@ export default function PlataformaHubPage() {
                 <input
                   type="text"
                   className="form-control"
+                  id="hub-slug-barberia"
                   placeholder="kyrios-centro"
                   value={nuevoSlug}
                   onChange={(e) => setNuevoSlug(e.target.value)}
@@ -424,12 +445,13 @@ export default function PlataformaHubPage() {
             </div>
 
             <div className="mb-3">
-              <label className="form-label small fw-semibold text-white">
+              <label htmlFor="hub-direccion-barberia" className="form-label small fw-semibold text-white">
                 Dirección Física (Opcional)
               </label>
               <input
                 type="text"
                 className="form-control"
+                id="hub-direccion-barberia"
                 placeholder="Ej. Calle 4 # 5-20, Centro Histórico"
                 value={nuevaDireccion}
                 onChange={(e) => setNuevaDireccion(e.target.value)}

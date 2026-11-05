@@ -23,7 +23,7 @@ export const ComisionSlider: React.FC<ComisionSliderProps> = ({
   error,
   disabled = false,
 }) => {
-  const safeValue = isNaN(valorActual) || valorActual === undefined ? 0 : valorActual;
+  const safeValue = Number.isNaN(valorActual) || valorActual === undefined ? 0 : valorActual;
   const [hasChanged, setHasChanged] = useState(false);
   const prevValueRef = useRef(safeValue);
 

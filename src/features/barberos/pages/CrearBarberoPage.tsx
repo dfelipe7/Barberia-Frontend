@@ -70,7 +70,7 @@ export const CrearBarberoPage: React.FC = () => {
       });
 
       showToast('success', `Barbero ${data.nombre} creado correctamente.`);
-      navigate('/barberos', {
+      void navigate('/barberos', {
         state: { mensaje: `¡Barbero ${data.nombre} creado y registrado con éxito!` },
       });
     } catch (err: unknown) {

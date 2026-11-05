@@ -25,7 +25,7 @@ export function useCrearServicio() {
     mutationFn: (datos: Parameters<typeof serviciosMapper.toCrearDTO>[0]) =>
       serviciosService.crearServicio(serviciosMapper.toCrearDTO(datos)),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
+      void queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
     },
   });
 }
@@ -41,7 +41,7 @@ export function useActualizarServicio() {
       datos: Parameters<typeof serviciosMapper.toActualizarDTO>[0];
     }) => serviciosService.actualizarServicio(id, serviciosMapper.toActualizarDTO(datos)),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
+      void queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
     },
   });
 }
@@ -52,7 +52,7 @@ export function useCambiarEstadoServicio() {
     mutationFn: ({ id, datos }: { id: number; datos: CambiarEstadoServicioDTO }) =>
       serviciosService.cambiarEstadoServicio(id, datos),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
+      void queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
     },
   });
 }
@@ -63,7 +63,7 @@ export function useSubirFotoServicio() {
     mutationFn: ({ id, file }: { id: number; file: File }) =>
       serviciosService.subirFotoServicio(id, file),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
+      void queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
     },
   });
 }
@@ -73,7 +73,7 @@ export function useEliminarFotoServicio() {
   return useMutation({
     mutationFn: (id: number) => serviciosService.eliminarFotoServicio(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
+      void queryClient.invalidateQueries({ queryKey: serviciosKeys.all });
     },
   });
 }

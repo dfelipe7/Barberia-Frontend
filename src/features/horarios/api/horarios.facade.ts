@@ -15,8 +15,8 @@ export function useGuardarMiHorario() {
   return useMutation({
     mutationFn: horariosService.guardarMiHorario,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: horariosKeys.miHorario() });
-      queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
+      void queryClient.invalidateQueries({ queryKey: horariosKeys.miHorario() });
+      void queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
     },
   });
 }
@@ -42,8 +42,8 @@ export function useCrearBloqueoHorario() {
   return useMutation({
     mutationFn: horariosService.crearBloqueo,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: horariosKeys.bloqueos() });
-      queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
+      void queryClient.invalidateQueries({ queryKey: horariosKeys.bloqueos() });
+      void queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
     },
   });
 }
@@ -55,8 +55,8 @@ export function useActualizarBloqueoHorario() {
     mutationFn: ({ id, datos }: { id: number; datos: Parameters<typeof horariosService.actualizarBloqueo>[1] }) =>
       horariosService.actualizarBloqueo(id, datos),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: horariosKeys.bloqueos() });
-      queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
+      void queryClient.invalidateQueries({ queryKey: horariosKeys.bloqueos() });
+      void queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
     },
   });
 }
@@ -67,8 +67,8 @@ export function useCancelarBloqueoHorario() {
   return useMutation({
     mutationFn: horariosService.cancelarBloqueo,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: horariosKeys.bloqueos() });
-      queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
+      void queryClient.invalidateQueries({ queryKey: horariosKeys.bloqueos() });
+      void queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
     },
   });
 }
@@ -79,8 +79,8 @@ export function useReactivarBloqueoHorario() {
   return useMutation({
     mutationFn: horariosService.reactivarBloqueo,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: horariosKeys.bloqueos() });
-      queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
+      void queryClient.invalidateQueries({ queryKey: horariosKeys.bloqueos() });
+      void queryClient.invalidateQueries({ queryKey: horariosKeys.disponibilidad() });
     },
   });
 }

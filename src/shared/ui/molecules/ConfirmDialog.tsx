@@ -31,8 +31,8 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 }) => {
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
   const reactId = useId();
-  const titleId = `confirm-dialog-title-${reactId.replace(/:/g, '')}`;
-  const descId = `confirm-dialog-desc-${reactId.replace(/:/g, '')}`;
+  const titleId = `confirm-dialog-title-${reactId.replaceAll(':', '')}`;
+  const descId = `confirm-dialog-desc-${reactId.replaceAll(':', '')}`;
 
   // Focus inicial en Cancelar al abrir (Emil Kowalski: evitar confirmaciones accidentales)
   useEffect(() => {

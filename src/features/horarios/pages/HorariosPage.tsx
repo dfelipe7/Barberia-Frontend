@@ -61,7 +61,7 @@ const convertirADatosFormulario = (
         .filter((hora): hora is (typeof HORAS_INICIO_FRANJA)[number] =>
           HORAS_INICIO_FRANJA.some((opcion) => opcion === hora),
         )
-        .sort(),
+        .sort((a, b) => a.localeCompare(b)),
     })),
   };
 };
@@ -261,7 +261,7 @@ export const HorariosPage = () => {
     const marcada = seleccionadas.includes(hora);
     const siguiente: HoraInicioFranja[] = marcada
       ? seleccionadas.filter((h) => h !== hora)
-      : [...seleccionadas, hora].sort();
+      : [...seleccionadas, hora].sort((a, b) => a.localeCompare(b));
 
     setValue(ruta, siguiente, {
       shouldDirty: true,
@@ -335,7 +335,7 @@ export const HorariosPage = () => {
     diasDestinoSeleccionados.forEach((destinoCodigo) => {
       const indiceDestino = DIAS_SEMANA.findIndex((d) => d.codigo === destinoCodigo);
       if (indiceDestino !== -1) {
-        setValue(rutaFranjas(indiceDestino), [...franjasOrigen].sort(), {
+        setValue(rutaFranjas(indiceDestino), [...franjasOrigen].sort((a, b) => a.localeCompare(b)), {
           shouldDirty: true,
           shouldTouch: true,
           shouldValidate: true,
@@ -354,7 +354,7 @@ export const HorariosPage = () => {
   const onGuardar = async (valores: HorarioSemanalFormValues) => {
     setErrorGuardar(null);
     const franjas = valores.dias.flatMap((dia) =>
-      [...new Set(dia.franjas)].sort().map((startTime) => ({
+      [...new Set(dia.franjas)].sort((a, b) => a.localeCompare(b)).map((startTime) => ({
         dayOfWeek: DIA_A_API[dia.diaSemana],
         startTime,
         endTime: sumarUnaHora(startTime),
@@ -545,11 +545,13 @@ export const HorariosPage = () => {
                         {/* Switch On/Off */}
                         <label
                           className="horario-switch"
+                          aria-label={estaActivo ? `Desactivar ${nombre}` : `Habilitar ${nombre}`}
                           onClick={(e) => e.stopPropagation()}
                           title={estaActivo ? 'Desactivar día (Descanso)' : 'Habilitar día'}
                         >
                           <input
                             type="checkbox"
+                            aria-label={estaActivo ? `Desactivar ${nombre}` : `Habilitar ${nombre}`}
                             checked={estaActivo}
                             onChange={() => toggleDiaActivo(indice, codigo, seleccionadas)}
                           />

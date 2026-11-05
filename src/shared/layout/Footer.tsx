@@ -14,13 +14,7 @@ export default function Footer() {
           </div>
           <div className="d-flex align-items-center gap-3 small">
             <span className="app-footer__muted">Todos los derechos reservados</span>
-            <a
-              href="#"
-              className="app-footer__link"
-              aria-label="Ver versión del sistema"
-            >
-              v1.0
-            </a>
+            <span className="app-footer__link">v1.0</span>
           </div>
         </div>
       </div>
