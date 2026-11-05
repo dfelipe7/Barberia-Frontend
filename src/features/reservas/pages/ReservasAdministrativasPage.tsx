@@ -1052,13 +1052,22 @@ export default function ReservasAdministrativasPage() {
             setReservaSeleccionadaId(null);
             setEditando(false);
           }}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setReservaSeleccionadaId(null);
+              setEditando(false);
+            }
+          }}
+          tabIndex={-1}
           role="dialog"
           aria-modal="true"
           aria-label="Detalle de la reserva"
         >
           <div
             className="reservations-admin__mobile-sheet-content"
+            role="document"
             onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
           >
             <div className="reservations-admin__mobile-sheet-header">
               <div className="reservations-admin__mobile-sheet-drag-handle" aria-hidden="true" />

@@ -14,6 +14,8 @@ export const BarberoCard: React.FC<BarberoCardProps> = ({ barbero }) => {
         style={{ transition: 'transform 0.2s', cursor: 'pointer' }}
         onMouseOver={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
         onMouseOut={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+        onFocus={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
+        onBlur={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
       >
         <div className="card-body p-2.5 p-sm-3 p-md-4 text-center d-flex flex-column align-items-center">
           <UserAvatar

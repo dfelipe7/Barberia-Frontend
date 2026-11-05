@@ -34,12 +34,14 @@ const estados: Record<EstadoReservaDTO, string> = {
 
 const SIN_RESERVAS: CitaAgendaBarberoDTO[] = [];
 
-const formatearFecha = (valor: string, opciones: Intl.DateTimeFormatOptions = {
+const OPCIONES_FECHA_DEFAULT: Intl.DateTimeFormatOptions = {
   weekday: 'long',
   day: 'numeric',
   month: 'long',
   year: 'numeric',
-}) => {
+};
+
+const formatearFecha = (valor: string, opciones: Intl.DateTimeFormatOptions = OPCIONES_FECHA_DEFAULT) => {
   const [anio, mes, dia] = valor.split('-').map(Number);
   return new Intl.DateTimeFormat('es-CO', opciones).format(new Date(anio, mes - 1, dia, 12));
 };
@@ -492,13 +494,17 @@ export default function ReservasBarberoPage() {
           <div
             className="barber-agenda__mobile-sheet-overlay"
             onClick={() => setReservaSeleccionadaId(null)}
+            onKeyDown={(e) => { if (e.key === 'Escape') setReservaSeleccionadaId(null); }}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label="Detalle de cita"
           >
             <div
               className="barber-agenda__mobile-sheet-content"
+              role="document"
               onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
             >
               <div className="barber-agenda__mobile-sheet-header">
                 <div className="barber-agenda__mobile-sheet-drag-handle" aria-hidden="true" />

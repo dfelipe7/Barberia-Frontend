@@ -131,7 +131,7 @@ export const UsuariosPage: React.FC = () => {
     const mensaje = location.state?.mensaje as string | undefined;
     if (!mensaje) return;
     showToast('success', mensaje);
-    navigate(location.pathname, { replace: true, state: null });
+    void navigate(location.pathname, { replace: true, state: null });
   }, [location.state?.mensaje, location.pathname, navigate, showToast]);
 
   // Handlers
@@ -329,7 +329,7 @@ export const UsuariosPage: React.FC = () => {
             }`}
             onClick={() => {
               setPestañaActiva('administradores');
-              navigate('?tab=administradores', { replace: true });
+              void navigate('?tab=administradores', { replace: true });
             }}
           >
             <Shield size={16} className="flex-shrink-0" />
@@ -351,7 +351,7 @@ export const UsuariosPage: React.FC = () => {
           }`}
           onClick={() => {
             setPestañaActiva('barberos');
-            navigate('?tab=barberos', { replace: true });
+            void navigate('?tab=barberos', { replace: true });
           }}
         >
           <Scissors size={16} className="flex-shrink-0" />

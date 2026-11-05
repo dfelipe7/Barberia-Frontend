@@ -22,7 +22,7 @@ export function useReturnToPrevious() {
   return useCallback(
     ({ fallbackTo, state }: ReturnOptions) => {
       const from = (location.state as { from?: string } | null)?.from;
-      navigate(from ?? fallbackTo, { state, replace: true });
+      void navigate(from ?? fallbackTo, { state, replace: true });
     },
     [navigate, location.state],
   );

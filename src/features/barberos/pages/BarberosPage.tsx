@@ -54,7 +54,7 @@ export const BarberosPage: React.FC = () => {
     const mensaje = location.state?.mensaje as string | undefined;
     if (!mensaje) return;
     showToast('success', mensaje);
-    navigate(location.pathname, { replace: true, state: null });
+    void navigate(location.pathname, { replace: true, state: null });
   }, [location.state?.mensaje, location.pathname, navigate, showToast]);
 
   const barberosFiltrados = useMemo(() => {

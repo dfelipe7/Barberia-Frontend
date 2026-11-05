@@ -492,13 +492,13 @@ export const WhatsAppConfigPage: React.FC = () => {
   const renderPreviewTexto = (texto: string) => {
     if (!texto) return '';
     return texto
-      .replace(/{cliente}/g, 'Juan Pérez')
-      .replace(/{servicio}/g, 'Corte Clásico')
-      .replace(/{barbero}/g, 'Carlos Gómez')
-      .replace(/{fecha}/g, '2026-10-19')
-      .replace(/{hora}/g, '14:00')
-      .replace(/{precio}/g, '\n💰 *Valor:* $25.000')
-      .replace(/{ubicacion}/g, 'Carrera 6 # 3-45, Centro Histórico, Popayán');
+      .replaceAll('{cliente}', 'Juan Pérez')
+      .replaceAll('{servicio}', 'Corte Clásico')
+      .replaceAll('{barbero}', 'Carlos Gómez')
+      .replaceAll('{fecha}', '2026-10-19')
+      .replaceAll('{hora}', '14:00')
+      .replaceAll('{precio}', '\n💰 *Valor:* $25.000')
+      .replaceAll('{ubicacion}', 'Carrera 6 # 3-45, Centro Histórico, Popayán');
   };
 
   const formatWhatsAppMarkdown = (content: string) => {
@@ -992,8 +992,8 @@ export const WhatsAppConfigPage: React.FC = () => {
                         className="wa-custom-input"
                         value={minutosAnticipacion}
                         onChange={(e) => {
-                          const val = parseInt(e.target.value, 10);
-                          if (!isNaN(val) && val >= 15 && val <= 720) {
+                          const val = Number.parseInt(e.target.value, 10);
+                          if (!Number.isNaN(val) && val >= 15 && val <= 720) {
                             setMinutosAnticipacion(val);
                           } else if (e.target.value === '') {
                             setMinutosAnticipacion(15);

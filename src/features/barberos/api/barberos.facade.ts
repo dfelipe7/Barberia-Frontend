@@ -47,8 +47,8 @@ export function useCrearBarbero() {
   return useMutation({
     mutationFn: (datos: CrearBarberoDTO) => barberosService.crearBarbero(datos),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
-      queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
+      void queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
+      void queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
     },
   });
 }
@@ -60,8 +60,8 @@ export function useCambiarEstadoBarbero() {
     mutationFn: ({ id, datos }: { id: number; datos: CambiarEstadoBarberoDTO }) =>
       barberosService.cambiarEstadoBarbero(id, datos),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
-      queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
+      void queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
+      void queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
     },
   });
 }
@@ -72,8 +72,8 @@ export function useCambiarEstadoGlobalBarbero() {
     mutationFn: ({ id, datos }: { id: number; datos: CambiarEstadoBarberoDTO }) =>
       barberosService.cambiarEstadoGlobalBarbero(id, datos),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
-      queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
+      void queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
+      void queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
     },
   });
 }
@@ -85,7 +85,7 @@ export function useActualizarComision() {
     mutationFn: ({ id, datos }: { id: number; datos: ActualizarComisionDTO }) =>
       barberosService.actualizarComision(id, datos),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
+      void queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
     },
   });
 }
@@ -95,8 +95,8 @@ export function useSubirFotoPropia() {
   return useMutation({
     mutationFn: (file: File) => barberosService.subirFotoPropia(file),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
-      queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
+      void queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
+      void queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
     },
   });
 }
@@ -106,8 +106,8 @@ export function useEliminarFotoPropia() {
   return useMutation({
     mutationFn: () => barberosService.eliminarFotoPropia(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
-      queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
+      void queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
+      void queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
     },
   });
 }
@@ -118,8 +118,8 @@ export function useSubirFotoAdmin() {
     mutationFn: ({ id, file }: { id: number; file: File }) =>
       barberosService.subirFotoAdmin(id, file),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
-      queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
+      void queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
+      void queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
     },
   });
 }

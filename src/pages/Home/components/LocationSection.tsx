@@ -14,8 +14,8 @@ export const LocationSection: React.FC = () => {
 
   // Coordenadas base: Si la sede tiene coordenadas configuradas, usarlas;
   // de lo contrario Popayán Centro por defecto.
-  const latNum = latitud != null && !isNaN(Number(latitud)) ? Number(latitud) : 2.4419;
-  const lngNum = longitud != null && !isNaN(Number(longitud)) ? Number(longitud) : -76.6063;
+  const latNum = latitud != null && !Number.isNaN(Number(latitud)) ? Number(latitud) : 2.4419;
+  const lngNum = longitud != null && !Number.isNaN(Number(longitud)) ? Number(longitud) : -76.6063;
 
   // OpenStreetMap Embed: 100% público, libre de X-Frame-Options y sin redirecciones a consent.google.com
   const deltaLat = 0.0035;
@@ -146,7 +146,7 @@ export const LocationSection: React.FC = () => {
                 <div className="kyrios-map-glass-card">
                   <div className="d-flex align-items-center justify-content-between gap-2 mb-1">
                     <span className="kyrios-status-badge">
-                      <span className="kyrios-status-dot" />
+                      <span className="kyrios-status-dot" />{' '}
                       Sede oficial
                     </span>
                     <a

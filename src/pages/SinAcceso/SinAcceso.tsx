@@ -50,8 +50,8 @@ export default function SinAcceso() {
                             habilitado en el sistema.
                         </p>
                         <p className="text-surface-muted mb-4">
-                            Contacta al administrador para que te asigne o reactive tu rol de
-                            <strong> Administrador</strong> o <strong>Barbero</strong>.
+                            Contacta al administrador para que te asigne o reactive tu rol de{' '}
+                            <strong>Administrador</strong> o <strong>Barbero</strong>.
                         </p>
                     </>
                 ) : (

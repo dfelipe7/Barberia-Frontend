@@ -390,9 +390,9 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
         {/* BLOQUE 3: Barberos asignados */}
         <div className="col-12 mt-3 pt-3 border-top">
           <div className="d-flex align-items-center justify-content-between mb-2">
-            <label className="servicio-form-label mb-0">
+            <span className="servicio-form-label mb-0 fw-semibold">
               Barberos que realizan este servicio
-            </label>
+            </span>
             <span className="text-surface-muted small" style={{ fontSize: '0.78rem' }}>
               Selecciona quiénes pueden atender este servicio
             </span>

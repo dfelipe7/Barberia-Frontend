@@ -64,7 +64,7 @@ export const CrearAdministradorPage: React.FC = () => {
       });
 
       showToast('success', `Administrador ${data.nombre} creado correctamente.`);
-      navigate('/usuarios', {
+      void navigate('/usuarios', {
         state: { mensaje: `¡Administrador ${data.nombre} creado con éxito!` },
       });
     } catch (err: unknown) {

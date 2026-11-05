@@ -48,7 +48,7 @@ export function useCrearAdministrador() {
   return useMutation({
     mutationFn: (datos: CrearAdministradorDTO) => usuariosService.crearAdministrador(datos),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
+      void queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
     },
   });
 }
@@ -60,10 +60,10 @@ export function useActualizarUsuario() {
     mutationFn: ({ id, datos }: { id: number; datos: ActualizarUsuarioDTO }) =>
       usuariosService.actualizarUsuario(id, datos),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
-      queryClient.invalidateQueries({ queryKey: usuariosKeys.detail(variables.id) });
-      queryClient.invalidateQueries({ queryKey: usuariosKeys.perfil() });
-      queryClient.invalidateQueries({ queryKey: ['barberos'] });
+      void queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
+      void queryClient.invalidateQueries({ queryKey: usuariosKeys.detail(variables.id) });
+      void queryClient.invalidateQueries({ queryKey: usuariosKeys.perfil() });
+      void queryClient.invalidateQueries({ queryKey: ['barberos'] });
     },
   });
 }
@@ -74,8 +74,8 @@ export function useCambiarEstadoUsuarioGlobal() {
     mutationFn: ({ id, datos }: { id: number; datos: CambiarEstadoUsuarioDTO }) =>
       usuariosService.cambiarEstadoUsuario(id, datos),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
-      queryClient.invalidateQueries({ queryKey: ['barberos'] });
+      void queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
+      void queryClient.invalidateQueries({ queryKey: ['barberos'] });
     },
   });
 }
@@ -87,8 +87,8 @@ export function useCambiarEstadoUsuario() {
     mutationFn: ({ id, datos }: { id: number; datos: CambiarEstadoDTO }) =>
       usuariosService.cambiarEstado(id, datos),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
-      queryClient.invalidateQueries({ queryKey: ['barberos'] });
+      void queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
+      void queryClient.invalidateQueries({ queryKey: ['barberos'] });
     },
   });
 }
@@ -100,8 +100,8 @@ export function useCambiarEstadoAdministrador() {
     mutationFn: ({ id, datos }: { id: number; datos: CambiarEstadoDTO }) =>
       usuariosService.cambiarEstadoAdministrador(id, datos),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
-      queryClient.invalidateQueries({ queryKey: ['barberos'] });
+      void queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
+      void queryClient.invalidateQueries({ queryKey: ['barberos'] });
     },
   });
 }
@@ -113,8 +113,8 @@ export function useConfigurarBarbero() {
     mutationFn: ({ id, datos }: { id: number; datos: ConfigurarBarberoDTO }) =>
       usuariosService.configurarBarbero(id, datos),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
-      queryClient.invalidateQueries({ queryKey: ['barberos'] });
+      void queryClient.invalidateQueries({ queryKey: usuariosKeys.administradores() });
+      void queryClient.invalidateQueries({ queryKey: ['barberos'] });
     },
   });
 }
@@ -126,8 +126,8 @@ export function useConfigurarMeComoBarbero() {
     mutationFn: (datos: ConfigurarBarberoDTO) =>
       usuariosService.configurarMeComoBarbero(datos),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: usuariosKeys.perfil() });
-      queryClient.invalidateQueries({ queryKey: ['barberos'] });
+      void queryClient.invalidateQueries({ queryKey: usuariosKeys.perfil() });
+      void queryClient.invalidateQueries({ queryKey: ['barberos'] });
     },
   });
 }

@@ -85,6 +85,9 @@ export const Modal: React.FC<ModalProps> = ({
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') onClose();
+      }}
     >
       <div
         className={`modal-dialog modal-dialog-centered modal-dialog-scrollable kyrios-modal-dialog ${sizeClass} ${fullscreenClass} ${className}`.trim()}

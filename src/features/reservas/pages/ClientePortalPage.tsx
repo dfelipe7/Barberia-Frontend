@@ -89,7 +89,7 @@ export default function ClientePortalPage() {
       const rutaDestino = slugActivo
         ? `/${slugActivo}/cliente/iniciar-sesion?returnTo=/${slugActivo}/cliente/mi-cuenta`
         : `/cliente/iniciar-sesion?returnTo=/cliente/mi-cuenta`;
-      navigate(rutaDestino, { replace: true });
+      void navigate(rutaDestino, { replace: true });
     }
   }, [sesion, slugActivo, navigate]);
 
@@ -134,7 +134,7 @@ export default function ClientePortalPage() {
 
   const handleCerrarSesion = () => {
     clientesService.cerrarSesion(slugActivo);
-    navigate(slugActivo ? `/${slugActivo}` : '/', { replace: true });
+    void navigate(slugActivo ? `/${slugActivo}` : '/', { replace: true });
   };
 
   const handleGuardarTelefono = async (e: React.FormEvent) => {
@@ -536,12 +536,13 @@ export default function ClientePortalPage() {
               <form onSubmit={handleGuardarTelefono}>
                 <div className="row g-3">
                   <div className="col-12 col-sm-6">
-                    <label className="form-label small fw-semibold text-muted">Nombre</label>
+                    <label htmlFor="cliente-perfil-nombre" className="form-label small fw-semibold text-muted">Nombre</label>
                     <div className="input-group">
                       <span className="input-group-text cliente-portal__input-addon">
                         <User size={16} />
                       </span>
                       <input
+                        id="cliente-perfil-nombre"
                         type="text"
                         className="form-control cliente-portal__form-control"
                         value={perfil?.nombre || sesion?.nombre || ''}
@@ -552,8 +553,9 @@ export default function ClientePortalPage() {
                   </div>
 
                   <div className="col-12 col-sm-6">
-                    <label className="form-label small fw-semibold text-muted">Apellido</label>
+                    <label htmlFor="cliente-perfil-apellido" className="form-label small fw-semibold text-muted">Apellido</label>
                     <input
+                      id="cliente-perfil-apellido"
                       type="text"
                       className="form-control cliente-portal__form-control"
                       value={perfil?.apellido || sesion?.apellido || ''}
@@ -563,7 +565,7 @@ export default function ClientePortalPage() {
                   </div>
 
                   <div className="col-12">
-                    <label className="form-label small fw-semibold text-muted">
+                    <label htmlFor="cliente-perfil-email" className="form-label small fw-semibold text-muted">
                       Correo Electrónico de Google
                     </label>
                     <div className="input-group">
@@ -571,6 +573,7 @@ export default function ClientePortalPage() {
                         <Mail size={16} />
                       </span>
                       <input
+                        id="cliente-perfil-email"
                         type="email"
                         className="form-control cliente-portal__form-control"
                         value={perfil?.email || sesion?.email || ''}

@@ -28,23 +28,25 @@ export const HomePage: React.FC = () => {
     if (isInitializing) return;
     // Si inicia sesión pero no posee ningún rol en la aplicación o está bloqueado globalmente, redirigir a "Sin Acceso"
     if (isAuthenticated && (!tienePermiso || usuarioDb?.estado === 'INACTIVO')) {
-      navigate('/sin-acceso');
+      void navigate('/sin-acceso');
     }
   }, [isInitializing, isAuthenticated, tienePermiso, usuarioDb, navigate]);
 
-  const handleReservarGeneral = () => navigate(`${basePrefix}/reservar`);
+  const handleReservarGeneral = () => { void navigate(`${basePrefix}/reservar`); };
 
-  const handleReservarServicio = (servicio: Servicio) =>
-    navigate(`${basePrefix}/reservar`, { state: { servicioId: servicio.id, origen: 'servicio' } });
+  const handleReservarServicio = (servicio: Servicio) => {
+    void navigate(`${basePrefix}/reservar`, { state: { servicioId: servicio.id, origen: 'servicio' } });
+  };
 
-  const handleReservarBarbero = (barbero: BarberoCatalogo, servicioId?: number) =>
-    navigate(`${basePrefix}/reservar`, {
+  const handleReservarBarbero = (barbero: BarberoCatalogo, servicioId?: number) => {
+    void navigate(`${basePrefix}/reservar`, {
       state: {
         barberoId: barbero.id,
         origen: 'barbero',
         ...(servicioId ? { servicioId, paso: 3 } : {}),
       },
     });
+  };
 
   return (
     <div className="kyrios-home min-vh-100 d-flex flex-column">

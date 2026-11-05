@@ -31,6 +31,7 @@ import {
 } from '../../../config/tenantTheme';
 import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import { useToastContext } from '../../../shared/ui/ToastContext';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import { Share2 } from 'lucide-react';
 import { RedesSocialesSection } from '../components/RedesSocialesSection';
@@ -42,9 +43,9 @@ function extraerCoordenadas(texto: string): { lat: number; lng: number } | null 
   // 1. Patrón en URLs de Google Maps con @lat,lng
   const matchAt = limpio.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
   if (matchAt) {
-    const lat = parseFloat(matchAt[1]);
-    const lng = parseFloat(matchAt[2]);
-    if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+    const lat = Number.parseFloat(matchAt[1]);
+    const lng = Number.parseFloat(matchAt[2]);
+    if (!Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
       return { lat, lng };
     }
   }
@@ -52,9 +53,9 @@ function extraerCoordenadas(texto: string): { lat: number; lng: number } | null 
   // 2. Patrón en parámetros de consulta (?q=lat,lng o ?query=lat,lng o ?ll=lat,lng)
   const matchQuery = limpio.match(/[?&](?:q|query|ll)=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
   if (matchQuery) {
-    const lat = parseFloat(matchQuery[1]);
-    const lng = parseFloat(matchQuery[2]);
-    if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+    const lat = Number.parseFloat(matchQuery[1]);
+    const lng = Number.parseFloat(matchQuery[2]);
+    if (!Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
       return { lat, lng };
     }
   }
@@ -62,19 +63,19 @@ function extraerCoordenadas(texto: string): { lat: number; lng: number } | null 
   // 3. Patrón simple: dos números decimales separados por coma, espacio o punto y coma
   const matchSimple = limpio.match(/^(-?\d+(?:\.\d+)?)[,\s;]+(-?\d+(?:\.\d+)?)$/);
   if (matchSimple) {
-    const lat = parseFloat(matchSimple[1]);
-    const lng = parseFloat(matchSimple[2]);
-    if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+    const lat = Number.parseFloat(matchSimple[1]);
+    const lng = Number.parseFloat(matchSimple[2]);
+    if (!Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
       return { lat, lng };
     }
   }
 
   // 4. Buscar dos números decimales consecutivos en cualquier parte del texto
-  const matchAny = limpio.match(/(-?\d+\.\d+)[,\s;]+(-?\d+\.\d+)/);
+  const matchAny = /(-?\d+\.\d+)[\s,;]+?(-?\d+\.\d+)/.exec(limpio);
   if (matchAny) {
-    const lat = parseFloat(matchAny[1]);
-    const lng = parseFloat(matchAny[2]);
-    if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+    const lat = Number.parseFloat(matchAny[1]);
+    const lng = Number.parseFloat(matchAny[2]);
+    if (!Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
       return { lat, lng };
     }
   }
@@ -86,6 +87,7 @@ export default function ConfiguracionNegocioPage() {
   const { slug: paramSlug } = useParams<{ slug?: string }>();
   const slugActivo = paramSlug || obtenerNegocioSlugActivo() || 'kyrios-studio';
   const { showToast } = useToastContext();
+  const confirm = useConfirm();
 
   const [cargando, setCargando] = useState<boolean>(true);
   const [guardando, setGuardando] = useState<boolean>(false);
@@ -167,13 +169,13 @@ export default function ConfiguracionNegocioPage() {
     let lngNum: number | undefined = undefined;
 
     if (tieneLat && tieneLng) {
-      latNum = parseFloat(latitud);
-      lngNum = parseFloat(longitud);
-      if (isNaN(latNum) || latNum < -90 || latNum > 90) {
+      latNum = Number.parseFloat(latitud);
+      lngNum = Number.parseFloat(longitud);
+      if (Number.isNaN(latNum) || latNum < -90 || latNum > 90) {
         showToast('danger', 'La latitud debe ser un número válido entre -90 y 90.');
         return;
       }
-      if (isNaN(lngNum) || lngNum < -180 || lngNum > 180) {
+      if (Number.isNaN(lngNum) || lngNum < -180 || lngNum > 180) {
         showToast('danger', 'La longitud debe ser un número válido entre -180 y 180.');
         return;
       }
@@ -292,7 +294,23 @@ export default function ConfiguracionNegocioPage() {
 
   // Eliminar un recurso de marca
   const handleEliminarRecurso = async (tipo: TipoRecursoPerfil) => {
-    if (!window.confirm(`¿Estás seguro de eliminar el recurso (${tipo}) de esta barbería?`)) {
+    const etiquetas: Record<TipoRecursoPerfil, string> = {
+      banner: "el Banner Principal",
+      "logo-blanco": "el Logo Modo Oscuro (Blanco)",
+      "logo-negro": "el Logo Modo Claro (Negro)",
+      favicon: "el Favicon del Sitio",
+    };
+    const etiqueta = etiquetas[tipo] || tipo;
+
+    const aceptado = await confirm({
+      title: "Eliminar Recurso de Marca",
+      message: `¿Estás seguro de que deseas eliminar ${etiqueta} de esta barbería? Esta acción no se puede deshacer.`,
+      confirmLabel: "Eliminar recurso",
+      cancelLabel: "Cancelar",
+      variant: "danger",
+    });
+
+    if (!aceptado) {
       return;
     }
 
@@ -430,12 +448,13 @@ export default function ConfiguracionNegocioPage() {
               <form onSubmit={handleGuardarDatos}>
                 {/* Lema o Frase Principal */}
                 <div className="mb-3">
-                  <label className="form-label fw-semibold small">
+                  <label htmlFor="input-frase-principal" className="form-label fw-semibold small">
                     Frase Principal / Lema de la Barbería
                   </label>
                   <input
                     type="text"
                     className="form-control"
+                    id="input-frase-principal"
                     placeholder="Ej. Barbería de alto estándar · Popayán"
                     maxLength={255}
                     value={frasePrincipal}
@@ -449,10 +468,11 @@ export default function ConfiguracionNegocioPage() {
                 {/* Dirección y Referencia */}
                 <div className="row g-3 mb-3">
                   <div className="col-12 col-md-8">
-                    <label className="form-label fw-semibold small">Dirección Oficial</label>
+                    <label htmlFor="input-direccion" className="form-label fw-semibold small">Dirección Oficial</label>
                     <input
                       type="text"
                       className="form-control"
+                      id="input-direccion"
                       placeholder="Ej. Cra 9 # 18N - 45, Local 2"
                       maxLength={255}
                       value={direccion}
@@ -460,10 +480,11 @@ export default function ConfiguracionNegocioPage() {
                     />
                   </div>
                   <div className="col-12 col-md-4">
-                    <label className="form-label fw-semibold small">Ciudad</label>
+                    <label htmlFor="input-ciudad" className="form-label fw-semibold small">Ciudad</label>
                     <input
                       type="text"
                       className="form-control"
+                      id="input-ciudad"
                       placeholder="Ej. Popayán"
                       maxLength={100}
                       value={ciudad}
@@ -474,10 +495,11 @@ export default function ConfiguracionNegocioPage() {
 
                 <div className="row g-3 mb-3">
                   <div className="col-12 col-md-6">
-                    <label className="form-label fw-semibold small">Departamento / Provincia</label>
+                    <label htmlFor="input-departamento" className="form-label fw-semibold small">Departamento / Provincia</label>
                     <input
                       type="text"
                       className="form-control"
+                      id="input-departamento"
                       placeholder="Ej. Cauca"
                       maxLength={100}
                       value={departamento}
@@ -485,10 +507,11 @@ export default function ConfiguracionNegocioPage() {
                     />
                   </div>
                   <div className="col-12 col-md-6">
-                    <label className="form-label fw-semibold small">Referencia de Llegada</label>
+                    <label htmlFor="input-referencia" className="form-label fw-semibold small">Referencia de Llegada</label>
                     <input
                       type="text"
                       className="form-control"
+                      id="input-referencia"
                       placeholder="Ej. Frente al Centro Comercial"
                       maxLength={255}
                       value={referencia}
@@ -613,22 +636,24 @@ export default function ConfiguracionNegocioPage() {
                     <div className="p-3 rounded bg-body border mt-2">
                       <div className="row g-3">
                         <div className="col-12 col-md-6">
-                          <label className="form-label small text-muted mb-1" style={{ fontSize: '0.76rem' }}>Latitud decimal</label>
+                          <label htmlFor="input-latitud-decimal" className="form-label small text-muted mb-1" style={{ fontSize: '0.76rem' }}>Latitud decimal</label>
                           <input
                             type="number"
                             step="any"
                             className="form-control form-control-sm"
+                            id="input-latitud-decimal"
                             placeholder="Ej. 2.483989"
                             value={latitud}
                             onChange={(e) => setLatitud(e.target.value)}
                           />
                         </div>
                         <div className="col-12 col-md-6">
-                          <label className="form-label small text-muted mb-1" style={{ fontSize: '0.76rem' }}>Longitud decimal</label>
+                          <label htmlFor="input-longitud-decimal" className="form-label small text-muted mb-1" style={{ fontSize: '0.76rem' }}>Longitud decimal</label>
                           <input
                             type="number"
                             step="any"
                             className="form-control form-control-sm"
+                            id="input-longitud-decimal"
                             placeholder="Ej. -76.580762"
                             value={longitud}
                             onChange={(e) => setLongitud(e.target.value)}

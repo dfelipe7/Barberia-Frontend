@@ -287,7 +287,7 @@ export function AuthContextProvider({
   useEffect(() => {
     if (isInitializing) return;
     if (token) {
-      refrescarPerfil();
+      void refrescarPerfil();
     }
   }, [isInitializing, token, refrescarPerfil]);
 
@@ -299,7 +299,7 @@ export function AuthContextProvider({
       const now = Date.now();
       if (now - lastFocusRefreshRef.current > 5000) {
         lastFocusRefreshRef.current = now;
-        refrescarPerfil();
+        void refrescarPerfil();
       }
     };
     window.addEventListener('focus', handleFocus);
@@ -311,7 +311,7 @@ export function AuthContextProvider({
     if (!token) return;
     const interval = setInterval(() => {
       if (document.visibilityState === 'visible') {
-        refrescarPerfil();
+        void refrescarPerfil();
       }
     }, 45000);
     return () => clearInterval(interval);

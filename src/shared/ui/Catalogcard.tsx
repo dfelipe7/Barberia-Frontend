@@ -70,6 +70,7 @@ export function CatalogCard({
     <div
       className={`catalog-card position-relative ${isActive ? 'is-active' : 'is-inactive'}`}
       onClick={isActive ? onClick : undefined}
+      onKeyDown={onClick && isActive ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } } : undefined}
       role={onClick ? 'button' : undefined}
       aria-disabled={onClick && !isActive ? true : undefined}
       tabIndex={onClick ? (isActive ? 0 : -1) : undefined}

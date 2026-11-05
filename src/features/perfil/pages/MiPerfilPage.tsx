@@ -52,7 +52,7 @@ export const MiPerfilPage: React.FC = () => {
   });
 
   useEffect(() => {
-    refrescarPerfil();
+    void refrescarPerfil();
   }, [refrescarPerfil]);
 
   useEffect(() => {
@@ -136,7 +136,7 @@ export const MiPerfilPage: React.FC = () => {
       cancelLabel: 'Cancelar',
     });
     if (!ok) return;
-    navigate(`/usuarios/${usuarioDb.id}/editar`, { state: { from: '/mi-perfil' } });
+    void navigate(`/usuarios/${usuarioDb.id}/editar`, { state: { from: '/mi-perfil' } });
   };
 
   return (

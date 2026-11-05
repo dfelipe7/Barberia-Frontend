@@ -110,7 +110,7 @@ export default function LandingPlataformaPage() {
                     <h3 className="h5 fw-bold text-white mt-2 mb-0">Barbería Demo 2 &middot; Sede Principal</h3>
                   </div>
                   <span className="text-success small fw-semibold d-flex align-items-center gap-1">
-                    <span className="p-1 rounded-circle bg-success d-inline-block"></span>
+                    <span className="p-1 rounded-circle bg-success d-inline-block"></span>{' '}
                     En línea
                   </span>
                 </div>

@@ -417,7 +417,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                   <button
                     type="button"
                     className="btn-kyrios-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
-                    onClick={() => { closeMobileMenu(); navigate('/dashboard'); }}
+                    onClick={() => { closeMobileMenu(); void navigate('/dashboard'); }}
                   >
                     <LayoutDashboard size={15} strokeWidth={2} />
                     Ir a mi panel
@@ -426,7 +426,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                     <button
                       type="button"
                       className="btn-kyrios-outline w-100 d-inline-flex align-items-center justify-content-center gap-2"
-                      onClick={() => { closeMobileMenu(); navigate('/mi-perfil'); }}
+                      onClick={() => { closeMobileMenu(); void navigate('/mi-perfil'); }}
                     >
                       <User size={15} strokeWidth={2} />
                       Mi Perfil
