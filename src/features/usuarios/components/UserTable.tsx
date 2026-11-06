@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { UserCog, Shield, Eye, Pencil, UserMinus, UserCheck, Lock, Unlock, Scissors } from 'lucide-react';
+import { UserCog, Shield, Eye, Pencil, UserMinus, UserCheck } from 'lucide-react';
 import Table, { type Column } from '../../../shared/ui/Table';
 import AccionesDropdown from '../../../shared/ui/AccionesDropdown';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
@@ -13,8 +13,8 @@ interface UserTableProps {
   administradores: AdministradorGestion[];
   onSelectUsuario: (admin: AdministradorGestion) => void;
   onCambiarEstado: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
-  onCambiarEstadoGlobal: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
-  onConfigurarBarbero: (admin: AdministradorGestion) => void;
+  onCambiarEstadoGlobal?: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
+  onConfigurarBarbero?: (admin: AdministradorGestion) => void;
   esSuperAdmin: boolean;
   currentUserId?: number;
   isUpdatingId?: number | null;
@@ -26,23 +26,13 @@ interface AdminActionsProps {
   currentUserId?: number;
   esSuperAdmin: boolean;
   isUpdatingId?: number | null;
-  isUpdatingGlobalId?: number | null;
   onSelectUsuario: (admin: AdministradorGestion) => void;
-  onConfigurarBarbero: (admin: AdministradorGestion) => void;
   onCambiarEstado: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
-  onCambiarEstadoGlobal: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
-}
-
-function resolverTituloBloqueoGlobal(esMismoUsuario: boolean, esSuperAdminAdmin: boolean, estadoActivo: boolean): string {
-  if (esMismoUsuario) return 'No puedes bloquear tu propia cuenta';
-  if (esSuperAdminAdmin) return 'No se puede bloquear la cuenta de un Superadministrador';
-  if (estadoActivo) return 'Bloquear cuenta completa (no podrá iniciar sesión)';
-  return 'Desbloquear cuenta global';
 }
 
 function resolverTituloRolAdmin(esSuperAdminAdmin: boolean, estadoAdminActivo: boolean): string {
   if (esSuperAdminAdmin) return 'No se pueden modificar los privilegios de un Superadministrador';
-  if (estadoAdminActivo) return 'Desactivar rol (el usuario sigue activo)';
+  if (estadoAdminActivo) return 'Desactivar rol de administrador';
   return 'Activar rol de administrador';
 }
 
@@ -52,27 +42,17 @@ function resolverIconoRolAdmin(isCurrentUpdating: boolean, estadoAdminActivo: bo
   return <UserCheck size={18} />;
 }
 
-function resolverIconoBloqueoGlobal(isCurrentUpdatingGlobal: boolean, isActivo: boolean) {
-  if (isCurrentUpdatingGlobal) return <KyriosSpinner size="xs" aria-hidden="true" />;
-  if (isActivo) return <Lock size={18} />;
-  return <Unlock size={18} />;
-}
-
 const AdminActionsDropdown: React.FC<AdminActionsProps> = ({
   admin,
   currentUserId,
   esSuperAdmin,
   isUpdatingId,
-  isUpdatingGlobalId,
   onSelectUsuario,
-  onConfigurarBarbero,
   onCambiarEstado,
-  onCambiarEstadoGlobal,
 }) => {
   const esMismoUsuario = currentUserId === admin.id;
   const puedeEditar = esSuperAdmin || esMismoUsuario;
   const isCurrentUpdating = isUpdatingId === admin.id;
-  const isCurrentUpdatingGlobal = isUpdatingGlobalId === admin.id;
 
   const itemsPerfil = [
     {
@@ -90,14 +70,6 @@ const AdminActionsDropdown: React.FC<AdminActionsProps> = ({
       linkState: { from: '/usuarios?tab=administradores' },
       title: 'Editar datos del perfil',
     },
-    !admin.esBarbero &&
-      (esSuperAdmin || esMismoUsuario) && {
-        key: 'barbero',
-        label: 'Habilitar rol de barbero',
-        icon: <Scissors size={15} className="text-info" />,
-        onClick: () => onConfigurarBarbero(admin),
-        title: 'Convertir también en barbero',
-      },
   ];
 
   const itemsRolCuenta = [
@@ -106,7 +78,9 @@ const AdminActionsDropdown: React.FC<AdminActionsProps> = ({
         key: 'rol',
         label:
           admin.estadoAdmin === 'ACTIVO'
-            ? 'Desactivar rol (sigue activo)'
+            ? admin.esBarbero && admin.estadoBarbero === 'ACTIVO'
+              ? 'Desactivar rol (sigue como barbero)'
+              : 'Desactivar rol de administrador'
             : 'Activar rol de administrador',
         icon:
           admin.estadoAdmin === 'ACTIVO' ? (
@@ -123,29 +97,6 @@ const AdminActionsDropdown: React.FC<AdminActionsProps> = ({
           ),
         title: resolverTituloRolAdmin(Boolean(admin.esSuperAdmin), admin.estadoAdmin === 'ACTIVO'),
       },
-    esSuperAdmin && {
-      key: 'global',
-      label:
-        admin.estado === 'ACTIVO'
-          ? 'Bloquear cuenta completa'
-          : 'Desbloquear cuenta global',
-      icon:
-        admin.estado === 'ACTIVO' ? (
-          <Lock size={15} className="text-danger" />
-        ) : (
-          <Unlock size={15} className="text-success" />
-        ),
-      variant:
-        admin.estado === 'ACTIVO' ? ('danger' as const) : ('success' as const),
-      disabled: esMismoUsuario || isCurrentUpdatingGlobal || Boolean(admin.esSuperAdmin),
-      isLoading: isCurrentUpdatingGlobal,
-      onClick: () =>
-        onCambiarEstadoGlobal(
-          admin.id,
-          admin.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
-        ),
-      title: resolverTituloBloqueoGlobal(Boolean(esMismoUsuario), Boolean(admin.esSuperAdmin), admin.estado === 'ACTIVO'),
-    },
   ];
 
   return (
@@ -157,7 +108,7 @@ const AdminActionsDropdown: React.FC<AdminActionsProps> = ({
         items={itemsPerfil}
       />
 
-      {esSuperAdmin && (
+      {itemsRolCuenta.some(Boolean) && (
         <AccionesDropdown
           label="Rol y Cuenta"
           icon={<Shield size={15} />}
@@ -174,17 +125,12 @@ const AdminMobileActions: React.FC<AdminActionsProps> = ({
   currentUserId,
   esSuperAdmin,
   isUpdatingId,
-  isUpdatingGlobalId,
   onSelectUsuario,
-  onConfigurarBarbero,
   onCambiarEstado,
-  onCambiarEstadoGlobal,
 }) => {
   const esMismoUsuario = currentUserId === admin.id;
   const puedeEditar = esSuperAdmin || esMismoUsuario;
   const isCurrentUpdating = isUpdatingId === admin.id;
-  const isCurrentUpdatingGlobal = isUpdatingGlobalId === admin.id;
-  const isActivo = admin.estado === 'ACTIVO';
 
   return (
     <div className="d-flex flex-wrap gap-2 pt-2 justify-content-end">
@@ -210,18 +156,6 @@ const AdminMobileActions: React.FC<AdminActionsProps> = ({
         </Link>
       )}
 
-      {!admin.esBarbero && (esSuperAdmin || esMismoUsuario) && (
-        <button
-          type="button"
-          className="btn btn-outline-info mobile-action-btn"
-          onClick={() => onConfigurarBarbero(admin)}
-          title="Habilitar rol de barbero"
-          aria-label="Habilitar rol de barbero"
-        >
-          <Scissors size={18} />
-        </button>
-      )}
-
       {esSuperAdmin && !esMismoUsuario && (
         <button
           type="button"
@@ -243,24 +177,6 @@ const AdminMobileActions: React.FC<AdminActionsProps> = ({
           {resolverIconoRolAdmin(Boolean(isCurrentUpdating), admin.estadoAdmin === 'ACTIVO')}
         </button>
       )}
-
-      {esSuperAdmin && (
-        <button
-          type="button"
-          className={`btn ${isActivo ? 'btn-outline-danger' : 'btn-outline-success'} mobile-action-btn`}
-          disabled={esMismoUsuario || isCurrentUpdatingGlobal || Boolean(admin.esSuperAdmin)}
-          onClick={() =>
-            onCambiarEstadoGlobal(
-              admin.id,
-              isActivo ? 'INACTIVO' : 'ACTIVO'
-            )
-          }
-          title={resolverTituloBloqueoGlobal(Boolean(esMismoUsuario), Boolean(admin.esSuperAdmin), Boolean(isActivo))}
-          aria-label={isActivo ? 'Bloquear cuenta de usuario' : 'Desbloquear cuenta de usuario'}
-        >
-          {resolverIconoBloqueoGlobal(Boolean(isCurrentUpdatingGlobal), Boolean(isActivo))}
-        </button>
-      )}
     </div>
   );
 };
@@ -269,12 +185,11 @@ export const UserTable: React.FC<UserTableProps> = ({
   administradores,
   onSelectUsuario,
   onCambiarEstado,
-  onCambiarEstadoGlobal,
-  onConfigurarBarbero,
+  onCambiarEstadoGlobal: _onCambiarEstadoGlobal,
   esSuperAdmin,
   currentUserId,
   isUpdatingId,
-  isUpdatingGlobalId,
+  isUpdatingGlobalId: _isUpdatingGlobalId,
 }) => {
   const isMobile = useMediaQuery('(max-width: 767.98px)');
 
@@ -296,7 +211,7 @@ export const UserTable: React.FC<UserTableProps> = ({
     },
     {
       key: 'roles',
-      header: 'Perfiles Habilitados',
+      header: 'Perfil',
       className: 'text-center',
       render: (admin) => (
         <div className="d-flex flex-wrap justify-content-center gap-1">
@@ -315,9 +230,11 @@ export const UserTable: React.FC<UserTableProps> = ({
       key: 'estadoGlobal',
       header: 'Estado Global',
       className: 'text-center',
-      render: (admin) => (
-        <StatusBadge estado={admin.estado} tone="global" />
-      ),
+      render: (admin) => {
+        const isCuentaHabilitada =
+          admin.estadoAdmin === 'ACTIVO' || (admin.esBarbero && admin.estadoBarbero === 'ACTIVO');
+        return <StatusBadge estado={isCuentaHabilitada ? 'ACTIVO' : 'INACTIVO'} tone="global" />;
+      },
     },
     {
       key: 'estadoAdmin',
@@ -337,11 +254,8 @@ export const UserTable: React.FC<UserTableProps> = ({
           currentUserId={currentUserId}
           esSuperAdmin={esSuperAdmin}
           isUpdatingId={isUpdatingId}
-          isUpdatingGlobalId={isUpdatingGlobalId}
           onSelectUsuario={onSelectUsuario}
-          onConfigurarBarbero={onConfigurarBarbero}
           onCambiarEstado={onCambiarEstado}
-          onCambiarEstadoGlobal={onCambiarEstadoGlobal}
         />
       ),
     },
@@ -369,8 +283,9 @@ export const UserTable: React.FC<UserTableProps> = ({
     return (
       <div className="mobile-cards-container d-flex flex-column gap-3">
         {administradores.map((admin) => {
-          const isActivo = admin.estado === 'ACTIVO';
-          const borderColor = isActivo ? '#10B981' : '#EF4444';
+          const isCuentaHabilitada =
+            admin.estadoAdmin === 'ACTIVO' || (admin.esBarbero && admin.estadoBarbero === 'ACTIVO');
+          const borderColor = isCuentaHabilitada ? '#10B981' : '#EF4444';
 
           return (
             <div
@@ -413,7 +328,7 @@ export const UserTable: React.FC<UserTableProps> = ({
               <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 py-2 border-top border-bottom my-2 bg-surface-app px-2 rounded">
                 <div className="d-flex align-items-center gap-1">
                   <span className="text-muted small">Cuenta:</span>
-                  <StatusBadge estado={admin.estado} tone="global" />
+                  <StatusBadge estado={isCuentaHabilitada ? 'ACTIVO' : 'INACTIVO'} tone="global" />
                 </div>
                 <div className="d-flex align-items-center gap-1">
                   <span className="text-muted small">Rol:</span>
@@ -427,11 +342,8 @@ export const UserTable: React.FC<UserTableProps> = ({
                 currentUserId={currentUserId}
                 esSuperAdmin={esSuperAdmin}
                 isUpdatingId={isUpdatingId}
-                isUpdatingGlobalId={isUpdatingGlobalId}
                 onSelectUsuario={onSelectUsuario}
-                onConfigurarBarbero={onConfigurarBarbero}
                 onCambiarEstado={onCambiarEstado}
-                onCambiarEstadoGlobal={onCambiarEstadoGlobal}
               />
             </div>
           );

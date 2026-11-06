@@ -1971,6 +1971,7 @@
 /* Título de Hero con degradado cian eléctrico y resplandor cyber */
 [data-tenant-theme="midnight-cyan"] .kyrios-hero-title span {
   background: linear-gradient(135deg, #00d2ff 0%, #38bdf8 50%, #0066ff 100%) !important;
+  background-clip: text !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.45)) !important;
@@ -2861,6 +2862,7 @@
 /* Título de Hero con degradado cian eléctrico y resplandor cyber */
 [data-tenant-theme="midnight-cyan"] .kyrios-hero-title span {
   background: linear-gradient(135deg, #00d2ff 0%, #38bdf8 50%, #0066ff 100%) !important;
+  background-clip: text !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.45)) !important;
@@ -3715,6 +3717,7 @@
 /* Título de Hero con degradado carmesí y resplandor rubí */
 [data-tenant-theme="crimson-velvet"] .kyrios-hero-title span {
   background: linear-gradient(135deg, #ff4d6d 0%, #ef233c 50%, #ff758f 100%) !important;
+  background-clip: text !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   filter: drop-shadow(0 0 24px rgba(239, 35, 60, 0.5)) !important;

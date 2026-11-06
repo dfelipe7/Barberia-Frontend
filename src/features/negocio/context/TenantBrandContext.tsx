@@ -162,16 +162,22 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
   useEffect(() => {
     const temaId = (perfil?.temaKey as TenantThemeId) || resolverTemaTenant(slug);
     if (temaId) {
+      document.documentElement.setAttribute('data-tenant-theme', temaId);
       document.documentElement.dataset.tenantTheme = temaId;
     }
   }, [perfil?.temaKey, slug]);
-  // Escuchar evento global cuando se actualice la configuración en ConfiguracionNegocioPage
+
+  // Escuchar evento global cuando se actualice la configuración en ConfiguracionNegocioPage o selector
   useEffect(() => {
     const handleActualizado = () => {
       void cargarPerfil();
     };
     window.addEventListener('tenant-perfil-actualizado', handleActualizado);
-    return () => window.removeEventListener('tenant-perfil-actualizado', handleActualizado);
+    window.addEventListener('tenant-tema-cambiado', handleActualizado);
+    return () => {
+      window.removeEventListener('tenant-perfil-actualizado', handleActualizado);
+      window.removeEventListener('tenant-tema-cambiado', handleActualizado);
+    };
   }, [cargarPerfil]);
 
   const value: TenantBrandContextValue = {

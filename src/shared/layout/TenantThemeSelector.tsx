@@ -9,6 +9,7 @@ import {
 import { obtenerNegocioSlugActivo } from '../lib/http/axios';
 import { ToastContext } from '../ui/ToastContext';
 import { useTheme } from '../context/ThemeContext';
+import { perfilNegocioApi } from '../../features/negocio/services/perfilNegocioApi';
 
 interface TenantThemeSelectorProps {
   isDark?: boolean;
@@ -83,10 +84,20 @@ export const TenantThemeSelector: React.FC<TenantThemeSelectorProps> = ({ isDark
     };
   }, [isOpen]);
 
-  const handleSeleccionarTema = (nuevoTemaId: TenantThemeId) => {
+  const handleSeleccionarTema = async (nuevoTemaId: TenantThemeId) => {
     guardarTemaTenant(slug, nuevoTemaId);
     setTemaActual(nuevoTemaId);
     setIsOpen(false);
+    document.documentElement.dataset.tenantTheme = nuevoTemaId;
+    document.documentElement.setAttribute('data-tenant-theme', nuevoTemaId);
+
+    try {
+      await perfilNegocioApi.actualizarPerfil({ temaKey: nuevoTemaId });
+      window.dispatchEvent(new CustomEvent('tenant-perfil-actualizado'));
+    } catch {
+      // Si el usuario no tiene permisos para actualizar en BD (ej. público), queda aplicado localmente
+    }
+
     if (toastCtx?.showToast) {
       toastCtx.showToast('info', `Tema visual cambiado a: ${TEMAS_TENANT[nuevoTemaId].nombre}`);
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { UserCog, Shield, Eye, Percent, Camera, Pencil, Scissors, UserMinus, UserCheck, Lock, Unlock } from 'lucide-react';
+import { UserCog, Shield, Eye, Percent, Camera, Pencil, Scissors, UserMinus, UserCheck } from 'lucide-react';
 import Table, { type Column } from '../../../shared/ui/Table';
 import AccionesDropdown from '../../../shared/ui/AccionesDropdown';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
@@ -17,7 +17,7 @@ interface BarberoTableProps {
   onEditarComision: (barbero: BarberoGestion) => void;
   onEditarFoto: (barbero: BarberoGestion) => void; 
   onCambiarEstado: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
-  onCambiarEstadoGlobal: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
+  onCambiarEstadoGlobal?: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
   rolActorPrincipal: Rol; 
   currentUserId?: number;
   isUpdatingId?: number | null;
@@ -30,11 +30,11 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
   onEditarComision,
   onEditarFoto,
   onCambiarEstado,
-  onCambiarEstadoGlobal,
+  onCambiarEstadoGlobal: _onCambiarEstadoGlobal,
   rolActorPrincipal,
-  currentUserId,
+  currentUserId: _currentUserId,
   isUpdatingId,
-  isUpdatingGlobalId,
+  isUpdatingGlobalId: _isUpdatingGlobalId,
 }) => {
   const isMobile = useMediaQuery('(max-width: 767.98px)');
 
@@ -81,9 +81,11 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
       key: 'estadoGlobal',
       header: 'Estado Global',
       className: 'text-center',
-      render: (barbero) => (
-        <StatusBadge estado={barbero.estadoGlobal} tone="global" />
-      ),
+      render: (barbero) => {
+        const isCuentaHabilitada =
+          barbero.estado === 'ACTIVO' || (barbero.esAdministrador && barbero.estadoAdmin === 'ACTIVO');
+        return <StatusBadge estado={isCuentaHabilitada ? 'ACTIVO' : 'INACTIVO'} tone="global" />;
+      },
     },
     {
       key: 'estado',
@@ -98,9 +100,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
       header: 'Acciones',
       className: 'text-center',
       render: (barbero) => {
-        const esMismoUsuario = currentUserId === barbero.id;
         const isCurrentUpdating = isUpdatingId === barbero.id;
-        const isCurrentUpdatingGlobal = isUpdatingGlobalId === barbero.id;
         const puedeEditar = puedeGestionarEstado(rolActorPrincipal, 'BARBERO');
 
         const itemsPerfil = [
@@ -140,7 +140,9 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
             key: 'rol',
             label:
               barbero.estado === 'ACTIVO'
-                ? 'Desactivar rol (sigue activo)'
+                ? barbero.esAdministrador && barbero.estadoAdmin === 'ACTIVO'
+                  ? 'Desactivar rol (sigue como admin)'
+                  : 'Desactivar rol de barbero'
                 : 'Activar rol de barbero',
             icon:
               barbero.estado === 'ACTIVO' ? (
@@ -156,35 +158,8 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
               ),
             title:
               barbero.estado === 'ACTIVO'
-                ? 'Desactivar rol (el usuario sigue activo)'
+                ? 'Desactivar rol de barbero'
                 : 'Activar rol de barbero',
-          },
-          puedeEditar && {
-            key: 'global',
-            label:
-              barbero.estadoGlobal === 'ACTIVO'
-                ? 'Bloquear cuenta completa'
-                : 'Desbloquear cuenta global',
-            icon:
-              barbero.estadoGlobal === 'ACTIVO' ? (
-                <Lock size={15} className="text-danger" />
-              ) : (
-                <Unlock size={15} className="text-success" />
-              ),
-            variant:
-              barbero.estadoGlobal === 'ACTIVO' ? ('danger' as const) : ('success' as const),
-            disabled: esMismoUsuario,
-            isLoading: isCurrentUpdatingGlobal,
-            onClick: () =>
-              onCambiarEstadoGlobal(
-                barbero.id,
-                barbero.estadoGlobal === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
-              ),
-            title: esMismoUsuario
-              ? 'No puedes bloquear tu propia cuenta'
-              : barbero.estadoGlobal === 'ACTIVO'
-              ? 'Bloquear cuenta completa (no podrá iniciar sesión)'
-              : 'Desbloquear cuenta global',
           },
         ];
 
@@ -231,12 +206,11 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
     return (
       <div className="mobile-cards-container d-flex flex-column gap-3">
         {barberos.map((barbero) => {
-          const esMismoUsuario = currentUserId === barbero.id;
           const isCurrentUpdating = isUpdatingId === barbero.id;
-          const isCurrentUpdatingGlobal = isUpdatingGlobalId === barbero.id;
           const puedeEditar = puedeGestionarEstado(rolActorPrincipal, 'BARBERO');
-          const isActivo = barbero.estadoGlobal === 'ACTIVO';
-          const borderColor = isActivo ? '#10B981' : '#EF4444';
+          const isCuentaHabilitada =
+            barbero.estado === 'ACTIVO' || (barbero.esAdministrador && barbero.estadoAdmin === 'ACTIVO');
+          const borderColor = isCuentaHabilitada ? '#10B981' : '#EF4444';
 
           return (
             <div
@@ -278,7 +252,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
               <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 py-2 border-top border-bottom my-2 bg-surface-app px-2 rounded">
                 <div className="d-flex align-items-center gap-1">
                   <span className="text-muted small">Cuenta:</span>
-                  <StatusBadge estado={barbero.estadoGlobal} tone="global" />
+                  <StatusBadge estado={isCuentaHabilitada ? 'ACTIVO' : 'INACTIVO'} tone="global" />
                 </div>
                 <div className="d-flex align-items-center gap-1">
                   <span className="text-muted small">Rol:</span>
@@ -352,36 +326,6 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
                       <UserMinus size={18} />
                     ) : (
                       <UserCheck size={18} />
-                    )}
-                  </button>
-                )}
-
-                {puedeEditar && (
-                  <button
-                    type="button"
-                    className={`btn ${isActivo ? 'btn-outline-danger' : 'btn-outline-success'} mobile-action-btn`}
-                    disabled={esMismoUsuario || isCurrentUpdatingGlobal}
-                    onClick={() =>
-                      onCambiarEstadoGlobal(
-                        barbero.id,
-                        barbero.estadoGlobal === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
-                      )
-                    }
-                    title={
-                      esMismoUsuario
-                        ? 'No puedes bloquear tu propia cuenta'
-                        : isActivo
-                        ? 'Bloquear cuenta completa'
-                        : 'Desbloquear cuenta global'
-                    }
-                    aria-label={isActivo ? 'Bloquear cuenta completa' : 'Desbloquear cuenta global'}
-                  >
-                    {isCurrentUpdatingGlobal ? (
-                      <KyriosSpinner size="xs" aria-hidden="true" />
-                    ) : isActivo ? (
-                      <Lock size={18} />
-                    ) : (
-                      <Unlock size={18} />
                     )}
                   </button>
                 )}

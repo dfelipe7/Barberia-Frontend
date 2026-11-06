@@ -88,12 +88,17 @@ export const TEMAS_TENANT: Record<TenantThemeId, TenantThemeConfig> = {
  * 3. Fallback general: 'clasico-azul' (Kyrios)
  */
 export function resolverTemaTenant(slug?: string | null): TenantThemeId {
-  if (!slug) return 'clasico-azul';
-  const guardado = localStorage.getItem(`tema_negocio_${slug}`) as TenantThemeId | null;
-  if (guardado && TEMAS_TENANT[guardado]) {
-    return guardado;
+  if (slug) {
+    const guardado = localStorage.getItem(`tema_negocio_${slug}`) as TenantThemeId | null;
+    if (guardado && TEMAS_TENANT[guardado]) {
+      return guardado;
+    }
   }
-  if (slug.toLowerCase().includes('demo-2')) {
+  const guardadoActivo = localStorage.getItem('tema_negocio_activo') as TenantThemeId | null;
+  if (guardadoActivo && TEMAS_TENANT[guardadoActivo]) {
+    return guardadoActivo;
+  }
+  if (slug && slug.toLowerCase().includes('demo-2')) {
     return 'cyber-lime';
   }
   return 'clasico-azul';
@@ -102,7 +107,9 @@ export function resolverTemaTenant(slug?: string | null): TenantThemeId {
 export function guardarTemaTenant(slug: string, temaId: TenantThemeId) {
   if (!slug) return;
   localStorage.setItem(`tema_negocio_${slug}`, temaId);
+  localStorage.setItem('tema_negocio_activo', temaId);
   document.documentElement.dataset.tenantTheme = temaId;
+  document.documentElement.setAttribute('data-tenant-theme', temaId);
   window.dispatchEvent(new CustomEvent('tenant-tema-cambiado', { detail: { slug, temaId } }));
 }
 
