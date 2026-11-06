@@ -130,6 +130,8 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
       render: (barbero) => {
         const isCurrentUpdating = isUpdatingId === barbero.id;
         const puedeEditar = puedeGestionarBarbero(rolActorPrincipal, barbero, currentUserId);
+        const puedeGestionarComision =
+          rolActorPrincipal === 'SUPERADMIN' || rolActorPrincipal === 'ADMINISTRADOR';
 
         const itemsPerfil = [
           {
@@ -147,7 +149,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
             linkState: { from: '/usuarios?tab=barberos' },
             title: 'Editar datos del perfil',
           },
-          puedeEditar && {
+          puedeGestionarComision && {
             key: 'comision',
             label: 'Cambiar % de comisión',
             icon: <Percent size={15} className="text-warning-emphasis" />,

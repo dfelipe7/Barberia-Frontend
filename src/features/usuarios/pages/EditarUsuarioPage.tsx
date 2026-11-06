@@ -108,6 +108,7 @@ export const EditarUsuarioPage: React.FC = () => {
   const editandoPropioPerfil = usuarioDb?.id === usuarioId;
   const rolActorPrincipal = resolverRolActor(roles);
   const esSuperadmin = rolActorPrincipal === 'SUPERADMIN';
+  const puedeEditarComision = esSuperadmin || rolActorPrincipal === 'ADMINISTRADOR';
 
   const {
     data: usuario,
@@ -262,7 +263,7 @@ export const EditarUsuarioPage: React.FC = () => {
           apellido: data.apellido,
           ...(data.esBarbero && {
             telefono: data.telefono,
-            porcentajeComision: data.porcentajeComision,
+            ...(puedeEditarComision && { porcentajeComision: data.porcentajeComision }),
           }),
           esAdministrador: noPuedeRevocarAdmin ? true : data.esAdministrador,
           esBarbero: data.esBarbero,
@@ -430,8 +431,13 @@ export const EditarUsuarioPage: React.FC = () => {
                       registerProps={register('porcentajeComision', { valueAsNumber: true })}
                       onChange={(n) => setValue('porcentajeComision', n, { shouldValidate: true })}
                       error={errors.porcentajeComision?.message}
-                      disabled={actualizarUsuarioMutation.isPending}
+                      disabled={actualizarUsuarioMutation.isPending || !puedeEditarComision}
                     />
+                    {!puedeEditarComision && (
+                      <small className="text-muted d-block mt-1">
+                        El porcentaje de comisión solo puede ser modificado por un administrador.
+                      </small>
+                    )}
                   </div>
                 </div>
               </div>
