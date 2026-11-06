@@ -69,11 +69,19 @@ export function useCambiarEstadoBarbero() {
 export function useCambiarEstadoGlobalBarbero() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, datos }: { id: number; datos: CambiarEstadoBarberoDTO }) =>
-      barberosService.cambiarEstadoGlobalBarbero(id, datos),
+    mutationFn: ({
+      id,
+      datos,
+      tipo = 'barbero',
+    }: {
+      id: number;
+      datos: CambiarEstadoBarberoDTO;
+      tipo?: 'barbero' | 'ambos';
+    }) => barberosService.cambiarEstadoGlobalBarbero(id, datos, tipo),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: barberosKeys.gestion() });
       void queryClient.invalidateQueries({ queryKey: barberosKeys.catalogo() });
+      void queryClient.invalidateQueries({ queryKey: ['administradores'] });
     },
   });
 }

@@ -66,9 +66,9 @@ export function obtenerNegocioSlugActivo(): string | null {
     } catch {}
 
     // 3. Fallback de respaldo solo si la pestaña nunca ha visitado una sede con prefijo
-    const sesionSlug = localStorage.getItem('negocio_sesion_slug')?.toLowerCase().trim();
-    if (sesionSlug && !RUTAS_RESERVADAS.has(sesionSlug)) {
-      return sesionSlug;
+    const localSlug = (localStorage.getItem('negocio_sesion_slug') || localStorage.getItem('negocio_slug'))?.toLowerCase().trim();
+    if (localSlug && !RUTAS_RESERVADAS.has(localSlug)) {
+      return localSlug;
     }
 
     return null;

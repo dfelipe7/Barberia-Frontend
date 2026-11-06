@@ -111,7 +111,6 @@ El diseño visual es dinámico y reactivo a nivel de nodo raíz (`<html data-ten
 | :--- | :--- | :--- | :--- |
 | `clasico-azul` | Azul Zafiro Clásico | `#0071BC` | Barlow Condensed |
 | `cyber-lime` | Cyber Lime Urbano | `#22c55e` | Outfit / Sans-serif |
-| `oro-vip` | Oro Champagne Vintage | `#D4AF37` | Cinzel / Serif Clásica |
 | `sunset-amber` | Sunset Amber Cálido | `#ff6b35` | Plus Jakarta Sans |
 | `midnight-cyan` | Midnight Cyan Neón | `#00d2ff` | Orbitron / Futurista |
 | `crimson-velvet` | Crimson Velvet Rubí | `#ef233c` | Playfair Display / Editorial |

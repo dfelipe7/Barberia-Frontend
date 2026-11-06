@@ -16,6 +16,7 @@ import {
   CalendarCheck,
 } from 'lucide-react';
 import type { BarberoCatalogo } from '../../../features/barberos/types/barberos.types';
+import type { Servicio } from '../../../features/servicios/types/servicios.types';
 import { useServiciosPorBarbero } from '../../../features/servicios/api/servicios.facade';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import Modal from '../../../shared/ui/Modal';
@@ -30,6 +31,108 @@ export interface BarberProfileModalProps {
 }
 
 type TabType = 'perfil' | 'servicios' | 'portfolio' | 'resenas';
+
+function formatearPrecio(valor: number | string): string {
+  const num = typeof valor === 'number' ? valor : Number(valor) || 0;
+  return new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    maximumFractionDigits: 0,
+  }).format(num);
+}
+
+interface TabServiciosBarberoProps {
+  cargando: boolean;
+  error: any;
+  servicios: Servicio[];
+  barbero: BarberoCatalogo;
+  onReservar: (barbero: BarberoCatalogo, servicioId: number) => void;
+  onClose: () => void;
+}
+
+const TabServiciosBarbero: React.FC<TabServiciosBarberoProps> = ({
+  cargando,
+  error,
+  servicios,
+  barbero,
+  onReservar,
+  onClose,
+}) => {
+  if (cargando) {
+    return (
+      <div className="text-center py-4 d-flex flex-column align-items-center justify-content-center">
+        <KyriosSpinner size="sm" />
+        <span className="small text-muted mt-2">Cargando servicios del barbero...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-4 px-2">
+        <AlertCircle size={24} className="text-danger mb-2" />
+        <p className="small text-muted mb-0">
+          No pudimos cargar los servicios de este barbero en este momento.
+        </p>
+      </div>
+    );
+  }
+
+  if (servicios.length === 0) {
+    return (
+      <div className="text-center py-4 px-2">
+        <Scissors size={28} className="text-secondary opacity-50 mb-2" />
+        <p className="small text-muted mb-1">
+          Este barbero no tiene servicios asignados actualmente en el sistema.
+        </p>
+      </div>
+    );
+  }
+
+  const nombreCompleto = `${barbero.nombre} ${barbero.apellido}`.trim();
+
+  return (
+    <div className="barber-modal-service-list">
+      {servicios.map((servicio) => (
+        <button
+          key={servicio.id}
+          type="button"
+          className="barber-modal-service-item barber-modal-service-item--interactive w-100 text-start border-0 bg-transparent p-0"
+          onClick={() => {
+            onReservar(barbero, servicio.id);
+            onClose();
+          }}
+          title={`Reservar ${servicio.nombre} con ${nombreCompleto}`}
+        >
+          <div className="barber-modal-service-main">
+            <div className="barber-modal-service-icon">
+              <Scissors size={16} className="barber-modal-scissor-icon" />
+            </div>
+            <div className="barber-modal-service-info">
+              <h4 className="barber-modal-service-name">{servicio.nombre}</h4>
+              <div className="barber-modal-service-meta">
+                <span className="barber-modal-service-duration">
+                  <Clock size={12} />
+                  <span>{servicio.duracionMinutos} min</span>
+                </span>
+                {servicio.descripcion && (
+                  <span className="barber-modal-service-desc" title={servicio.descripcion}>
+                    · {servicio.descripcion}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="barber-modal-service-side">
+            <span className="barber-modal-service-price">{formatearPrecio(servicio.precio)}</span>
+            <span className="barber-modal-service-cta-badge">Elegir</span>
+          </div>
+        </button>
+      ))}
+    </div>
+  );
+};
 
 export const BarberProfileModal: React.FC<BarberProfileModalProps> = ({
   isOpen,
@@ -53,15 +156,6 @@ export const BarberProfileModal: React.FC<BarberProfileModalProps> = ({
   const fotoUrl = obtenerUrlFoto(barbero.fotoUrl);
   const nombreCompleto = `${barbero.nombre} ${barbero.apellido}`.trim();
   const iniciales = `${barbero.nombre.charAt(0)}${barbero.apellido.charAt(0)}`.toUpperCase();
-
-  const formatearPrecio = (valor: number | string) => {
-    const num = typeof valor === 'number' ? valor : Number(valor) || 0;
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      maximumFractionDigits: 0,
-    }).format(num);
-  };
 
   const handleShare = async () => {
     try {
@@ -293,83 +387,14 @@ export const BarberProfileModal: React.FC<BarberProfileModalProps> = ({
 
         {/* Tab 2: Servicios */}
         {activeTab === 'servicios' && (
-          <div className="barber-modal-service-list">
-            {cargandoServicios && (
-              <div className="text-center py-4 d-flex flex-column align-items-center justify-content-center">
-                <KyriosSpinner size="sm" />
-                <span className="small text-muted mt-2">Cargando servicios del barbero...</span>
-              </div>
-            )}
-
-            {!cargandoServicios && errorServicios && (
-              <div className="text-center py-4 px-2">
-                <AlertCircle size={24} className="text-danger mb-2" />
-                <p className="small text-muted mb-0">
-                  No pudimos cargar los servicios de este barbero en este momento.
-                </p>
-              </div>
-            )}
-
-            {!cargandoServicios && !errorServicios && servicios.length === 0 && (
-              <div className="text-center py-4 px-2">
-                <Scissors size={28} className="text-secondary opacity-50 mb-2" />
-                <p className="small text-muted mb-1">
-                  Este barbero no tiene servicios asignados actualmente en el sistema.
-                </p>
-              </div>
-            )}
-
-            {!cargandoServicios &&
-              !errorServicios &&
-              servicios.map((servicio) => (
-                <div
-                  key={servicio.id}
-                  className="barber-modal-service-item barber-modal-service-item--interactive"
-                  onClick={() => {
-                    onReservar(barbero, servicio.id);
-                    onClose();
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      onReservar(barbero, servicio.id);
-                      onClose();
-                    }
-                  }}
-                  title={`Reservar ${servicio.nombre} con ${nombreCompleto}`}
-                >
-                  <div className="barber-modal-service-main">
-                    <div className="barber-modal-service-icon">
-                      <Scissors size={16} className="barber-modal-scissor-icon" />
-                    </div>
-                    <div className="barber-modal-service-info">
-                      <h4 className="barber-modal-service-name">{servicio.nombre}</h4>
-                      <div className="barber-modal-service-meta">
-                        <span className="barber-modal-service-duration">
-                          <Clock size={12} />
-                          <span>{servicio.duracionMinutos} min</span>
-                        </span>
-                        {servicio.descripcion && (
-                          <span
-                            className="barber-modal-service-desc"
-                            title={servicio.descripcion}
-                          >
-                            · {servicio.descripcion}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="barber-modal-service-side">
-                    <span className="barber-modal-service-price">{formatearPrecio(servicio.precio)}</span>
-                    <span className="barber-modal-service-cta-badge">Elegir</span>
-                  </div>
-                </div>
-              ))}
-          </div>
+          <TabServiciosBarbero
+            cargando={cargandoServicios}
+            error={errorServicios}
+            servicios={servicios}
+            barbero={barbero}
+            onReservar={onReservar}
+            onClose={onClose}
+          />
         )}
 
         {/* Tab 3: Portfolio */}

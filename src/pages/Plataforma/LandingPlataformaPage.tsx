@@ -61,7 +61,8 @@ export default function LandingPlataformaPage() {
           </div>
 
           <h1 className="saas-hero__title">
-            El sistema operativo definitivo para <span className="saas-hero__title-gradient">barberías de alto estándar</span>
+            El sistema operativo definitivo para{' '}
+            <span className="saas-hero__title-gradient">barberías de alto estándar</span>
           </h1>
 
           <p className="saas-hero__subtitle">

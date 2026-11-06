@@ -20,5 +20,7 @@ export interface BarberoGestion {
   estadoAdmin?: EstadoEntidad;
   estadoGlobal: EstadoEntidad;
   esAdministrador: boolean;
+  /** Superadmin de esta barbería (membresía). Su perfil es de solo lectura para terceros. */
+  esSuperAdmin?: boolean;
   fotoUrl?: string | null;
 }

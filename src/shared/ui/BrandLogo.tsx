@@ -38,6 +38,48 @@ export interface BrandLogoProps {
  * de la barbería al lado. Si la sede aún no ha configurado sus logos o si la
  * imagen falla, recurre de forma transparente a los assets predeterminados de BRAND.
  */
+interface LogoSrcParams {
+  resolvedVariant: 'black' | 'white';
+  imageError: boolean;
+  logoBlancoUrl?: string | null;
+  logoNegroUrl?: string | null;
+  isDifferentTenant: boolean;
+}
+
+function resolverSrcLogo({
+  resolvedVariant,
+  imageError,
+  logoBlancoUrl,
+  logoNegroUrl,
+  isDifferentTenant,
+}: LogoSrcParams): { src: string; isCustomLogo: boolean } {
+  const fallbackSrc = resolvedVariant === 'white' ? BRAND.assets.logoWhite : BRAND.assets.logoBlack;
+
+  if (imageError) {
+    return {
+      src: isDifferentTenant ? BRAND.assets.iconKyrios : fallbackSrc,
+      isCustomLogo: false,
+    };
+  }
+
+  const customUrl = resolvedVariant === 'white' ? logoBlancoUrl : logoNegroUrl;
+  if (customUrl) {
+    return { src: customUrl, isCustomLogo: true };
+  }
+
+  if (isDifferentTenant) {
+    return { src: BRAND.assets.iconKyrios, isCustomLogo: false };
+  }
+
+  return { src: fallbackSrc, isCustomLogo: false };
+}
+
+function resolverVarianteLogo(variant: 'auto' | 'black' | 'white', systemTheme: string): 'black' | 'white' {
+  if (variant === 'white') return 'white';
+  if (variant === 'black') return 'black';
+  return systemTheme === 'dark' ? 'white' : 'black';
+}
+
 export const BrandLogo: React.FC<BrandLogoProps> = ({
   variant = 'auto',
   height = 36,
@@ -57,45 +99,24 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
     setImageError(false);
   }, [logoBlancoUrl, logoNegroUrl]);
 
-  const resolvedVariant: 'black' | 'white' =
-    variant === 'auto'
-      ? systemTheme === 'dark' ? 'white' : 'black'
-      : variant;
-
-  const fallbackSrc =
-    resolvedVariant === 'white'
-      ? BRAND.assets.logoWhite
-      : BRAND.assets.logoBlack;
-
-  const isCustomLogo = !imageError && Boolean(
-    (resolvedVariant === 'white' && logoBlancoUrl) ||
-    (resolvedVariant === 'black' && logoNegroUrl)
-  );
+  const resolvedVariant = resolverVarianteLogo(variant, systemTheme);
 
   const isDifferentTenant = Boolean(
     nombreNegocio &&
     nombreNegocio.toLowerCase().trim() !== BRAND.name.toLowerCase().trim()
   );
 
-  let src = fallbackSrc;
-  if (isCustomLogo) {
-    if (resolvedVariant === 'white' && logoBlancoUrl) {
-      src = logoBlancoUrl;
-    } else if (resolvedVariant === 'black' && logoNegroUrl) {
-      src = logoNegroUrl;
-    }
-  } else if (isDifferentTenant) {
-    src = BRAND.assets.iconKyrios;
-  }
+  const { src, isCustomLogo } = resolverSrcLogo({
+    resolvedVariant,
+    imageError,
+    logoBlancoUrl,
+    logoNegroUrl,
+    isDifferentTenant,
+  });
 
   const effectiveMaxHeight = maxHeight ?? height;
   const effectiveAlt = alt || nombreNegocio || BRAND.name;
-
-  const shouldShowName =
-    showName !== undefined
-      ? showName
-      : isCustomLogo || isDifferentTenant;
-
+  const shouldShowName = showName ?? (isCustomLogo || isDifferentTenant);
   const textColor = resolvedVariant === 'white' ? '#FFFFFF' : '#0C0C0C';
 
   const imageElement = (

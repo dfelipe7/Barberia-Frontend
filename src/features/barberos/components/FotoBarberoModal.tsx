@@ -36,13 +36,18 @@ const BarberoPreviewImg: React.FC<{
     );
   }
 
-  /* Fallback: iniciales en círculo azul (mismo estilo que UserAvatar) */
+  /* Fallback: iniciales adaptadas al tema visual del tenant */
   return (
     <div
       className="rounded-circle d-flex align-items-center justify-content-center border"
-      style={{ width: '110px', height: '110px', backgroundColor: '#0071BC' }}
+      style={{
+        width: '110px',
+        height: '110px',
+        backgroundColor: 'var(--tenant-accent, #0071BC)',
+        color: 'var(--tenant-btn-text, #ffffff)',
+      }}
     >
-      <span className="fw-bold text-white" style={{ fontSize: '2rem' }}>
+      <span className="fw-bold" style={{ fontSize: '2rem' }}>
         {iniciales}
       </span>
     </div>
@@ -146,9 +151,14 @@ export const FotoBarberoModal: React.FC<FotoBarberoModalProps> = ({
             /* Sin imagen: iniciales directamente */
             <div
               className="rounded-circle d-flex align-items-center justify-content-center border"
-              style={{ width: '110px', height: '110px', backgroundColor: '#0071BC' }}
+              style={{
+                width: '110px',
+                height: '110px',
+                backgroundColor: 'var(--tenant-accent, #0071BC)',
+                color: 'var(--tenant-btn-text, #ffffff)',
+              }}
             >
-              <span className="fw-bold text-white" style={{ fontSize: '2rem' }}>
+              <span className="fw-bold" style={{ fontSize: '2rem' }}>
                 {iniciales}
               </span>
             </div>

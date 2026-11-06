@@ -26,6 +26,130 @@ const fechaISO = (fecha: Date) => {
 const formatearPrecio = (precio: number) =>
   new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(precio);
 
+interface ValidarPayloadParams {
+  servicioSeleccionado?: any;
+  barberoSeleccionado?: any;
+  fecha: string;
+  hora: string | null;
+  tipoCliente: TipoCliente;
+  cliente: ClienteAdministrativoDTO | null;
+  nombreInvitado: string;
+  apellidoInvitado: string;
+  telefonoInvitado: string;
+  emailInvitado: string;
+  emailInvitadoInvalido: boolean;
+}
+
+function validarYConstruirPayload(params: ValidarPayloadParams): { error?: string; datos?: any } {
+  const {
+    servicioSeleccionado,
+    barberoSeleccionado,
+    fecha,
+    hora,
+    tipoCliente,
+    cliente,
+    nombreInvitado,
+    apellidoInvitado,
+    telefonoInvitado,
+    emailInvitado,
+    emailInvitadoInvalido,
+  } = params;
+
+  if (!servicioSeleccionado || !barberoSeleccionado || !fecha || !hora) {
+    return { error: 'Faltan campos requeridos para la reserva.' };
+  }
+  if (tipoCliente === 'registrado' && !cliente) {
+    return { error: 'Busca y selecciona un cliente registrado.' };
+  }
+  if (tipoCliente === 'invitado' && (!nombreInvitado.trim() || !telefonoInvitado.trim())) {
+    return { error: 'El nombre y el teléfono son obligatorios para el cliente invitado.' };
+  }
+  if (tipoCliente === 'invitado' && emailInvitadoInvalido) {
+    return { error: 'Escribe un correo electrónico válido o deja el campo vacío.' };
+  }
+
+  const datos = {
+    servicioId: servicioSeleccionado.id,
+    barberoId: barberoSeleccionado.id,
+    fecha,
+    hora,
+    ...(tipoCliente === 'registrado' && cliente ? { clienteId: cliente.id } : {}),
+    ...(tipoCliente === 'invitado'
+      ? {
+          nombre: nombreInvitado.trim(),
+          apellido: apellidoInvitado.trim() || undefined,
+          telefono: telefonoInvitado.trim(),
+          ...(emailInvitado.trim() ? { email: emailInvitado.trim() } : {}),
+        }
+      : {}),
+  };
+
+  return { datos };
+}
+
+interface HorariosDisponiblesSelectorProps {
+  barberoSeleccionado?: any;
+  isLoading: boolean;
+  isError: boolean;
+  error: any;
+  isFetching: boolean;
+  onRefetch: () => void;
+  horasDisponibles: { startTime: string; endTime: string; available: boolean }[];
+  horaSeleccionada: string | null;
+  onSeleccionarHora: (hora: string) => void;
+}
+
+const HorariosDisponiblesSelector: React.FC<HorariosDisponiblesSelectorProps> = ({
+  barberoSeleccionado,
+  isLoading,
+  isError,
+  error,
+  isFetching,
+  onRefetch,
+  horasDisponibles,
+  horaSeleccionada,
+  onSeleccionarHora,
+}) => {
+  if (!barberoSeleccionado) {
+    return <p className="small text-surface-muted mb-0">Selecciona primero un servicio y un barbero.</p>;
+  }
+
+  if (isLoading) {
+    return <output className="small text-surface-muted d-block">Consultando disponibilidad...</output>;
+  }
+
+  if (isError) {
+    return (
+      <div>
+        <ErrorMessage message={mapApiError(error)} />
+        <Button className="mt-2" type="button" size="sm" variant="outline-warning" onClick={onRefetch} isLoading={isFetching}>
+          Reintentar
+        </Button>
+      </div>
+    );
+  }
+
+  if (horasDisponibles.length === 0) {
+    return <p className="alert alert-light border mb-0">No hay horarios disponibles en esta fecha. Prueba otro día.</p>;
+  }
+
+  return (
+    <div className="d-flex flex-wrap gap-2" aria-label="Horarios disponibles">
+      {horasDisponibles.map((slot) => (
+        <button
+          key={slot.startTime}
+          type="button"
+          className={`btn ${horaSeleccionada === slot.startTime ? 'btn-primary' : 'btn-outline-primary'}`}
+          aria-pressed={horaSeleccionada === slot.startTime}
+          onClick={() => onSeleccionarHora(slot.startTime)}
+        >
+          {slot.startTime}–{slot.endTime}
+        </button>
+      ))}
+    </div>
+  );
+};
+
 export default function CrearReservaAdministrativaPage() {
   const { data: servicios = [], isLoading: cargandoServicios, error: errorServicios } = useServiciosCatalogo();
   const [servicioId, setServicioId] = useState<number | null>(null);
@@ -44,7 +168,7 @@ export default function CrearReservaAdministrativaPage() {
   const [creada, setCreada] = useState<Awaited<ReturnType<typeof reservasService.crearReservaAdministrativa>> | null>(null);
   const crearReserva = useCrearReservaAdministrativa();
   const emailInvitadoInvalido = Boolean(
-    emailInvitado.trim() && !/^\S+@\S+\.\S+$/.test(emailInvitado.trim()),
+    emailInvitado.trim() && !/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(emailInvitado.trim()),
   );
   const servicioSeleccionado = servicios.find((servicio) => servicio.id === servicioId);
   const consultaBarberos = useQuery({
@@ -89,37 +213,28 @@ export default function CrearReservaAdministrativaPage() {
   };
 
   const crear = async () => {
-    if (!servicioSeleccionado || !barberoSeleccionado || !fecha || !hora) return;
-    if (tipoCliente === 'registrado' && !cliente) {
-      setErrorAccion('Busca y selecciona un cliente registrado.');
-      return;
-    }
-    if (tipoCliente === 'invitado' && (!nombreInvitado.trim() || !telefonoInvitado.trim())) {
-      setErrorAccion('El nombre y el teléfono son obligatorios para el cliente invitado.');
-      return;
-    }
-    if (tipoCliente === 'invitado' && emailInvitadoInvalido) {
-      setErrorAccion('Escribe un correo electrónico válido o deja el campo vacío.');
-      return;
-    }
-
-    const datos = {
-      servicioId: servicioSeleccionado.id,
-      barberoId: barberoSeleccionado.id,
+    const validacion = validarYConstruirPayload({
+      servicioSeleccionado,
+      barberoSeleccionado,
       fecha,
       hora,
-      ...(tipoCliente === 'registrado' && cliente ? { clienteId: cliente.id } : {}),
-      ...(tipoCliente === 'invitado' ? {
-        nombre: nombreInvitado.trim(),
-        apellido: apellidoInvitado.trim() || undefined,
-        telefono: telefonoInvitado.trim(),
-        ...(emailInvitado.trim() ? { email: emailInvitado.trim() } : {}),
-      } : {}),
-    };
+      tipoCliente,
+      cliente,
+      nombreInvitado,
+      apellidoInvitado,
+      telefonoInvitado,
+      emailInvitado,
+      emailInvitadoInvalido,
+    });
+
+    if (validacion.error) {
+      setErrorAccion(validacion.error);
+      return;
+    }
 
     setErrorAccion(null);
     try {
-      const resultado = await crearReserva.mutateAsync(datos);
+      const resultado = await crearReserva.mutateAsync(validacion.datos);
       setCreada(resultado);
     } catch (error: unknown) {
       setErrorAccion(mapApiError(error));
@@ -214,21 +329,17 @@ export default function CrearReservaAdministrativaPage() {
                   onChange={(event) => cambiarFecha(event.target.value)}
                 />
 
-                {!barberoSeleccionado ? <p className="small text-surface-muted mb-0">Selecciona primero un servicio y un barbero.</p> : disponibilidad.isLoading ? (
-                  <p className="small text-surface-muted" role="status">Consultando disponibilidad...</p>
-                ) : disponibilidad.isError ? (
-                  <div><ErrorMessage message={mapApiError(disponibilidad.error)} /><Button className="mt-2" type="button" size="sm" variant="outline-warning" onClick={() => void disponibilidad.refetch()} isLoading={disponibilidad.isFetching}>Reintentar</Button></div>
-                ) : horasDisponibles.length === 0 ? (
-                  <p className="alert alert-light border mb-0">No hay horarios disponibles en esta fecha. Prueba otro día.</p>
-                ) : (
-                  <div className="d-flex flex-wrap gap-2" aria-label="Horarios disponibles">
-                    {horasDisponibles.map((slot) => (
-                      <button key={slot.startTime} type="button" className={`btn ${hora === slot.startTime ? 'btn-primary' : 'btn-outline-primary'}`} aria-pressed={hora === slot.startTime} onClick={() => setHora(slot.startTime)}>
-                        {slot.startTime}–{slot.endTime}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <HorariosDisponiblesSelector
+                  barberoSeleccionado={barberoSeleccionado}
+                  isLoading={disponibilidad.isLoading}
+                  isError={disponibilidad.isError}
+                  error={disponibilidad.error}
+                  isFetching={disponibilidad.isFetching}
+                  onRefetch={() => void disponibilidad.refetch()}
+                  horasDisponibles={horasDisponibles}
+                  horaSeleccionada={hora}
+                  onSeleccionarHora={setHora}
+                />
               </div>
             </section>
           </div>

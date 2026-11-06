@@ -38,11 +38,12 @@ export const barberosService = {
 
   async cambiarEstadoGlobalBarbero(
     id: number,
-    datos: CambiarEstadoBarberoDTO
+    datos: CambiarEstadoBarberoDTO,
+    tipo: 'barbero' | 'ambos' = 'barbero'
   ): Promise<{ mensaje: string }> {
     const response = await apiClient.patch(`/usuarios/${id}/estado`, {
       ...datos,
-      tipo: 'barbero',
+      tipo,
     });
     return response.data;
   },

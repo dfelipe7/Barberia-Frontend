@@ -62,17 +62,10 @@ export const BarberCard: React.FC<BarberCardProps> = ({
   return (
     <>
       <article className="kyrios-barber-card" aria-label={`Perfil de ${nombreCompleto}`}>
-        <div
-          className="kyrios-barber-img-wrap"
+        <button
+          type="button"
+          className="kyrios-barber-img-wrap border-0 p-0 text-start w-100 bg-transparent"
           onClick={() => setModalAbierto(true)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              setModalAbierto(true);
-            }
-          }}
           aria-label={`Ver perfil de ${nombreCompleto}`}
         >
           {fotoCompleta ? (
@@ -84,18 +77,12 @@ export const BarberCard: React.FC<BarberCardProps> = ({
                 nombreCompleto={nombreCompleto}
                 iniciales={iniciales}
               />
-              <button
-                type="button"
+              <span
                 className="kyrios-img-expand-btn"
-                title={`Ver perfil completo de ${nombreCompleto}`}
-                aria-label={`Ver perfil completo de ${nombreCompleto}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setModalAbierto(true);
-                }}
+                aria-hidden="true"
               >
                 <Maximize2 size={15} />
-              </button>
+              </span>
             </>
           ) : (
             <div className="kyrios-barber-img-placeholder">
@@ -103,7 +90,7 @@ export const BarberCard: React.FC<BarberCardProps> = ({
               <span className="small text-white-50 mt-1">Kyrios Barber</span>
             </div>
           )}
-        </div>
+        </button>
 
         <div className="kyrios-barber-body">
           <h3 className="kyrios-barber-name">{nombreCompleto}</h3>

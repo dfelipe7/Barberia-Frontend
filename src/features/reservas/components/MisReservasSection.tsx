@@ -28,6 +28,49 @@ const estadoReserva = (estado: string) =>
 const reservaGestionable = (estado: string) =>
   estado === 'PENDING' || estado === 'CONFIRMED';
 
+interface DetalleReservaBoxProps {
+  detalle: any;
+}
+
+const DetalleReservaBox: React.FC<DetalleReservaBoxProps> = ({ detalle }) => {
+  if (detalle.isLoading) {
+    return (
+      <div className="border rounded-3 p-3 mt-3" aria-live="polite">
+        <output className="small text-surface-muted mb-0 d-block">Cargando detalle...</output>
+      </div>
+    );
+  }
+
+  if (detalle.error) {
+    return (
+      <div className="border rounded-3 p-3 mt-3" aria-live="polite">
+        <ErrorMessage message={mapApiError(detalle.error)} />
+      </div>
+    );
+  }
+
+  if (!detalle.data) return null;
+
+  return (
+    <div className="border rounded-3 p-3 mt-3" aria-live="polite">
+      <dl className="row mb-0">
+        <dt className="col-sm-4 text-surface-muted">Reserva</dt>
+        <dd className="col-sm-8">#{detalle.data.id} · {estadoReserva(detalle.data.estado)}</dd>
+        <dt className="col-sm-4 text-surface-muted">Servicio</dt>
+        <dd className="col-sm-8">{detalle.data.servicio.nombre}</dd>
+        <dt className="col-sm-4 text-surface-muted">Barbero</dt>
+        <dd className="col-sm-8">{detalle.data.barbero.nombre} {detalle.data.barbero.apellido}</dd>
+        <dt className="col-sm-4 text-surface-muted">Fecha y hora</dt>
+        <dd className="col-sm-8">{formatearFecha(detalle.data.fecha)} · {detalle.data.hora}–{detalle.data.horaFin}</dd>
+        <dt className="col-sm-4 text-surface-muted">Precio aplicado</dt>
+        <dd className="col-sm-8 mb-0">
+          {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(detalle.data.precio)}
+        </dd>
+      </dl>
+    </div>
+  );
+};
+
 export const MisReservasSection = () => {
   const { slug: paramSlug } = useParams<{ slug?: string }>();
   const slugActivo = paramSlug || obtenerNegocioSlugActivo() || '';
@@ -71,11 +114,13 @@ export const MisReservasSection = () => {
             Consulta tus citas, modifica una reserva activa o cancélala si cambian tus planes.
           </p>
 
-          {avisoCancelacion && <div className="alert alert-success py-2" role="status">{avisoCancelacion}</div>}
+          {avisoCancelacion && <div className="alert alert-success py-2">{avisoCancelacion}</div>}
 
-          {consulta.isLoading ? (
-            <p className="small text-surface-muted" role="status">Cargando tus reservas...</p>
-          ) : consulta.error ? (
+          {consulta.isLoading && (
+            <output className="small text-surface-muted d-block">Cargando tus reservas...</output>
+          )}
+
+          {!consulta.isLoading && consulta.error && (
             isAxiosError(consulta.error) &&
             (consulta.error.response?.status === 401 || consulta.error.response?.status === 403) ? (
               <p className="small text-surface-muted mb-0">
@@ -96,11 +141,15 @@ export const MisReservasSection = () => {
             ) : (
               <ErrorMessage message={mapApiError(consulta.error)} />
             )
-          ) : (consulta.data?.reservas ?? []).length === 0 ? (
+          )}
+
+          {!consulta.isLoading && !consulta.error && (consulta.data?.reservas ?? []).length === 0 && (
             <p className="small text-surface-muted mb-0">
               {consulta.data?.mensaje || 'No tienes reservas registradas.'}
             </p>
-          ) : (
+          )}
+
+          {!consulta.isLoading && !consulta.error && (consulta.data?.reservas ?? []).length > 0 && (
             <ul className="list-group list-group-flush">
               {consulta.data?.reservas.map((reserva) => (
                 <li
@@ -161,28 +210,7 @@ export const MisReservasSection = () => {
           )}
 
           {reservaSeleccionadaId !== null && (
-            <div className="border rounded-3 p-3 mt-3" aria-live="polite">
-              {detalle.isLoading ? (
-                <p className="small text-surface-muted mb-0" role="status">Cargando detalle...</p>
-              ) : detalle.error ? (
-                <ErrorMessage message={mapApiError(detalle.error)} />
-              ) : detalle.data ? (
-                <dl className="row mb-0">
-                  <dt className="col-sm-4 text-surface-muted">Reserva</dt>
-                  <dd className="col-sm-8">#{detalle.data.id} · {estadoReserva(detalle.data.estado)}</dd>
-                  <dt className="col-sm-4 text-surface-muted">Servicio</dt>
-                  <dd className="col-sm-8">{detalle.data.servicio.nombre}</dd>
-                  <dt className="col-sm-4 text-surface-muted">Barbero</dt>
-                  <dd className="col-sm-8">{detalle.data.barbero.nombre} {detalle.data.barbero.apellido}</dd>
-                  <dt className="col-sm-4 text-surface-muted">Fecha y hora</dt>
-                  <dd className="col-sm-8">{formatearFecha(detalle.data.fecha)} · {detalle.data.hora}–{detalle.data.horaFin}</dd>
-                  <dt className="col-sm-4 text-surface-muted">Precio aplicado</dt>
-                  <dd className="col-sm-8 mb-0">
-                    {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(detalle.data.precio)}
-                  </dd>
-                </dl>
-              ) : null}
-            </div>
+            <DetalleReservaBox detalle={detalle} />
           )}
         </div>
       </section>

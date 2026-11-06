@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { Scissors } from 'lucide-react';
 import '../../Home/home.css';
@@ -30,6 +30,20 @@ const ServiceSkeleton: React.FC = () => (
   </div>
 );
 
+function filtrarServicios(servicios: Servicio[], query: string): Servicio[] {
+  const activos = servicios.filter(
+    (s) => s.estado === 'ACTIVO' && s.barberos && s.barberos.length > 0
+  );
+  const limpio = query.trim().toLowerCase();
+  if (!limpio) return activos;
+  return activos.filter((s) => s.nombre.toLowerCase().includes(limpio));
+}
+
+function textoResultadosServicios(total: number): string {
+  if (total === 0) return 'Sin resultados';
+  return `${total} servicio${total !== 1 ? 's' : ''} encontrado${total !== 1 ? 's' : ''}`;
+}
+
 /* ─── Página principal ─────────────────────────────────────────────────────── */
 const CatalogoServiciosPage: React.FC = () => {
   const navigate = useNavigate();
@@ -54,18 +68,10 @@ const CatalogoServiciosPage: React.FC = () => {
   // Título dinámico gestionado por TenantBrandContext
 
   const { data: servicios = [], isLoading, error, refetch } = useServiciosCatalogo();
-
-  // Solo activos en la vista pública que cuenten con al menos un barbero asignado
-  const serviciosActivos = servicios.filter(
-    (s) => s.estado === 'ACTIVO' && s.barberos && s.barberos.length > 0,
+  const serviciosFiltrados = useMemo(
+    () => filtrarServicios(servicios, debouncedQuery),
+    [servicios, debouncedQuery]
   );
-
-  // Filtrado client-side: no se necesita una segunda petición al servidor
-  const serviciosFiltrados = debouncedQuery.trim()
-    ? serviciosActivos.filter((s) =>
-        s.nombre.toLowerCase().includes(debouncedQuery.toLowerCase())
-      )
-    : serviciosActivos;
 
   const handleLogin = useCallback(() => {
     // La lógica de login la gestiona Google OAuth a través del AuthContext
@@ -157,9 +163,7 @@ const CatalogoServiciosPage: React.FC = () => {
               {/* Contador de resultados (solo con búsqueda activa) */}
               {debouncedQuery.trim() && (
                 <p className="text-surface-muted small mb-4 text-center" role="status">
-                  {serviciosFiltrados.length === 0
-                    ? 'Sin resultados'
-                    : `${serviciosFiltrados.length} servicio${serviciosFiltrados.length !== 1 ? 's' : ''} encontrado${serviciosFiltrados.length !== 1 ? 's' : ''}`}
+                  {textoResultadosServicios(serviciosFiltrados.length)}
                 </p>
               )}
 

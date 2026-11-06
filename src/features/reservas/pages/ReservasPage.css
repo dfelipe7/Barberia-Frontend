@@ -48,16 +48,16 @@
 }
 
 .reservas-tab-btn.is-active {
-  background: var(--brand-blue, #0071BC);
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 113, 188, 0.35);
+  background: var(--tenant-accent, var(--brand-blue, #0071BC));
+  color: var(--tenant-btn-text, #ffffff) !important;
+  box-shadow: 0 2px 8px var(--tenant-glow, rgba(0, 113, 188, 0.35));
 }
 
 [data-theme='dark'] .reservas-tab-btn.is-active,
 [data-bs-theme='dark'] .reservas-tab-btn.is-active {
-  background: #0071BC;
-  color: #ffffff;
-  box-shadow: 0 2px 10px rgba(0, 113, 188, 0.5);
+  background: var(--tenant-accent, #0071BC);
+  color: var(--tenant-btn-text, #ffffff) !important;
+  box-shadow: 0 2px 10px var(--tenant-glow, rgba(0, 113, 188, 0.5));
 }
 
 .reservas-vista-contenedor > main {

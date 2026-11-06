@@ -4,7 +4,7 @@ import { mapApiError } from '../../../shared/lib/mapApiError';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useDisponibilidadFecha } from '../api/horarios.facade';
-import type { EstadoFranjaDTO } from '../api/horarios.dto';
+import type { EstadoFranjaDTO, FranjaDisponibilidadDTO } from '../api/horarios.dto';
 
 interface EstadoConfig {
   label: string;
@@ -62,6 +62,89 @@ const formatearDiaRelativo = (diasDesdeHoy: number) => {
   return `${year}-${month}-${day}`;
 };
 
+interface SlotsDetalleProps {
+  fecha: string;
+  slots: FranjaDisponibilidadDTO[];
+}
+
+const SlotsDetalle: React.FC<SlotsDetalleProps> = ({ fecha, slots }) => {
+  const disponibles = slots.filter((s) => s.status === 'AVAILABLE').length;
+  const reservadas = slots.filter((s) => s.status === 'RESERVED').length;
+  const bloqueadas = slots.filter((s) => s.status === 'BLOCKED').length;
+  const fueraHorario = slots.filter((s) => s.status === 'OUTSIDE_SCHEDULE').length;
+  const cierres = slots.filter((s) => s.status === 'GENERAL_CLOSURE').length;
+
+  return (
+    <div>
+      <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+        <div className="d-flex align-items-center gap-2">
+          <Calendar size={18} className="text-brand-blue" aria-hidden="true" />
+          <h3 className="h6 fw-bold mb-0">Franjas del {formatearFecha(fecha)}</h3>
+        </div>
+
+        <div className="disp-summary-strip d-flex flex-wrap align-items-center gap-2">
+          {disponibles > 0 && (
+            <span className="disp-status-badge disp-status-badge--available small">
+              <span className="disp-status-dot" aria-hidden="true">●</span>
+              {disponibles} {disponibles === 1 ? 'disponible' : 'disponibles'}
+            </span>
+          )}
+          {reservadas > 0 && (
+            <span className="disp-status-badge disp-status-badge--reserved small">
+              <span className="disp-status-dot" aria-hidden="true">●</span>
+              {reservadas} {reservadas === 1 ? 'reservada' : 'reservadas'}
+            </span>
+          )}
+          {bloqueadas > 0 && (
+            <span className="disp-status-badge disp-status-badge--blocked small">
+              <span className="disp-status-dot" aria-hidden="true">●</span>
+              {bloqueadas} {bloqueadas === 1 ? 'bloqueada' : 'bloqueadas'}
+            </span>
+          )}
+          {fueraHorario > 0 && (
+            <span className="disp-status-badge disp-status-badge--outside small">
+              <span className="disp-status-dot" aria-hidden="true">○</span>
+              {fueraHorario} fuera de horario
+            </span>
+          )}
+          {cierres > 0 && (
+            <span className="disp-status-badge disp-status-badge--closure small">
+              <span className="disp-status-dot" aria-hidden="true">✕</span>
+              {cierres} {cierres === 1 ? 'cierre general' : 'cierres'}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="disp-slots-grid">
+        {slots.map((slot) => {
+          const config: EstadoConfig = CONFIG_ESTADOS[slot.status as EstadoFranjaDTO] ?? {
+            label: slot.status,
+            badgeClase: 'disp-status-badge--outside',
+            slotClase: 'disp-slot-card--outside',
+            dot: '●',
+          };
+
+          return (
+            <div key={slot.startTime} className={`disp-slot-card ${config.slotClase}`}>
+              <div className="d-flex align-items-center gap-2">
+                <Clock size={15} className="disp-slot-clock" aria-hidden="true" />
+                <span className="disp-slot-time fw-semibold">
+                  {slot.startTime}–{slot.endTime}
+                </span>
+              </div>
+              <span className={`disp-status-badge ${config.badgeClase}`}>
+                <span className="disp-status-dot" aria-hidden="true">{config.dot}</span>
+                {config.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 export const DisponibilidadFechaSection = () => {
   const hoy = formatearDiaRelativo(0);
   const manana = formatearDiaRelativo(1);
@@ -86,11 +169,6 @@ export const DisponibilidadFechaSection = () => {
   };
 
   const slots = consulta.data?.slots ?? [];
-  const disponibles = slots.filter((s) => s.status === 'AVAILABLE').length;
-  const reservadas = slots.filter((s) => s.status === 'RESERVED').length;
-  const bloqueadas = slots.filter((s) => s.status === 'BLOCKED').length;
-  const fueraHorario = slots.filter((s) => s.status === 'OUTSIDE_SCHEDULE').length;
-  const cierres = slots.filter((s) => s.status === 'GENERAL_CLOSURE').length;
 
   return (
     <section className="card card-surface border-0 shadow-sm mt-4">
@@ -172,11 +250,12 @@ export const DisponibilidadFechaSection = () => {
 
         {fechaConsultada && (
           <div aria-live="polite">
-            {consulta.isLoading ? (
-              <p className="small text-surface-muted" role="status">
+            {consulta.isLoading && (
+              <output className="small text-surface-muted d-block">
                 Consultando disponibilidad...
-              </p>
-            ) : consulta.error ? (
+              </output>
+            )}
+            {!consulta.isLoading && consulta.error && (
               <div className="alert alert-warning py-2">
                 <ErrorMessage message={mapApiError(consulta.error)} />
                 <button
@@ -188,84 +267,17 @@ export const DisponibilidadFechaSection = () => {
                   Reintentar consulta
                 </button>
               </div>
-            ) : slots.length > 0 ? (
-              <div>
-                <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-                  <div className="d-flex align-items-center gap-2">
-                    <Calendar size={18} className="text-brand-blue" aria-hidden="true" />
-                    <h3 className="h6 fw-bold mb-0">
-                      Franjas del {formatearFecha(consulta.data?.fecha || fechaConsultada)}
-                    </h3>
-                  </div>
-
-                  {/* Resumen de estados para la fecha */}
-                  <div className="disp-summary-strip d-flex flex-wrap align-items-center gap-2">
-                    {disponibles > 0 && (
-                      <span className="disp-status-badge disp-status-badge--available small">
-                        <span className="disp-status-dot" aria-hidden="true">●</span>
-                        {disponibles} {disponibles === 1 ? 'disponible' : 'disponibles'}
-                      </span>
-                    )}
-                    {reservadas > 0 && (
-                      <span className="disp-status-badge disp-status-badge--reserved small">
-                        <span className="disp-status-dot" aria-hidden="true">●</span>
-                        {reservadas} {reservadas === 1 ? 'reservada' : 'reservadas'}
-                      </span>
-                    )}
-                    {bloqueadas > 0 && (
-                      <span className="disp-status-badge disp-status-badge--blocked small">
-                        <span className="disp-status-dot" aria-hidden="true">●</span>
-                        {bloqueadas} {bloqueadas === 1 ? 'bloqueada' : 'bloqueadas'}
-                      </span>
-                    )}
-                    {fueraHorario > 0 && (
-                      <span className="disp-status-badge disp-status-badge--outside small">
-                        <span className="disp-status-dot" aria-hidden="true">○</span>
-                        {fueraHorario} fuera de horario
-                      </span>
-                    )}
-                    {cierres > 0 && (
-                      <span className="disp-status-badge disp-status-badge--closure small">
-                        <span className="disp-status-dot" aria-hidden="true">✕</span>
-                        {cierres} {cierres === 1 ? 'cierre general' : 'cierres'}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="disp-slots-grid">
-                  {slots.map((slot) => {
-                    const config = CONFIG_ESTADOS[slot.status] ?? {
-                      label: slot.status,
-                      badgeClase: 'disp-status-badge--outside',
-                      slotClase: 'disp-slot-card--outside',
-                      dot: '●',
-                    };
-
-                    return (
-                      <div
-                        key={slot.startTime}
-                        className={`disp-slot-card ${config.slotClase}`}
-                      >
-                        <div className="d-flex align-items-center gap-2">
-                          <Clock size={15} className="disp-slot-clock" aria-hidden="true" />
-                          <span className="disp-slot-time fw-semibold">
-                            {slot.startTime}–{slot.endTime}
-                          </span>
-                        </div>
-                        <span className={`disp-status-badge ${config.badgeClase}`}>
-                          <span className="disp-status-dot" aria-hidden="true">{config.dot}</span>
-                          {config.label}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : (
-              <p className="small text-surface-muted mb-0" role="status">
+            )}
+            {!consulta.isLoading && !consulta.error && slots.length > 0 && (
+              <SlotsDetalle
+                fecha={consulta.data?.fecha || fechaConsultada}
+                slots={slots}
+              />
+            )}
+            {!consulta.isLoading && !consulta.error && slots.length === 0 && (
+              <output className="small text-surface-muted mb-0 d-block">
                 No hay franjas configuradas para la fecha seleccionada.
-              </p>
+              </output>
             )}
           </div>
         )}

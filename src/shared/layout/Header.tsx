@@ -8,17 +8,31 @@ import { useTheme } from '../context/ThemeContext';
 import { BRAND } from '../../config/brand';
 import UserDropdown from './UserDropdown';
 import { useUi } from '../contexts/UiContext';
+import { useConfirm } from '../contexts/ConfirmContext';
 import { ROLES_APP, ROL_HIERARCHY } from '../constants/roles';
 import UserAvatar from '../ui/atoms/UserAvatar';
 import RoleBadge from '../ui/atoms/RoleBadge';
-import TenantThemeSelector from './TenantThemeSelector';
 
 export default function Header() {
   const { cerrarSesion, nombre, apellido, email, roles, usuarioDb, fotoUrl: fotoGoogle } = useAuth();
+  const confirm = useConfirm();
   const slugActivo = obtenerNegocioSlugActivo() || localStorage.getItem('negocio_slug') || 'kyrios-studio';
   const rutaSitioPublico = `/${slugActivo}`;
   const { theme, setTheme, isDark } = useTheme();
   const { toggleSidebar, isSidebarOpen } = useUi();
+
+  const handleCerrarSesion = async () => {
+    const aceptado = await confirm({
+      title: 'Cerrar sesión',
+      message: '¿Estás seguro de que deseas salir del panel de administración?',
+      confirmLabel: 'Cerrar sesión',
+      cancelLabel: 'Cancelar',
+      variant: 'warning',
+    });
+    if (aceptado) {
+      cerrarSesion(slugActivo);
+    }
+  };
 
   const cycleTheme = () => {
     if (theme === 'system') setTheme('light');
@@ -116,7 +130,6 @@ export default function Header() {
 
           {/* ── Zona derecha — Acciones ── */}
           <div className="d-flex align-items-center gap-2">
-            <TenantThemeSelector isDark={isDark} />
             <button
               type="button"
               onClick={cycleTheme}
@@ -146,7 +159,7 @@ export default function Header() {
               roles={roles}
               fotoUrl={fotoUrl}
               isDark={isDark}
-              onCerrarSesion={() => cerrarSesion(slugActivo)}
+              onCerrarSesion={handleCerrarSesion}
             />
           </div>
         </div>

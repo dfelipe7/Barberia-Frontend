@@ -10,9 +10,8 @@ import { useAuth } from '../../../auth/AuthContext';
 import { useBodyScrollLock } from '../../../shared/lib/useBodyScrollLock';
 import { esRolApp } from '../../../shared/lib/autorizacion/roles';
 import { ProductosEnDesarrolloModal } from './ProductosEnDesarrolloModal';
-import { SelectorAccesoModal } from './SelectorAccesoModal';
 import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
-import TenantThemeSelector from '../../../shared/layout/TenantThemeSelector';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import UserDropdown from '../../../shared/layout/UserDropdown';
 
 /* ─── Hook: detecta si el usuario hizo scroll más allá de un umbral ─────── */
@@ -58,10 +57,10 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [productosModalOpen, setProductosModalOpen] = useState(false);
-  const [accesoModalOpen, setAccesoModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { slug: paramSlug } = useParams<{ slug?: string }>();
+  const confirm = useConfirm();
   const slug = paramSlug || obtenerNegocioSlugActivo() || undefined;
   const basePrefix = slug ? `/${slug}` : '';
   const rutaHome = slug ? `/${slug}` : '/';
@@ -104,7 +103,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
   const nombre = propNombre !== undefined ? propNombre : authNombre;
   const apellido = authApellido;
   const rutaLogin = slug ? `/${slug}/login` : '/login';
-  const onLogin = propOnLogin || (() => setAccesoModalOpen(true));
+  const onLogin = propOnLogin || (() => { void navigate(rutaLogin); });
   const tieneAcceso = roles.some(esRolApp) && usuarioDb?.estado === 'ACTIVO';
 
   // Solo mostramos avatar si la sesión está resuelta Y autenticada Y el
@@ -139,10 +138,241 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                          'Seguir sistema (clic para cambiar)';
 
   // Cierra el drawer antes de cerrar sesión para evitar estado zombie en móvil
-  const handleLogout = useCallback(() => {
+  const handleLogout = useCallback(async () => {
     closeMobileMenu();
-    cerrarSesion();
-  }, [closeMobileMenu, cerrarSesion]);
+    const aceptado = await confirm({
+      title: 'Cerrar sesión',
+      message: '¿Estás seguro de que deseas salir del panel de administración?',
+      confirmLabel: 'Cerrar sesión',
+      cancelLabel: 'Cancelar',
+      variant: 'warning',
+    });
+    if (aceptado) {
+      cerrarSesion();
+    }
+  }, [closeMobileMenu, cerrarSesion, confirm]);
+
+  const handleLogoutCliente = useCallback(async () => {
+    closeMobileMenu();
+    const aceptado = await confirm({
+      title: 'Cerrar sesión',
+      message: '¿Estás seguro de que deseas salir de tu cuenta de cliente?',
+      confirmLabel: 'Cerrar sesión',
+      cancelLabel: 'Cancelar',
+      variant: 'warning',
+    });
+    if (aceptado) {
+      clientesService.cerrarSesion(slug);
+      setClienteSesion(null);
+      void navigate(slug ? `/${slug}` : '/');
+    }
+  }, [closeMobileMenu, slug, confirm, navigate]);
+
+  const renderDesktopAuth = () => {
+    if (isInitializing) {
+      return <div style={{ width: 32, height: 32 }} aria-hidden="true" />;
+    }
+    if (mostrarAvatar) {
+      return (
+        <div className="d-flex align-items-center gap-2">
+          <button
+            type="button"
+            className="btn-kyrios-primary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 rounded-pill fw-semibold text-nowrap"
+            onClick={() => void navigate(slug ? `/${slug}/dashboard` : '/dashboard')}
+            aria-label="Ir a mi panel administrativo"
+            style={{ fontSize: '0.82rem' }}
+          >
+            <LayoutDashboard size={14} strokeWidth={2} />
+            Mi panel
+          </button>
+          <UserDropdown
+            nombre={nombre || usuarioDb?.nombre}
+            apellido={usuarioDb?.apellido}
+            email={usuarioDb?.email}
+            roles={roles}
+            fotoUrl={usuarioDb?.barbero?.fotoUrl}
+            isDark={isDark}
+            onCerrarSesion={handleLogout}
+          />
+        </div>
+      );
+    }
+    if (clienteSesion) {
+      return (
+        <div className="d-flex align-items-center gap-2">
+          <UserAvatar nombre={clienteSesion.nombre} apellido={clienteSesion.apellido} online />
+          <span className="kyrios-nav-greeting">{clienteSesion.nombre}</span>
+          <button
+            type="button"
+            className="btn-kyrios-primary d-inline-flex align-items-center gap-1"
+            onClick={() => void navigate(slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta')}
+          >
+            <Calendar size={14} strokeWidth={2} />
+            Mis Citas
+          </button>
+          <button
+            type="button"
+            className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
+            onClick={handleLogoutCliente}
+            aria-label="Cerrar sesión"
+          >
+            <LogOut size={14} strokeWidth={2} />
+            Salir
+          </button>
+        </div>
+      );
+    }
+    return (
+      <button
+        type="button"
+        className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
+        onClick={() => {
+          void navigate(rutaLogin);
+        }}
+      >
+        Iniciar sesión
+        <ArrowUpRight size={14} strokeWidth={2} className="kyrios-nav-cta-arrow" />
+      </button>
+    );
+  };
+
+  const renderTabletAuth = () => {
+    if (isInitializing) {
+      return <div style={{ width: 32, height: 32 }} aria-hidden="true" />;
+    }
+    if (mostrarAvatar) {
+      return (
+        <button
+          type="button"
+          className="p-0 border-0 bg-transparent d-inline-flex align-items-center rounded-circle"
+          onClick={() => void navigate(slug ? `/${slug}/dashboard` : '/dashboard')}
+          aria-label="Ir a mi panel administrativo"
+          title="Mi panel"
+        >
+          <UserAvatar nombre={nombre} apellido={apellido} online />
+        </button>
+      );
+    }
+    if (clienteSesion) {
+      return (
+        <button
+          type="button"
+          className="p-0 border-0 bg-transparent d-inline-flex align-items-center rounded-circle"
+          onClick={() => void navigate(slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta')}
+          aria-label="Ir a mis citas"
+          title="Mis Citas"
+        >
+          <UserAvatar nombre={clienteSesion.nombre} apellido={clienteSesion.apellido} online />
+        </button>
+      );
+    }
+    return (
+      <button
+        type="button"
+        className="btn-kyrios-outline kyrios-nav-cta-compact d-inline-flex align-items-center gap-1"
+        onClick={onLogin}
+      >
+        Ingresar
+      </button>
+    );
+  };
+
+  const renderMobileAuth = () => {
+    if (isInitializing) {
+      return <div style={{ height: 40 }} aria-hidden="true" />;
+    }
+    if (mostrarAvatar) {
+      return (
+        <>
+          <div className="kyrios-nav-greeting d-flex align-items-center gap-2 mb-1">
+            <UserAvatar nombre={nombre} apellido={apellido} online />
+            <span>Conectado como <strong>{displayName}</strong></span>
+          </div>
+          <button
+            type="button"
+            className="btn-kyrios-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
+            onClick={() => { closeMobileMenu(); void navigate('/dashboard'); }}
+          >
+            <LayoutDashboard size={15} strokeWidth={2} />
+            Ir a mi panel
+          </button>
+          {tieneAcceso && (
+            <button
+              type="button"
+              className="btn-kyrios-outline w-100 d-inline-flex align-items-center justify-content-center gap-2"
+              onClick={() => { closeMobileMenu(); void navigate('/mi-perfil'); }}
+            >
+              <User size={15} strokeWidth={2} />
+              Mi Perfil
+            </button>
+          )}
+          <button
+            type="button"
+            className="btn-kyrios-outline w-100 d-inline-flex align-items-center justify-content-center gap-2"
+            onClick={handleLogout}
+            aria-label="Cerrar sesión"
+          >
+            <LogOut size={15} strokeWidth={2} />
+            Cerrar sesión
+          </button>
+        </>
+      );
+    }
+    if (clienteSesion) {
+      return (
+        <>
+          <div className="kyrios-nav-greeting d-flex align-items-center gap-2 mb-1">
+            <UserAvatar nombre={clienteSesion.nombre} apellido={clienteSesion.apellido} online />
+            <span>Hola, <strong>{clienteSesion.nombre}</strong></span>
+          </div>
+          <button
+            type="button"
+            className="btn-kyrios-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
+            onClick={() => {
+              closeMobileMenu();
+              void navigate(slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta');
+            }}
+          >
+            <Calendar size={15} strokeWidth={2} />
+            Mis Citas y Datos
+          </button>
+          <button
+            type="button"
+            className="btn-kyrios-outline w-100 d-inline-flex align-items-center justify-content-center gap-2"
+            onClick={handleLogoutCliente}
+          >
+            <LogOut size={15} strokeWidth={2} />
+            Cerrar sesión
+          </button>
+        </>
+      );
+    }
+    return (
+      <>
+        <button
+          type="button"
+          className="btn-kyrios-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
+          onClick={() => {
+            closeMobileMenu();
+            onLogin();
+          }}
+        >
+          Iniciar sesión
+          <ArrowUpRight size={15} strokeWidth={2} />
+        </button>
+        <button
+          type="button"
+          className="btn btn-link text-surface-muted text-decoration-none small text-center w-100 mt-1"
+          onClick={() => {
+            closeMobileMenu();
+            void navigate(rutaLogin);
+          }}
+        >
+          ¿Eres del equipo o barbero? Acceso al panel
+        </button>
+      </>
+    );
+  };
 
   const mobileMenuId = 'home-mobile-menu';
 
@@ -227,7 +457,6 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 
         {/* ── CTA Desktop ── */}
         <div className="d-none d-xl-flex align-items-center gap-2 flex-shrink-0">
-          <TenantThemeSelector isDark={isDark} />
           {/* Toggle de tema */}
           <button
             type="button"
@@ -239,70 +468,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
             <ThemeIcon size={18} strokeWidth={2} />
           </button>
 
-          {isInitializing ? (
-            // Espacio reservado para evitar layout shift (sin spinner, sin círculo)
-            <div style={{ width: 32, height: 32 }} aria-hidden="true" />
-          ) : mostrarAvatar ? (
-            <div className="d-flex align-items-center gap-2">
-              <button
-                type="button"
-                className="btn-kyrios-primary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 rounded-pill fw-semibold text-nowrap"
-                onClick={() => navigate(slug ? `/${slug}/dashboard` : '/dashboard')}
-                aria-label="Ir a mi panel administrativo"
-                style={{ fontSize: '0.82rem' }}
-              >
-                <LayoutDashboard size={14} strokeWidth={2} />
-                Mi panel
-              </button>
-              <UserDropdown
-                nombre={nombre || usuarioDb?.nombre}
-                apellido={usuarioDb?.apellido}
-                email={usuarioDb?.email}
-                roles={roles}
-                fotoUrl={usuarioDb?.barbero?.fotoUrl}
-                isDark={isDark}
-                onCerrarSesion={handleLogout}
-              />
-            </div>
-          ) : clienteSesion ? (
-            <div className="d-flex align-items-center gap-2">
-              <UserAvatar nombre={clienteSesion.nombre} apellido={clienteSesion.apellido} online />
-              <span className="kyrios-nav-greeting">{clienteSesion.nombre}</span>
-              <button
-                type="button"
-                className="btn-kyrios-primary d-inline-flex align-items-center gap-1"
-                onClick={() => navigate(slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta')}
-              >
-                <Calendar size={14} strokeWidth={2} />
-                Mis Citas
-              </button>
-              <button
-                type="button"
-                className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
-                onClick={() => {
-                  clientesService.cerrarSesion(slug);
-                  setClienteSesion(null);
-                  void navigate(slug ? `/${slug}` : '/');
-                }}
-                aria-label="Cerrar sesión"
-              >
-                <LogOut size={14} strokeWidth={2} />
-                Salir
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
-              onClick={() => {
-                const rutaCliente = slug ? `/${slug}/cliente/iniciar-sesion?returnTo=${encodeURIComponent(location.pathname)}` : `/cliente/iniciar-sesion?returnTo=${encodeURIComponent(location.pathname)}`;
-                void navigate(rutaCliente);
-              }}
-            >
-              Iniciar sesión
-              <ArrowUpRight size={14} strokeWidth={2} className="kyrios-nav-cta-arrow" />
-            </button>
-          )}
+          {renderDesktopAuth()}
         </div>
 
         {/* ── Zona derecha Móvil / Tablet: toggle tema + CTA compacto + hamburguesa ── */}
@@ -318,38 +484,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
             <ThemeIcon size={18} strokeWidth={2} />
           </button>
 
-          {isInitializing ? (
-            // Espacio reservado para evitar layout shift (sin spinner, sin círculo)
-            <div style={{ width: 32, height: 32 }} aria-hidden="true" />
-          ) : mostrarAvatar ? (
-            <button
-              type="button"
-              className="p-0 border-0 bg-transparent d-inline-flex align-items-center rounded-circle"
-              onClick={() => navigate(slug ? `/${slug}/dashboard` : '/dashboard')}
-              aria-label="Ir a mi panel administrativo"
-              title="Mi panel"
-            >
-              <UserAvatar nombre={nombre} apellido={apellido} online />
-            </button>
-          ) : clienteSesion ? (
-            <button
-              type="button"
-              className="p-0 border-0 bg-transparent d-inline-flex align-items-center rounded-circle"
-              onClick={() => navigate(slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta')}
-              aria-label="Ir a mis citas"
-              title="Mis Citas"
-            >
-              <UserAvatar nombre={clienteSesion.nombre} apellido={clienteSesion.apellido} online />
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="btn-kyrios-outline kyrios-nav-cta-compact d-inline-flex align-items-center gap-1"
-              onClick={onLogin}
-            >
-              Ingresar
-            </button>
-          )}
+          {renderTabletAuth()}
 
           <button
             type="button"
@@ -405,110 +540,13 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 
             {/* CTA al fondo del drawer */}
             <div className="kyrios-nav-mobile-divider pt-4 mt-2 d-flex flex-column gap-2">
-              {isInitializing ? (
-                // Espacio reservado para evitar layout shift
-                <div style={{ height: 40 }} aria-hidden="true" />
-              ) : mostrarAvatar ? (
-                <>
-                  <div className="kyrios-nav-greeting d-flex align-items-center gap-2 mb-1">
-                    <UserAvatar nombre={nombre} apellido={apellido} online />
-                    <span>Conectado como <strong>{displayName}</strong></span>
-                  </div>
-                  <button
-                    type="button"
-                    className="btn-kyrios-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
-                    onClick={() => { closeMobileMenu(); void navigate('/dashboard'); }}
-                  >
-                    <LayoutDashboard size={15} strokeWidth={2} />
-                    Ir a mi panel
-                  </button>
-                  {tieneAcceso && (
-                    <button
-                      type="button"
-                      className="btn-kyrios-outline w-100 d-inline-flex align-items-center justify-content-center gap-2"
-                      onClick={() => { closeMobileMenu(); void navigate('/mi-perfil'); }}
-                    >
-                      <User size={15} strokeWidth={2} />
-                      Mi Perfil
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className="btn-kyrios-outline w-100 d-inline-flex align-items-center justify-content-center gap-2"
-                    onClick={handleLogout}
-                    aria-label="Cerrar sesión"
-                  >
-                    <LogOut size={15} strokeWidth={2} />
-                    Cerrar sesión
-                  </button>
-                </>
-              ) : clienteSesion ? (
-                <>
-                  <div className="kyrios-nav-greeting d-flex align-items-center gap-2 mb-1">
-                    <UserAvatar nombre={clienteSesion.nombre} apellido={clienteSesion.apellido} online />
-                    <span>Hola, <strong>{clienteSesion.nombre}</strong></span>
-                  </div>
-                  <button
-                    type="button"
-                    className="btn-kyrios-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
-                    onClick={() => {
-                      closeMobileMenu();
-                      void navigate(slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta');
-                    }}
-                  >
-                    <Calendar size={15} strokeWidth={2} />
-                    Mis Citas y Datos
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-kyrios-outline w-100 d-inline-flex align-items-center justify-content-center gap-2"
-                    onClick={() => {
-                      closeMobileMenu();
-                      clientesService.cerrarSesion(slug);
-                      setClienteSesion(null);
-                      void navigate(slug ? `/${slug}` : '/');
-                    }}
-                  >
-                    <LogOut size={15} strokeWidth={2} />
-                    Cerrar sesión
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    className="btn-kyrios-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
-                    onClick={() => {
-                      closeMobileMenu();
-                      onLogin();
-                    }}
-                  >
-                    Iniciar sesión
-                    <ArrowUpRight size={15} strokeWidth={2} />
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-link text-surface-muted text-decoration-none small text-center w-100 mt-1"
-                    onClick={() => {
-                      closeMobileMenu();
-                      void navigate(rutaLogin);
-                    }}
-                  >
-                    ¿Eres del equipo o barbero? Acceso al panel
-                  </button>
-                </>
-              )}
+              {renderMobileAuth()}
             </div>
           </div>
         </div>
       )}
 
       {/* Modal de Productos en Desarrollo */}
-      <SelectorAccesoModal
-        isOpen={accesoModalOpen}
-        onClose={() => setAccesoModalOpen(false)}
-        slug={slug}
-      />
       <ProductosEnDesarrolloModal
         isOpen={productosModalOpen}
         onClose={() => setProductosModalOpen(false)}

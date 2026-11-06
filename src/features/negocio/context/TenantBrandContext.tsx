@@ -36,6 +36,27 @@ export function resolverUrlRecurso(url: string | null | undefined): string | nul
   return `${baseUrl.replace(/\/$/, '')}${url.startsWith('/') ? '' : '/'}${url}`;
 }
 
+const MAPA_TITULOS_RUTAS: readonly [string, string][] = [
+  ['/reservar', 'Reservar Cita'],
+  ['/reserva/gestion', 'Mi Cita'],
+  ['/c/', 'Mi Cita'],
+  ['/catalogo/servicios', 'Servicios'],
+  ['/catalogo/barberos', 'Barberos'],
+  ['/cliente/mi-cuenta', 'Mi Cuenta'],
+  ['/cliente/registro', 'Registro'],
+  ['/cliente/iniciar-sesion', 'Acceso Cliente'],
+  ['/login', 'Iniciar Sesión'],
+  ['/dashboard', 'Dashboard'],
+  ['/mi-perfil', 'Mi Perfil'],
+  ['/configuracion', 'Configuración'],
+  ['/usuarios', 'Usuarios'],
+  ['/barberos', 'Barberos'],
+  ['/servicios', 'Servicios'],
+  ['/horarios', 'Horarios'],
+  ['/reservas', 'Reservas'],
+  ['/whatsapp', 'WhatsApp'],
+];
+
 /**
  * Resuelve el título de la pestaña del navegador combinando el nombre
  * de la barbería y la sección que el usuario está visitando.
@@ -55,25 +76,11 @@ function resolverTituloPestana(pathname: string, nombreNegocio: string, frase?: 
   if (pathSinSlug === '/' || pathSinSlug === '') {
     return frase ? `${nombreNegocio} · ${frase}` : `${nombreNegocio} | Barbería`;
   }
-  if (pathSinSlug.startsWith('/reservar')) return `Reservar Cita | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/reserva/gestion') || pathSinSlug.startsWith('/c/')) return `Mi Cita | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/catalogo/servicios')) return `Servicios | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/catalogo/barberos')) return `Barberos | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/cliente/mi-cuenta')) return `Mi Cuenta | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/cliente/registro')) return `Registro | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/cliente/iniciar-sesion')) return `Acceso Cliente | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/login')) return `Iniciar Sesión | ${nombreNegocio}`;
 
-  // Páginas administrativas
-  if (pathSinSlug.startsWith('/dashboard')) return `Dashboard | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/mi-perfil')) return `Mi Perfil | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/configuracion')) return `Configuración | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/usuarios')) return `Usuarios | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/barberos')) return `Barberos | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/servicios')) return `Servicios | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/horarios')) return `Horarios | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/reservas')) return `Reservas | ${nombreNegocio}`;
-  if (pathSinSlug.startsWith('/whatsapp')) return `WhatsApp | ${nombreNegocio}`;
+  const coincidencia = MAPA_TITULOS_RUTAS.find(([prefijo]) => pathSinSlug.startsWith(prefijo));
+  if (coincidencia) {
+    return `${coincidencia[1]} | ${nombreNegocio}`;
+  }
 
   return `${nombreNegocio} | Barbería`;
 }
@@ -155,17 +162,33 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
   useEffect(() => {
     const temaId = (perfil?.temaKey as TenantThemeId) || resolverTemaTenant(slug);
     if (temaId) {
-      document.documentElement.setAttribute('data-tenant-theme', temaId);
+      document.documentElement.dataset.tenantTheme = temaId;
     }
   }, [perfil?.temaKey, slug]);
-  // Escuchar evento global cuando se actualice la configuración en ConfiguracionNegocioPage
+
+  // Escuchar eventos globales y entre pestañas cuando se actualice la configuración
   useEffect(() => {
     const handleActualizado = () => {
       void cargarPerfil();
     };
+    const handleStorage = (e: StorageEvent) => {
+      if (!e.key || e.key.startsWith('tema_negocio_')) {
+        const nuevoTema = resolverTemaTenant(slug);
+        if (nuevoTema) {
+          document.documentElement.dataset.tenantTheme = nuevoTema;
+        }
+        void cargarPerfil();
+      }
+    };
     window.addEventListener('tenant-perfil-actualizado', handleActualizado);
-    return () => window.removeEventListener('tenant-perfil-actualizado', handleActualizado);
-  }, [cargarPerfil]);
+    window.addEventListener('tenant-tema-cambiado', handleActualizado);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('tenant-perfil-actualizado', handleActualizado);
+      window.removeEventListener('tenant-tema-cambiado', handleActualizado);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [cargarPerfil, slug]);
 
   const value: TenantBrandContextValue = {
     slug,

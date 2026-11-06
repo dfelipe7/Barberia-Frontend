@@ -46,35 +46,27 @@ import type { Rol } from '../../../shared/lib/autorizacion/roles';
 
 type Pestaña = 'administradores' | 'barberos';
 
+function resolverRolActorPrincipal(esSuperAdmin: boolean, esAdministrador: boolean): Rol {
+  if (esSuperAdmin) return 'SUPERADMIN';
+  if (esAdministrador) return 'ADMINISTRADOR';
+  return 'BARBERO';
+}
+
+function resolverPestañaInicial(searchTab: Pestaña | null, esSuperAdmin: boolean): Pestaña {
+  if (searchTab === 'administradores' && esSuperAdmin) return 'administradores';
+  if (searchTab === 'barberos') return 'barberos';
+  return esSuperAdmin ? 'administradores' : 'barberos';
+}
+
 export const UsuariosPage: React.FC = () => {
   const { roles, usuarioDb } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const esSuperAdmin = roles.includes('SUPERADMIN');
   const esAdministrador = roles.includes('ADMINISTRADOR');
-  const rolActorPrincipal: Rol = esSuperAdmin
-    ? 'SUPERADMIN'
-    : esAdministrador
-      ? 'ADMINISTRADOR'
-      : 'BARBERO';
+  const rolActorPrincipal: Rol = resolverRolActorPrincipal(esSuperAdmin, esAdministrador);
   const searchTab = new URLSearchParams(location.search).get('tab') as Pestaña | null;
-  const pestañaInicial: Pestaña =
-    (searchTab === 'administradores' && esSuperAdmin) || searchTab === 'barberos'
-      ? searchTab
-      : esSuperAdmin
-        ? 'administradores'
-        : 'barberos';
-
-  const [pestañaActiva, setPestañaActiva] = useState<Pestaña>(pestañaInicial);
-
-  useEffect(() => {
-    const tabFromUrl = new URLSearchParams(location.search).get('tab') as Pestaña | null;
-    if (tabFromUrl === 'barberos') {
-      setPestañaActiva('barberos');
-    } else if (tabFromUrl === 'administradores' && esSuperAdmin) {
-      setPestañaActiva('administradores');
-    }
-  }, [location.search, esSuperAdmin]);
+  const pestañaActiva: Pestaña = resolverPestañaInicial(searchTab, esSuperAdmin);
 
   // Consultas asíncronas con TanStack Query
   const {
@@ -131,8 +123,8 @@ export const UsuariosPage: React.FC = () => {
     const mensaje = location.state?.mensaje as string | undefined;
     if (!mensaje) return;
     showToast('success', mensaje);
-    void navigate(location.pathname, { replace: true, state: null });
-  }, [location.state?.mensaje, location.pathname, navigate, showToast]);
+    void navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+  }, [location.state?.mensaje, location.pathname, location.search, navigate, showToast]);
 
   // Handlers
   const handleVerDetalles = (entity: AdministradorGestion | BarberoGestion) => {
@@ -142,11 +134,14 @@ export const UsuariosPage: React.FC = () => {
   const handleCambiarEstadoAdmin = async (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => {
     const admin = administradores.find((a) => a.id === id);
     const nombre = admin ? `${admin.nombre} ${admin.apellido}` : 'este usuario';
+    const esBarberoActivo = Boolean(admin?.esBarbero && admin?.estadoBarbero === 'ACTIVO');
 
     if (nuevoEstado === 'INACTIVO') {
       const ok = await confirm({
         title: '¿Desactivar rol de administrador?',
-        message: `¿Desactivar rol de administrador de ${nombre}?`,
+        message: esBarberoActivo
+          ? `¿Estás seguro de desactivar el rol de administrador de ${nombre}? Perderá el acceso al panel administrativo, pero seguirá activo como barbero en esta barbería.`
+          : `¿Estás seguro de desactivar el rol de administrador de ${nombre}? Al ser su único rol activo, su cuenta quedará sin acceso a esta barbería.`,
         variant: 'warning',
         confirmLabel: 'Desactivar',
       });
@@ -155,7 +150,12 @@ export const UsuariosPage: React.FC = () => {
 
     try {
       await cambiarEstadoAdminMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
-      showToast('success', 'El estado del usuario se actualizó correctamente.');
+      showToast(
+        'success',
+        nuevoEstado === 'ACTIVO'
+          ? 'Rol de administrador activado correctamente.'
+          : 'Rol de administrador desactivado en esta sede.',
+      );
     } catch (err: unknown) {
       showToast('danger', mapApiError(err));
     }
@@ -164,11 +164,15 @@ export const UsuariosPage: React.FC = () => {
   const handleCambiarEstadoGlobalAdmin = async (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => {
     const admin = administradores.find((a) => a.id === id);
     const nombre = admin ? `${admin.nombre} ${admin.apellido}` : 'este usuario';
+    const esDesactivacionConRolBarbero = nuevoEstado !== 'ACTIVO' && Boolean(admin?.esBarbero);
+    const tipo: 'administrador' | 'ambos' = esDesactivacionConRolBarbero ? 'ambos' : 'administrador';
 
     if (nuevoEstado === 'INACTIVO') {
       const ok = await confirm({
-        title: '¿Bloquear cuenta?',
-        message: `¿Bloquear cuenta completa de ${nombre}? No podrá iniciar sesión.`,
+        title: '¿Bloquear cuenta completa?',
+        message: admin?.esBarbero
+          ? `¿Estás seguro de bloquear la cuenta de ${nombre}? Se desactivarán sus roles de administrador y barbero en esta barbería.`
+          : `¿Estás seguro de bloquear la cuenta de ${nombre}? No podrá acceder al panel de esta barbería.`,
         variant: 'danger',
         confirmLabel: 'Bloquear',
       });
@@ -178,13 +182,13 @@ export const UsuariosPage: React.FC = () => {
     try {
       await cambiarEstadoGlobalAdminMutation.mutateAsync({
         id,
-        datos: { estado: nuevoEstado, tipo: 'administrador' },
+        datos: { estado: nuevoEstado, tipo },
       });
       showToast(
         'success',
         nuevoEstado === 'ACTIVO'
-          ? 'Perfil de administrador activado correctamente.'
-          : 'Perfil de administrador desactivado en esta sede.',
+          ? 'Cuenta activada correctamente en esta barbería.'
+          : 'Cuenta bloqueada correctamente en esta barbería.',
       );
     } catch (err) {
       showToast('danger', mapApiError(err));
@@ -194,11 +198,14 @@ export const UsuariosPage: React.FC = () => {
   const handleCambiarEstadoBarbero = async (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => {
     const barbero = barberos.find((b) => b.id === id);
     const nombre = barbero ? `${barbero.nombre} ${barbero.apellido}` : 'este usuario';
+    const esAdminActivo = Boolean(barbero?.esAdministrador && barbero?.estadoAdmin === 'ACTIVO');
 
     if (nuevoEstado === 'INACTIVO') {
       const ok = await confirm({
         title: '¿Desactivar rol de barbero?',
-        message: `¿Desactivar rol de barbero de ${nombre}?`,
+        message: esAdminActivo
+          ? `¿Estás seguro de desactivar el rol de barbero de ${nombre}? Dejará de aparecer en el catálogo y no podrá recibir citas, pero seguirá activo como administrador en esta barbería.`
+          : `¿Estás seguro de desactivar el rol de barbero de ${nombre}? Al ser su único rol activo, su cuenta quedará sin acceso a esta barbería.`,
         variant: 'warning',
         confirmLabel: 'Desactivar',
       });
@@ -207,7 +214,12 @@ export const UsuariosPage: React.FC = () => {
 
     try {
       await cambiarEstadoBarberoMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
-      showToast('success', 'El estado del usuario se actualizó correctamente.');
+      showToast(
+        'success',
+        nuevoEstado === 'ACTIVO'
+          ? 'Rol de barbero activado correctamente.'
+          : 'Rol de barbero desactivado en esta sede.',
+      );
     } catch (err: unknown) {
       showToast('danger', mapApiError(err));
     }
@@ -219,11 +231,15 @@ export const UsuariosPage: React.FC = () => {
   ) => {
     const barbero = barberos.find((b) => b.id === id);
     const nombre = barbero ? `${barbero.nombre} ${barbero.apellido}` : 'este usuario';
+    const esDesactivacionConRolAdmin = nuevoEstado !== 'ACTIVO' && Boolean(barbero?.esAdministrador);
+    const tipo: 'barbero' | 'ambos' = esDesactivacionConRolAdmin ? 'ambos' : 'barbero';
 
     if (nuevoEstado === 'INACTIVO') {
       const ok = await confirm({
-        title: '¿Bloquear cuenta?',
-        message: `¿Bloquear cuenta completa de ${nombre}?`,
+        title: '¿Bloquear cuenta completa?',
+        message: barbero?.esAdministrador
+          ? `¿Estás seguro de bloquear la cuenta de ${nombre}? Se desactivarán sus roles de barbero y administrador en esta barbería.`
+          : `¿Estás seguro de bloquear la cuenta de ${nombre}? Dejará de aparecer en el catálogo y no podrá recibir citas.`,
         variant: 'danger',
         confirmLabel: 'Bloquear',
       });
@@ -231,12 +247,16 @@ export const UsuariosPage: React.FC = () => {
     }
 
     try {
-      await cambiarEstadoGlobalBarberoMutation.mutateAsync({ id, datos: { estado: nuevoEstado } });
+      await cambiarEstadoGlobalBarberoMutation.mutateAsync({
+        id,
+        datos: { estado: nuevoEstado },
+        tipo,
+      });
       showToast(
         'success',
         nuevoEstado === 'ACTIVO'
-          ? 'Cuenta desbloqueada correctamente.'
-          : 'Cuenta bloqueada globalmente.',
+          ? 'Cuenta activada correctamente en esta barbería.'
+          : 'Cuenta bloqueada correctamente en esta barbería.',
       );
     } catch (err) {
       showToast('danger', mapApiError(err));
@@ -328,7 +348,6 @@ export const UsuariosPage: React.FC = () => {
               pestañaActiva === 'administradores' ? 'btn-dark' : 'btn-light text-muted'
             }`}
             onClick={() => {
-              setPestañaActiva('administradores');
               void navigate('?tab=administradores', { replace: true });
             }}
           >
@@ -350,7 +369,6 @@ export const UsuariosPage: React.FC = () => {
             pestañaActiva === 'barberos' ? 'btn-dark' : 'btn-light text-muted'
           }`}
           onClick={() => {
-            setPestañaActiva('barberos');
             void navigate('?tab=barberos', { replace: true });
           }}
         >
@@ -382,7 +400,7 @@ export const UsuariosPage: React.FC = () => {
             {/* Hint explicativo Administradores */}
             <InfoHint className="mb-3 py-2 px-3 text-muted">
               Los administradores tienen acceso a los módulos de gestión. Puedes desactivar su{' '}
-              <strong>rol</strong> sin bloquear su cuenta global.
+              <strong>rol</strong> sin bloquear su cuenta.
             </InfoHint>
 
             {errorAdmins && (
@@ -406,7 +424,6 @@ export const UsuariosPage: React.FC = () => {
                 onSelectUsuario={handleVerDetalles}
                 onCambiarEstado={handleCambiarEstadoAdmin}
                 onCambiarEstadoGlobal={handleCambiarEstadoGlobalAdmin}
-                onConfigurarBarbero={(admin) => setAdminAConfigurar(admin)}
                 esSuperAdmin={esSuperAdmin}
                 currentUserId={usuarioDb?.id}
                 isUpdatingId={

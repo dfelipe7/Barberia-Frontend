@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import { Palette, Check, Sparkles } from 'lucide-react';
+import { Palette, Check } from 'lucide-react';
 import {
   TEMAS_TENANT,
   type TenantThemeId,
@@ -9,6 +9,7 @@ import {
 import { obtenerNegocioSlugActivo } from '../lib/http/axios';
 import { ToastContext } from '../ui/ToastContext';
 import { useTheme } from '../context/ThemeContext';
+import { perfilNegocioApi } from '../../features/negocio/services/perfilNegocioApi';
 
 interface TenantThemeSelectorProps {
   isDark?: boolean;
@@ -22,11 +23,43 @@ export const TenantThemeSelector: React.FC<TenantThemeSelectorProps> = ({ isDark
   const isDark = isDarkProp !== undefined ? isDarkProp : isDarkContext;
 
   const slug = obtenerNegocioSlugActivo() || localStorage.getItem('negocio_slug') || 'barberia-demo-2';
-  const [temaActual, setTemaActual] = useState<TenantThemeId>(() => resolverTemaTenant(slug));
+  const [temaActual, setTemaActual] = useState<TenantThemeId>(() => {
+    const attr = document.documentElement.dataset.tenantTheme as TenantThemeId;
+    if (attr && TEMAS_TENANT[attr]) return attr;
+    return resolverTemaTenant(slug);
+  });
 
   useEffect(() => {
-    const tema = resolverTemaTenant(slug);
-    setTemaActual(tema);
+    const sincronizarTema = () => {
+      const attr = document.documentElement.dataset.tenantTheme as TenantThemeId;
+      if (attr && TEMAS_TENANT[attr]) {
+        setTemaActual(attr);
+      } else {
+        setTemaActual(resolverTemaTenant(slug));
+      }
+    };
+
+    sincronizarTema();
+
+    window.addEventListener('tenant-tema-cambiado', sincronizarTema);
+    window.addEventListener('tenant-perfil-actualizado', sincronizarTema);
+    window.addEventListener('storage', sincronizarTema);
+
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === 'attributes' && m.attributeName === 'data-tenant-theme') {
+          sincronizarTema();
+        }
+      }
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-tenant-theme'] });
+
+    return () => {
+      window.removeEventListener('tenant-tema-cambiado', sincronizarTema);
+      window.removeEventListener('tenant-perfil-actualizado', sincronizarTema);
+      window.removeEventListener('storage', sincronizarTema);
+      observer.disconnect();
+    };
   }, [slug]);
 
   // Cerrar al hacer clic fuera
@@ -51,10 +84,19 @@ export const TenantThemeSelector: React.FC<TenantThemeSelectorProps> = ({ isDark
     };
   }, [isOpen]);
 
-  const handleSeleccionarTema = (nuevoTemaId: TenantThemeId) => {
+  const handleSeleccionarTema = async (nuevoTemaId: TenantThemeId) => {
     guardarTemaTenant(slug, nuevoTemaId);
     setTemaActual(nuevoTemaId);
     setIsOpen(false);
+    document.documentElement.dataset.tenantTheme = nuevoTemaId;
+
+    try {
+      await perfilNegocioApi.actualizarPerfil({ temaKey: nuevoTemaId });
+      window.dispatchEvent(new CustomEvent('tenant-perfil-actualizado'));
+    } catch {
+      // Si el usuario no tiene permisos para actualizar en BD (ej. público), queda aplicado localmente
+    }
+
     if (toastCtx?.showToast) {
       toastCtx.showToast('info', `Tema visual cambiado a: ${TEMAS_TENANT[nuevoTemaId].nombre}`);
     }
@@ -91,7 +133,7 @@ export const TenantThemeSelector: React.FC<TenantThemeSelectorProps> = ({ isDark
           className="position-absolute end-0 mt-2 border rounded-4 shadow-lg p-2"
           style={{
             zIndex: 1070,
-            minWidth: '290px',
+            minWidth: '240px',
             animation: 'fadeInMenu 150ms cubic-bezier(0.16, 1, 0.3, 1)',
             backgroundColor: isDark ? '#141815' : '#ffffff',
             borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.1)',
@@ -100,27 +142,27 @@ export const TenantThemeSelector: React.FC<TenantThemeSelectorProps> = ({ isDark
           }}
         >
           {/* Header del dropdown */}
-          <div className="px-3 pt-2 pb-2 border-bottom border-surface-subtle d-flex align-items-center justify-content-between">
+          <div className="px-2.5 pt-1.5 pb-2 border-bottom border-surface-subtle d-flex align-items-center justify-content-between">
             <div className="d-flex align-items-center gap-1.5">
-              <Sparkles size={14} className="text-warning" />
-              <span className="fw-bold small" style={{ fontSize: '0.82rem', letterSpacing: '0.02em' }}>
-                Temas de Barbería
+              <Palette size={14} style={{ color: acentoBoton }} />
+              <span className="fw-bold small" style={{ fontSize: '0.8rem', letterSpacing: '0.02em' }}>
+                Tema Visual
               </span>
             </div>
             <span
               className="badge rounded-pill"
               style={{
                 fontSize: '0.65rem',
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
                 color: isDark ? '#9ca3af' : '#64748b',
               }}
             >
-              Frontend Demo
+              {Object.keys(TEMAS_TENANT).length} temas
             </span>
           </div>
 
-          {/* Opciones de tema */}
-          <div className="d-flex flex-column gap-1 pt-2">
+          {/* Opciones de tema limpias (sin descripciones largas redundantes) */}
+          <div className="d-flex flex-column gap-1 pt-1.5">
             {(Object.keys(TEMAS_TENANT) as TenantThemeId[]).map((id) => {
               const tema = TEMAS_TENANT[id];
               const isSelected = temaActual === id;
@@ -130,14 +172,14 @@ export const TenantThemeSelector: React.FC<TenantThemeSelectorProps> = ({ isDark
                   key={id}
                   type="button"
                   onClick={() => handleSeleccionarTema(id)}
-                  className={`btn btn-sm d-flex align-items-center justify-content-between text-start p-2 rounded-3 border-0 transition-all ${
+                  className={`btn btn-sm w-100 d-flex align-items-center justify-content-between text-start px-2.5 py-1.5 rounded-3 border-0 transition-all ${
                     isSelected ? 'fw-bold' : ''
                   }`}
                   style={{
                     backgroundColor: isSelected
                       ? isDark
-                        ? 'rgba(255, 255, 255, 0.08)'
-                        : 'rgba(0, 0, 0, 0.05)'
+                        ? 'rgba(255, 255, 255, 0.1)'
+                        : 'rgba(0, 0, 0, 0.06)'
                       : 'transparent',
                     color: isDark ? '#f3f4f6' : '#1e293b',
                     cursor: 'pointer',
@@ -156,36 +198,27 @@ export const TenantThemeSelector: React.FC<TenantThemeSelectorProps> = ({ isDark
                     }
                   }}
                 >
-                  <div className="d-flex align-items-center gap-2.5">
+                  <div className="d-flex align-items-center gap-2.5 min-w-0">
                     {/* Indicador de color y forma */}
                     <div
                       style={{
-                        width: '18px',
-                        height: '18px',
-                        borderRadius: tema.formaBotones === 'pill' ? '9999px' : '5px',
+                        width: '14px',
+                        height: '14px',
+                        borderRadius: tema.formaBotones === 'pill' ? '9999px' : '4px',
                         backgroundColor: id === 'monochrome-noir' && !isDark ? '#000000' : tema.colorPrimario,
-                        boxShadow: `0 0 10px ${tema.glow}`,
+                        boxShadow: `0 0 8px ${tema.glow}`,
                         flexShrink: 0,
-                        border: isDark ? '2px solid rgba(255,255,255,0.2)' : '2px solid rgba(0,0,0,0.3)',
+                        border: isDark ? '1.5px solid rgba(255,255,255,0.25)' : '1.5px solid rgba(0,0,0,0.2)',
                       }}
                     />
-                    <div>
-                      <div className="d-flex align-items-center gap-1.5">
-                        <span style={{ fontSize: '0.84rem' }}>{tema.nombre}</span>
-                        <span style={{ fontSize: '0.65rem', opacity: 0.8 }}>{tema.badge}</span>
-                      </div>
-                      <span
-                        className="d-block text-muted"
-                        style={{ fontSize: '0.72rem', maxWidth: '200px', lineHeight: 1.2 }}
-                      >
-                        {tema.descripcion}
-                      </span>
-                    </div>
+                    <span style={{ fontSize: '0.84rem', whiteSpace: 'nowrap' }}>
+                      {tema.nombre}
+                    </span>
                   </div>
 
                   {isSelected && (
                     <Check
-                      size={16}
+                      size={15}
                       className="flex-shrink-0 ms-2"
                       style={{ color: tema.colorPrimario }}
                     />
@@ -195,12 +228,12 @@ export const TenantThemeSelector: React.FC<TenantThemeSelectorProps> = ({ isDark
             })}
           </div>
 
-          {/* Pie informativo */}
+          {/* Pie limpio informativo */}
           <div
-            className="mt-2 pt-2 border-top border-surface-subtle px-3 pb-1 text-muted"
-            style={{ fontSize: '0.68rem', lineHeight: 1.3 }}
+            className="mt-1.5 pt-1.5 border-top border-surface-subtle px-2 pb-0.5 text-center"
+            style={{ fontSize: '0.68rem', color: isDark ? '#9ca3af' : '#64748b' }}
           >
-            Se aplica al instante en tu sesión sin modificar la base de datos.
+            Personaliza más opciones en Configuración
           </div>
         </div>
       )}

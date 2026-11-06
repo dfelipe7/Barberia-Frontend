@@ -57,29 +57,18 @@
   z-index: 1;
 }
 
-/* Luces de acento ambiental */
+/* Luces de acento ambiental basadas en el tema de la barbería */
 .auth-split__brand-glow {
   position: absolute;
+  top: -100px;
+  left: -100px;
   width: 500px;
   height: 500px;
   border-radius: 50%;
   filter: blur(90px);
   pointer-events: none;
   z-index: 1;
-}
-
-/* Variante Cliente: Acento Oro / Ámbar */
-.auth-split--cliente .auth-split__brand-glow {
-  top: -100px;
-  left: -100px;
-  background: radial-gradient(circle, rgba(194, 151, 82, 0.22) 0%, transparent 70%);
-}
-
-/* Variante Personal: Acento Azul Cobalto */
-.auth-split--staff .auth-split__brand-glow {
-  top: -100px;
-  left: -100px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.22) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--tenant-glow, rgba(0, 113, 188, 0.3)) 0%, transparent 70%);
 }
 
 .auth-split__brand-content {
@@ -213,6 +202,38 @@
   max-width: 440px;
 }
 
+/* ── Barra Superior (Volver + Toggle Tema) ── */
+.auth-split__top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.auth-split__top-bar .auth-split__top-link {
+  margin-bottom: 0;
+}
+
+.auth-split__theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #a1a1aa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auth-split__theme-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
 .auth-split__top-link {
   display: inline-flex;
   align-items: center;
@@ -243,6 +264,48 @@
   .auth-split__mobile-brand {
     display: none;
   }
+}
+
+/* ── Selector Segmentado de Rol (Tabs) ── */
+.auth-split__tabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  padding: 0.35rem;
+  margin-bottom: 1.75rem;
+  gap: 0.35rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.auth-split__tab-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.15rem;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: #a1a1aa;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.auth-split__tab-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.auth-split__tab-btn.is-active {
+  background: var(--tenant-accent, #0071BC);
+  color: var(--tenant-btn-text, #ffffff);
+  font-weight: 700;
+  box-shadow: 0 4px 16px var(--tenant-glow, rgba(0, 113, 188, 0.35));
 }
 
 .auth-split__heading {
@@ -322,5 +385,121 @@
 
 .auth-split--staff .auth-split__cross-link {
   color: #e5b974;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ADAPTACIÓN A MODO CLARO (Light Theme)
+   El panel derecho se convierte en superficie luminosa de alta legibilidad,
+   mientras el panel de marca conserva el banner cinematográfico.
+   ══════════════════════════════════════════════════════════════ */
+[data-theme="light"] .auth-split,
+[data-bs-theme="light"] .auth-split {
+  color: #0f172a;
+}
+
+[data-theme="light"] .auth-split__form-panel,
+[data-bs-theme="light"] .auth-split__form-panel {
+  background-color: #f8fafc;
+}
+
+[data-theme="light"] .auth-split__top-link,
+[data-bs-theme="light"] .auth-split__top-link {
+  color: #64748b;
+}
+
+[data-theme="light"] .auth-split__top-link:hover,
+[data-bs-theme="light"] .auth-split__top-link:hover {
+  color: #0f172a;
+}
+
+[data-theme="light"] .auth-split__theme-btn,
+[data-bs-theme="light"] .auth-split__theme-btn {
+  border-color: #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .auth-split__theme-btn:hover,
+[data-bs-theme="light"] .auth-split__theme-btn:hover {
+  color: #0f172a;
+  background: #f1f5f9;
+}
+
+[data-theme="light"] .auth-split__heading,
+[data-bs-theme="light"] .auth-split__heading {
+  color: #0f172a;
+}
+
+[data-theme="light"] .auth-split__desc,
+[data-bs-theme="light"] .auth-split__desc {
+  color: #64748b;
+}
+
+[data-theme="light"] .auth-split__tabs,
+[data-bs-theme="light"] .auth-split__tabs {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .auth-split__tab-btn,
+[data-bs-theme="light"] .auth-split__tab-btn {
+  color: #64748b;
+}
+
+[data-theme="light"] .auth-split__tab-btn:hover,
+[data-bs-theme="light"] .auth-split__tab-btn:hover {
+  color: #0f172a;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .auth-split__action-card,
+[data-bs-theme="light"] .auth-split__action-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .auth-split__security-note,
+[data-bs-theme="light"] .auth-split__security-note {
+  color: #64748b;
+}
+
+[data-theme="light"] .auth-split__cross-access p,
+[data-bs-theme="light"] .auth-split__cross-access p {
+  color: #64748b;
+}
+
+[data-theme="light"] .auth-split--cliente .auth-split__cross-link,
+[data-bs-theme="light"] .auth-split--cliente .auth-split__cross-link {
+  color: #0284c7;
+}
+
+[data-theme="light"] .auth-split--staff .auth-split__cross-link,
+[data-bs-theme="light"] .auth-split--staff .auth-split__cross-link {
+  color: #b45309;
+}
+
+/* La insignia en el panel de marca izquierdo siempre conserva su estilo sobre fondo oscuro */
+.auth-split__brand-panel .auth-split__brand-badge {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+/* En el panel de formulario derecho */
+.auth-split__form-panel .auth-split__brand-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #e4e4e7;
+}
+
+[data-theme="light"] .auth-split__form-panel .auth-split__brand-badge,
+[data-bs-theme="light"] .auth-split__form-panel .auth-split__brand-badge {
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  color: #0f172a;
+  font-weight: 750;
 }
 

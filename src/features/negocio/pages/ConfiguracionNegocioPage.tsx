@@ -36,50 +36,98 @@ import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import { Share2 } from 'lucide-react';
 import { RedesSocialesSection } from '../components/RedesSocialesSection';
 
+function parsearCoordenada(latStr: string, lngStr: string): { lat: number; lng: number } | null {
+  const lat = Number.parseFloat(latStr);
+  const lng = Number.parseFloat(lngStr);
+  if (!Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+    return { lat, lng };
+  }
+  return null;
+}
+
 function extraerCoordenadas(texto: string): { lat: number; lng: number } | null {
   if (!texto) return null;
   const limpio = texto.trim();
 
   // 1. Patrón en URLs de Google Maps con @lat,lng
-  const matchAt = limpio.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
+  const matchAt = /@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/.exec(limpio);
   if (matchAt) {
-    const lat = Number.parseFloat(matchAt[1]);
-    const lng = Number.parseFloat(matchAt[2]);
-    if (!Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-      return { lat, lng };
-    }
+    const coord = parsearCoordenada(matchAt[1], matchAt[2]);
+    if (coord) return coord;
   }
 
   // 2. Patrón en parámetros de consulta (?q=lat,lng o ?query=lat,lng o ?ll=lat,lng)
-  const matchQuery = limpio.match(/[?&](?:q|query|ll)=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
+  const matchQuery = /[?&](?:q|query|ll)=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/.exec(limpio);
   if (matchQuery) {
-    const lat = Number.parseFloat(matchQuery[1]);
-    const lng = Number.parseFloat(matchQuery[2]);
-    if (!Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-      return { lat, lng };
-    }
+    const coord = parsearCoordenada(matchQuery[1], matchQuery[2]);
+    if (coord) return coord;
   }
 
   // 3. Patrón simple: dos números decimales separados por coma, espacio o punto y coma
-  const matchSimple = limpio.match(/^(-?\d+(?:\.\d+)?)[,\s;]+(-?\d+(?:\.\d+)?)$/);
+  const matchSimple = /^(-?\d+(?:\.\d+)?)[,\s;]+(-?\d+(?:\.\d+)?)$/.exec(limpio);
   if (matchSimple) {
-    const lat = Number.parseFloat(matchSimple[1]);
-    const lng = Number.parseFloat(matchSimple[2]);
-    if (!Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-      return { lat, lng };
-    }
+    const coord = parsearCoordenada(matchSimple[1], matchSimple[2]);
+    if (coord) return coord;
   }
 
   // 4. Buscar dos números decimales consecutivos en cualquier parte del texto
-  const matchAny = /(-?\d+\.\d+)[\s,;]+?(-?\d+\.\d+)/.exec(limpio);
+  const matchAny = /(-?\d+\.\d+)[,\s;]+(-?\d+\.\d+)/.exec(limpio);
   if (matchAny) {
-    const lat = Number.parseFloat(matchAny[1]);
-    const lng = Number.parseFloat(matchAny[2]);
-    if (!Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-      return { lat, lng };
-    }
+    const coord = parsearCoordenada(matchAny[1], matchAny[2]);
+    if (coord) return coord;
   }
 
+  return null;
+}
+
+function validarCoordenadasFormulario(
+  latitud: string,
+  longitud: string
+): { valid: boolean; error?: string; latNum?: number; lngNum?: number } {
+  const tieneLat = latitud.trim().length > 0;
+  const tieneLng = longitud.trim().length > 0;
+
+  if ((tieneLat && !tieneLng) || (!tieneLat && tieneLng)) {
+    return { valid: false, error: 'La latitud y la longitud deben ingresarse juntas.' };
+  }
+
+  if (!tieneLat && !tieneLng) {
+    return { valid: true };
+  }
+
+  const latNum = Number.parseFloat(latitud);
+  const lngNum = Number.parseFloat(longitud);
+  if (Number.isNaN(latNum) || latNum < -90 || latNum > 90) {
+    return { valid: false, error: 'La latitud debe ser un número válido entre -90 y 90.' };
+  }
+  if (Number.isNaN(lngNum) || lngNum < -180 || lngNum > 180) {
+    return { valid: false, error: 'La longitud debe ser un número válido entre -180 y 180.' };
+  }
+
+  return { valid: true, latNum, lngNum };
+}
+
+function extraerMensajeApiError(err: any, fallback: string): string {
+  const msg = err.response?.data?.message || fallback;
+  return Array.isArray(msg) ? msg[0] : msg;
+}
+
+function validarArchivoRecurso(tipo: TipoRecursoPerfil, file: File): string | null {
+  if (tipo === 'banner') {
+    if (!file.type.includes('png') && !file.name.toLowerCase().endsWith('.png')) {
+      return 'El banner principal debe ser un archivo PNG.';
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      return 'El banner no debe superar los 5 MB.';
+    }
+  } else {
+    if (!file.type.includes('svg') && !file.name.toLowerCase().endsWith('.svg')) {
+      return 'Los logos e isotipos oficiales deben estar en formato vectorial SVG.';
+    }
+    if (file.size > 500 * 1024) {
+      return 'El archivo SVG no debe superar 500 KB.';
+    }
+  }
   return null;
 }
 
@@ -156,29 +204,10 @@ export default function ConfiguracionNegocioPage() {
   const handleGuardarDatos = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validar coordenadas: ambas deben informarse o ambas nulas
-    const tieneLat = latitud.trim().length > 0;
-    const tieneLng = longitud.trim().length > 0;
-
-    if ((tieneLat && !tieneLng) || (!tieneLat && tieneLng)) {
-      showToast('warning', 'La latitud y la longitud deben ingresarse juntas.');
+    const validacion = validarCoordenadasFormulario(latitud, longitud);
+    if (!validacion.valid) {
+      showToast('danger', validacion.error!);
       return;
-    }
-
-    let latNum: number | undefined = undefined;
-    let lngNum: number | undefined = undefined;
-
-    if (tieneLat && tieneLng) {
-      latNum = Number.parseFloat(latitud);
-      lngNum = Number.parseFloat(longitud);
-      if (Number.isNaN(latNum) || latNum < -90 || latNum > 90) {
-        showToast('danger', 'La latitud debe ser un número válido entre -90 y 90.');
-        return;
-      }
-      if (Number.isNaN(lngNum) || lngNum < -180 || lngNum > 180) {
-        showToast('danger', 'La longitud debe ser un número válido entre -180 y 180.');
-        return;
-      }
     }
 
     const payload: ActualizarPerfilNegocioDto = {
@@ -188,8 +217,8 @@ export default function ConfiguracionNegocioPage() {
       ciudad: ciudad.trim() || undefined,
       departamento: departamento.trim() || undefined,
       referencia: referencia.trim() || undefined,
-      latitud: latNum,
-      longitud: lngNum,
+      latitud: validacion.latNum,
+      longitud: validacion.lngNum,
     };
 
     try {
@@ -199,8 +228,7 @@ export default function ConfiguracionNegocioPage() {
       showToast('success', '¡Información comercial y ubicación actualizadas exitosamente!');
     } catch (err: any) {
       console.error('Error al actualizar perfil de negocio:', err);
-      const msg = err.response?.data?.message || 'Error al guardar los datos.';
-      showToast('danger', Array.isArray(msg) ? msg[0] : msg);
+      showToast('danger', extraerMensajeApiError(err, 'Error al guardar los datos.'));
     } finally {
       setGuardando(false);
     }
@@ -256,25 +284,10 @@ export default function ConfiguracionNegocioPage() {
 
   // Subir un archivo de marca
   const handleSubirArchivo = async (tipo: TipoRecursoPerfil, file: File) => {
-    // Validar tipo básico
-    if (tipo === 'banner') {
-      if (!file.type.includes('png') && !file.name.toLowerCase().endsWith('.png')) {
-        showToast('danger', 'El banner debe ser una imagen en formato PNG.');
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        showToast('danger', 'El banner no debe superar 5 MB.');
-        return;
-      }
-    } else {
-      if (!file.type.includes('svg') && !file.name.toLowerCase().endsWith('.svg')) {
-        showToast('danger', 'Los logos y el favicon deben ser vectores en formato SVG.');
-        return;
-      }
-      if (file.size > 500 * 1024) {
-        showToast('danger', 'El archivo SVG no debe superar 500 KB.');
-        return;
-      }
+    const errorArchivo = validarArchivoRecurso(tipo, file);
+    if (errorArchivo) {
+      showToast('danger', errorArchivo);
+      return;
     }
 
     try {
@@ -285,8 +298,7 @@ export default function ConfiguracionNegocioPage() {
       showToast('success', `¡Recurso de marca (${tipo}) actualizado correctamente!`);
     } catch (err: any) {
       console.error(`Error al subir ${tipo}:`, err);
-      const msg = err.response?.data?.message || `No fue posible subir el recurso ${tipo}.`;
-      showToast('danger', Array.isArray(msg) ? msg[0] : msg);
+      showToast('danger', extraerMensajeApiError(err, `No fue posible subir el recurso ${tipo}.`));
     } finally {
       setSubiendoRecurso(null);
     }
@@ -332,12 +344,45 @@ export default function ConfiguracionNegocioPage() {
   const handleSeleccionarTema = async (temaId: TenantThemeId) => {
     guardarTemaTenant(slugActivo, temaId);
     setTemaActual(temaId);
+
+    // Validar coordenadas actuales si existen
+    const validacion = validarCoordenadasFormulario(latitud, longitud);
+
+    let latitudFinal: number | undefined;
+    if (validacion.valid && validacion.latNum !== undefined) {
+      latitudFinal = validacion.latNum;
+    } else if (perfil?.ubicacion?.latitud != null) {
+      latitudFinal = Number(perfil.ubicacion.latitud);
+    }
+
+    let longitudFinal: number | undefined;
+    if (validacion.valid && validacion.lngNum !== undefined) {
+      longitudFinal = validacion.lngNum;
+    } else if (perfil?.ubicacion?.longitud != null) {
+      longitudFinal = Number(perfil.ubicacion.longitud);
+    }
+
+    // Construir payload completo preservando toda la información comercial y ubicación existente
+    // para evitar que el PUT del backend sobreescriba con null los campos omitidos.
+    const payload: ActualizarPerfilNegocioDto = {
+      temaKey: temaId,
+      frasePrincipal: frasePrincipal.trim() || perfil?.contenido?.frasePrincipal || undefined,
+      direccion: direccion.trim() || perfil?.ubicacion?.direccion || undefined,
+      ciudad: ciudad.trim() || perfil?.ubicacion?.ciudad || undefined,
+      departamento: departamento.trim() || perfil?.ubicacion?.departamento || undefined,
+      referencia: referencia.trim() || perfil?.ubicacion?.referencia || undefined,
+      latitud: latitudFinal,
+      longitud: longitudFinal,
+    };
+
     try {
-      await perfilNegocioApi.actualizarPerfil({ temaKey: temaId });
+      const actualizado = await perfilNegocioApi.actualizarPerfil(payload);
+      setPerfil(actualizado);
       window.dispatchEvent(new CustomEvent('tenant-perfil-actualizado'));
       showToast('success', `Tema guardado en la sede: ${TEMAS_TENANT[temaId]?.nombre}`);
-    } catch {
-      showToast('success', `Tema actualizado a: ${TEMAS_TENANT[temaId]?.nombre}`);
+    } catch (err: any) {
+      console.error('Error al guardar tema en backend:', err);
+      showToast('warning', `Tema aplicado localmente. Aviso del servidor: ${extraerMensajeApiError(err, 'No fue posible persistir en la base de datos')}`);
     }
   };
 

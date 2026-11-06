@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { UserCog, Shield, Eye, Percent, Camera, Pencil, Scissors, UserMinus, UserCheck, Lock, Unlock } from 'lucide-react';
+import { UserCog, Shield, Eye, Percent, Camera, Pencil, Scissors, UserMinus, UserCheck } from 'lucide-react';
 import Table, { type Column } from '../../../shared/ui/Table';
 import AccionesDropdown from '../../../shared/ui/AccionesDropdown';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
@@ -17,11 +17,39 @@ interface BarberoTableProps {
   onEditarComision: (barbero: BarberoGestion) => void;
   onEditarFoto: (barbero: BarberoGestion) => void; 
   onCambiarEstado: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
-  onCambiarEstadoGlobal: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
+  onCambiarEstadoGlobal?: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
   rolActorPrincipal: Rol; 
   currentUserId?: number;
   isUpdatingId?: number | null;
   isUpdatingGlobalId?: number | null;
+}
+
+/**
+ * Puede gestionar (editar, comisión, foto, rol) a este barbero:
+ * - Siempre sobre uno mismo.
+ * - Nunca sobre un Superadmin ajeno (inmunidad entre pares, igual que el backend).
+ * - En otro caso, según la jerarquía del actor sobre el rol BARBERO.
+ */
+function puedeGestionarBarbero(rolActor: Rol, barbero: BarberoGestion, currentUserId?: number): boolean {
+  if (currentUserId !== undefined && currentUserId === barbero.id) return true;
+  if (barbero.esSuperAdmin) return false;
+  return puedeGestionarEstado(rolActor, 'BARBERO');
+}
+
+function resolverEtiquetaRolBarbero(barbero: BarberoGestion): string {
+  if (barbero.estado !== 'ACTIVO') {
+    return 'Activar rol de barbero';
+  }
+  if (barbero.esAdministrador && barbero.estadoAdmin === 'ACTIVO') {
+    return 'Desactivar rol (sigue como admin)';
+  }
+  return 'Desactivar rol de barbero';
+}
+
+function resolverIconoRolBarbero(isCurrentUpdating: boolean, estadoBarberoActivo: boolean) {
+  if (isCurrentUpdating) return <KyriosSpinner size="xs" aria-hidden="true" />;
+  if (estadoBarberoActivo) return <UserMinus size={18} />;
+  return <UserCheck size={18} />;
 }
 
 export const BarberoTable: React.FC<BarberoTableProps> = ({
@@ -30,11 +58,11 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
   onEditarComision,
   onEditarFoto,
   onCambiarEstado,
-  onCambiarEstadoGlobal,
+  onCambiarEstadoGlobal: _onCambiarEstadoGlobal,
   rolActorPrincipal,
   currentUserId,
   isUpdatingId,
-  isUpdatingGlobalId,
+  isUpdatingGlobalId: _isUpdatingGlobalId,
 }) => {
   const isMobile = useMediaQuery('(max-width: 767.98px)');
 
@@ -81,9 +109,11 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
       key: 'estadoGlobal',
       header: 'Estado Global',
       className: 'text-center',
-      render: (barbero) => (
-        <StatusBadge estado={barbero.estadoGlobal} tone="global" />
-      ),
+      render: (barbero) => {
+        const isCuentaHabilitada =
+          barbero.estado === 'ACTIVO' || (barbero.esAdministrador && barbero.estadoAdmin === 'ACTIVO');
+        return <StatusBadge estado={isCuentaHabilitada ? 'ACTIVO' : 'INACTIVO'} tone="global" />;
+      },
     },
     {
       key: 'estado',
@@ -98,10 +128,10 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
       header: 'Acciones',
       className: 'text-center',
       render: (barbero) => {
-        const esMismoUsuario = currentUserId === barbero.id;
         const isCurrentUpdating = isUpdatingId === barbero.id;
-        const isCurrentUpdatingGlobal = isUpdatingGlobalId === barbero.id;
-        const puedeEditar = puedeGestionarEstado(rolActorPrincipal, 'BARBERO');
+        const puedeEditar = puedeGestionarBarbero(rolActorPrincipal, barbero, currentUserId);
+        const puedeGestionarComision =
+          rolActorPrincipal === 'SUPERADMIN' || rolActorPrincipal === 'ADMINISTRADOR';
 
         const itemsPerfil = [
           {
@@ -119,7 +149,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
             linkState: { from: '/usuarios?tab=barberos' },
             title: 'Editar datos del perfil',
           },
-          {
+          puedeGestionarComision && {
             key: 'comision',
             label: 'Cambiar % de comisión',
             icon: <Percent size={15} className="text-warning-emphasis" />,
@@ -138,10 +168,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
         const itemsRolCuenta = [
           puedeEditar && {
             key: 'rol',
-            label:
-              barbero.estado === 'ACTIVO'
-                ? 'Desactivar rol (sigue activo)'
-                : 'Activar rol de barbero',
+            label: resolverEtiquetaRolBarbero(barbero),
             icon:
               barbero.estado === 'ACTIVO' ? (
                 <UserMinus size={15} className="text-warning-emphasis" />
@@ -156,35 +183,8 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
               ),
             title:
               barbero.estado === 'ACTIVO'
-                ? 'Desactivar rol (el usuario sigue activo)'
+                ? 'Desactivar rol de barbero'
                 : 'Activar rol de barbero',
-          },
-          puedeEditar && {
-            key: 'global',
-            label:
-              barbero.estadoGlobal === 'ACTIVO'
-                ? 'Bloquear cuenta completa'
-                : 'Desbloquear cuenta global',
-            icon:
-              barbero.estadoGlobal === 'ACTIVO' ? (
-                <Lock size={15} className="text-danger" />
-              ) : (
-                <Unlock size={15} className="text-success" />
-              ),
-            variant:
-              barbero.estadoGlobal === 'ACTIVO' ? ('danger' as const) : ('success' as const),
-            disabled: esMismoUsuario,
-            isLoading: isCurrentUpdatingGlobal,
-            onClick: () =>
-              onCambiarEstadoGlobal(
-                barbero.id,
-                barbero.estadoGlobal === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
-              ),
-            title: esMismoUsuario
-              ? 'No puedes bloquear tu propia cuenta'
-              : barbero.estadoGlobal === 'ACTIVO'
-              ? 'Bloquear cuenta completa (no podrá iniciar sesión)'
-              : 'Desbloquear cuenta global',
           },
         ];
 
@@ -201,7 +201,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
               <AccionesDropdown
                 label="Rol y Cuenta"
                 icon={<Shield size={15} />}
-                buttonVariant="btn-outline-dark"
+                buttonVariant="btn-outline-secondary"
                 items={itemsRolCuenta}
               />
             )}
@@ -231,12 +231,11 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
     return (
       <div className="mobile-cards-container d-flex flex-column gap-3">
         {barberos.map((barbero) => {
-          const esMismoUsuario = currentUserId === barbero.id;
           const isCurrentUpdating = isUpdatingId === barbero.id;
-          const isCurrentUpdatingGlobal = isUpdatingGlobalId === barbero.id;
-          const puedeEditar = puedeGestionarEstado(rolActorPrincipal, 'BARBERO');
-          const isActivo = barbero.estadoGlobal === 'ACTIVO';
-          const borderColor = isActivo ? '#10B981' : '#EF4444';
+          const puedeEditar = puedeGestionarBarbero(rolActorPrincipal, barbero, currentUserId);
+          const isCuentaHabilitada =
+            barbero.estado === 'ACTIVO' || (barbero.esAdministrador && barbero.estadoAdmin === 'ACTIVO');
+          const borderColor = isCuentaHabilitada ? '#10B981' : '#EF4444';
 
           return (
             <div
@@ -278,7 +277,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
               <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 py-2 border-top border-bottom my-2 bg-surface-app px-2 rounded">
                 <div className="d-flex align-items-center gap-1">
                   <span className="text-muted small">Cuenta:</span>
-                  <StatusBadge estado={barbero.estadoGlobal} tone="global" />
+                  <StatusBadge estado={isCuentaHabilitada ? 'ACTIVO' : 'INACTIVO'} tone="global" />
                 </div>
                 <div className="d-flex align-items-center gap-1">
                   <span className="text-muted small">Rol:</span>
@@ -310,15 +309,17 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
                   </Link>
                 )}
 
-                <button
-                  type="button"
-                  className="btn btn-outline-warning mobile-action-btn"
-                  onClick={() => onEditarComision(barbero)}
-                  title="Cambiar % de comisión"
-                  aria-label="Cambiar porcentaje de comisión"
-                >
-                  <Percent size={18} />
-                </button>
+                {puedeEditar && (
+                  <button
+                    type="button"
+                    className="btn btn-outline-warning mobile-action-btn"
+                    onClick={() => onEditarComision(barbero)}
+                    title="Cambiar % de comisión"
+                    aria-label="Cambiar porcentaje de comisión"
+                  >
+                    <Percent size={18} />
+                  </button>
+                )}
 
                 {puedeEditar && (
                   <button
@@ -346,43 +347,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
                     title={barbero.estado === 'ACTIVO' ? 'Desactivar rol' : 'Activar rol de barbero'}
                     aria-label={barbero.estado === 'ACTIVO' ? 'Desactivar rol de barbero' : 'Activar rol de barbero'}
                   >
-                    {isCurrentUpdating ? (
-                      <KyriosSpinner size="xs" aria-hidden="true" />
-                    ) : barbero.estado === 'ACTIVO' ? (
-                      <UserMinus size={18} />
-                    ) : (
-                      <UserCheck size={18} />
-                    )}
-                  </button>
-                )}
-
-                {puedeEditar && (
-                  <button
-                    type="button"
-                    className={`btn ${isActivo ? 'btn-outline-danger' : 'btn-outline-success'} mobile-action-btn`}
-                    disabled={esMismoUsuario || isCurrentUpdatingGlobal}
-                    onClick={() =>
-                      onCambiarEstadoGlobal(
-                        barbero.id,
-                        barbero.estadoGlobal === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'
-                      )
-                    }
-                    title={
-                      esMismoUsuario
-                        ? 'No puedes bloquear tu propia cuenta'
-                        : isActivo
-                        ? 'Bloquear cuenta completa'
-                        : 'Desbloquear cuenta global'
-                    }
-                    aria-label={isActivo ? 'Bloquear cuenta completa' : 'Desbloquear cuenta global'}
-                  >
-                    {isCurrentUpdatingGlobal ? (
-                      <KyriosSpinner size="xs" aria-hidden="true" />
-                    ) : isActivo ? (
-                      <Lock size={18} />
-                    ) : (
-                      <Unlock size={18} />
-                    )}
+                    {resolverIconoRolBarbero(Boolean(isCurrentUpdating), barbero.estado === 'ACTIVO')}
                   </button>
                 )}
               </div>

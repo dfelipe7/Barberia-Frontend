@@ -84,6 +84,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  color: inherit;
+}
+
+.booking-stepper__icon-wrap svg {
+  color: inherit;
+}
+
+.booking-stepper__label {
+  color: inherit;
+  font-weight: 700;
 }
 
 .booking-stepper__step:not(:disabled):hover {
@@ -99,15 +109,62 @@
   box-shadow: 0 4px 16px rgba(0, 113, 188, 0.38);
 }
 
+.booking-stepper__step.is-current .booking-stepper__label,
+.booking-stepper__step.is-current .booking-stepper__icon-wrap,
+.booking-stepper__step.is-current svg {
+  color: inherit !important;
+}
+
 .booking-stepper__step.is-done {
   border-color: rgba(0, 113, 188, 0.35);
   color: var(--bs-primary);
   background: rgba(0, 113, 188, 0.08);
 }
 
+.booking-stepper__step.is-done .booking-stepper__label,
+.booking-stepper__step.is-done .booking-stepper__icon-wrap,
+.booking-stepper__step.is-done svg {
+  color: inherit !important;
+}
+
 .booking-stepper__step:disabled {
   cursor: default;
-  opacity: 0.65;
+  opacity: 0.8;
+}
+
+/* ─── Píldoras de Estado y Badges de Selección de Barbero y Flujo ─── */
+.booking-barber-status-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  transition: all 180ms ease;
+  border: 1px solid transparent;
+}
+
+.booking-barber-status-badge--available {
+  background: var(--bs-tertiary-bg, rgba(255, 255, 255, 0.08));
+  color: var(--bs-secondary-color, #94a3b8);
+  border-color: var(--surface-card-border, rgba(255, 255, 255, 0.12));
+}
+
+.booking-barber-status-badge--selected {
+  background: var(--bs-primary);
+  color: #ffffff;
+  font-weight: 750;
+  box-shadow: 0 2px 10px rgba(0, 113, 188, 0.35);
+}
+
+.booking-card--selected .badge {
+  background-color: var(--bs-primary) !important;
+  color: #ffffff !important;
+}
+
+.booking-primary-badge {
+  background-color: var(--bs-primary);
+  color: #ffffff;
+  font-weight: 700;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
 }
 
 /* ─── Banner de Barbero Fijo (Camino C) ─── */
@@ -196,6 +253,7 @@
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   min-height: 2.4rem;
 }
 
@@ -249,17 +307,21 @@
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
 }
 
-.booking-date-capsule:not(:disabled):hover {
+.booking-date-capsule:not(:disabled):not(.booking-date-capsule--selected):hover {
   border-color: var(--bs-primary);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .booking-date-capsule--selected {
   background: var(--bs-primary) !important;
   border-color: var(--bs-primary) !important;
   color: #ffffff !important;
-  box-shadow: 0 6px 20px rgba(0, 113, 188, 0.4);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 113, 188, 0.4);
+  transform: none !important;
+}
+
+.booking-date-capsule--selected:hover {
+  transform: none !important;
 }
 
 .booking-date-capsule__day {
@@ -463,6 +525,13 @@
   background: rgba(0, 113, 188, 0.12);
   border: 1px solid rgba(0, 113, 188, 0.28);
   color: #38bdf8;
+}
+
+[data-theme="light"] .booking-voucher__brand-badge,
+[data-bs-theme="light"] .booking-voucher__brand-badge {
+  background: rgba(0, 113, 188, 0.08);
+  border-color: rgba(0, 113, 188, 0.24);
+  color: #0071BC;
 }
 
 .booking-voucher__check-ring {
@@ -829,4 +898,316 @@
   .booking-barber-avatar {
     transition: none !important;
   }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   BLINDAJE DE CONTRASTE DUAL: MODO CLARO VS MODO OSCURO (WCAG AA)
+   Garantiza legibilidad absoluta de fechas, slots de horas, barras y tarjetas
+   independientemente del tema de tenant activo.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── MODO CLARO (Light Theme) ── */
+[data-theme="light"] .booking-calendar-card,
+[data-bs-theme="light"] .booking-calendar-card,
+[data-theme="light"] .booking-daypart-card,
+[data-bs-theme="light"] .booking-daypart-card,
+[data-theme="light"] .booking-card,
+[data-bs-theme="light"] .booking-card,
+[data-theme="light"] .booking-ticket,
+[data-bs-theme="light"] .booking-ticket,
+[data-theme="light"] .booking-form-card,
+[data-bs-theme="light"] .booking-form-card {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .booking-stepper__step:not(.is-current):not(.is-done),
+[data-bs-theme="light"] .booking-stepper__step:not(.is-current):not(.is-done) {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .booking-stepper__step:disabled,
+[data-bs-theme="light"] .booking-stepper__step:disabled {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #475569 !important;
+  opacity: 0.9 !important;
+}
+
+[data-theme="light"] .booking-barber-status-badge--available,
+[data-bs-theme="light"] .booking-barber-status-badge--available {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+[data-theme="light"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-bs-theme="light"] .booking-date-capsule:not(.booking-date-capsule--selected) {
+  background: #ffffff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__day,
+[data-bs-theme="light"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__day,
+[data-theme="light"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__num,
+[data-bs-theme="light"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__num,
+[data-theme="light"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__month,
+[data-bs-theme="light"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__month {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .booking-date-capsule:not(:disabled):not(.booking-date-capsule--selected):hover,
+[data-bs-theme="light"] .booking-date-capsule:not(:disabled):not(.booking-date-capsule--selected):hover {
+  background: #f8fafc !important;
+  border-color: var(--bs-primary) !important;
+}
+
+[data-theme="light"] .booking-date-capsule:disabled,
+[data-bs-theme="light"] .booking-date-capsule:disabled {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  opacity: 0.7 !important;
+  cursor: not-allowed;
+}
+
+[data-theme="light"] .booking-date-capsule:disabled .booking-date-capsule__day,
+[data-bs-theme="light"] .booking-date-capsule:disabled .booking-date-capsule__day,
+[data-theme="light"] .booking-date-capsule:disabled .booking-date-capsule__num,
+[data-bs-theme="light"] .booking-date-capsule:disabled .booking-date-capsule__num,
+[data-theme="light"] .booking-date-capsule:disabled .booking-date-capsule__month,
+[data-bs-theme="light"] .booking-date-capsule:disabled .booking-date-capsule__month,
+[data-theme="light"] .booking-date-capsule:disabled .booking-date-capsule__empty,
+[data-bs-theme="light"] .booking-date-capsule:disabled .booking-date-capsule__empty {
+  color: #94a3b8 !important;
+}
+
+/* ── Día Seleccionado Premium (Alta Visibilidad y Glow del Tema) ── */
+.booking-date-capsule--selected,
+[data-theme="light"] .booking-date-capsule--selected,
+[data-bs-theme="light"] .booking-date-capsule--selected,
+[data-theme="dark"] .booking-date-capsule--selected,
+[data-bs-theme="dark"] .booking-date-capsule--selected {
+  background: var(--tenant-accent, var(--bs-primary, #0071BC)) !important;
+  border-color: var(--tenant-accent, var(--bs-primary, #0071BC)) !important;
+  color: var(--tenant-btn-text, #ffffff) !important;
+  box-shadow: 0 4px 16px var(--tenant-glow, rgba(0, 113, 188, 0.45)), 0 0 0 2px var(--tenant-accent, var(--bs-primary, #0071BC)) !important;
+  transform: none !important;
+  cursor: default !important;
+}
+
+.booking-date-capsule--selected .booking-date-capsule__day,
+[data-theme="light"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-bs-theme="light"] .booking-date-capsule--selected .booking-date-capsule__day,
+.booking-date-capsule--selected .booking-date-capsule__num,
+[data-theme="light"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-bs-theme="light"] .booking-date-capsule--selected .booking-date-capsule__num,
+.booking-date-capsule--selected .booking-date-capsule__month,
+[data-theme="light"] .booking-date-capsule--selected .booking-date-capsule__month,
+[data-bs-theme="light"] .booking-date-capsule--selected .booking-date-capsule__month {
+  color: var(--tenant-btn-text, #ffffff) !important;
+  opacity: 1 !important;
+}
+
+.booking-date-capsule--selected .booking-date-capsule__badge,
+[data-theme="light"] .booking-date-capsule--selected .booking-date-capsule__badge,
+[data-bs-theme="light"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-tenant-theme="cyber-lime"] .booking-date-capsule--selected .booking-date-capsule__badge,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule--selected .booking-date-capsule__badge,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: rgba(0, 0, 0, 0.15) !important;
+  color: #000000 !important;
+  font-weight: 850 !important;
+  border: 1px solid rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Slots de Horas en Modo Claro */
+[data-theme="light"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-bs-theme="light"] .booking-slot-pill:not(.booking-slot-pill--active) {
+  background: #ffffff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time,
+[data-bs-theme="light"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end,
+[data-bs-theme="light"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .booking-slot-pill:not(.booking-slot-pill--active):hover,
+[data-bs-theme="light"] .booking-slot-pill:not(.booking-slot-pill--active):hover {
+  background: #f8fafc !important;
+  border-color: var(--bs-primary) !important;
+}
+
+[data-theme="light"] .booking-slot-pill--active,
+[data-bs-theme="light"] .booking-slot-pill--active {
+  background: var(--tenant-accent, var(--bs-primary)) !important;
+  border-color: var(--tenant-accent, var(--bs-primary)) !important;
+  color: var(--tenant-btn-text, #ffffff) !important;
+}
+
+[data-theme="light"] .booking-slot-pill--active .booking-slot-time,
+[data-bs-theme="light"] .booking-slot-pill--active .booking-slot-time {
+  color: var(--tenant-btn-text, #ffffff) !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"] .booking-slot-pill--active .booking-slot-end,
+[data-bs-theme="light"] .booking-slot-pill--active .booking-slot-end {
+  color: var(--tenant-btn-text, #ffffff) !important;
+  opacity: 0.92 !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="light"] .booking-slot-pill--active .booking-slot-check,
+[data-bs-theme="light"] .booking-slot-pill--active .booking-slot-check {
+  color: var(--tenant-btn-text, #ffffff) !important;
+}
+
+/* Titulares y textos de jornada en Modo Claro */
+[data-theme="light"] .booking-daypart-title,
+[data-bs-theme="light"] .booking-daypart-title {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .booking-daypart-range,
+[data-bs-theme="light"] .booking-daypart-range {
+  color: #64748b !important;
+}
+
+/* Barra Flotante Inferior en Modo Claro */
+[data-theme="light"] .booking-floating-bar,
+[data-bs-theme="light"] .booking-floating-bar {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .booking-floating-bar__tag,
+[data-bs-theme="light"] .booking-floating-bar__tag {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .booking-floating-bar__title,
+[data-bs-theme="light"] .booking-floating-bar__title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .booking-floating-bar .text-surface-muted,
+[data-bs-theme="light"] .booking-floating-bar .text-surface-muted {
+  color: #64748b !important;
+}
+
+/* ── MODO OSCURO (Dark Theme) ── */
+[data-theme="dark"] .booking-date-capsule,
+[data-bs-theme="dark"] .booking-date-capsule {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .booking-date-capsule:disabled,
+[data-bs-theme="dark"] .booking-date-capsule:disabled {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  color: #64748b !important;
+  opacity: 0.5 !important;
+}
+
+[data-theme="dark"] .booking-date-capsule:disabled .booking-date-capsule__day,
+[data-bs-theme="dark"] .booking-date-capsule:disabled .booking-date-capsule__day,
+[data-theme="dark"] .booking-date-capsule:disabled .booking-date-capsule__num,
+[data-bs-theme="dark"] .booking-date-capsule:disabled .booking-date-capsule__num,
+[data-theme="dark"] .booking-date-capsule:disabled .booking-date-capsule__month,
+[data-bs-theme="dark"] .booking-date-capsule:disabled .booking-date-capsule__month,
+[data-theme="dark"] .booking-date-capsule:disabled .booking-date-capsule__empty,
+[data-bs-theme="dark"] .booking-date-capsule:disabled .booking-date-capsule__empty {
+  color: #64748b !important;
+}
+
+[data-theme="dark"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-bs-theme="dark"] .booking-slot-pill:not(.booking-slot-pill--active) {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time,
+[data-bs-theme="dark"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end,
+[data-bs-theme="dark"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .booking-slot-pill--active,
+[data-bs-theme="dark"] .booking-slot-pill--active {
+  background: var(--tenant-accent, var(--bs-primary)) !important;
+  border-color: var(--tenant-accent, var(--bs-primary)) !important;
+  color: var(--tenant-btn-text, #ffffff) !important;
+  box-shadow: 0 4px 16px var(--tenant-glow, rgba(0, 113, 188, 0.4)) !important;
+}
+
+[data-theme="dark"] .booking-slot-pill--active .booking-slot-time,
+[data-bs-theme="dark"] .booking-slot-pill--active .booking-slot-time {
+  color: var(--tenant-btn-text, #ffffff) !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="dark"] .booking-slot-pill--active .booking-slot-end,
+[data-bs-theme="dark"] .booking-slot-pill--active .booking-slot-end {
+  color: var(--tenant-btn-text, #ffffff) !important;
+  opacity: 0.92 !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="dark"] .booking-slot-pill--active .booking-slot-check,
+[data-bs-theme="dark"] .booking-slot-pill--active .booking-slot-check {
+  color: var(--tenant-btn-text, #ffffff) !important;
+}
+
+[data-theme="dark"] .booking-stepper__step:not(.is-current):not(.is-done),
+[data-bs-theme="dark"] .booking-stepper__step:not(.is-current):not(.is-done) {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .booking-stepper__step:disabled,
+[data-bs-theme="dark"] .booking-stepper__step:disabled {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #94a3b8 !important;
+  opacity: 0.85 !important;
+}
+
+[data-theme="dark"] .booking-barber-status-badge--available,
+[data-bs-theme="dark"] .booking-barber-status-badge--available {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  color: #cbd5e1 !important;
 }

@@ -11,6 +11,7 @@ import { useAuth } from '../../../auth/AuthContext';
 import { useUsuario, useActualizarUsuario } from '../api/usuarios.facade';
 import { puedeGestionarEstado } from '../../../shared/lib/autorizacion/jerarquiaRoles';
 import type { Rol } from '../../../shared/lib/autorizacion/roles';
+import type { Usuario } from '../types/usuarios.types';
 import {
   editarUsuarioSchema,
   type EditarUsuarioFormValues,
@@ -20,6 +21,83 @@ import { useReturnToPrevious } from '../../../shared/lib/useReturnToPrevious';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import { useToastContext } from '../../../shared/ui/ToastContext';
 
+function resolverRolActor(roles: string[]): Rol {
+  if (roles.includes('SUPERADMIN')) return 'SUPERADMIN';
+  if (roles.includes('ADMINISTRADOR')) return 'ADMINISTRADOR';
+  return 'BARBERO';
+}
+
+function resolverRolObjetivo(usuario: Usuario): Rol {
+  if (usuario.administrador?.estado === 'ACTIVO' || usuario.rol === 'ADMINISTRADOR') {
+    return 'ADMINISTRADOR';
+  }
+  return 'BARBERO';
+}
+
+function resolverRutaRetornoUsuario(editandoPropio: boolean, esSoloBarbero: boolean): string {
+  if (editandoPropio) return '/mi-perfil';
+  if (esSoloBarbero) return '/usuarios?tab=barberos';
+  return '/usuarios';
+}
+
+function renderResumenCambiosUsuario(data: EditarUsuarioFormValues) {
+  return (
+    <div className="d-flex flex-column gap-2 small">
+      <div><strong>Nombre:</strong> {data.nombre} {data.apellido}</div>
+      <div><strong>Email:</strong> {data.email} <span className="text-muted">(identidad global)</span></div>
+      {data.esAdministrador && <div>✓ Rol Administrador activo</div>}
+      {data.esBarbero && (
+        <>
+          <div>✓ Rol Barbero activo</div>
+          <div><strong>Teléfono:</strong> {data.telefono}</div>
+          <div><strong>Comisión:</strong> {data.porcentajeComision}%</div>
+        </>
+      )}
+      {!data.esAdministrador && !data.esBarbero && (
+        <div className="text-warning-emphasis mt-2">
+          Este usuario quedará sin roles asignados.
+        </div>
+      )}
+    </div>
+  );
+}
+
+async function confirmarRevocacionesRol(
+  usuario: Usuario | undefined,
+  data: EditarUsuarioFormValues,
+  noPuedeRevocarAdmin: boolean,
+  confirm: ReturnType<typeof useConfirm>
+): Promise<boolean> {
+  const teniaAdmin = Boolean(
+    usuario?.administrador?.estado === 'ACTIVO' ||
+    usuario?.rol === 'ADMINISTRADOR' ||
+    usuario?.rol === 'SUPERADMIN'
+  );
+  const teniaBarbero = Boolean(usuario?.barbero && usuario.barbero.estado === 'ACTIVO');
+
+  if (!noPuedeRevocarAdmin && teniaAdmin && !data.esAdministrador) {
+    const ok = await confirm({
+      title: `¿Revocar rol de Administrador de ${usuario?.nombre}?`,
+      message: 'El usuario perderá el acceso a las funciones de administración y configuración del sistema.',
+      variant: 'danger',
+      confirmLabel: 'Revocar Rol',
+    });
+    if (!ok) return false;
+  }
+
+  if (teniaBarbero && !data.esBarbero) {
+    const ok = await confirm({
+      title: `¿Desactivar perfil de Barbero de ${usuario?.nombre}?`,
+      message: 'El perfil de barbero será desactivado y no estará disponible para agendamiento de turnos.',
+      variant: 'warning',
+      confirmLabel: 'Desactivar Perfil',
+    });
+    if (!ok) return false;
+  }
+
+  return true;
+}
+
 export const EditarUsuarioPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const usuarioId = Number(id);
@@ -28,12 +106,9 @@ export const EditarUsuarioPage: React.FC = () => {
   const { showToast } = useToastContext();
   const { roles, usuarioDb, refrescarPerfil } = useAuth();
   const editandoPropioPerfil = usuarioDb?.id === usuarioId;
-  const rolActorPrincipal = (roles.includes('SUPERADMIN')
-    ? 'SUPERADMIN'
-    : roles.includes('ADMINISTRADOR')
-    ? 'ADMINISTRADOR'
-    : 'BARBERO') as Rol;
+  const rolActorPrincipal = resolverRolActor(roles);
   const esSuperadmin = rolActorPrincipal === 'SUPERADMIN';
+  const puedeEditarComision = esSuperadmin || rolActorPrincipal === 'ADMINISTRADOR';
 
   const {
     data: usuario,
@@ -41,7 +116,9 @@ export const EditarUsuarioPage: React.FC = () => {
     error: errorUsuario,
   } = useUsuario(usuarioId);
 
-  const esSuperadminObjetivo = usuario?.rol === 'SUPERADMIN';
+  // El carácter Superadmin vive en la MEMBRESÍA de la barbería (igual que en el backend).
+  const esSuperadminObjetivo =
+    usuario?.administrador?.superadmin === true || usuario?.rol === 'SUPERADMIN';
   const esAdminObjetivo = Boolean(
     usuario?.administrador?.estado === 'ACTIVO' || usuario?.rol === 'ADMINISTRADOR'
   );
@@ -88,8 +165,8 @@ export const EditarUsuarioPage: React.FC = () => {
 
       const adminActivo = Boolean(
         usuario.administrador?.estado === 'ACTIVO' ||
-          usuario.rol === 'ADMINISTRADOR' ||
-          usuario.rol === 'SUPERADMIN'
+        usuario.rol === 'ADMINISTRADOR' ||
+        usuario.rol === 'SUPERADMIN'
       );
       setValue('esAdministrador', adminActivo);
     }
@@ -116,11 +193,30 @@ export const EditarUsuarioPage: React.FC = () => {
     );
   }
 
+  // Inmunidad entre pares: el perfil de un Superadmin solo lo edita él mismo.
+  if (esSuperadminObjetivo && !editandoPropioPerfil) {
+    return (
+      <div className="container py-4">
+        <div className="alert alert-info">
+          El perfil de un Superadministrador es de solo lectura. Solo{' '}
+          <strong>
+            {usuario.nombre} {usuario.apellido}
+          </strong>{' '}
+          puede modificar sus datos desde <em>Mi Perfil</em>.
+        </div>
+        <button
+          type="button"
+          className="btn btn-outline-secondary"
+          onClick={() => goBack({ fallbackTo: '/usuarios' })}
+        >
+          &larr; Volver
+        </button>
+      </div>
+    );
+  }
+
   // Protección si un usuario intenta editar a otro de jerarquía igual o superior sin ser superadmin
-  const rolObjetivo: Rol =
-    usuario.administrador?.estado === 'ACTIVO' || usuario.rol === 'ADMINISTRADOR'
-      ? 'ADMINISTRADOR'
-      : 'BARBERO';
+  const rolObjetivo = resolverRolObjetivo(usuario);
   if (!puedeGestionarEstado(rolActorPrincipal, rolObjetivo) && usuarioDb?.id !== usuarioId) {
     return (
       <div className="container py-4">
@@ -138,61 +234,22 @@ export const EditarUsuarioPage: React.FC = () => {
     );
   }
 
+  const esSoloBarbero = Boolean(usuario?.barbero && !usuario?.administrador);
+  const rutaRetorno = resolverRutaRetornoUsuario(Boolean(editandoPropioPerfil), esSoloBarbero);
+
   const onSubmit = async (data: EditarUsuarioFormValues) => {
     try {
-      const teniaAdmin = Boolean(
-        usuario?.administrador?.estado === 'ACTIVO' ||
-          usuario?.rol === 'ADMINISTRADOR' ||
-          usuario?.rol === 'SUPERADMIN'
+      const puedeProceder = await confirmarRevocacionesRol(
+        usuario,
+        data,
+        Boolean(noPuedeRevocarAdmin),
+        confirm
       );
-      const teniaBarbero = Boolean(usuario?.barbero && usuario.barbero.estado === 'ACTIVO');
-
-      // Si desmarca rol de administrador (SUPERADMIN editando a otro admin) -> peligroso
-      if (!noPuedeRevocarAdmin && teniaAdmin && !data.esAdministrador) {
-        const ok = await confirm({
-          title: `¿Revocar rol de Administrador de ${usuario?.nombre}?`,
-          message: `El usuario perderá el acceso a las funciones de administración y configuración del sistema.`,
-          variant: 'danger',
-          confirmLabel: 'Revocar Rol',
-        });
-        if (!ok) return;
-      }
-
-      // Si desmarca perfil de barbero -> advertencia
-      if (teniaBarbero && !data.esBarbero) {
-        const ok = await confirm({
-          title: `¿Desactivar perfil de Barbero de ${usuario?.nombre}?`,
-          message: `El perfil de barbero será desactivado y no estará disponible para agendamiento de turnos.`,
-          variant: 'warning',
-          confirmLabel: 'Desactivar Perfil',
-        });
-        if (!ok) return;
-      }
-
-      // Confirmación general de guardado con resumen de datos modificados
-      const resumen = (
-        <div className="d-flex flex-column gap-2 small">
-          <div><strong>Nombre:</strong> {data.nombre} {data.apellido}</div>
-          <div><strong>Email:</strong> {data.email} <span className="text-muted">(identidad global)</span></div>
-          {data.esAdministrador && <div>✓ Rol Administrador activo</div>}
-          {data.esBarbero && (
-            <>
-              <div>✓ Rol Barbero activo</div>
-              <div><strong>Teléfono:</strong> {data.telefono}</div>
-              <div><strong>Comisión:</strong> {data.porcentajeComision}%</div>
-            </>
-          )}
-          {!data.esAdministrador && !data.esBarbero && (
-            <div className="text-warning-emphasis mt-2">
-              Este usuario quedará sin roles asignados.
-            </div>
-          )}
-        </div>
-      );
+      if (!puedeProceder) return;
 
       const ok = await confirm({
         title: `Guardar cambios de ${usuario?.nombre}?`,
-        message: resumen,
+        message: renderResumenCambiosUsuario(data),
         variant: 'primary',
         confirmLabel: 'Guardar cambios',
         cancelLabel: 'Revisar',
@@ -206,7 +263,7 @@ export const EditarUsuarioPage: React.FC = () => {
           apellido: data.apellido,
           ...(data.esBarbero && {
             telefono: data.telefono,
-            porcentajeComision: data.porcentajeComision,
+            ...(puedeEditarComision && { porcentajeComision: data.porcentajeComision }),
           }),
           esAdministrador: noPuedeRevocarAdmin ? true : data.esAdministrador,
           esBarbero: data.esBarbero,
@@ -220,7 +277,7 @@ export const EditarUsuarioPage: React.FC = () => {
       }
 
       goBack({
-        fallbackTo: editandoPropioPerfil ? '/mi-perfil' : '/usuarios',
+        fallbackTo: rutaRetorno,
         state: { mensaje: `Usuario ${data.nombre} actualizado correctamente.` },
       });
     } catch (err: unknown) {
@@ -239,7 +296,7 @@ export const EditarUsuarioPage: React.FC = () => {
         <button
           type="button"
           className="btn btn-outline-secondary btn-sm mb-3"
-          onClick={() => goBack({ fallbackTo: editandoPropioPerfil ? '/mi-perfil' : '/usuarios' })}
+          onClick={() => goBack({ fallbackTo: rutaRetorno })}
         >
           &larr; Volver
         </button>
@@ -374,8 +431,13 @@ export const EditarUsuarioPage: React.FC = () => {
                       registerProps={register('porcentajeComision', { valueAsNumber: true })}
                       onChange={(n) => setValue('porcentajeComision', n, { shouldValidate: true })}
                       error={errors.porcentajeComision?.message}
-                      disabled={actualizarUsuarioMutation.isPending}
+                      disabled={actualizarUsuarioMutation.isPending || !puedeEditarComision}
                     />
+                    {!puedeEditarComision && (
+                      <small className="text-muted d-block mt-1">
+                        El porcentaje de comisión solo puede ser modificado por un administrador.
+                      </small>
+                    )}
                   </div>
                 </div>
               </div>
@@ -385,7 +447,7 @@ export const EditarUsuarioPage: React.FC = () => {
               <button
                 type="button"
                 className="btn btn-light"
-                onClick={() => goBack({ fallbackTo: editandoPropioPerfil ? '/mi-perfil' : '/usuarios' })}
+                onClick={() => goBack({ fallbackTo: rutaRetorno })}
               >
                 Cancelar
               </button>

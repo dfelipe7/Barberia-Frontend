@@ -78,25 +78,54 @@ interface ReservaBorradorStorage {
 
 const STORAGE_KEY_BORRADOR = 'kyrios_reserva_borrador';
 
+const sanitizarEnteroSeguro = (val: unknown): number | null =>
+  typeof val === 'number' && Number.isSafeInteger(val) ? val : null;
+
+const sanitizarTextoSeguro = (val: unknown, maxLen: number, regex: RegExp): string => {
+  if (typeof val !== 'string') return '';
+  return val.slice(0, maxLen).replace(regex, '').trim();
+};
+
+const sanitizarFechaHora = (val: unknown, regex: RegExp): string | null =>
+  typeof val === 'string' && regex.test(val) ? val : null;
+
+const sanitizarPaso = (paso: unknown): PasoReserva =>
+  paso === 1 || paso === 2 || paso === 3 || paso === 4 ? paso : 1;
+
+const sanitizarBorradorParaStorage = (datos: ReservaBorradorStorage): ReservaBorradorStorage => ({
+  servicioId: sanitizarEnteroSeguro(datos.servicioId),
+  barberoId: sanitizarEnteroSeguro(datos.barberoId),
+  barberoFijoId: sanitizarEnteroSeguro(datos.barberoFijoId),
+  esOrigenBarbero: Boolean(datos.esOrigenBarbero),
+  fechaSeleccionada: sanitizarFechaHora(datos.fechaSeleccionada, /^\d{4}-\d{2}-\d{2}$/),
+  horaSeleccionada: sanitizarFechaHora(datos.horaSeleccionada, /^\d{2}:\d{2}(:\d{2})?$/),
+  paso: sanitizarPaso(datos.paso),
+  nombreInvitado: sanitizarTextoSeguro(datos.nombreInvitado, 100, /[^\p{L}\s'-]/gu),
+  apellidoInvitado: sanitizarTextoSeguro(datos.apellidoInvitado, 100, /[^\p{L}\s'-]/gu),
+  telefonoInvitado: sanitizarTextoSeguro(datos.telefonoInvitado, 30, /[^\d+]/g),
+  reservaId: sanitizarEnteroSeguro(datos.reservaId) ?? undefined,
+});
+
 const obtenerBorradorStorage = (): ReservaBorradorStorage | null => {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY_BORRADOR);
     if (!raw) return null;
-    const datos = JSON.parse(raw) as Partial<ReservaBorradorStorage>;
+    const jsonStr = raw.startsWith('%') ? decodeURIComponent(raw) : raw;
+    const datos = JSON.parse(jsonStr) as Partial<ReservaBorradorStorage>;
     if (!datos || typeof datos !== 'object') return null;
-    return {
-      servicioId: typeof datos.servicioId === 'number' ? datos.servicioId : null,
-      barberoId: typeof datos.barberoId === 'number' ? datos.barberoId : null,
-      barberoFijoId: typeof datos.barberoFijoId === 'number' ? datos.barberoFijoId : null,
+    return sanitizarBorradorParaStorage({
+      servicioId: datos.servicioId ?? null,
+      barberoId: datos.barberoId ?? null,
+      barberoFijoId: datos.barberoFijoId ?? null,
       esOrigenBarbero: Boolean(datos.esOrigenBarbero),
-      fechaSeleccionada: typeof datos.fechaSeleccionada === 'string' ? datos.fechaSeleccionada : null,
-      horaSeleccionada: typeof datos.horaSeleccionada === 'string' ? datos.horaSeleccionada : null,
-      paso: (datos.paso === 1 || datos.paso === 2 || datos.paso === 3 || datos.paso === 4 ? datos.paso : 1) as PasoReserva,
-      nombreInvitado: typeof datos.nombreInvitado === 'string' ? datos.nombreInvitado : '',
-      apellidoInvitado: typeof datos.apellidoInvitado === 'string' ? datos.apellidoInvitado : '',
-      telefonoInvitado: typeof datos.telefonoInvitado === 'string' ? datos.telefonoInvitado : '',
-      reservaId: typeof datos.reservaId === 'number' ? datos.reservaId : undefined,
-    };
+      fechaSeleccionada: datos.fechaSeleccionada ?? null,
+      horaSeleccionada: datos.horaSeleccionada ?? null,
+      paso: (datos.paso ?? 1) as PasoReserva,
+      nombreInvitado: datos.nombreInvitado ?? '',
+      apellidoInvitado: datos.apellidoInvitado ?? '',
+      telefonoInvitado: datos.telefonoInvitado ?? '',
+      reservaId: datos.reservaId,
+    });
   } catch {
     return null;
   }
@@ -106,9 +135,11 @@ const guardarBorradorStorage = (datos: ReservaBorradorStorage | null) => {
   try {
     if (!datos) {
       sessionStorage.removeItem(STORAGE_KEY_BORRADOR);
-    } else {
-      sessionStorage.setItem(STORAGE_KEY_BORRADOR, JSON.stringify(datos));
+      return;
     }
+    const payloadSeguro = sanitizarBorradorParaStorage(datos);
+    const serialized = encodeURIComponent(JSON.stringify(payloadSeguro));
+    sessionStorage.setItem(STORAGE_KEY_BORRADOR, serialized);
   } catch {
     // Silencioso en caso de restricciones de privacidad
   }
@@ -204,6 +235,65 @@ const mensajeErrorConfirmacion = (error: unknown) => {
 
   return mapApiError(error);
 };
+
+interface ValidarConfirmacionParams {
+  servicioSeleccionado?: Servicio;
+  barberoSeleccionado?: BarberoDisponibleReservaDTO;
+  fechaSeleccionada: string | null;
+  horaSeleccionada: string | null;
+  reservaId?: number | null;
+  clienteSesion: any;
+  tokenInvitado: string | null;
+  nombreInvitado: string;
+  apellidoInvitado: string;
+  telefonoInvitado: string;
+}
+
+function validarConfirmacion(params: ValidarConfirmacionParams): { error?: string; datos?: CrearReservaDTO } {
+  const {
+    servicioSeleccionado,
+    barberoSeleccionado,
+    fechaSeleccionada,
+    horaSeleccionada,
+    reservaId,
+    clienteSesion,
+    tokenInvitado,
+    nombreInvitado,
+    apellidoInvitado,
+    telefonoInvitado,
+  } = params;
+
+  if (!servicioSeleccionado || !barberoSeleccionado || !fechaSeleccionada || !horaSeleccionada) {
+    return {};
+  }
+
+  if (reservaId && !clienteSesion && !tokenInvitado) {
+    return {
+      error: 'Para cambiar esta cita, inicia sesión con la cuenta que la reservó o abre esta pestaña donde la creaste.',
+    };
+  }
+
+  if (!reservaId && !clienteSesion && (!nombreInvitado.trim() || !telefonoInvitado.trim())) {
+    return {
+      error: 'El nombre y el teléfono son obligatorios para reservar como invitado.',
+    };
+  }
+
+  const datos: CrearReservaDTO = {
+    servicioId: servicioSeleccionado.id,
+    barberoId: barberoSeleccionado.id,
+    fecha: fechaSeleccionada,
+    hora: horaSeleccionada,
+  };
+
+  if (!clienteSesion && !reservaId) {
+    datos.nombre = nombreInvitado.trim();
+    datos.apellido = apellidoInvitado.trim() || undefined;
+    datos.telefono = telefonoInvitado.trim();
+  }
+
+  return { datos };
+}
 
 export const ReservaClientePage = () => {
   const confirm = useConfirm();
@@ -592,7 +682,7 @@ export const ReservaClientePage = () => {
     setReservaCreada(null);
     setReservaModificada(false);
     limpiarBorradorStorage();
-    void queryClient.removeQueries({ queryKey: reservasKeys.all });
+    queryClient.removeQueries({ queryKey: reservasKeys.all });
   };
 
   const cambiarServicio = (servicio: Servicio) => {
@@ -655,45 +745,41 @@ export const ReservaClientePage = () => {
   };
 
   const confirmarReserva = async () => {
-    if (!servicioSeleccionado || !barberoSeleccionado || !fechaSeleccionada || !horaSeleccionada) {
-      return;
-    }
-
     const tokenInvitado = reservaId
       ? reservasService.obtenerTokenGestionInvitado(reservaId) ||
         searchParams.get('token') ||
         (location.state as any)?.token
       : null;
-    if (reservaId && !clienteSesion && !tokenInvitado) {
-      setErrorContacto('Para cambiar esta cita, inicia sesión con la cuenta que la reservó o abre esta pestaña donde la creaste.');
+
+    const validacion = validarConfirmacion({
+      servicioSeleccionado,
+      barberoSeleccionado,
+      fechaSeleccionada,
+      horaSeleccionada,
+      reservaId,
+      clienteSesion,
+      tokenInvitado,
+      nombreInvitado,
+      apellidoInvitado,
+      telefonoInvitado,
+    });
+
+    if (validacion.error) {
+      setErrorContacto(validacion.error);
       return;
     }
-
-    if (!reservaId && !clienteSesion && (!nombreInvitado.trim() || !telefonoInvitado.trim())) {
-      setErrorContacto('El nombre y el teléfono son obligatorios para reservar como invitado.');
+    if (!validacion.datos) {
       return;
     }
 
     setErrorContacto(null);
-    const datos: CrearReservaDTO = {
-      servicioId: servicioSeleccionado.id,
-      barberoId: barberoSeleccionado.id,
-      fecha: fechaSeleccionada,
-      hora: horaSeleccionada,
-    };
-
-    if (!clienteSesion && !reservaId) {
-      datos.nombre = nombreInvitado.trim();
-      datos.apellido = apellidoInvitado.trim() || undefined;
-      datos.telefono = telefonoInvitado.trim();
-    }
 
     try {
       if (reservaId) {
         const datosModificados = {
-          barberoId: barberoSeleccionado.id,
-          fecha: fechaSeleccionada,
-          hora: horaSeleccionada,
+          barberoId: barberoSeleccionado!.id,
+          fecha: fechaSeleccionada!,
+          hora: horaSeleccionada!,
         };
         if (clienteSesion) {
           await modificarReserva.mutateAsync({ id: reservaId, datos: datosModificados });
@@ -703,7 +789,7 @@ export const ReservaClientePage = () => {
         limpiarBorradorStorage();
         setReservaModificada(true);
       } else {
-        const resultado = await crearReserva.mutateAsync(datos);
+        const resultado = await crearReserva.mutateAsync(validacion.datos);
         limpiarBorradorStorage();
         if (resultado.tokenGestion) {
           reservasService.guardarTokenGestionInvitado(resultado.id, resultado.tokenGestion);
@@ -1382,7 +1468,13 @@ export const ReservaClientePage = () => {
                         Master Barber · Profesional
                       </span>
                       <div className="mt-auto">
-                        <span className={`badge rounded-pill ${seleccionado ? 'bg-primary text-white' : 'bg-body-secondary text-surface-muted'}`}>
+                        <span
+                          className={`badge rounded-pill booking-barber-status-badge ${
+                            seleccionado
+                              ? 'booking-barber-status-badge--selected'
+                              : 'booking-barber-status-badge--available'
+                          }`}
+                        >
                           {seleccionado ? 'Seleccionado' : 'Disponible'}
                         </span>
                       </div>
@@ -1615,7 +1707,7 @@ export const ReservaClientePage = () => {
                             onClick={() => setHoraSeleccionada(slot.startTime)}
                           >
                             <span className="booking-slot-time">{slot.startTime}</span>
-                            <span className="booking-slot-end text-surface-muted">a {slot.endTime}</span>
+                            <span className="booking-slot-end">a {slot.endTime}</span>
                             {activo && <Check size={13} className="booking-slot-check" />}
                           </button>
                         );
@@ -1652,7 +1744,7 @@ export const ReservaClientePage = () => {
                             onClick={() => setHoraSeleccionada(slot.startTime)}
                           >
                             <span className="booking-slot-time">{slot.startTime}</span>
-                            <span className="booking-slot-end text-surface-muted">a {slot.endTime}</span>
+                            <span className="booking-slot-end">a {slot.endTime}</span>
                             {activo && <Check size={13} className="booking-slot-check" />}
                           </button>
                         );
@@ -1689,7 +1781,7 @@ export const ReservaClientePage = () => {
                             onClick={() => setHoraSeleccionada(slot.startTime)}
                           >
                             <span className="booking-slot-time">{slot.startTime}</span>
-                            <span className="booking-slot-end text-surface-muted">a {slot.endTime}</span>
+                            <span className="booking-slot-end">a {slot.endTime}</span>
                             {activo && <Check size={13} className="booking-slot-check" />}
                           </button>
                         );
@@ -2136,7 +2228,7 @@ export const ReservaClientePage = () => {
                       </div>
                       <div className="text-end">
                         <span className="fw-semibold d-block text-capitalize">{fechaSeleccionada ? formatearFecha(fechaSeleccionada) : '—'}</span>
-                        <span className="badge bg-primary text-white">{horaSeleccionada ?? '—'}</span>
+                        <span className="badge booking-primary-badge">{horaSeleccionada ?? '—'}</span>
                       </div>
                     </div>
                   </div>
@@ -2267,7 +2359,7 @@ export const ReservaClientePage = () => {
                   {servicioSeleccionado ? servicioSeleccionado.nombre : 'Elige un servicio para continuar'}
                 </strong>
                 {servicioSeleccionado && (
-                  <span className="badge bg-primary text-white">
+                  <span className="badge booking-primary-badge">
                     {formatearPrecio(servicioSeleccionado.precio)}
                   </span>
                 )}
@@ -2328,7 +2420,7 @@ export const ReservaClientePage = () => {
                 {horaSeleccionada && (
                   <>
                     <span className="text-surface-muted">·</span>
-                    <span className="badge bg-primary text-white">{horaSeleccionada}</span>
+                    <span className="badge booking-primary-badge">{horaSeleccionada}</span>
                   </>
                 )}
               </div>

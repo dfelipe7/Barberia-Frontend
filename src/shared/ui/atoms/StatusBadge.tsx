@@ -2,7 +2,7 @@ import React from 'react';
 
 export interface StatusBadgeProps {
   estado: 'ACTIVO' | 'INACTIVO';
-  tone?: 'role' | 'global'; // 'role': Activo/Inactivo | 'global': Habilitada/Bloqueada
+  tone?: 'role' | 'global' | 'sede'; // 'role': Activo/Inactivo | 'global': Habilitada/Bloqueada | 'sede': Activo/Inactivo
   className?: string;
 }
 
@@ -15,10 +15,10 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   const isGlobal = tone === 'global';
 
   const bgClass = isActivo
-    ? 'bg-success'
+    ? 'bg-success text-white'
     : isGlobal
-    ? 'bg-danger'
-    : 'bg-secondary';
+    ? 'bg-danger text-white'
+    : 'bg-secondary text-white';
 
   const label = isGlobal
     ? isActivo
@@ -29,7 +29,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
     : 'Inactivo';
 
   return (
-    <span className={`badge ${bgClass} ${className}`.trim()}>
+    <span className={`badge ${bgClass} fw-semibold ${className}`.trim()}>
       {label}
     </span>
   );
