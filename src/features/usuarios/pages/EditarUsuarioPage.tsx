@@ -11,6 +11,7 @@ import { useAuth } from '../../../auth/AuthContext';
 import { useUsuario, useActualizarUsuario } from '../api/usuarios.facade';
 import { puedeGestionarEstado } from '../../../shared/lib/autorizacion/jerarquiaRoles';
 import type { Rol } from '../../../shared/lib/autorizacion/roles';
+import type { Usuario } from '../types/usuarios.types';
 import {
   editarUsuarioSchema,
   type EditarUsuarioFormValues,
@@ -20,6 +21,19 @@ import { useReturnToPrevious } from '../../../shared/lib/useReturnToPrevious';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import { useToastContext } from '../../../shared/ui/ToastContext';
 
+function resolverRolActor(roles: string[]): Rol {
+  if (roles.includes('SUPERADMIN')) return 'SUPERADMIN';
+  if (roles.includes('ADMINISTRADOR')) return 'ADMINISTRADOR';
+  return 'BARBERO';
+}
+
+function resolverRolObjetivo(usuario: Usuario): Rol {
+  if (usuario.administrador?.estado === 'ACTIVO' || usuario.rol === 'ADMINISTRADOR') {
+    return 'ADMINISTRADOR';
+  }
+  return 'BARBERO';
+}
+
 export const EditarUsuarioPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const usuarioId = Number(id);
@@ -28,11 +42,7 @@ export const EditarUsuarioPage: React.FC = () => {
   const { showToast } = useToastContext();
   const { roles, usuarioDb, refrescarPerfil } = useAuth();
   const editandoPropioPerfil = usuarioDb?.id === usuarioId;
-  const rolActorPrincipal = (roles.includes('SUPERADMIN')
-    ? 'SUPERADMIN'
-    : roles.includes('ADMINISTRADOR')
-    ? 'ADMINISTRADOR'
-    : 'BARBERO') as Rol;
+  const rolActorPrincipal = resolverRolActor(roles);
   const esSuperadmin = rolActorPrincipal === 'SUPERADMIN';
 
   const {
@@ -117,10 +127,7 @@ export const EditarUsuarioPage: React.FC = () => {
   }
 
   // Protección si un usuario intenta editar a otro de jerarquía igual o superior sin ser superadmin
-  const rolObjetivo: Rol =
-    usuario.administrador?.estado === 'ACTIVO' || usuario.rol === 'ADMINISTRADOR'
-      ? 'ADMINISTRADOR'
-      : 'BARBERO';
+  const rolObjetivo = resolverRolObjetivo(usuario);
   if (!puedeGestionarEstado(rolActorPrincipal, rolObjetivo) && usuarioDb?.id !== usuarioId) {
     return (
       <div className="container py-4">

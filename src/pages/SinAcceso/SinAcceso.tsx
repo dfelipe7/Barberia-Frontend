@@ -37,7 +37,7 @@ export default function SinAcceso() {
                 {cuentaBloqueada ? (
                     <>
                         <p className="text-surface-muted mb-1">
-                            Tu cuenta <strong>{email}</strong> ha sido bloqueada globalmente por un administrador.
+                            Tu cuenta{' '}<strong>{email}</strong> ha sido bloqueada globalmente por un administrador.
                         </p>
                         <p className="text-surface-muted mb-4">
                             No tienes acceso al sistema mientras tu cuenta permanezca inactiva. Comunícate con la administración para más información.
@@ -46,7 +46,7 @@ export default function SinAcceso() {
                 ) : sinRolesAsignados ? (
                     <>
                         <p className="text-surface-muted mb-1">
-                            Tu cuenta <strong>{email}</strong> está activa pero no tiene ningún rol
+                            Tu cuenta{' '}<strong>{email}</strong> está activa pero no tiene ningún rol
                             habilitado en el sistema.
                         </p>
                         <p className="text-surface-muted mb-4">

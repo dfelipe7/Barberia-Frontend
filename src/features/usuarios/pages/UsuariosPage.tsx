@@ -46,24 +46,27 @@ import type { Rol } from '../../../shared/lib/autorizacion/roles';
 
 type Pestaña = 'administradores' | 'barberos';
 
+function resolverRolActorPrincipal(esSuperAdmin: boolean, esAdministrador: boolean): Rol {
+  if (esSuperAdmin) return 'SUPERADMIN';
+  if (esAdministrador) return 'ADMINISTRADOR';
+  return 'BARBERO';
+}
+
+function resolverPestañaInicial(searchTab: Pestaña | null, esSuperAdmin: boolean): Pestaña {
+  if (searchTab === 'administradores' && esSuperAdmin) return 'administradores';
+  if (searchTab === 'barberos') return 'barberos';
+  return esSuperAdmin ? 'administradores' : 'barberos';
+}
+
 export const UsuariosPage: React.FC = () => {
   const { roles, usuarioDb } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const esSuperAdmin = roles.includes('SUPERADMIN');
   const esAdministrador = roles.includes('ADMINISTRADOR');
-  const rolActorPrincipal: Rol = esSuperAdmin
-    ? 'SUPERADMIN'
-    : esAdministrador
-      ? 'ADMINISTRADOR'
-      : 'BARBERO';
+  const rolActorPrincipal: Rol = resolverRolActorPrincipal(esSuperAdmin, esAdministrador);
   const searchTab = new URLSearchParams(location.search).get('tab') as Pestaña | null;
-  const pestañaInicial: Pestaña =
-    (searchTab === 'administradores' && esSuperAdmin) || searchTab === 'barberos'
-      ? searchTab
-      : esSuperAdmin
-        ? 'administradores'
-        : 'barberos';
+  const pestañaInicial: Pestaña = resolverPestañaInicial(searchTab, esSuperAdmin);
 
   const [pestañaActiva, setPestañaActiva] = useState<Pestaña>(pestañaInicial);
 

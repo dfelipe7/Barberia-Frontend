@@ -438,9 +438,9 @@ export const HorariosPage = () => {
               <h2 className="h5 fw-bold mb-1">Horario semanal</h2>
               <div className="horario-header-stats mt-1">
                 <span className="text-surface-muted small">
-                  {diasActivos === 0
-                    ? 'Sin días configurados'
-                    : diasActivos + (diasActivos === 1 ? ' día habilitado' : ' días habilitados')}
+                  {diasActivos === 0 && 'Sin días configurados'}
+                  {diasActivos === 1 && '1 día habilitado'}
+                  {diasActivos > 1 && `${diasActivos} días habilitados`}
                 </span>
                 <span className="text-surface-muted small">·</span>
                 <span className="horario-stat-badge">
@@ -455,9 +455,9 @@ export const HorariosPage = () => {
           </div>
 
           {cargando && (
-            <p className="small text-surface-muted" role="status">
+            <output className="small text-surface-muted d-block">
               Consultando el horario guardado...
-            </p>
+            </output>
           )}
 
           {errorConsulta && (
@@ -528,25 +528,12 @@ export const HorariosPage = () => {
                     }
                   >
                     {/* Header del Acordeón del Día */}
-                    <div
-                      className="horario-day-header"
-                      onClick={() => toggleDiaAbierto(codigo)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          toggleDiaAbierto(codigo);
-                        }
-                      }}
-                      aria-expanded={estaAbierto}
-                    >
+                    <div className="horario-day-header">
                       <div className="horario-day-header-left">
                         {/* Switch On/Off */}
                         <label
                           className="horario-switch"
                           aria-label={estaActivo ? `Desactivar ${nombre}` : `Habilitar ${nombre}`}
-                          onClick={(e) => e.stopPropagation()}
                           title={estaActivo ? 'Desactivar día (Descanso)' : 'Habilitar día'}
                         >
                           <input
@@ -558,21 +545,33 @@ export const HorariosPage = () => {
                           <span className="horario-switch-slider"></span>
                         </label>
 
-                        {/* Nombre del día */}
-                        <span className="horario-day-name">{nombre}</span>
-
-                        {/* Resumen textual cuando está cerrado o abierto */}
-                        <span
-                          className={
-                            'horario-day-summary ' +
-                            (info.esDescanso ? 'horario-day-summary--descanso' : '')
-                          }
+                        <button
+                          type="button"
+                          className="horario-day-btn text-start border-0 bg-transparent p-0 d-flex align-items-center gap-2 flex-grow-1"
+                          onClick={() => toggleDiaAbierto(codigo)}
+                          aria-expanded={estaAbierto}
                         >
-                          {info.texto}
-                        </span>
+                          {/* Nombre del día */}
+                          <span className="horario-day-name">{nombre}</span>
+
+                          {/* Resumen textual cuando está cerrado o abierto */}
+                          <span
+                            className={
+                              'horario-day-summary ' +
+                              (info.esDescanso ? 'horario-day-summary--descanso' : '')
+                            }
+                          >
+                            {info.texto}
+                          </span>
+                        </button>
                       </div>
 
-                      <div className="horario-day-header-right">
+                      <button
+                        type="button"
+                        className="horario-day-header-right border-0 bg-transparent p-0"
+                        onClick={() => toggleDiaAbierto(codigo)}
+                        aria-expanded={estaAbierto}
+                      >
                         <span
                           className={
                             'horario-badge-hours ' +
@@ -588,7 +587,7 @@ export const HorariosPage = () => {
                             (estaAbierto ? 'horario-chevron-icon--rotated' : '')
                           }
                         />
-                      </div>
+                      </button>
                     </div>
 
                     {/* Cuerpo Desplegable del Día */}

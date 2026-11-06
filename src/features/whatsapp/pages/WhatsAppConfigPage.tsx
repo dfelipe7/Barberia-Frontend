@@ -173,7 +173,9 @@ export const formatoHorasMinutos = (mins: number) => {
   if (mins >= 60) {
     const h = Math.floor(mins / 60);
     const m = mins % 60;
-    return m > 0 ? `${h}h ${m}m` : `${h} hora${h > 1 ? 's' : ''}`;
+    if (m > 0) return `${h}h ${m}m`;
+    const sufijo = h > 1 ? 'horas' : 'hora';
+    return `${h} ${sufijo}`;
   }
   return `${mins} minutos`;
 };
@@ -184,9 +186,298 @@ export const getEjemploEnvio = (mins: number) => {
   const h = Math.floor(envioHora / 60);
   const m = envioHora % 60;
   const ampm = h >= 12 ? 'PM' : 'AM';
-  const displayH = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  let displayH = h;
+  if (h > 12) {
+    displayH = h - 12;
+  } else if (h === 0) {
+    displayH = 12;
+  }
   const timeStr = `${displayH}:${m.toString().padStart(2, '0')} ${ampm}`;
   return `Ejemplo: Si un cliente tiene cita a las 4:00 PM, recibirá el recordatorio a las ${timeStr} (${formatoHorasMinutos(mins)} antes).`;
+};
+
+interface WhatsAppConectadoViewProps {
+  minutosAnticipacion: number;
+  plantillaConfirmacion: string;
+  isDisconnecting: boolean;
+  onDesconectar: () => void;
+  formatWhatsAppMarkdown: (content: string) => React.ReactNode;
+}
+
+const WhatsAppConectadoView: React.FC<WhatsAppConectadoViewProps> = ({
+  minutosAnticipacion,
+  plantillaConfirmacion,
+  isDisconnecting,
+  onDesconectar,
+  formatWhatsAppMarkdown,
+}) => (
+  <div className="wa-grid">
+    <div className="wa-card">
+      <div className="wa-connected-banner">
+        <div className="wa-connected-icon-box">
+          <CheckCircle2 size={32} />
+        </div>
+        <div className="wa-connected-info">
+          <h4>WhatsApp Vinculado con Éxito</h4>
+          <p>
+            El sistema está despachando notificaciones automáticas usando el número oficial de la barbería.
+          </p>
+        </div>
+      </div>
+
+      <div className="wa-card-header">
+        <h3 className="wa-card-title">
+          <Sparkles size={18} className="text-warning" />
+          Automatizaciones Activas
+        </h3>
+      </div>
+
+      <div className="wa-features-grid">
+        <div className="wa-feature-card">
+          <Send size={20} className="wa-feature-icon" />
+          <div>
+            <div className="wa-feature-title">Confirmación Inmediata</div>
+            <p className="wa-feature-desc">
+              Se envía en milisegundos cuando un cliente reserva una cita desde la web.
+            </p>
+          </div>
+        </div>
+
+        <div className="wa-feature-card">
+          <Clock size={20} className="wa-feature-icon" />
+          <div>
+            <div className="wa-feature-title">
+              Recordatorio {formatoHorasMinutos(minutosAnticipacion)} Antes
+            </div>
+            <p className="wa-feature-desc">
+              El cron job evalúa citas activas cada 10 minutos y envía un recordatorio oportuno.
+            </p>
+          </div>
+        </div>
+
+        <div className="wa-feature-card">
+          <Bell size={20} className="wa-feature-icon" />
+          <div>
+            <div className="wa-feature-title">Mensajes Dinámicos</div>
+            <p className="wa-feature-desc">
+              Puedes personalizar los textos y variables desde la pestaña "Personalización de Mensajes".
+            </p>
+          </div>
+        </div>
+
+        <div className="wa-feature-card">
+          <Smartphone size={20} className="wa-feature-icon" />
+          <div>
+            <div className="wa-feature-title">Cero Costos de API</div>
+            <p className="wa-feature-desc">
+              Conexión nativa WebSockets directa con WhatsApp sin cobros por mensaje.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="wa-disconnect-section">
+        <button
+          type="button"
+          className="wa-btn-disconnect"
+          onClick={onDesconectar}
+          disabled={isDisconnecting}
+        >
+          {isDisconnecting ? (
+            <>
+              <KyriosSpinner />
+              <span>Cerrando sesión...</span>
+            </>
+          ) : (
+            <>
+              <LogOut size={16} />
+              <span>Desvincular WhatsApp de la Barbería</span>
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+
+    {/* Panel Derecho: Vista previa rápida */}
+    <div className="wa-card">
+      <div className="wa-card-header">
+        <h3 className="wa-card-title">
+          <MessageSquare size={18} className="text-success" />
+          Vista Previa del Mensaje Activo
+        </h3>
+      </div>
+
+      <div className="wa-chat-preview-box">
+        <div className="wa-bubble">
+          {formatWhatsAppMarkdown(plantillaConfirmacion)}
+          <div className="wa-bubble-time">
+            <span>14:00</span>
+            <CheckCheck size={14} className="wa-bubble-ticks" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+interface WhatsAppDesconectadoViewProps {
+  isQrExpired: boolean;
+  qrCode?: string | null;
+  qrSecondsLeft: number;
+  onRecargarQR: () => void;
+}
+
+const WhatsAppDesconectadoView: React.FC<WhatsAppDesconectadoViewProps> = ({
+  isQrExpired,
+  qrCode,
+  qrSecondsLeft,
+  onRecargarQR,
+}) => {
+  const renderContenidoQr = () => {
+    if (isQrExpired) {
+      return (
+        <>
+          <div className="wa-qr-frame">
+            <div className="wa-qr-expired-overlay">
+              <div className="wa-qr-expired-content">
+                <div className="wa-qr-expired-icon-box">
+                  <Clock size={32} className="text-warning" />
+                </div>
+                <div className="wa-qr-expired-title">Código QR Expirado</div>
+                <p className="wa-qr-expired-desc">
+                  El código caducó por inactividad para no saturar recursos.
+                </p>
+                <button
+                  type="button"
+                  className="wa-btn-reload-qr"
+                  onClick={onRecargarQR}
+                >
+                  <RefreshCw size={15} />
+                  <span>Recargar Código QR</span>
+                </button>
+              </div>
+            </div>
+            {qrCode && (
+              <img
+                src={qrCode}
+                alt="Código QR de WhatsApp"
+                className="wa-qr-image blur"
+              />
+            )}
+          </div>
+
+          <p className="text-warning small mt-1 mb-0 d-flex align-items-center justify-content-center gap-1">
+            <AlertCircle size={14} />
+            <span>Haz clic en "Recargar Código QR" para generar un código fresco.</span>
+          </p>
+        </>
+      );
+    }
+
+    if (qrCode) {
+      return (
+        <>
+          <div className="wa-qr-frame">
+            <img
+              src={qrCode}
+              alt="Código QR de WhatsApp"
+              className="wa-qr-image"
+            />
+          </div>
+
+          <div className="wa-qr-countdown-text">
+            <span className="wa-radar-dot connected" style={{ width: 6, height: 6 }} />
+            <span>
+              Expira en {Math.floor(qrSecondsLeft / 60)}:
+              {(qrSecondsLeft % 60).toString().padStart(2, '0')} min (Sondeo activo)
+            </span>
+          </div>
+        </>
+      );
+    }
+
+    return (
+      <div className="wa-qr-loading">
+        <KyriosSpinner />
+        <p className="wa-qr-loading-text">
+          Generando código QR criptográfico seguro...
+          <br />
+          <span className="small text-muted">
+            Espere un instante mientras el motor de WhatsApp responde.
+          </span>
+        </p>
+      </div>
+    );
+  };
+
+  return (
+    <div className="wa-grid">
+      <div className="wa-card text-center">
+        <div className="wa-card-header justify-content-center">
+          <h3 className="wa-card-title">
+            <QrCode size={20} className="text-success" />
+            Escanea el Código QR
+          </h3>
+        </div>
+
+        <div className="wa-qr-container">
+          {renderContenidoQr()}
+        </div>
+      </div>
+
+      <div className="wa-card">
+      <div className="wa-card-header">
+        <h3 className="wa-card-title">
+          <Smartphone size={20} className="text-success" />
+          Instrucciones de Vinculación
+        </h3>
+      </div>
+
+      <div className="wa-steps-list">
+        <div className="wa-step-item">
+          <div className="wa-step-number">1</div>
+          <div className="wa-step-content">
+            <div className="wa-step-title">Abre WhatsApp en tu teléfono</div>
+            <p className="wa-step-desc">
+              Inicia la aplicación de WhatsApp oficial en el dispositivo móvil de la barbería.
+            </p>
+          </div>
+        </div>
+
+        <div className="wa-step-item">
+          <div className="wa-step-number">2</div>
+          <div className="wa-step-content">
+            <div className="wa-step-title">Ingresa a Dispositivos vinculados</div>
+            <p className="wa-step-desc">
+              Toca en <strong>Menú (⋮)</strong> en Android o{' '}
+              <strong>Ajustes / Configuración (⚙️)</strong> en iPhone y elige <strong>Dispositivos vinculados</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div className="wa-step-item">
+          <div className="wa-step-number">3</div>
+          <div className="wa-step-content">
+            <div className="wa-step-title">Toca en "Vincular un dispositivo"</div>
+            <p className="wa-step-desc">
+              Desbloquea tu teléfono mediante huella, rostro o PIN cuando sea solicitado.
+            </p>
+          </div>
+        </div>
+
+        <div className="wa-step-item">
+          <div className="wa-step-number">4</div>
+          <div className="wa-step-content">
+            <div className="wa-step-title">Apunta tu cámara al código QR</div>
+            <p className="wa-step-desc">
+              Escanea el código que aparece en esta pantalla. La conexión se detectará automáticamente en segundos.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 };
 
 export const WhatsAppConfigPage: React.FC = () => {
@@ -383,12 +674,10 @@ export const WhatsAppConfigPage: React.FC = () => {
         textarea.focus();
         textarea.setSelectionRange(start + text.length, start + text.length);
       }, 0);
+    } else if (subTab === 'confirmacion') {
+      setPlantillaConfirmacion((prev) => prev + ` ${text}`);
     } else {
-      if (subTab === 'confirmacion') {
-        setPlantillaConfirmacion((prev) => prev + ` ${text}`);
-      } else {
-        setPlantillaRecordatorio((prev) => prev + ` ${text}`);
-      }
+      setPlantillaRecordatorio((prev) => prev + ` ${text}`);
     }
   };
 
@@ -497,7 +786,7 @@ export const WhatsAppConfigPage: React.FC = () => {
       .replaceAll('{barbero}', 'Carlos Gómez')
       .replaceAll('{fecha}', '2026-10-19')
       .replaceAll('{hora}', '14:00')
-      .replaceAll('{precio}', '\n💰 *Valor:* $25.000')
+      .replaceAll('{precio}', () => '\n💰 *Valor:* $25.000')
       .replaceAll('{ubicacion}', 'Carrera 6 # 3-45, Centro Histórico, Popayán');
   };
 
@@ -512,7 +801,7 @@ export const WhatsAppConfigPage: React.FC = () => {
       parsed = parsed.replace(/_(.*?)_/g, '<em>$1</em>');
 
       return (
-        <span key={idx}>
+        <span key={`wa-preview-line-${idx}-${line.slice(0, 15)}`}>
           <span dangerouslySetInnerHTML={{ __html: parsed }} />
           <br />
         </span>
@@ -607,270 +896,20 @@ export const WhatsAppConfigPage: React.FC = () => {
               </p>
             </div>
           ) : isConnected ? (
-            /* VISTA: CONECTADO */
-            <div className="wa-grid">
-              <div className="wa-card">
-                <div className="wa-connected-banner">
-                  <div className="wa-connected-icon-box">
-                    <CheckCircle2 size={32} />
-                  </div>
-                  <div className="wa-connected-info">
-                    <h4>WhatsApp Vinculado con Éxito</h4>
-                    <p>
-                      El sistema está despachando notificaciones automáticas usando
-                      el número oficial de la barbería.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="wa-card-header">
-                  <h3 className="wa-card-title">
-                    <Sparkles size={18} className="text-warning" />
-                    Automatizaciones Activas
-                  </h3>
-                </div>
-
-                <div className="wa-features-grid">
-                  <div className="wa-feature-card">
-                    <Send size={20} className="wa-feature-icon" />
-                    <div>
-                      <div className="wa-feature-title">
-                        Confirmación Inmediata
-                      </div>
-                      <p className="wa-feature-desc">
-                        Se envía en milisegundos cuando un cliente reserva una cita
-                        desde la web.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="wa-feature-card">
-                    <Clock size={20} className="wa-feature-icon" />
-                    <div>
-                      <div className="wa-feature-title">
-                        Recordatorio {formatoHorasMinutos(minutosAnticipacion)} Antes
-                      </div>
-                      <p className="wa-feature-desc">
-                        El cron job evalúa citas activas cada 10 minutos y envía un
-                        recordatorio oportuno.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="wa-feature-card">
-                    <Bell size={20} className="wa-feature-icon" />
-                    <div>
-                      <div className="wa-feature-title">
-                        Mensajes Dinámicos
-                      </div>
-                      <p className="wa-feature-desc">
-                        Puedes personalizar los textos y variables desde la pestaña
-                        "Personalización de Mensajes".
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="wa-feature-card">
-                    <Smartphone size={20} className="wa-feature-icon" />
-                    <div>
-                      <div className="wa-feature-title">Cero Costos de API</div>
-                      <p className="wa-feature-desc">
-                        Conexión nativa WebSockets directa con WhatsApp sin cobros
-                        por mensaje.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="wa-disconnect-section">
-                  <button
-                    type="button"
-                    className="wa-btn-disconnect"
-                    onClick={handleDesconectar}
-                    disabled={isDisconnecting}
-                  >
-                    {isDisconnecting ? (
-                      <>
-                        <KyriosSpinner />
-                        <span>Cerrando sesión...</span>
-                      </>
-                    ) : (
-                      <>
-                        <LogOut size={16} />
-                        <span>Desvincular WhatsApp de la Barbería</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Panel Derecho: Vista previa rápida */}
-              <div className="wa-card">
-                <div className="wa-card-header">
-                  <h3 className="wa-card-title">
-                    <MessageSquare size={18} className="text-success" />
-                    Vista Previa del Mensaje Activo
-                  </h3>
-                </div>
-
-                <div className="wa-chat-preview-box">
-                  <div className="wa-bubble">
-                    {formatWhatsAppMarkdown(plantillaConfirmacion)}
-                    <div className="wa-bubble-time">
-                      <span>14:00</span>
-                      <CheckCheck size={14} className="wa-bubble-ticks" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <WhatsAppConectadoView
+              minutosAnticipacion={minutosAnticipacion}
+              plantillaConfirmacion={plantillaConfirmacion}
+              isDisconnecting={isDisconnecting}
+              onDesconectar={handleDesconectar}
+              formatWhatsAppMarkdown={formatWhatsAppMarkdown}
+            />
           ) : (
-            /* VISTA: DESCONECTADO (MOSTRAR QR) */
-            <div className="wa-grid">
-              <div className="wa-card text-center">
-                <div className="wa-card-header justify-content-center">
-                  <h3 className="wa-card-title">
-                    <QrCode size={20} className="text-success" />
-                    Escanea el Código QR
-                  </h3>
-                </div>
-
-                <div className="wa-qr-container">
-                  {isQrExpired ? (
-                    <>
-                      <div className="wa-qr-frame">
-                        <div className="wa-qr-expired-overlay">
-                          <div className="wa-qr-expired-content">
-                            <div className="wa-qr-expired-icon-box">
-                              <Clock size={32} className="text-warning" />
-                            </div>
-                            <div className="wa-qr-expired-title">
-                              Código QR Expirado
-                            </div>
-                            <p className="wa-qr-expired-desc">
-                              El código caducó por inactividad para no saturar recursos.
-                            </p>
-                            <button
-                              type="button"
-                              className="wa-btn-reload-qr"
-                              onClick={handleRecargarQR}
-                            >
-                              <RefreshCw size={15} />
-                              <span>Recargar Código QR</span>
-                            </button>
-                          </div>
-                        </div>
-                        {qrCode && (
-                          <img
-                            src={qrCode}
-                            alt="Código QR de WhatsApp"
-                            className="wa-qr-image blur"
-                          />
-                        )}
-                      </div>
-
-                      <p className="text-warning small mt-1 mb-0 d-flex align-items-center justify-content-center gap-1">
-                        <AlertCircle size={14} />
-                        <span>Haz clic en "Recargar Código QR" para generar un código fresco.</span>
-                      </p>
-                    </>
-                  ) : qrCode ? (
-                    <>
-                      <div className="wa-qr-frame">
-                        <img
-                          src={qrCode}
-                          alt="Código QR de WhatsApp"
-                          className="wa-qr-image"
-                        />
-                      </div>
-
-                      <div className="wa-qr-countdown-text">
-                        <span className="wa-radar-dot connected" style={{ width: 6, height: 6 }} />
-                        <span>
-                          Expira en {Math.floor(qrSecondsLeft / 60)}:
-                          {(qrSecondsLeft % 60).toString().padStart(2, '0')} min (Sondeo activo)
-                        </span>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="wa-qr-loading">
-                      <KyriosSpinner />
-                      <p className="wa-qr-loading-text">
-                        Generando código QR criptográfico seguro...
-                        <br />
-                        <span className="small text-muted">
-                          Espere un instante mientras el motor de WhatsApp responde.
-                        </span>
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="wa-card">
-                <div className="wa-card-header">
-                  <h3 className="wa-card-title">
-                    <Smartphone size={20} className="text-success" />
-                    Instrucciones de Vinculación
-                  </h3>
-                </div>
-
-                <div className="wa-steps-list">
-                  <div className="wa-step-item">
-                    <div className="wa-step-number">1</div>
-                    <div className="wa-step-content">
-                      <div className="wa-step-title">
-                        Abre WhatsApp en tu teléfono
-                      </div>
-                      <p className="wa-step-desc">
-                        Inicia la aplicación de WhatsApp oficial en el dispositivo
-                        móvil de la barbería.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="wa-step-item">
-                    <div className="wa-step-number">2</div>
-                    <div className="wa-step-content">
-                      <div className="wa-step-title">
-                        Ingresa a Dispositivos vinculados
-                      </div>
-                      <p className="wa-step-desc">
-                        Toca en <strong>Menú (⋮)</strong> en Android o{' '}
-                        <strong>Ajustes / Configuración (⚙️)</strong> en iPhone y
-                        elige <strong>Dispositivos vinculados</strong>.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="wa-step-item">
-                    <div className="wa-step-number">3</div>
-                    <div className="wa-step-content">
-                      <div className="wa-step-title">
-                        Toca en "Vincular un dispositivo"
-                      </div>
-                      <p className="wa-step-desc">
-                        Desbloquea tu teléfono mediante huella, rostro o PIN cuando
-                        sea solicitado.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="wa-step-item">
-                    <div className="wa-step-number">4</div>
-                    <div className="wa-step-content">
-                      <div className="wa-step-title">
-                        Apunta tu cámara al código QR
-                      </div>
-                      <p className="wa-step-desc">
-                        Escanea el código que aparece en esta pantalla. La conexión
-                        se detectará automáticamente en segundos.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <WhatsAppDesconectadoView
+              isQrExpired={isQrExpired}
+              qrCode={qrCode}
+              qrSecondsLeft={qrSecondsLeft}
+              onRecargarQR={handleRecargarQR}
+            />
           )}
         </>
       )}

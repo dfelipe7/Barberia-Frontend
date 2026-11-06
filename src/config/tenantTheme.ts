@@ -113,6 +113,6 @@ export function resolverTemaTenant(slug?: string | null): TenantThemeId {
 export function guardarTemaTenant(slug: string, temaId: TenantThemeId) {
   if (!slug) return;
   localStorage.setItem(`tema_negocio_${slug}`, temaId);
-  document.documentElement.setAttribute('data-tenant-theme', temaId);
+  document.documentElement.dataset.tenantTheme = temaId;
 }
 

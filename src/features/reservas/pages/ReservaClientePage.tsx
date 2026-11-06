@@ -205,6 +205,65 @@ const mensajeErrorConfirmacion = (error: unknown) => {
   return mapApiError(error);
 };
 
+interface ValidarConfirmacionParams {
+  servicioSeleccionado?: Servicio;
+  barberoSeleccionado?: BarberoDisponibleReservaDTO;
+  fechaSeleccionada: string | null;
+  horaSeleccionada: string | null;
+  reservaId?: number | null;
+  clienteSesion: any;
+  tokenInvitado: string | null;
+  nombreInvitado: string;
+  apellidoInvitado: string;
+  telefonoInvitado: string;
+}
+
+function validarConfirmacion(params: ValidarConfirmacionParams): { error?: string; datos?: CrearReservaDTO } {
+  const {
+    servicioSeleccionado,
+    barberoSeleccionado,
+    fechaSeleccionada,
+    horaSeleccionada,
+    reservaId,
+    clienteSesion,
+    tokenInvitado,
+    nombreInvitado,
+    apellidoInvitado,
+    telefonoInvitado,
+  } = params;
+
+  if (!servicioSeleccionado || !barberoSeleccionado || !fechaSeleccionada || !horaSeleccionada) {
+    return {};
+  }
+
+  if (reservaId && !clienteSesion && !tokenInvitado) {
+    return {
+      error: 'Para cambiar esta cita, inicia sesión con la cuenta que la reservó o abre esta pestaña donde la creaste.',
+    };
+  }
+
+  if (!reservaId && !clienteSesion && (!nombreInvitado.trim() || !telefonoInvitado.trim())) {
+    return {
+      error: 'El nombre y el teléfono son obligatorios para reservar como invitado.',
+    };
+  }
+
+  const datos: CrearReservaDTO = {
+    servicioId: servicioSeleccionado.id,
+    barberoId: barberoSeleccionado.id,
+    fecha: fechaSeleccionada,
+    hora: horaSeleccionada,
+  };
+
+  if (!clienteSesion && !reservaId) {
+    datos.nombre = nombreInvitado.trim();
+    datos.apellido = apellidoInvitado.trim() || undefined;
+    datos.telefono = telefonoInvitado.trim();
+  }
+
+  return { datos };
+}
+
 export const ReservaClientePage = () => {
   const confirm = useConfirm();
   const location = useLocation();
@@ -592,7 +651,7 @@ export const ReservaClientePage = () => {
     setReservaCreada(null);
     setReservaModificada(false);
     limpiarBorradorStorage();
-    void queryClient.removeQueries({ queryKey: reservasKeys.all });
+    queryClient.removeQueries({ queryKey: reservasKeys.all });
   };
 
   const cambiarServicio = (servicio: Servicio) => {
@@ -655,45 +714,41 @@ export const ReservaClientePage = () => {
   };
 
   const confirmarReserva = async () => {
-    if (!servicioSeleccionado || !barberoSeleccionado || !fechaSeleccionada || !horaSeleccionada) {
-      return;
-    }
-
     const tokenInvitado = reservaId
       ? reservasService.obtenerTokenGestionInvitado(reservaId) ||
         searchParams.get('token') ||
         (location.state as any)?.token
       : null;
-    if (reservaId && !clienteSesion && !tokenInvitado) {
-      setErrorContacto('Para cambiar esta cita, inicia sesión con la cuenta que la reservó o abre esta pestaña donde la creaste.');
+
+    const validacion = validarConfirmacion({
+      servicioSeleccionado,
+      barberoSeleccionado,
+      fechaSeleccionada,
+      horaSeleccionada,
+      reservaId,
+      clienteSesion,
+      tokenInvitado,
+      nombreInvitado,
+      apellidoInvitado,
+      telefonoInvitado,
+    });
+
+    if (validacion.error) {
+      setErrorContacto(validacion.error);
       return;
     }
-
-    if (!reservaId && !clienteSesion && (!nombreInvitado.trim() || !telefonoInvitado.trim())) {
-      setErrorContacto('El nombre y el teléfono son obligatorios para reservar como invitado.');
+    if (!validacion.datos) {
       return;
     }
 
     setErrorContacto(null);
-    const datos: CrearReservaDTO = {
-      servicioId: servicioSeleccionado.id,
-      barberoId: barberoSeleccionado.id,
-      fecha: fechaSeleccionada,
-      hora: horaSeleccionada,
-    };
-
-    if (!clienteSesion && !reservaId) {
-      datos.nombre = nombreInvitado.trim();
-      datos.apellido = apellidoInvitado.trim() || undefined;
-      datos.telefono = telefonoInvitado.trim();
-    }
 
     try {
       if (reservaId) {
         const datosModificados = {
-          barberoId: barberoSeleccionado.id,
-          fecha: fechaSeleccionada,
-          hora: horaSeleccionada,
+          barberoId: barberoSeleccionado!.id,
+          fecha: fechaSeleccionada!,
+          hora: horaSeleccionada!,
         };
         if (clienteSesion) {
           await modificarReserva.mutateAsync({ id: reservaId, datos: datosModificados });
@@ -703,7 +758,7 @@ export const ReservaClientePage = () => {
         limpiarBorradorStorage();
         setReservaModificada(true);
       } else {
-        const resultado = await crearReserva.mutateAsync(datos);
+        const resultado = await crearReserva.mutateAsync(validacion.datos);
         limpiarBorradorStorage();
         if (resultado.tokenGestion) {
           reservasService.guardarTokenGestionInvitado(resultado.id, resultado.tokenGestion);

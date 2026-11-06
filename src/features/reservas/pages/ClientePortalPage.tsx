@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   ShieldCheck,
@@ -23,6 +23,7 @@ import {
   Award,
 } from 'lucide-react';
 import { clientesService } from '../api/reservas.service';
+import type { ReservaClienteDTO } from '../api/reservas.dto';
 import {
   useMisReservas,
   useCancelarMiReserva,
@@ -69,6 +70,28 @@ const mapearEstado = (estado: string) => {
   return estados[estado] ?? estado;
 };
 
+function siguienteTema(actual: string): 'light' | 'dark' | 'system' {
+  if (actual === 'system') return 'light';
+  if (actual === 'light') return 'dark';
+  return 'system';
+}
+
+function separarCitas(
+  reservas: ReservaClienteDTO[],
+  hoyStr: string
+): { proximas: ReservaClienteDTO[]; historial: ReservaClienteDTO[] } {
+  const proximas: ReservaClienteDTO[] = [];
+  const historial: ReservaClienteDTO[] = [];
+  for (const r of reservas) {
+    if ((r.estado === 'PENDING' || r.estado === 'CONFIRMED') && r.fecha >= hoyStr) {
+      proximas.push(r);
+    } else {
+      historial.push(r);
+    }
+  }
+  return { proximas, historial };
+}
+
 export default function ClientePortalPage() {
   const navigate = useNavigate();
   const { slug: paramSlug } = useParams<{ slug?: string }>();
@@ -97,9 +120,7 @@ export default function ClientePortalPage() {
 
   // Toggle de tema: claro -> oscuro -> sistema
   const cycleTheme = () => {
-    if (theme === 'system') setTheme('light');
-    else if (theme === 'light') setTheme('dark');
-    else setTheme('system');
+    setTheme(siguienteTema(theme));
   };
 
   const ThemeIcon = theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor;
@@ -188,13 +209,9 @@ export default function ClientePortalPage() {
 
   const reservas = reservasData?.reservas ?? [];
   const hoyStr = new Date().toISOString().split('T')[0];
-
-  // Separar próximas citas de históricas
-  const proximasCitas = reservas.filter(
-    (r) => (r.estado === 'PENDING' || r.estado === 'CONFIRMED') && r.fecha >= hoyStr
-  );
-  const historialCitas = reservas.filter(
-    (r) => !proximasCitas.some((p) => p.id === r.id)
+  const { proximas: proximasCitas, historial: historialCitas } = useMemo(
+    () => separarCitas(reservas, hoyStr),
+    [reservas, hoyStr]
   );
 
   const iniciales = (sesion?.nombre?.[0] || 'C') + (sesion?.apellido?.[0] || '');
@@ -392,7 +409,7 @@ export default function ClientePortalPage() {
 
             {!cargandoReservas && proximasCitas.length > 0 && (
               <div className="mb-4">
-                {proximasCitas.map((reserva) => (
+                {proximasCitas.map((reserva: ReservaClienteDTO) => (
                   <div key={reserva.id} className="cliente-ticket-card">
                     <div className="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
                       <div className="d-flex align-items-center gap-2">
@@ -475,7 +492,7 @@ export default function ClientePortalPage() {
                   Historial de Citas Anteriores
                 </h3>
                 <div className="d-flex flex-column gap-2">
-                  {historialCitas.map((reserva) => (
+                  {historialCitas.map((reserva: ReservaClienteDTO) => (
                     <div key={reserva.id} className="cliente-ticket-card cliente-ticket-card--past">
                       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2">
                         <div>

@@ -460,7 +460,7 @@ export const BloqueosHorarioSection = () => {
           </form>
 
           {horarioSemanal.isLoading && (
-            <p className="small text-surface-muted mt-3 mb-0" role="status">Consultando tu horario semanal para validar el bloqueo...</p>
+            <output className="small text-surface-muted mt-3 mb-0 d-block">Consultando tu horario semanal para validar el bloqueo...</output>
           )}
           {rangoValido && horarioSemanal.data && horasFuera.length > 0 && (
             <div className="alert alert-danger py-2 mt-3 mb-0" role="alert">
@@ -468,10 +468,10 @@ export const BloqueosHorarioSection = () => {
             </div>
           )}
           {rangoValido && horarioSemanal.data && horasFuera.length === 0 && (
-            <p className="small text-success mt-3 mb-0 d-flex align-items-center gap-2" role="status">
+            <output className="small text-success mt-3 mb-0 d-flex align-items-center gap-2">
               <CheckCircle2 size={15} aria-hidden="true" />
               El rango coincide con tu horario semanal.
-            </p>
+            </output>
           )}
         </div>
 
@@ -491,11 +491,13 @@ export const BloqueosHorarioSection = () => {
           </div>
         </div>
 
-        {consulta.isLoading ? (
-          <p className="small text-surface-muted" role="status">Cargando bloqueos...</p>
-        ) : bloqueos.length === 0 ? (
+        {consulta.isLoading && (
+          <output className="small text-surface-muted d-block">Cargando bloqueos...</output>
+        )}
+        {!consulta.isLoading && bloqueos.length === 0 && (
           <p className="small text-surface-muted mb-0">No tienes bloqueos registrados.</p>
-        ) : (
+        )}
+        {!consulta.isLoading && bloqueos.length > 0 && (
           <div className="bloqueos-list d-flex flex-column gap-2">
             {bloqueos.map((bloqueo) => {
               const estilo = ESTILOS_BLOQUEO[bloqueo.status];

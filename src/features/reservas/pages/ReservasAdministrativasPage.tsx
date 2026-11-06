@@ -919,15 +919,17 @@ export default function ReservasAdministrativasPage() {
               </div>
 
               {listado.isError && <ErrorMessage message={mapApiError(listado.error)} />}
-              {listado.isLoading ? (
-                <p className="text-surface-muted" role="status">Cargando reservas...</p>
-              ) : listado.isSuccess && reservas.length === 0 ? (
+              {listado.isLoading && (
+                <output className="text-surface-muted d-block py-3">Cargando reservas...</output>
+              )}
+              {listado.isSuccess && reservas.length === 0 && (
                 <div className="text-center py-5">
                   <CalendarDays size={30} className="text-surface-muted mb-2" aria-hidden="true" />
                   <p className="fw-semibold mb-1">No encontramos reservas</p>
                   <p className="small text-surface-muted mb-0">Prueba con otro periodo o estado.</p>
                 </div>
-              ) : (
+              )}
+              {listado.isSuccess && reservas.length > 0 && (
                 <div className="d-flex flex-column gap-3">
                   {diasAgrupados.map((dia) => (
                     <section key={dia.fecha} className="reservations-admin__day-group" aria-label={dia.tituloCompleto}>
@@ -1006,7 +1008,7 @@ export default function ReservasAdministrativasPage() {
 
         <aside id="admin-detalle-reserva" className="col-12 col-xl-5 reservations-admin__aside" aria-label="Detalle de reserva">
           <div className="reservations-admin__detail-sticky">
-            {!reservaActiva ? (
+            {!reservaActiva && (
               <div className="reservations-admin__detail-placeholder card card-surface border-0 shadow-sm">
                 <span><Scissors size={24} aria-hidden="true" /></span>
                 <h2 className="h5 fw-bold">Detalles de la cita</h2>
@@ -1014,11 +1016,8 @@ export default function ReservasAdministrativasPage() {
                   Selecciona una reserva para consultar la información completa del servicio, barbero y cliente.
                 </p>
               </div>
-            ) : detalle.isLoading && !reservaActiva ? (
-              <p className="text-surface-muted py-4 text-center" role="status">Cargando detalle...</p>
-            ) : detalle.isError && !reservaActiva ? (
-              <ErrorMessage message={mapApiError(detalle.error)} />
-            ) : (
+            )}
+            {reservaActiva && (
               <PanelContenidoDetalleAdmin
                 reserva={reservaActiva}
                 editando={editando}
@@ -1048,26 +1047,22 @@ export default function ReservasAdministrativasPage() {
       {reservaActiva && (
         <div
           className="reservations-admin__mobile-sheet-overlay"
-          onClick={() => {
-            setReservaSeleccionadaId(null);
-            setEditando(false);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') {
-              setReservaSeleccionadaId(null);
-              setEditando(false);
-            }
-          }}
-          tabIndex={-1}
-          role="dialog"
           aria-modal="true"
           aria-label="Detalle de la reserva"
         >
+          <button
+            type="button"
+            className="border-0 bg-transparent"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', cursor: 'default' }}
+            onClick={() => {
+              setReservaSeleccionadaId(null);
+              setEditando(false);
+            }}
+            aria-label="Cerrar modal al hacer clic afuera"
+          />
           <div
-            className="reservations-admin__mobile-sheet-content"
-            role="document"
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={(e) => e.stopPropagation()}
+            className="reservations-admin__mobile-sheet-content position-relative"
+            style={{ zIndex: 1 }}
           >
             <div className="reservations-admin__mobile-sheet-header">
               <div className="reservations-admin__mobile-sheet-drag-handle" aria-hidden="true" />

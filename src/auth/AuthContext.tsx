@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { usuariosService } from '../features/usuarios/api/usuarios.service';
 import { usuariosMapper } from '../features/usuarios/api/usuarios.mapper';
 import type { Usuario } from '../features/usuarios/types/usuarios.types';
@@ -36,6 +36,123 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function obtenerTokenInicial(): string | null {
+  const slug = obtenerNegocioSlugActivo();
+  if (slug) {
+    return localStorage.getItem(`token_barberia_${slug}`) || null;
+  }
+  return localStorage.getItem('token_barberia');
+}
+
+function parseUsuarioJson(raw: string | null): UsuarioSesion | null {
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function obtenerUsuarioSesionInicial(): UsuarioSesion | null {
+  const slug = obtenerNegocioSlugActivo();
+  if (slug) {
+    return parseUsuarioJson(localStorage.getItem(`usuario_barberia_${slug}`));
+  }
+  return parseUsuarioJson(localStorage.getItem('usuario_barberia'));
+}
+
+function obtenerNegocioSesionSlugInicial(): string | null {
+  const slug = obtenerNegocioSlugActivo();
+  if (slug) {
+    return localStorage.getItem(`token_barberia_${slug}`) ? slug : null;
+  }
+  return localStorage.getItem('negocio_sesion_slug');
+}
+
+function obtenerNegocioSesionNombreInicial(): string | null {
+  const slug = obtenerNegocioSlugActivo();
+  if (slug) {
+    return localStorage.getItem(`negocio_sesion_nombre_${slug}`) || null;
+  }
+  return localStorage.getItem('negocio_sesion_nombre');
+}
+
+function calcularRoles(usuarioSesion: UsuarioSesion | null, usuarioDb: Usuario | null): string[] {
+  let rolesFromSesion: string[] = [];
+  if (Array.isArray(usuarioSesion?.roles) && usuarioSesion.roles.length > 0) {
+    rolesFromSesion = usuarioSesion.roles;
+  } else if (usuarioSesion?.rol && usuarioSesion.rol !== 'PERSONAL') {
+    rolesFromSesion = [usuarioSesion.rol];
+  }
+
+  if (!usuarioDb) {
+    return rolesFromSesion;
+  }
+
+  const rolesFromDb: string[] = [];
+  if (
+    usuarioDb.rol === 'SUPERADMIN' ||
+    usuarioDb.administrador?.superadmin ||
+    rolesFromSesion.includes('SUPERADMIN')
+  ) {
+    rolesFromDb.push('SUPERADMIN');
+  }
+  if (
+    usuarioDb.administrador?.estado === 'ACTIVO' ||
+    (usuarioDb.rol === 'ADMINISTRADOR' && !usuarioDb.administrador)
+  ) {
+    if (!rolesFromDb.includes('ADMINISTRADOR')) rolesFromDb.push('ADMINISTRADOR');
+  }
+  if (
+    usuarioDb.barbero?.estado === 'ACTIVO' ||
+    (usuarioDb.rol === 'BARBERO' && !usuarioDb.barbero)
+  ) {
+    if (!rolesFromDb.includes('BARBERO')) rolesFromDb.push('BARBERO');
+  }
+
+  return rolesFromDb.length > 0 ? rolesFromDb : rolesFromSesion;
+}
+
+function formatearErrorAuth(err: any): string {
+  const data = err?.response?.data;
+  const raw = err?.userMessage ?? data?.message ?? data?.mensaje;
+  if (typeof raw === 'string') return raw;
+  if (Array.isArray(raw)) return raw.join(' ');
+  if (typeof raw === 'object' && raw !== null) {
+    if (typeof raw.message === 'string') return raw.message;
+    if (Array.isArray(raw.message)) return raw.message.join(' ');
+    if (typeof raw.error === 'string') return raw.error;
+  }
+  if (typeof err?.message === 'string') return err.message;
+  return 'Error al autenticar con Google';
+}
+
+function guardarSesionEnStorage(
+  accessToken: string,
+  usuario: any,
+  negocio?: any
+): { slugNegocio: string; nombreNegocio: string | null } {
+  const slugNegocio = negocio?.slug ? negocio.slug.toLowerCase().trim() : '';
+  const nombreNegocio = negocio?.nombre || null;
+
+  if (slugNegocio) {
+    localStorage.setItem(`token_barberia_${slugNegocio}`, accessToken);
+    localStorage.setItem(`usuario_barberia_${slugNegocio}`, JSON.stringify(usuario));
+    localStorage.setItem('negocio_slug', slugNegocio);
+    localStorage.setItem('negocio_sesion_slug', slugNegocio);
+  }
+  if (nombreNegocio) {
+    localStorage.setItem('negocio_sesion_nombre', nombreNegocio);
+    if (slugNegocio) {
+      localStorage.setItem(`negocio_sesion_nombre_${slugNegocio}`, nombreNegocio);
+    }
+  }
+  localStorage.setItem('token_barberia', accessToken);
+  localStorage.setItem('usuario_barberia', JSON.stringify(usuario));
+
+  return { slugNegocio, nombreNegocio };
+}
+
 export function AuthContextProvider({
   children,
   isInitializing,
@@ -43,50 +160,11 @@ export function AuthContextProvider({
   children: React.ReactNode;
   isInitializing: boolean;
 }) {
-  const [token, setToken] = useState<string | null>(() => {
-    const slug = obtenerNegocioSlugActivo();
-    if (slug) {
-      // Aislamiento estricto: Si la URL pertenece a una barbería, SOLO usar el token de esa barbería
-      return localStorage.getItem(`token_barberia_${slug}`) || null;
-    }
-    return localStorage.getItem('token_barberia');
-  });
-
-  const [usuarioSesion, setUsuarioSesion] = useState<UsuarioSesion | null>(() => {
-    const slug = obtenerNegocioSlugActivo();
-    if (slug) {
-      const specific = localStorage.getItem(`usuario_barberia_${slug}`);
-      if (specific) {
-        try {
-          return JSON.parse(specific);
-        } catch {}
-      }
-      return null;
-    }
-    const saved = localStorage.getItem('usuario_barberia');
-    if (!saved) return null;
-    try {
-      return JSON.parse(saved);
-    } catch {
-      return null;
-    }
-  });
-
+  const [token, setToken] = useState<string | null>(obtenerTokenInicial);
+  const [usuarioSesion, setUsuarioSesion] = useState<UsuarioSesion | null>(obtenerUsuarioSesionInicial);
   const [usuarioDb, setUsuarioDb] = useState<Usuario | null>(null);
-  const [negocioSesionSlug, setNegocioSesionSlug] = useState<string | null>(() => {
-    const slug = obtenerNegocioSlugActivo();
-    if (slug) {
-      return localStorage.getItem(`token_barberia_${slug}`) ? slug : null;
-    }
-    return localStorage.getItem('negocio_sesion_slug');
-  });
-  const [negocioSesionNombre, setNegocioSesionNombre] = useState<string | null>(() => {
-    const slug = obtenerNegocioSlugActivo();
-    if (slug) {
-      return localStorage.getItem(`negocio_sesion_nombre_${slug}`) || null;
-    }
-    return localStorage.getItem('negocio_sesion_nombre');
-  });
+  const [negocioSesionSlug, setNegocioSesionSlug] = useState<string | null>(obtenerNegocioSesionSlugInicial);
+  const [negocioSesionNombre, setNegocioSesionNombre] = useState<string | null>(obtenerNegocioSesionNombreInicial);
 
   const esStaffDeSede = useCallback((slugRuta?: string | null) => {
     if (!token) return false;
@@ -97,31 +175,7 @@ export function AuthContextProvider({
   }, [token, negocioSesionSlug]);
 
   const isAuthenticated = !!token;
-
-  // Resuelve todos los roles activos combinando la sesión JWT y el perfil cargado de BD
-  const rolesFromSesion = Array.isArray(usuarioSesion?.roles) && usuarioSesion.roles.length > 0
-    ? usuarioSesion.roles
-    : (usuarioSesion?.rol && usuarioSesion.rol !== 'PERSONAL' ? [usuarioSesion.rol] : []);
-
-  const rolesFromDb: string[] = [];
-  if (usuarioDb) {
-    if (
-      usuarioDb.rol === 'SUPERADMIN' ||
-      usuarioDb.administrador?.superadmin ||
-      rolesFromSesion.includes('SUPERADMIN')
-    ) {
-      rolesFromDb.push('SUPERADMIN');
-    }
-    if (usuarioDb.administrador?.estado === 'ACTIVO' || (usuarioDb.rol === 'ADMINISTRADOR' && !usuarioDb.administrador)) {
-      if (!rolesFromDb.includes('ADMINISTRADOR')) rolesFromDb.push('ADMINISTRADOR');
-    }
-    if (usuarioDb.barbero?.estado === 'ACTIVO' || (usuarioDb.rol === 'BARBERO' && !usuarioDb.barbero)) {
-      if (!rolesFromDb.includes('BARBERO')) rolesFromDb.push('BARBERO');
-    }
-  }
-
-  // Resuelve los roles activos: si la BD tiene roles identificados, se usan; de lo contrario se preserva la sesión JWT
-  const roles = rolesFromDb.length > 0 ? rolesFromDb : rolesFromSesion;
+  const roles = useMemo(() => calcularRoles(usuarioSesion, usuarioDb), [usuarioSesion, usuarioDb]);
   const nombre = usuarioSesion?.nombre;
   const apellido = usuarioSesion?.apellido;
   const email = usuarioSesion?.email;
@@ -171,7 +225,13 @@ export function AuthContextProvider({
     setNegocioSesionNombre(null);
 
     // Redirigir a la landing de esa barbería limpia
-    window.location.href = slugDestino ? `/${slugDestino}` : (window.location.pathname !== '/' ? window.location.pathname : '/');
+    let rutaDestino = '/';
+    if (slugDestino) {
+      rutaDestino = `/${slugDestino}`;
+    } else if (window.location.pathname !== '/') {
+      rutaDestino = window.location.pathname;
+    }
+    window.location.href = rutaDestino;
   }, [negocioSesionSlug]);
 
   const isRefreshingRef = useRef(false);
@@ -228,23 +288,10 @@ export function AuthContextProvider({
     try {
       const response = await apiClient.post('/auth/google', { idToken });
       const { accessToken, usuario, negocio } = response.data;
-      const slugNegocio = negocio?.slug ? negocio.slug.toLowerCase().trim() : '';
-      if (slugNegocio) {
-        localStorage.setItem(`token_barberia_${slugNegocio}`, accessToken);
-        localStorage.setItem(`usuario_barberia_${slugNegocio}`, JSON.stringify(usuario));
-        localStorage.setItem('negocio_slug', slugNegocio);
-        localStorage.setItem('negocio_sesion_slug', slugNegocio);
-        setNegocioSesionSlug(slugNegocio);
-      }
-      if (negocio?.nombre) {
-        localStorage.setItem('negocio_sesion_nombre', negocio.nombre);
-        if (slugNegocio) {
-          localStorage.setItem(`negocio_sesion_nombre_${slugNegocio}`, negocio.nombre);
-        }
-        setNegocioSesionNombre(negocio.nombre);
-      }
-      localStorage.setItem('token_barberia', accessToken);
-      localStorage.setItem('usuario_barberia', JSON.stringify(usuario));
+      const { slugNegocio, nombreNegocio } = guardarSesionEnStorage(accessToken, usuario, negocio);
+      if (slugNegocio) setNegocioSesionSlug(slugNegocio);
+      if (nombreNegocio) setNegocioSesionNombre(nombreNegocio);
+
       queryClient.clear();
       setToken(accessToken);
       setUsuarioSesion(usuario);
@@ -259,27 +306,7 @@ export function AuthContextProvider({
 
       return { success: true };
     } catch (err: any) {
-      const data = err?.response?.data;
-      const raw = err?.userMessage ?? data?.message ?? data?.mensaje;
-      let mensaje = 'Error al autenticar con Google';
-
-      if (typeof raw === 'string') {
-        mensaje = raw;
-      } else if (Array.isArray(raw)) {
-        mensaje = raw.join(' ');
-      } else if (typeof raw === 'object' && raw !== null) {
-        if (typeof raw.message === 'string') {
-          mensaje = raw.message;
-        } else if (Array.isArray(raw.message)) {
-          mensaje = raw.message.join(' ');
-        } else if (typeof raw.error === 'string') {
-          mensaje = raw.error;
-        }
-      } else if (typeof err?.message === 'string') {
-        mensaje = err.message;
-      }
-
-      return { success: false, error: mensaje };
+      return { success: false, error: formatearErrorAuth(err) };
     }
   }, []);
 

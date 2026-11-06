@@ -160,10 +160,9 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
   const abrirModalCrear = () => {
     setRedEditando(null);
     const tiposYaConectados = new Set(redes.filter((r) => r.tipo !== 'OTRO').map((r) => r.tipo));
-    const tiposDisponibles = (Object.keys(REDES_CONFIG) as TipoRedSocial[]).filter(
-      (t) => t === 'OTRO' || !tiposYaConectados.has(t)
-    );
-    const tipoInicial = tiposDisponibles[0] || 'OTRO';
+    const tipoInicial =
+      (Object.keys(REDES_CONFIG) as TipoRedSocial[]).find((t) => t === 'OTRO' || !tiposYaConectados.has(t)) ||
+      'OTRO';
     setTipo(tipoInicial);
     setNombre(tipoInicial === 'OTRO' ? '' : REDES_CONFIG[tipoInicial].label);
     setUrl('');
@@ -380,12 +379,13 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
       </div>
 
       <div className="card-body p-4">
-        {cargando ? (
+        {cargando && (
           <div className="text-center py-5 text-muted small">
-            <span className="spinner-border spinner-border-sm me-2 text-primary" role="status" />{' '}
+            <output className="spinner-border spinner-border-sm me-2 text-primary" aria-label="Cargando" />{' '}
             Cargando redes sociales de la sede...
           </div>
-        ) : redes.length === 0 ? (
+        )}
+        {!cargando && redes.length === 0 && (
           /* Empty State */
           <div className="text-center py-5 px-3 border border-dashed rounded-4 bg-body-tertiary">
             <div
@@ -402,7 +402,8 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
               <Plus size={15} className="me-1" /> Conectar mi primera red
             </Button>
           </div>
-        ) : (
+        )}
+        {!cargando && redes.length > 0 && (
           /* Lista de Redes Sociales */
           <div className="row g-3">
             {redes.map((red) => {
@@ -548,15 +549,12 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
                   const esActivo = tipo === tId;
 
                   return (
-                    <div
+                    <button
+                      type="button"
                       key={tId}
-                      role="button"
-                      tabIndex={yaConectada ? -1 : 0}
+                      disabled={yaConectada}
                       onClick={() => handleTipoChange(tId)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') handleTipoChange(tId);
-                      }}
-                      className={`redes-selector-card ${esActivo ? 'redes-selector-card--active' : ''} ${
+                      className={`redes-selector-card text-start border-0 ${esActivo ? 'redes-selector-card--active' : ''} ${
                         yaConectada ? 'redes-selector-card--disabled' : ''
                       }`}
                       style={
@@ -572,14 +570,15 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
                       </div>
                       <span className="redes-selector-card__name">{conf.label}</span>
 
-                      {yaConectada ? (
+                      {yaConectada && (
                         <span className="redes-selector-card__connected-badge">Conectada</span>
-                      ) : esActivo ? (
+                      )}
+                      {!yaConectada && esActivo && (
                         <div className="redes-selector-card__check">
                           <Check size={10} strokeWidth={3} />
                         </div>
-                      ) : null}
-                    </div>
+                      )}
+                    </button>
                   );
                 })}
               </div>

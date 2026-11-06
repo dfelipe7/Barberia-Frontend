@@ -59,6 +59,11 @@ const inicioDeSemana = (fecha: Date) => {
   return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() + desplazamiento);
 };
 
+function textoConteoReservasDia(total: number): string {
+  if (total === 0) return 'Día libre';
+  return `${total} ${total === 1 ? 'cita' : 'citas'}`;
+}
+
 const desplazarDias = (fecha: Date, dias: number) =>
   new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() + dias);
 
@@ -189,7 +194,7 @@ function PanelContenidoDetalle({
     <>
       <DetalleReserva reserva={reserva} />
       {errorAccion && <div className="alert alert-warning mt-3" role="alert">{errorAccion}</div>}
-      {mensajeAccion && <div className="alert alert-success mt-3" role="status">{mensajeAccion}</div>}
+      {mensajeAccion && <output className="alert alert-success mt-3 d-block">{mensajeAccion}</output>}
       {reserva.estado !== 'COMPLETED' &&
         reserva.estado !== 'CANCELLED' &&
         reserva.estado !== 'NO_SHOW' && (
@@ -225,7 +230,7 @@ function PanelContenidoDetalle({
 
 function CargandoAgenda() {
   return (
-    <div className="barber-agenda__loading" role="status" aria-label="Cargando agenda">
+    <output className="barber-agenda__loading d-block" aria-label="Cargando agenda">
       {[0, 1, 2].map((item) => (
         <div key={item} className="barber-agenda__skeleton card-surface">
           <span className="barber-agenda__skeleton-line barber-agenda__skeleton-line--short" />
@@ -234,7 +239,7 @@ function CargandoAgenda() {
         </div>
       ))}
       <span className="visually-hidden">Cargando tu agenda semanal...</span>
-    </div>
+    </output>
   );
 }
 
@@ -408,9 +413,8 @@ export default function ReservasBarberoPage() {
           </div>
         </section>
 
-        {consulta.isLoading ? (
-          <CargandoAgenda />
-        ) : consulta.isError ? (
+        {consulta.isLoading && <CargandoAgenda />}
+        {consulta.isError && (
           <section className="barber-agenda__feedback card-surface" role="alert">
             <span className="barber-agenda__feedback-icon"><RotateCw size={19} aria-hidden="true" /></span>
             <div className="flex-grow-1">
@@ -421,7 +425,8 @@ export default function ReservasBarberoPage() {
               Intentar de nuevo
             </Button>
           </section>
-        ) : reservas.length === 0 ? (
+        )}
+        {!consulta.isLoading && !consulta.isError && reservas.length === 0 && (
           <section className="barber-agenda__empty card-surface">
             <span className="barber-agenda__empty-icon"><CalendarDays size={26} aria-hidden="true" /></span>
             <span className="barber-agenda__eyebrow">SEMANA TRANQUILA</span>
@@ -431,7 +436,8 @@ export default function ReservasBarberoPage() {
               Actualizar agenda
             </Button>
           </section>
-        ) : (
+        )}
+        {!consulta.isLoading && !consulta.isError && reservas.length > 0 && (
           <div className="barber-agenda__content">
             <section className="barber-agenda__days" aria-label="Citas de la semana">
               <div className="barber-agenda__section-heading">
@@ -447,7 +453,7 @@ export default function ReservasBarberoPage() {
                     </div>
                     <div className="barber-agenda__day-name">
                       <h3 className="text-capitalize">{dia.titulo}</h3>
-                      <span>{dia.reservas.length ? `${dia.reservas.length} ${dia.reservas.length === 1 ? 'cita' : 'citas'}` : 'Día libre'}</span>
+                      <span>{textoConteoReservasDia(dia.reservas.length)}</span>
                     </div>
                   </div>
                   <div className="barber-agenda__day-list">
@@ -493,18 +499,19 @@ export default function ReservasBarberoPage() {
         {reservaSeleccionada && (
           <div
             className="barber-agenda__mobile-sheet-overlay"
-            onClick={() => setReservaSeleccionadaId(null)}
-            onKeyDown={(e) => { if (e.key === 'Escape') setReservaSeleccionadaId(null); }}
-            tabIndex={-1}
-            role="dialog"
             aria-modal="true"
             aria-label="Detalle de cita"
           >
+            <button
+              type="button"
+              className="border-0 bg-transparent"
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', cursor: 'default' }}
+              onClick={() => setReservaSeleccionadaId(null)}
+              aria-label="Cerrar modal al hacer clic afuera"
+            />
             <div
-              className="barber-agenda__mobile-sheet-content"
-              role="document"
-              onClick={(e) => e.stopPropagation()}
-              onKeyDown={(e) => e.stopPropagation()}
+              className="barber-agenda__mobile-sheet-content position-relative"
+              style={{ zIndex: 1 }}
             >
               <div className="barber-agenda__mobile-sheet-header">
                 <div className="barber-agenda__mobile-sheet-drag-handle" aria-hidden="true" />

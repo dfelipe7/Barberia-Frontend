@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { Users } from 'lucide-react';
 import '../../Home/home.css';
@@ -29,6 +29,20 @@ const BarberSkeleton: React.FC = () => (
   </div>
 );
 
+function filtrarBarberos(barberos: BarberoCatalogo[], query: string): BarberoCatalogo[] {
+  const limpio = query.trim().toLowerCase();
+  if (!limpio) return barberos;
+  return barberos.filter((b) => {
+    const nombreCompleto = `${b.nombre} ${b.apellido}`.toLowerCase();
+    return nombreCompleto.includes(limpio);
+  });
+}
+
+function textoResultadosBarberos(total: number): string {
+  if (total === 0) return 'Sin resultados';
+  return `${total} barbero${total !== 1 ? 's' : ''} encontrado${total !== 1 ? 's' : ''}`;
+}
+
 /* ─── Página principal ─────────────────────────────────────────────────────── */
 const CatalogoBarberosPage: React.FC = () => {
   const navigate = useNavigate();
@@ -53,14 +67,10 @@ const CatalogoBarberosPage: React.FC = () => {
   // Título dinámico gestionado por TenantBrandContext
 
   const { data: barberos = [], isLoading, error, refetch } = useBarberosCatalogo();
-
-  // Filtrado client-side por nombre completo; sin petición extra al servidor
-  const barberosFiltrados = debouncedQuery.trim()
-    ? barberos.filter((b) => {
-        const nombreCompleto = `${b.nombre} ${b.apellido}`.toLowerCase();
-        return nombreCompleto.includes(debouncedQuery.toLowerCase());
-      })
-    : barberos;
+  const barberosFiltrados = useMemo(
+    () => filtrarBarberos(barberos, debouncedQuery),
+    [barberos, debouncedQuery]
+  );
 
   const handleLogin = useCallback(() => {
     window.location.href = '/dashboard';
@@ -151,9 +161,7 @@ const CatalogoBarberosPage: React.FC = () => {
               {/* Contador visible solo cuando hay búsqueda activa */}
               {debouncedQuery.trim() && (
                 <p className="text-surface-muted small mb-4 text-center" role="status">
-                  {barberosFiltrados.length === 0
-                    ? 'Sin resultados'
-                    : `${barberosFiltrados.length} barbero${barberosFiltrados.length !== 1 ? 's' : ''} encontrado${barberosFiltrados.length !== 1 ? 's' : ''}`}
+                  {textoResultadosBarberos(barberosFiltrados.length)}
                 </p>
               )}
 

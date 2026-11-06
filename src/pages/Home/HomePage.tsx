@@ -54,7 +54,7 @@ export const HomePage: React.FC = () => {
       <HomeNavbar
         isAuthenticated={isAuthenticated}
         nombre={nombre}
-        onLogin={() => navigate(`${basePrefix}/login`)}
+        onLogin={() => { void navigate(`${basePrefix}/login`); }}
       />
 
       {/* ── Contenido público principal ── */}

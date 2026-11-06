@@ -305,7 +305,6 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
         {/* BLOQUE 2: Imagen del servicio (Columna Derecha organizada) */}
         <div className="col-12 col-md-5">
           <div
-            role="group"
             aria-labelledby="imagen-label"
             className="servicio-form-image-card p-3 border rounded-3 bg-surface-card h-100 d-flex flex-column align-items-center justify-content-between text-center"
           >
