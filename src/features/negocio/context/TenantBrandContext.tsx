@@ -6,7 +6,7 @@ import { redesSocialesApi } from '../services/redesSocialesApi';
 import type { RedSocial } from '../types/redesSociales.types';
 import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import { BRAND } from '../../../config/brand';
-import { resolverTemaTenant, TEMAS_TENANT, type TenantThemeId } from '../../../config/tenantTheme';
+import { resolverTemaTenant, type TenantThemeId } from '../../../config/tenantTheme';
 
 export interface TenantBrandContextValue {
   slug: string | null;
@@ -163,16 +163,6 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const temaId = (perfil?.temaKey as TenantThemeId) || resolverTemaTenant(slug);
     if (temaId) {
       document.documentElement.dataset.tenantTheme = temaId;
-      const temaKey = perfil?.temaKey;
-      const esTemaValido = typeof temaKey === 'string' && Boolean(TEMAS_TENANT[temaKey as TenantThemeId]);
-      const esSlugValido = typeof slug === 'string' && /^[a-z0-9_-]{1,64}$/i.test(slug);
-
-      if (esSlugValido && esTemaValido && temaKey) {
-        const safeSlug = encodeURIComponent(slug);
-        const safeKey = temaKey as TenantThemeId;
-        localStorage.setItem(`tema_negocio_${safeSlug}`, safeKey);
-        localStorage.setItem('tema_negocio_activo', safeKey);
-      }
     }
   }, [perfil?.temaKey, slug]);
 

@@ -78,52 +78,68 @@ interface ReservaBorradorStorage {
 
 const STORAGE_KEY_BORRADOR = 'kyrios_reserva_borrador';
 
+const sanitizarEnteroSeguro = (val: unknown): number | null =>
+  typeof val === 'number' && Number.isSafeInteger(val) ? val : null;
+
+const sanitizarTextoSeguro = (val: unknown, maxLen: number, regex: RegExp): string => {
+  if (typeof val !== 'string') return '';
+  return val.slice(0, maxLen).replace(regex, '').trim();
+};
+
+const sanitizarFechaHora = (val: unknown, regex: RegExp): string | null =>
+  typeof val === 'string' && regex.test(val) ? val : null;
+
+const sanitizarPaso = (paso: unknown): PasoReserva =>
+  paso === 1 || paso === 2 || paso === 3 || paso === 4 ? paso : 1;
+
+const sanitizarBorradorParaStorage = (datos: ReservaBorradorStorage): ReservaBorradorStorage => ({
+  servicioId: sanitizarEnteroSeguro(datos.servicioId),
+  barberoId: sanitizarEnteroSeguro(datos.barberoId),
+  barberoFijoId: sanitizarEnteroSeguro(datos.barberoFijoId),
+  esOrigenBarbero: Boolean(datos.esOrigenBarbero),
+  fechaSeleccionada: sanitizarFechaHora(datos.fechaSeleccionada, /^\d{4}-\d{2}-\d{2}$/),
+  horaSeleccionada: sanitizarFechaHora(datos.horaSeleccionada, /^\d{2}:\d{2}(:\d{2})?$/),
+  paso: sanitizarPaso(datos.paso),
+  nombreInvitado: sanitizarTextoSeguro(datos.nombreInvitado, 100, /[^\p{L}\s'-]/gu),
+  apellidoInvitado: sanitizarTextoSeguro(datos.apellidoInvitado, 100, /[^\p{L}\s'-]/gu),
+  telefonoInvitado: sanitizarTextoSeguro(datos.telefonoInvitado, 30, /[^\d+]/g),
+  reservaId: sanitizarEnteroSeguro(datos.reservaId) ?? undefined,
+});
+
 const obtenerBorradorStorage = (): ReservaBorradorStorage | null => {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY_BORRADOR);
     if (!raw) return null;
-    const datos = JSON.parse(raw) as Partial<ReservaBorradorStorage>;
+    const jsonStr = raw.startsWith('%') ? decodeURIComponent(raw) : raw;
+    const datos = JSON.parse(jsonStr) as Partial<ReservaBorradorStorage>;
     if (!datos || typeof datos !== 'object') return null;
-    return {
-      servicioId: typeof datos.servicioId === 'number' ? datos.servicioId : null,
-      barberoId: typeof datos.barberoId === 'number' ? datos.barberoId : null,
-      barberoFijoId: typeof datos.barberoFijoId === 'number' ? datos.barberoFijoId : null,
+    return sanitizarBorradorParaStorage({
+      servicioId: datos.servicioId ?? null,
+      barberoId: datos.barberoId ?? null,
+      barberoFijoId: datos.barberoFijoId ?? null,
       esOrigenBarbero: Boolean(datos.esOrigenBarbero),
-      fechaSeleccionada: typeof datos.fechaSeleccionada === 'string' ? datos.fechaSeleccionada : null,
-      horaSeleccionada: typeof datos.horaSeleccionada === 'string' ? datos.horaSeleccionada : null,
-      paso: (datos.paso === 1 || datos.paso === 2 || datos.paso === 3 || datos.paso === 4 ? datos.paso : 1) as PasoReserva,
-      nombreInvitado: typeof datos.nombreInvitado === 'string' ? datos.nombreInvitado : '',
-      apellidoInvitado: typeof datos.apellidoInvitado === 'string' ? datos.apellidoInvitado : '',
-      telefonoInvitado: typeof datos.telefonoInvitado === 'string' ? datos.telefonoInvitado : '',
-      reservaId: typeof datos.reservaId === 'number' ? datos.reservaId : undefined,
-    };
+      fechaSeleccionada: datos.fechaSeleccionada ?? null,
+      horaSeleccionada: datos.horaSeleccionada ?? null,
+      paso: (datos.paso ?? 1) as PasoReserva,
+      nombreInvitado: datos.nombreInvitado ?? '',
+      apellidoInvitado: datos.apellidoInvitado ?? '',
+      telefonoInvitado: datos.telefonoInvitado ?? '',
+      reservaId: datos.reservaId,
+    });
   } catch {
     return null;
   }
 };
 
-const sanitizarBorradorParaStorage = (datos: ReservaBorradorStorage): ReservaBorradorStorage => ({
-  servicioId: typeof datos.servicioId === 'number' && Number.isSafeInteger(datos.servicioId) ? datos.servicioId : null,
-  barberoId: typeof datos.barberoId === 'number' && Number.isSafeInteger(datos.barberoId) ? datos.barberoId : null,
-  barberoFijoId: typeof datos.barberoFijoId === 'number' && Number.isSafeInteger(datos.barberoFijoId) ? datos.barberoFijoId : null,
-  esOrigenBarbero: Boolean(datos.esOrigenBarbero),
-  fechaSeleccionada: typeof datos.fechaSeleccionada === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(datos.fechaSeleccionada) ? datos.fechaSeleccionada : null,
-  horaSeleccionada: typeof datos.horaSeleccionada === 'string' && /^\d{2}:\d{2}(:\d{2})?$/.test(datos.horaSeleccionada) ? datos.horaSeleccionada : null,
-  paso: (datos.paso === 1 || datos.paso === 2 || datos.paso === 3 || datos.paso === 4 ? datos.paso : 1) as PasoReserva,
-  nombreInvitado: typeof datos.nombreInvitado === 'string' ? datos.nombreInvitado.slice(0, 100).replace(/[^\p{L}\s'-]/gu, '').trim() : '',
-  apellidoInvitado: typeof datos.apellidoInvitado === 'string' ? datos.apellidoInvitado.slice(0, 100).replace(/[^\p{L}\s'-]/gu, '').trim() : '',
-  telefonoInvitado: typeof datos.telefonoInvitado === 'string' ? datos.telefonoInvitado.slice(0, 30).replace(/[^\d+]/g, '').trim() : '',
-  reservaId: typeof datos.reservaId === 'number' && Number.isSafeInteger(datos.reservaId) ? datos.reservaId : undefined,
-});
-
 const guardarBorradorStorage = (datos: ReservaBorradorStorage | null) => {
   try {
     if (!datos) {
       sessionStorage.removeItem(STORAGE_KEY_BORRADOR);
-    } else {
-      const payloadSeguro = sanitizarBorradorParaStorage(datos);
-      sessionStorage.setItem(STORAGE_KEY_BORRADOR, JSON.stringify(payloadSeguro));
+      return;
     }
+    const payloadSeguro = sanitizarBorradorParaStorage(datos);
+    const serialized = encodeURIComponent(JSON.stringify(payloadSeguro));
+    sessionStorage.setItem(STORAGE_KEY_BORRADOR, serialized);
   } catch {
     // Silencioso en caso de restricciones de privacidad
   }

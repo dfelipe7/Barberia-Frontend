@@ -206,6 +206,140 @@ const BrandSidePanel: React.FC<BrandSidePanelProps> = ({ esModoCliente, effectiv
   );
 };
 
+interface ActiveSessionsNoticeProps {
+  tieneSesionEnOtraSede: boolean;
+  esModoCliente: boolean;
+  negocioSesionNombre: string | null;
+  negocioSesionSlug: string | null;
+  sesionCliente: { nombre: string } | null;
+  slug: string;
+}
+
+const ActiveSessionsNotice: React.FC<ActiveSessionsNoticeProps> = ({
+  tieneSesionEnOtraSede,
+  esModoCliente,
+  negocioSesionNombre,
+  negocioSesionSlug,
+  sesionCliente,
+  slug,
+}) => {
+  if (tieneSesionEnOtraSede && !esModoCliente) {
+    return (
+      <div
+        className="d-flex align-items-center justify-content-between p-2 mb-3 rounded-2"
+        style={{
+          background: 'rgba(59, 130, 246, 0.12)',
+          border: '1px solid rgba(59, 130, 246, 0.3)',
+          fontSize: '0.84rem',
+        }}
+      >
+        <div className="d-flex align-items-center gap-2" style={{ color: '#60a5fa' }}>
+          <ShieldCheck size={16} />
+          <span>
+            Sesión activa en <strong>{negocioSesionNombre || negocioSesionSlug}</strong>
+          </span>
+        </div>
+        <Link
+          to={slug ? `/${slug}/dashboard` : '/dashboard'}
+          className="btn btn-sm btn-primary py-0 px-2"
+          style={{ fontSize: '0.78rem' }}
+        >
+          Ir a mi panel
+        </Link>
+      </div>
+    );
+  }
+
+  if (sesionCliente && esModoCliente) {
+    return (
+      <div
+        className="d-flex align-items-center justify-content-between p-2 mb-3 rounded-2"
+        style={{
+          background: 'rgba(234, 179, 8, 0.12)',
+          border: '1px solid rgba(234, 179, 8, 0.3)',
+          fontSize: '0.84rem',
+        }}
+      >
+        <div className="d-flex align-items-center gap-2" style={{ color: '#facc15' }}>
+          <UserCheck size={16} />
+          <span>
+            Sesión activa: <strong>{sesionCliente.nombre}</strong>
+          </span>
+        </div>
+        <Link
+          to={slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta'}
+          className="btn btn-sm btn-warning py-0 px-2 text-dark fw-semibold"
+          style={{ fontSize: '0.78rem' }}
+        >
+          Mis Citas
+        </Link>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+interface LoginHeaderPanelProps {
+  esModoCliente: boolean;
+}
+
+const LoginHeaderPanel: React.FC<LoginHeaderPanelProps> = ({ esModoCliente }) => (
+  <div className="auth-split__header">
+    <div className="d-flex align-items-center gap-2 mb-2">
+      <span className="auth-split__brand-badge">
+        {esModoCliente ? (
+          <>
+            <UserCheck size={13} /> Portal de Clientes
+          </>
+        ) : (
+          <>
+            <ShieldCheck size={13} /> Acceso al Equipo y Barberos
+          </>
+        )}
+      </span>
+    </div>
+    <h2 className="auth-split__heading">
+      {esModoCliente ? 'Bienvenido a tus Reservas' : 'Panel Administrativo'}
+    </h2>
+    <p className="auth-split__desc">
+      {esModoCliente
+        ? 'Inicia sesión con Google para administrar tus citas, reprogramar turnos o actualizar tu perfil.'
+        : 'Inicia sesión con tu cuenta corporativa o correo autorizado para gestionar la barbería.'}
+    </p>
+  </div>
+);
+
+interface LoginRoleTabsProps {
+  esModoCliente: boolean;
+  onCambiarTab: (tab: TipoAccesoLogin) => void;
+}
+
+const LoginRoleTabs: React.FC<LoginRoleTabsProps> = ({ esModoCliente, onCambiarTab }) => (
+  <div className="auth-split__tabs" role="tablist" aria-label="Tipo de usuario">
+    <button
+      type="button"
+      role="tab"
+      aria-selected={esModoCliente}
+      className={`auth-split__tab-btn ${esModoCliente ? 'is-active' : ''}`}
+      onClick={() => onCambiarTab('cliente')}
+    >
+      <User size={16} />
+      <span>Soy Cliente</span>
+    </button>
+    <button
+      type="button"
+      role="tab"
+      aria-selected={!esModoCliente}
+      className={`auth-split__tab-btn ${!esModoCliente ? 'is-active' : ''}`}
+      onClick={() => onCambiarTab('personal')}
+    >
+      <Scissors size={16} />
+      <span>Equipo / Barbería</span>
+    </button>
+  </div>
+);
+
 export const LoginPage: React.FC<LoginPageProps> = ({ modoInicial }) => {
   const { slug: paramSlug } = useParams<{ slug?: string }>();
   const navigate = useNavigate();
@@ -383,103 +517,22 @@ export const LoginPage: React.FC<LoginPageProps> = ({ modoInicial }) => {
           </div>
 
           {/* ── SELECTOR SEGMENTADO DE ROL (PESTAÑAS) ── */}
-          <div className="auth-split__tabs" role="tablist" aria-label="Tipo de usuario">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={esModoCliente}
-              className={`auth-split__tab-btn ${esModoCliente ? 'is-active' : ''}`}
-              onClick={() => handleCambiarTab('cliente')}
-            >
-              <User size={16} />
-              <span>Soy Cliente</span>
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={!esModoCliente}
-              className={`auth-split__tab-btn ${!esModoCliente ? 'is-active' : ''}`}
-              onClick={() => handleCambiarTab('personal')}
-            >
-              <Scissors size={16} />
-              <span>Equipo / Barbería</span>
-            </button>
-          </div>
+          <LoginRoleTabs
+            esModoCliente={esModoCliente}
+            onCambiarTab={handleCambiarTab}
+          />
 
-          <div className="auth-split__header">
-            <div className="d-flex align-items-center gap-2 mb-2">
-              <span className="auth-split__brand-badge">
-                {esModoCliente ? (
-                  <>
-                    <UserCheck size={13} /> Portal de Clientes
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck size={13} /> Acceso al Equipo y Barberos
-                  </>
-                )}
-              </span>
-            </div>
-            <h2 className="auth-split__heading">
-              {esModoCliente ? 'Bienvenido a tus Reservas' : 'Panel Administrativo'}
-            </h2>
-            <p className="auth-split__desc">
-              {esModoCliente
-                ? 'Inicia sesión con Google para administrar tus citas, reprogramar turnos o actualizar tu perfil.'
-                : 'Inicia sesión con tu cuenta corporativa o correo autorizado para gestionar la barbería.'}
-            </p>
-          </div>
+          <LoginHeaderPanel esModoCliente={esModoCliente} />
 
           {/* Avisos de sesión activa previa */}
-          {tieneSesionEnOtraSede && !esModoCliente && (
-            <div
-              className="d-flex align-items-center justify-content-between p-2 mb-3 rounded-2"
-              style={{
-                background: 'rgba(59, 130, 246, 0.12)',
-                border: '1px solid rgba(59, 130, 246, 0.3)',
-                fontSize: '0.84rem',
-              }}
-            >
-              <div className="d-flex align-items-center gap-2" style={{ color: '#60a5fa' }}>
-                <ShieldCheck size={16} />
-                <span>
-                  Sesión activa en <strong>{negocioSesionNombre || negocioSesionSlug}</strong>
-                </span>
-              </div>
-              <Link
-                to={slug ? `/${slug}/dashboard` : '/dashboard'}
-                className="btn btn-sm btn-primary py-0 px-2"
-                style={{ fontSize: '0.78rem' }}
-              >
-                Ir a mi panel
-              </Link>
-            </div>
-          )}
-
-          {sesionCliente && esModoCliente && (
-            <div
-              className="d-flex align-items-center justify-content-between p-2 mb-3 rounded-2"
-              style={{
-                background: 'rgba(234, 179, 8, 0.12)',
-                border: '1px solid rgba(234, 179, 8, 0.3)',
-                fontSize: '0.84rem',
-              }}
-            >
-              <div className="d-flex align-items-center gap-2" style={{ color: '#facc15' }}>
-                <UserCheck size={16} />
-                <span>
-                  Sesión activa: <strong>{sesionCliente.nombre}</strong>
-                </span>
-              </div>
-              <Link
-                to={slug ? `/${slug}/cliente/mi-cuenta` : '/cliente/mi-cuenta'}
-                className="btn btn-sm btn-warning py-0 px-2 text-dark fw-semibold"
-                style={{ fontSize: '0.78rem' }}
-              >
-                Mis Citas
-              </Link>
-            </div>
-          )}
+          <ActiveSessionsNotice
+            tieneSesionEnOtraSede={tieneSesionEnOtraSede}
+            esModoCliente={esModoCliente}
+            negocioSesionNombre={negocioSesionNombre}
+            negocioSesionSlug={negocioSesionSlug}
+            sesionCliente={sesionCliente}
+            slug={slug}
+          />
 
           {errorMensaje && (
             <div

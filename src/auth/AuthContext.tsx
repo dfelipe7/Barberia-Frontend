@@ -224,29 +224,18 @@ export function AuthContextProvider({
     setNegocioSesionSlug(null);
     setNegocioSesionNombre(null);
 
-    // Redirigir de forma segura a la landing de esa barbería limpia
-    const sanitizarDestino = (slug?: string | null): string => {
+    // Redirigir de forma segura a la landing de esa barbería limpia dentro del mismo host
+    const resolverPathSeguro = (slug?: string | null): string => {
       if (slug) {
         const slugLimpio = slug.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
         if (slugLimpio.length > 0 && slugLimpio.length <= 64) {
           return `/${slugLimpio}`;
         }
       }
-      const pathname = window.location.pathname;
-      if (pathname.startsWith('/') && !pathname.startsWith('//') && !pathname.includes('\\')) {
-        try {
-          const parsed = new URL(pathname, window.location.origin);
-          if (parsed.origin === window.location.origin) {
-            return parsed.pathname;
-          }
-        } catch {
-          return '/';
-        }
-      }
       return '/';
     };
 
-    window.location.assign(sanitizarDestino(slugDestino));
+    window.location.pathname = resolverPathSeguro(slugDestino);
   }, [negocioSesionSlug]);
 
   const isRefreshingRef = useRef(false);
