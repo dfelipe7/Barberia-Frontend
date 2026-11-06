@@ -36,6 +36,22 @@ function puedeGestionarBarbero(rolActor: Rol, barbero: BarberoGestion, currentUs
   return puedeGestionarEstado(rolActor, 'BARBERO');
 }
 
+function resolverEtiquetaRolBarbero(barbero: BarberoGestion): string {
+  if (barbero.estado !== 'ACTIVO') {
+    return 'Activar rol de barbero';
+  }
+  if (barbero.esAdministrador && barbero.estadoAdmin === 'ACTIVO') {
+    return 'Desactivar rol (sigue como admin)';
+  }
+  return 'Desactivar rol de barbero';
+}
+
+function resolverIconoRolBarbero(isCurrentUpdating: boolean, estadoBarberoActivo: boolean) {
+  if (isCurrentUpdating) return <KyriosSpinner size="xs" aria-hidden="true" />;
+  if (estadoBarberoActivo) return <UserMinus size={18} />;
+  return <UserCheck size={18} />;
+}
+
 export const BarberoTable: React.FC<BarberoTableProps> = ({
   barberos,
   onSelectBarbero,
@@ -150,12 +166,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
         const itemsRolCuenta = [
           puedeEditar && {
             key: 'rol',
-            label:
-              barbero.estado === 'ACTIVO'
-                ? barbero.esAdministrador && barbero.estadoAdmin === 'ACTIVO'
-                  ? 'Desactivar rol (sigue como admin)'
-                  : 'Desactivar rol de barbero'
-                : 'Activar rol de barbero',
+            label: resolverEtiquetaRolBarbero(barbero),
             icon:
               barbero.estado === 'ACTIVO' ? (
                 <UserMinus size={15} className="text-warning-emphasis" />
@@ -334,13 +345,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
                     title={barbero.estado === 'ACTIVO' ? 'Desactivar rol' : 'Activar rol de barbero'}
                     aria-label={barbero.estado === 'ACTIVO' ? 'Desactivar rol de barbero' : 'Activar rol de barbero'}
                   >
-                    {isCurrentUpdating ? (
-                      <KyriosSpinner size="xs" aria-hidden="true" />
-                    ) : barbero.estado === 'ACTIVO' ? (
-                      <UserMinus size={18} />
-                    ) : (
-                      <UserCheck size={18} />
-                    )}
+                    {resolverIconoRolBarbero(Boolean(isCurrentUpdating), barbero.estado === 'ACTIVO')}
                   </button>
                 )}
               </div>

@@ -74,6 +74,12 @@ function resolverSrcLogo({
   return { src: fallbackSrc, isCustomLogo: false };
 }
 
+function resolverVarianteLogo(variant: 'auto' | 'black' | 'white', systemTheme: string): 'black' | 'white' {
+  if (variant === 'white') return 'white';
+  if (variant === 'black') return 'black';
+  return systemTheme === 'dark' ? 'white' : 'black';
+}
+
 export const BrandLogo: React.FC<BrandLogoProps> = ({
   variant = 'auto',
   height = 36,
@@ -93,10 +99,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
     setImageError(false);
   }, [logoBlancoUrl, logoNegroUrl]);
 
-  const resolvedVariant: 'black' | 'white' =
-    variant === 'auto'
-      ? (systemTheme === 'dark' ? 'white' : 'black')
-      : variant;
+  const resolvedVariant = resolverVarianteLogo(variant, systemTheme);
 
   const isDifferentTenant = Boolean(
     nombreNegocio &&

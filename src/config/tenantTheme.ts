@@ -98,7 +98,7 @@ export function resolverTemaTenant(slug?: string | null): TenantThemeId {
   if (guardadoActivo && TEMAS_TENANT[guardadoActivo]) {
     return guardadoActivo;
   }
-  if (slug && slug.toLowerCase().includes('demo-2')) {
+  if (slug?.toLowerCase().includes('demo-2')) {
     return 'cyber-lime';
   }
   return 'clasico-azul';
@@ -109,7 +109,6 @@ export function guardarTemaTenant(slug: string, temaId: TenantThemeId) {
   localStorage.setItem(`tema_negocio_${slug}`, temaId);
   localStorage.setItem('tema_negocio_activo', temaId);
   document.documentElement.dataset.tenantTheme = temaId;
-  document.documentElement.setAttribute('data-tenant-theme', temaId);
   window.dispatchEvent(new CustomEvent('tenant-tema-cambiado', { detail: { slug, temaId } }));
 }
 

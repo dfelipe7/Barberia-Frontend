@@ -348,6 +348,20 @@ export default function ConfiguracionNegocioPage() {
     // Validar coordenadas actuales si existen
     const validacion = validarCoordenadasFormulario(latitud, longitud);
 
+    let latitudFinal: number | undefined;
+    if (validacion.valid && validacion.latNum !== undefined) {
+      latitudFinal = validacion.latNum;
+    } else if (perfil?.ubicacion?.latitud != null) {
+      latitudFinal = Number(perfil.ubicacion.latitud);
+    }
+
+    let longitudFinal: number | undefined;
+    if (validacion.valid && validacion.lngNum !== undefined) {
+      longitudFinal = validacion.lngNum;
+    } else if (perfil?.ubicacion?.longitud != null) {
+      longitudFinal = Number(perfil.ubicacion.longitud);
+    }
+
     // Construir payload completo preservando toda la información comercial y ubicación existente
     // para evitar que el PUT del backend sobreescriba con null los campos omitidos.
     const payload: ActualizarPerfilNegocioDto = {
@@ -357,18 +371,8 @@ export default function ConfiguracionNegocioPage() {
       ciudad: ciudad.trim() || perfil?.ubicacion?.ciudad || undefined,
       departamento: departamento.trim() || perfil?.ubicacion?.departamento || undefined,
       referencia: referencia.trim() || perfil?.ubicacion?.referencia || undefined,
-      latitud:
-        validacion.valid && validacion.latNum !== undefined
-          ? validacion.latNum
-          : perfil?.ubicacion?.latitud != null
-            ? Number(perfil.ubicacion.latitud)
-            : undefined,
-      longitud:
-        validacion.valid && validacion.lngNum !== undefined
-          ? validacion.lngNum
-          : perfil?.ubicacion?.longitud != null
-            ? Number(perfil.ubicacion.longitud)
-            : undefined,
+      latitud: latitudFinal,
+      longitud: longitudFinal,
     };
 
     try {

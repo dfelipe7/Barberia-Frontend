@@ -41,6 +41,171 @@ function esRutaLocalSegura(valor: unknown): valor is string {
   return typeof valor === 'string' && valor.startsWith('/') && !valor.startsWith('//') && !valor.includes('\\');
 }
 
+function resolverSiguienteTema(theme: string): 'light' | 'dark' | 'system' {
+  if (theme === 'dark') return 'light';
+  if (theme === 'light') return 'system';
+  return 'dark';
+}
+
+function resolverIconoTema(theme: string) {
+  if (theme === 'light') return Sun;
+  if (theme === 'dark') return Moon;
+  return Monitor;
+}
+
+function resolverEtiquetaTema(theme: string): string {
+  if (theme === 'light') return 'Tema actual: Claro (clic para cambiar a Automático)';
+  if (theme === 'dark') return 'Tema actual: Oscuro (clic para cambiar a Claro)';
+  return 'Tema actual: Automático del Sistema (clic para cambiar a Oscuro)';
+}
+
+function resolverTabParam(tabParam: string | null, fallback: TipoAccesoLogin = 'cliente'): TipoAccesoLogin {
+  if (tabParam === 'personal' || tabParam === 'equipo' || tabParam === 'staff') {
+    return 'personal';
+  }
+  if (tabParam === 'cliente') {
+    return 'cliente';
+  }
+  return fallback;
+}
+
+function resolverRutaRetornoSegura(stateUrl: unknown, queryUrl: string | null): string {
+  if (esRutaLocalSegura(stateUrl)) return stateUrl;
+  if (esRutaLocalSegura(queryUrl)) return queryUrl;
+  return '';
+}
+
+function extraerMensajeErrorAuth(error: unknown): string {
+  if (typeof error === 'string') {
+    return error;
+  }
+  if (typeof error === 'object' && error !== null) {
+    const errObj = error as Record<string, unknown>;
+    if (typeof errObj.message === 'string') return errObj.message;
+    if (typeof errObj.error === 'string') return errObj.error;
+  }
+  return 'Acceso denegado: Tu correo no se encuentra registrado en el personal autorizado de la barbería.';
+}
+
+const PERKS_CLIENTE = [
+  {
+    icon: <CalendarCheck size={18} />,
+    title: 'Tus citas siempre organizadas',
+    desc: 'Consulta próximos turnos, reprograma o cancela en segundos desde un solo lugar.',
+  },
+  {
+    icon: <MessageSquare size={18} />,
+    title: 'Notificaciones a tu WhatsApp',
+    desc: 'Recibe confirmaciones automáticas y recordatorios antes de que empiece tu cita.',
+  },
+  {
+    icon: <Clock size={18} />,
+    title: 'Reserva sin contraseñas',
+    desc: 'Accede con un clic usando tu cuenta de Google. Sin recordar claves complejas.',
+  },
+];
+
+const PERKS_STAFF = [
+  {
+    icon: <Calendar size={18} />,
+    title: 'Control total de agenda',
+    desc: 'Visualiza tus turnos diarios y semanales con actualizaciones en tiempo real.',
+  },
+  {
+    icon: <Layers size={18} />,
+    title: 'Estados de cita y recepción',
+    desc: 'Gestiona la llegada del cliente, citas en progreso o finalizadas con un toque.',
+  },
+  {
+    icon: <TrendingUp size={18} />,
+    title: 'Métricas y rendimiento',
+    desc: 'Consulta tus servicios realizados, clientes atendidos y facturación del negocio.',
+  },
+];
+
+interface BrandSidePanelProps {
+  esModoCliente: boolean;
+  effectiveName: string;
+  bannerUrl: string | null;
+}
+
+const BrandSidePanel: React.FC<BrandSidePanelProps> = ({ esModoCliente, effectiveName, bannerUrl }) => {
+  const perks = esModoCliente ? PERKS_CLIENTE : PERKS_STAFF;
+  return (
+    <aside className="auth-split__brand-panel" aria-label="Portal de acceso">
+      <div
+        className="auth-split__brand-bg"
+        style={{ backgroundImage: `url(${bannerUrl || heroImg})` }}
+        aria-hidden="true"
+      />
+      <div className="auth-split__brand-overlay" aria-hidden="true" />
+      <div className="auth-split__brand-glow" aria-hidden="true" />
+
+      <div className="auth-split__brand-content">
+        <div>
+          <div className="d-flex align-items-center gap-3 mb-4">
+            <BrandLogo variant="white" height={40} alt={effectiveName} />
+          </div>
+
+          <div className="mb-4">
+            <span className="auth-split__brand-badge">
+              {esModoCliente ? (
+                <>
+                  <Sparkles size={13} /> Experiencia de Cliente VIP
+                </>
+              ) : (
+                <>
+                  <Scissors size={13} /> Sistema de Gestión Profesional
+                </>
+              )}
+            </span>
+          </div>
+
+          <h1 className="auth-split__brand-title">
+            {esModoCliente ? (
+              <>
+                Tu corte y estilo, <br />
+                gestionados sin complicaciones.
+              </>
+            ) : (
+              <>
+                La plataforma operativa de <br />
+                tu estudio de barbería.
+              </>
+            )}
+          </h1>
+
+          <p className="auth-split__brand-subtitle">
+            {esModoCliente
+              ? 'Disfruta de una atención personalizada en cada visita. Gestiona tus reservas con facilidad y sin perder tus enlaces.'
+              : 'Herramienta exclusiva para superadministradores, gerentes y barberos del equipo. Administra tu flujo de trabajo diario.'}
+          </p>
+
+          <div className="auth-split__perks">
+            {perks.map((perk, i) => (
+              <div key={`perk-${perk.title}-${i}`} className="auth-split__perk-item">
+                <div className="auth-split__perk-icon">{perk.icon}</div>
+                <div className="auth-split__perk-text">
+                  <strong>{perk.title}</strong>
+                  <span>{perk.desc}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="auth-split__brand-footer">
+          <span>
+            {esModoCliente
+              ? `© ${new Date().getFullYear()} ${effectiveName}. Todos los derechos reservados.`
+              : 'Kyrios OS Enterprise · Infraestructura Multitenant Segura'}
+          </span>
+        </div>
+      </div>
+    </aside>
+  );
+};
+
 export const LoginPage: React.FC<LoginPageProps> = ({ modoInicial }) => {
   const { slug: paramSlug } = useParams<{ slug?: string }>();
   const navigate = useNavigate();
@@ -59,57 +224,30 @@ export const LoginPage: React.FC<LoginPageProps> = ({ modoInicial }) => {
   const { theme, setTheme, isDark } = useTheme();
 
   const cycleTheme = () => {
-    if (theme === 'dark') setTheme('light');
-    else if (theme === 'light') setTheme('system');
-    else setTheme('dark');
+    setTheme(resolverSiguienteTema(theme));
   };
 
-  const ThemeIcon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor;
-  const themeLabel =
-    theme === 'light'
-      ? 'Tema actual: Claro (clic para cambiar a Automático)'
-      : theme === 'dark'
-        ? 'Tema actual: Oscuro (clic para cambiar a Claro)'
-        : 'Tema actual: Automático del Sistema (clic para cambiar a Oscuro)';
+  const ThemeIcon = resolverIconoTema(theme);
+  const themeLabel = resolverEtiquetaTema(theme);
 
   const { nombreNegocio, bannerUrl } = useTenantBrand();
   const effectiveName = nombreNegocio || 'Kyrios Barber Studio';
 
-  // Determinar tab inicial desde URL query param (?tab=personal o ?tab=cliente) o prop
   const tabParam = searchParams.get('tab') || searchParams.get('tipo');
-  const resolverTabInicial = (): TipoAccesoLogin => {
-    if (tabParam === 'personal' || tabParam === 'equipo' || tabParam === 'staff') {
-      return 'personal';
-    }
-    if (tabParam === 'cliente') {
-      return 'cliente';
-    }
-    return modoInicial || 'cliente';
-  };
-
-  const [tabActiva, setTabActiva] = useState<TipoAccesoLogin>(resolverTabInicial);
+  const [tabActiva, setTabActiva] = useState<TipoAccesoLogin>(() =>
+    resolverTabParam(tabParam, modoInicial || 'cliente')
+  );
   const [errorMensaje, setErrorMensaje] = useState<string | null>(null);
   const [isCargando, setIsCargando] = useState(false);
 
-  // Sincronizar tab si cambia el search param externo sin setState en effect
-  const tabActivaEfectiva = useMemo<TipoAccesoLogin>(() => {
-    if (tabParam === 'personal' || tabParam === 'equipo' || tabParam === 'staff') {
-      return 'personal';
-    }
-    if (tabParam === 'cliente') {
-      return 'cliente';
-    }
-    return tabActiva;
-  }, [tabParam, tabActiva]);
+  const tabActivaEfectiva = useMemo<TipoAccesoLogin>(
+    () => resolverTabParam(tabParam, tabActiva),
+    [tabParam, tabActiva]
+  );
 
-  // Manejo seguro del retorno
   const returnToState = (location.state as { returnTo?: unknown } | null)?.returnTo;
   const returnToQuery = searchParams.get('returnTo');
-  const returnToCandidato = esRutaLocalSegura(returnToState)
-    ? returnToState
-    : esRutaLocalSegura(returnToQuery)
-      ? returnToQuery
-      : '';
+  const returnToCandidato = resolverRutaRetornoSegura(returnToState, returnToQuery);
 
   const slugFromReturnTo = useMemo(() => {
     if (!returnToCandidato) return null;
@@ -192,63 +330,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ modoInicial }) => {
       const targetSlug = slug || localStorage.getItem('negocio_sesion_slug') || 'kyrios-studio';
       void navigate(`/${targetSlug}/dashboard`, { replace: true });
     } else {
-      let texto = 'Acceso denegado: Tu correo no se encuentra registrado en el personal autorizado de la barbería.';
-      if (typeof resultado.error === 'string') {
-        texto = resultado.error;
-      } else if (typeof resultado.error === 'object' && resultado.error !== null) {
-        const errObj = resultado.error as Record<string, unknown>;
-        const msg =
-          typeof errObj.message === 'string'
-            ? errObj.message
-            : typeof errObj.error === 'string'
-              ? errObj.error
-              : null;
-        if (msg) texto = msg;
-      }
-      setErrorMensaje(String(texto));
+      setErrorMensaje(extraerMensajeErrorAuth(resultado.error));
     }
   };
 
   const handleGoogleError = () => {
     setErrorMensaje('Ocurrió un error al conectar con Google. Por favor intenta de nuevo.');
   };
-
-  // Beneficios dinámicos según pestaña
-  const perksCliente = [
-    {
-      icon: <CalendarCheck size={18} />,
-      title: 'Tus citas siempre organizadas',
-      desc: 'Consulta próximos turnos, reprograma o cancela en segundos desde un solo lugar.',
-    },
-    {
-      icon: <MessageSquare size={18} />,
-      title: 'Notificaciones a tu WhatsApp',
-      desc: 'Recibe confirmaciones automáticas y recordatorios antes de que empiece tu cita.',
-    },
-    {
-      icon: <Clock size={18} />,
-      title: 'Reserva sin contraseñas',
-      desc: 'Accede con un clic usando tu cuenta de Google. Sin recordar claves complejas.',
-    },
-  ];
-
-  const perksStaff = [
-    {
-      icon: <Calendar size={18} />,
-      title: 'Control total de agenda',
-      desc: 'Visualiza tus turnos diarios y semanales con actualizaciones en tiempo real.',
-    },
-    {
-      icon: <Layers size={18} />,
-      title: 'Estados de cita y recepción',
-      desc: 'Gestiona la llegada del cliente, citas en progreso o finalizadas con un toque.',
-    },
-    {
-      icon: <TrendingUp size={18} />,
-      title: 'Métricas y rendimiento',
-      desc: 'Consulta tus servicios realizados, clientes atendidos y facturación del negocio.',
-    },
-  ];
 
   const esModoCliente = tabActivaEfectiva === 'cliente';
   const temaId = resolverTemaTenant(slug);
@@ -266,78 +354,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ modoInicial }) => {
         } as React.CSSProperties
       }
     >
-      {/* ── PANEL IZQUIERDO: MARCA Y BENEFICIOS VIP ── */}
-      <aside className="auth-split__brand-panel" aria-label="Portal de acceso">
-        <div
-          className="auth-split__brand-bg"
-          style={{ backgroundImage: `url(${bannerUrl || heroImg})` }}
-          aria-hidden="true"
-        />
-        <div className="auth-split__brand-overlay" aria-hidden="true" />
-        <div className="auth-split__brand-glow" aria-hidden="true" />
-
-        <div className="auth-split__brand-content">
-          <div>
-            <div className="d-flex align-items-center gap-3 mb-4">
-              <BrandLogo variant="white" height={40} alt={effectiveName} />
-            </div>
-
-            <div className="mb-4">
-              <span className="auth-split__brand-badge">
-                {esModoCliente ? (
-                  <>
-                    <Sparkles size={13} /> Experiencia de Cliente VIP
-                  </>
-                ) : (
-                  <>
-                    <Scissors size={13} /> Sistema de Gestión Profesional
-                  </>
-                )}
-              </span>
-            </div>
-
-            <h1 className="auth-split__brand-title">
-              {esModoCliente ? (
-                <>
-                  Tu corte y estilo, <br />
-                  gestionados sin complicaciones.
-                </>
-              ) : (
-                <>
-                  La plataforma operativa de <br />
-                  tu estudio de barbería.
-                </>
-              )}
-            </h1>
-
-            <p className="auth-split__brand-subtitle">
-              {esModoCliente
-                ? 'Disfruta de una atención personalizada en cada visita. Gestiona tus reservas con facilidad y sin perder tus enlaces.'
-                : 'Herramienta exclusiva para superadministradores, gerentes y barberos del equipo. Administra tu flujo de trabajo diario.'}
-            </p>
-
-            <div className="auth-split__perks">
-              {(esModoCliente ? perksCliente : perksStaff).map((perk, i) => (
-                <div key={`perk-${perk.title}-${i}`} className="auth-split__perk-item">
-                  <div className="auth-split__perk-icon">{perk.icon}</div>
-                  <div className="auth-split__perk-text">
-                    <strong>{perk.title}</strong>
-                    <span>{perk.desc}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="auth-split__brand-footer">
-            <span>
-              {esModoCliente
-                ? `© ${new Date().getFullYear()} ${effectiveName}. Todos los derechos reservados.`
-                : 'Kyrios OS Enterprise · Infraestructura Multitenant Segura'}
-            </span>
-          </div>
-        </div>
-      </aside>
+      <BrandSidePanel
+        esModoCliente={esModoCliente}
+        effectiveName={effectiveName}
+        bannerUrl={bannerUrl}
+      />
 
       {/* ── PANEL DERECHO: FORMULARIO UNIFICADO CON PESTAÑAS ── */}
       <main className="auth-split__form-panel">

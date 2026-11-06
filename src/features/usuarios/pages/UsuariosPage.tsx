@@ -164,12 +164,8 @@ export const UsuariosPage: React.FC = () => {
   const handleCambiarEstadoGlobalAdmin = async (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => {
     const admin = administradores.find((a) => a.id === id);
     const nombre = admin ? `${admin.nombre} ${admin.apellido}` : 'este usuario';
-    const tipo =
-      nuevoEstado === 'ACTIVO'
-        ? ('administrador' as const)
-        : admin?.esBarbero
-          ? ('ambos' as const)
-          : ('administrador' as const);
+    const esDesactivacionConRolBarbero = nuevoEstado !== 'ACTIVO' && Boolean(admin?.esBarbero);
+    const tipo: 'administrador' | 'ambos' = esDesactivacionConRolBarbero ? 'ambos' : 'administrador';
 
     if (nuevoEstado === 'INACTIVO') {
       const ok = await confirm({
@@ -235,12 +231,8 @@ export const UsuariosPage: React.FC = () => {
   ) => {
     const barbero = barberos.find((b) => b.id === id);
     const nombre = barbero ? `${barbero.nombre} ${barbero.apellido}` : 'este usuario';
-    const tipo =
-      nuevoEstado === 'ACTIVO'
-        ? ('barbero' as const)
-        : barbero?.esAdministrador
-          ? ('ambos' as const)
-          : ('barbero' as const);
+    const esDesactivacionConRolAdmin = nuevoEstado !== 'ACTIVO' && Boolean(barbero?.esAdministrador);
+    const tipo: 'barbero' | 'ambos' = esDesactivacionConRolAdmin ? 'ambos' : 'barbero';
 
     if (nuevoEstado === 'INACTIVO') {
       const ok = await confirm({
@@ -432,7 +424,6 @@ export const UsuariosPage: React.FC = () => {
                 onSelectUsuario={handleVerDetalles}
                 onCambiarEstado={handleCambiarEstadoAdmin}
                 onCambiarEstadoGlobal={handleCambiarEstadoGlobalAdmin}
-                onConfigurarBarbero={(admin) => setAdminAConfigurar(admin)}
                 esSuperAdmin={esSuperAdmin}
                 currentUserId={usuarioDb?.id}
                 isUpdatingId={

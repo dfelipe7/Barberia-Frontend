@@ -6,7 +6,7 @@ import { redesSocialesApi } from '../services/redesSocialesApi';
 import type { RedSocial } from '../types/redesSociales.types';
 import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import { BRAND } from '../../../config/brand';
-import { resolverTemaTenant, type TenantThemeId } from '../../../config/tenantTheme';
+import { resolverTemaTenant, TEMAS_TENANT, type TenantThemeId } from '../../../config/tenantTheme';
 
 export interface TenantBrandContextValue {
   slug: string | null;
@@ -162,11 +162,16 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
   useEffect(() => {
     const temaId = (perfil?.temaKey as TenantThemeId) || resolverTemaTenant(slug);
     if (temaId) {
-      document.documentElement.setAttribute('data-tenant-theme', temaId);
       document.documentElement.dataset.tenantTheme = temaId;
-      if (slug && perfil?.temaKey) {
-        localStorage.setItem(`tema_negocio_${slug}`, perfil.temaKey);
-        localStorage.setItem('tema_negocio_activo', perfil.temaKey);
+      const temaKey = perfil?.temaKey;
+      const esTemaValido = typeof temaKey === 'string' && Boolean(TEMAS_TENANT[temaKey as TenantThemeId]);
+      const esSlugValido = typeof slug === 'string' && /^[a-z0-9_-]{1,64}$/i.test(slug);
+
+      if (esSlugValido && esTemaValido && temaKey) {
+        const safeSlug = encodeURIComponent(slug);
+        const safeKey = temaKey as TenantThemeId;
+        localStorage.setItem(`tema_negocio_${safeSlug}`, safeKey);
+        localStorage.setItem('tema_negocio_activo', safeKey);
       }
     }
   }, [perfil?.temaKey, slug]);
@@ -180,7 +185,6 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
       if (!e.key || e.key.startsWith('tema_negocio_')) {
         const nuevoTema = resolverTemaTenant(slug);
         if (nuevoTema) {
-          document.documentElement.setAttribute('data-tenant-theme', nuevoTema);
           document.documentElement.dataset.tenantTheme = nuevoTema;
         }
         void cargarPerfil();

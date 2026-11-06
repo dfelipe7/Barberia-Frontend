@@ -34,6 +34,70 @@ function resolverRolObjetivo(usuario: Usuario): Rol {
   return 'BARBERO';
 }
 
+function resolverRutaRetornoUsuario(editandoPropio: boolean, esSoloBarbero: boolean): string {
+  if (editandoPropio) return '/mi-perfil';
+  if (esSoloBarbero) return '/usuarios?tab=barberos';
+  return '/usuarios';
+}
+
+function renderResumenCambiosUsuario(data: EditarUsuarioFormValues) {
+  return (
+    <div className="d-flex flex-column gap-2 small">
+      <div><strong>Nombre:</strong> {data.nombre} {data.apellido}</div>
+      <div><strong>Email:</strong> {data.email} <span className="text-muted">(identidad global)</span></div>
+      {data.esAdministrador && <div>✓ Rol Administrador activo</div>}
+      {data.esBarbero && (
+        <>
+          <div>✓ Rol Barbero activo</div>
+          <div><strong>Teléfono:</strong> {data.telefono}</div>
+          <div><strong>Comisión:</strong> {data.porcentajeComision}%</div>
+        </>
+      )}
+      {!data.esAdministrador && !data.esBarbero && (
+        <div className="text-warning-emphasis mt-2">
+          Este usuario quedará sin roles asignados.
+        </div>
+      )}
+    </div>
+  );
+}
+
+async function confirmarRevocacionesRol(
+  usuario: Usuario | undefined,
+  data: EditarUsuarioFormValues,
+  noPuedeRevocarAdmin: boolean,
+  confirm: ReturnType<typeof useConfirm>
+): Promise<boolean> {
+  const teniaAdmin = Boolean(
+    usuario?.administrador?.estado === 'ACTIVO' ||
+    usuario?.rol === 'ADMINISTRADOR' ||
+    usuario?.rol === 'SUPERADMIN'
+  );
+  const teniaBarbero = Boolean(usuario?.barbero && usuario.barbero.estado === 'ACTIVO');
+
+  if (!noPuedeRevocarAdmin && teniaAdmin && !data.esAdministrador) {
+    const ok = await confirm({
+      title: `¿Revocar rol de Administrador de ${usuario?.nombre}?`,
+      message: 'El usuario perderá el acceso a las funciones de administración y configuración del sistema.',
+      variant: 'danger',
+      confirmLabel: 'Revocar Rol',
+    });
+    if (!ok) return false;
+  }
+
+  if (teniaBarbero && !data.esBarbero) {
+    const ok = await confirm({
+      title: `¿Desactivar perfil de Barbero de ${usuario?.nombre}?`,
+      message: 'El perfil de barbero será desactivado y no estará disponible para agendamiento de turnos.',
+      variant: 'warning',
+      confirmLabel: 'Desactivar Perfil',
+    });
+    if (!ok) return false;
+  }
+
+  return true;
+}
+
 export const EditarUsuarioPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const usuarioId = Number(id);
@@ -100,8 +164,8 @@ export const EditarUsuarioPage: React.FC = () => {
 
       const adminActivo = Boolean(
         usuario.administrador?.estado === 'ACTIVO' ||
-          usuario.rol === 'ADMINISTRADOR' ||
-          usuario.rol === 'SUPERADMIN'
+        usuario.rol === 'ADMINISTRADOR' ||
+        usuario.rol === 'SUPERADMIN'
       );
       setValue('esAdministrador', adminActivo);
     }
@@ -169,61 +233,22 @@ export const EditarUsuarioPage: React.FC = () => {
     );
   }
 
+  const esSoloBarbero = Boolean(usuario?.barbero && !usuario?.administrador);
+  const rutaRetorno = resolverRutaRetornoUsuario(Boolean(editandoPropioPerfil), esSoloBarbero);
+
   const onSubmit = async (data: EditarUsuarioFormValues) => {
     try {
-      const teniaAdmin = Boolean(
-        usuario?.administrador?.estado === 'ACTIVO' ||
-          usuario?.rol === 'ADMINISTRADOR' ||
-          usuario?.rol === 'SUPERADMIN'
+      const puedeProceder = await confirmarRevocacionesRol(
+        usuario,
+        data,
+        Boolean(noPuedeRevocarAdmin),
+        confirm
       );
-      const teniaBarbero = Boolean(usuario?.barbero && usuario.barbero.estado === 'ACTIVO');
-
-      // Si desmarca rol de administrador (SUPERADMIN editando a otro admin) -> peligroso
-      if (!noPuedeRevocarAdmin && teniaAdmin && !data.esAdministrador) {
-        const ok = await confirm({
-          title: `¿Revocar rol de Administrador de ${usuario?.nombre}?`,
-          message: `El usuario perderá el acceso a las funciones de administración y configuración del sistema.`,
-          variant: 'danger',
-          confirmLabel: 'Revocar Rol',
-        });
-        if (!ok) return;
-      }
-
-      // Si desmarca perfil de barbero -> advertencia
-      if (teniaBarbero && !data.esBarbero) {
-        const ok = await confirm({
-          title: `¿Desactivar perfil de Barbero de ${usuario?.nombre}?`,
-          message: `El perfil de barbero será desactivado y no estará disponible para agendamiento de turnos.`,
-          variant: 'warning',
-          confirmLabel: 'Desactivar Perfil',
-        });
-        if (!ok) return;
-      }
-
-      // Confirmación general de guardado con resumen de datos modificados
-      const resumen = (
-        <div className="d-flex flex-column gap-2 small">
-          <div><strong>Nombre:</strong> {data.nombre} {data.apellido}</div>
-          <div><strong>Email:</strong> {data.email} <span className="text-muted">(identidad global)</span></div>
-          {data.esAdministrador && <div>✓ Rol Administrador activo</div>}
-          {data.esBarbero && (
-            <>
-              <div>✓ Rol Barbero activo</div>
-              <div><strong>Teléfono:</strong> {data.telefono}</div>
-              <div><strong>Comisión:</strong> {data.porcentajeComision}%</div>
-            </>
-          )}
-          {!data.esAdministrador && !data.esBarbero && (
-            <div className="text-warning-emphasis mt-2">
-              Este usuario quedará sin roles asignados.
-            </div>
-          )}
-        </div>
-      );
+      if (!puedeProceder) return;
 
       const ok = await confirm({
         title: `Guardar cambios de ${usuario?.nombre}?`,
-        message: resumen,
+        message: renderResumenCambiosUsuario(data),
         variant: 'primary',
         confirmLabel: 'Guardar cambios',
         cancelLabel: 'Revisar',
@@ -250,9 +275,8 @@ export const EditarUsuarioPage: React.FC = () => {
         await refrescarPerfil();
       }
 
-      const fallbackTab = usuario?.barbero && !usuario?.administrador ? '/usuarios?tab=barberos' : '/usuarios';
       goBack({
-        fallbackTo: editandoPropioPerfil ? '/mi-perfil' : fallbackTab,
+        fallbackTo: rutaRetorno,
         state: { mensaje: `Usuario ${data.nombre} actualizado correctamente.` },
       });
     } catch (err: unknown) {
@@ -271,15 +295,7 @@ export const EditarUsuarioPage: React.FC = () => {
         <button
           type="button"
           className="btn btn-outline-secondary btn-sm mb-3"
-          onClick={() =>
-            goBack({
-              fallbackTo: editandoPropioPerfil
-                ? '/mi-perfil'
-                : usuario?.barbero && !usuario?.administrador
-                  ? '/usuarios?tab=barberos'
-                  : '/usuarios',
-            })
-          }
+          onClick={() => goBack({ fallbackTo: rutaRetorno })}
         >
           &larr; Volver
         </button>
@@ -425,15 +441,7 @@ export const EditarUsuarioPage: React.FC = () => {
               <button
                 type="button"
                 className="btn btn-light"
-                onClick={() =>
-            goBack({
-              fallbackTo: editandoPropioPerfil
-                ? '/mi-perfil'
-                : usuario?.barbero && !usuario?.administrador
-                  ? '/usuarios?tab=barberos'
-                  : '/usuarios',
-            })
-          }
+                onClick={() => goBack({ fallbackTo: rutaRetorno })}
               >
                 Cancelar
               </button>

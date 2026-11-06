@@ -14,7 +14,6 @@ interface UserTableProps {
   onSelectUsuario: (admin: AdministradorGestion) => void;
   onCambiarEstado: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
   onCambiarEstadoGlobal?: (id: number, nuevoEstado: 'ACTIVO' | 'INACTIVO') => void;
-  onConfigurarBarbero?: (admin: AdministradorGestion) => void;
   esSuperAdmin: boolean;
   currentUserId?: number;
   isUpdatingId?: number | null;
@@ -34,6 +33,16 @@ function resolverTituloRolAdmin(esSuperAdminAdmin: boolean, estadoAdminActivo: b
   if (esSuperAdminAdmin) return 'No se pueden modificar los privilegios de un Superadministrador';
   if (estadoAdminActivo) return 'Desactivar rol de administrador';
   return 'Activar rol de administrador';
+}
+
+function resolverEtiquetaRolAdmin(admin: AdministradorGestion): string {
+  if (admin.estadoAdmin !== 'ACTIVO') {
+    return 'Activar rol de administrador';
+  }
+  if (admin.esBarbero && admin.estadoBarbero === 'ACTIVO') {
+    return 'Desactivar rol (sigue como barbero)';
+  }
+  return 'Desactivar rol de administrador';
 }
 
 function resolverIconoRolAdmin(isCurrentUpdating: boolean, estadoAdminActivo: boolean) {
@@ -78,12 +87,7 @@ const AdminActionsDropdown: React.FC<AdminActionsProps> = ({
       !esMismoUsuario &&
       !admin.esSuperAdmin && {
         key: 'rol',
-        label:
-          admin.estadoAdmin === 'ACTIVO'
-            ? admin.esBarbero && admin.estadoBarbero === 'ACTIVO'
-              ? 'Desactivar rol (sigue como barbero)'
-              : 'Desactivar rol de administrador'
-            : 'Activar rol de administrador',
+        label: resolverEtiquetaRolAdmin(admin),
         icon:
           admin.estadoAdmin === 'ACTIVO' ? (
             <UserMinus size={15} className="text-warning-emphasis" />

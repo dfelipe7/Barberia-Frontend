@@ -102,12 +102,27 @@ const obtenerBorradorStorage = (): ReservaBorradorStorage | null => {
   }
 };
 
+const sanitizarBorradorParaStorage = (datos: ReservaBorradorStorage): ReservaBorradorStorage => ({
+  servicioId: typeof datos.servicioId === 'number' && Number.isSafeInteger(datos.servicioId) ? datos.servicioId : null,
+  barberoId: typeof datos.barberoId === 'number' && Number.isSafeInteger(datos.barberoId) ? datos.barberoId : null,
+  barberoFijoId: typeof datos.barberoFijoId === 'number' && Number.isSafeInteger(datos.barberoFijoId) ? datos.barberoFijoId : null,
+  esOrigenBarbero: Boolean(datos.esOrigenBarbero),
+  fechaSeleccionada: typeof datos.fechaSeleccionada === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(datos.fechaSeleccionada) ? datos.fechaSeleccionada : null,
+  horaSeleccionada: typeof datos.horaSeleccionada === 'string' && /^\d{2}:\d{2}(:\d{2})?$/.test(datos.horaSeleccionada) ? datos.horaSeleccionada : null,
+  paso: (datos.paso === 1 || datos.paso === 2 || datos.paso === 3 || datos.paso === 4 ? datos.paso : 1) as PasoReserva,
+  nombreInvitado: typeof datos.nombreInvitado === 'string' ? datos.nombreInvitado.slice(0, 100).replace(/[^\p{L}\s'-]/gu, '').trim() : '',
+  apellidoInvitado: typeof datos.apellidoInvitado === 'string' ? datos.apellidoInvitado.slice(0, 100).replace(/[^\p{L}\s'-]/gu, '').trim() : '',
+  telefonoInvitado: typeof datos.telefonoInvitado === 'string' ? datos.telefonoInvitado.slice(0, 30).replace(/[^\d+]/g, '').trim() : '',
+  reservaId: typeof datos.reservaId === 'number' && Number.isSafeInteger(datos.reservaId) ? datos.reservaId : undefined,
+});
+
 const guardarBorradorStorage = (datos: ReservaBorradorStorage | null) => {
   try {
     if (!datos) {
       sessionStorage.removeItem(STORAGE_KEY_BORRADOR);
     } else {
-      sessionStorage.setItem(STORAGE_KEY_BORRADOR, JSON.stringify(datos));
+      const payloadSeguro = sanitizarBorradorParaStorage(datos);
+      sessionStorage.setItem(STORAGE_KEY_BORRADOR, JSON.stringify(payloadSeguro));
     }
   } catch {
     // Silencioso en caso de restricciones de privacidad

@@ -89,7 +89,6 @@ export const TenantThemeSelector: React.FC<TenantThemeSelectorProps> = ({ isDark
     setTemaActual(nuevoTemaId);
     setIsOpen(false);
     document.documentElement.dataset.tenantTheme = nuevoTemaId;
-    document.documentElement.setAttribute('data-tenant-theme', nuevoTemaId);
 
     try {
       await perfilNegocioApi.actualizarPerfil({ temaKey: nuevoTemaId });
