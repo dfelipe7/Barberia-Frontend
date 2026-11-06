@@ -4,11 +4,30 @@
    TENANT THEMES - Estilos y Variaciones por Barbería
    ========================================================================== */
 
+:root,
+[data-tenant-theme="clasico-azul"] {
+  --tenant-accent: #0071BC !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(0, 113, 188, 0.35) !important;
+}
+
+[data-theme="dark"],
+[data-theme="dark"][data-tenant-theme="clasico-azul"],
+[data-bs-theme="dark"][data-tenant-theme="clasico-azul"] {
+  --tenant-accent: #0071BC !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(0, 113, 188, 0.5) !important;
+}
+
 /* ─── 1. TEMA: CYBER LIME (Verde Neón + Botones Píldora de la Imagen) ───── */
 [data-tenant-theme="cyber-lime"] {
   --bs-primary: #22c55e !important;
   --bs-primary-rgb: 34, 197, 94 !important;
   --bs-primary-hover: #16a34a !important;
+
+  --tenant-accent: #22c55e !important;
+  --tenant-btn-text: #000000 !important;
+  --tenant-glow: rgba(34, 197, 94, 0.45) !important;
 
   /* Kyrios Home Overrides */
   --k-blue: #22c55e !important;
@@ -76,6 +95,60 @@
   box-shadow: 0 0 18px rgba(34, 197, 94, 0.6) !important;
 }
 
+/* Stepper activo y completado en Cyber Lime */
+[data-tenant-theme="cyber-lime"] .booking-stepper__step.is-current {
+  background: #22c55e !important;
+  border-color: #22c55e !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 18px rgba(34, 197, 94, 0.45) !important;
+}
+
+[data-tenant-theme="cyber-lime"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-tenant-theme="cyber-lime"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-tenant-theme="cyber-lime"] .booking-stepper__step.is-current svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+[data-tenant-theme="cyber-lime"] .booking-stepper__step.is-done {
+  background: rgba(34, 197, 94, 0.1) !important;
+  border-color: rgba(34, 197, 94, 0.4) !important;
+  color: #22c55e !important;
+}
+
+[data-tenant-theme="cyber-lime"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-tenant-theme="cyber-lime"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-tenant-theme="cyber-lime"] .booking-stepper__step.is-done svg {
+  color: #22c55e !important;
+  stroke: #22c55e !important;
+}
+
+[data-tenant-theme="cyber-lime"] .booking-card__check-indicator {
+  background: #22c55e !important;
+  color: #000000 !important;
+  box-shadow: 0 3px 10px rgba(34, 197, 94, 0.5) !important;
+}
+
+[data-tenant-theme="cyber-lime"] .booking-card__check-indicator svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+[data-tenant-theme="cyber-lime"] .booking-barber-status-badge--selected,
+[data-tenant-theme="cyber-lime"] .booking-card--selected .badge {
+  background-color: #22c55e !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 10px rgba(34, 197, 94, 0.4) !important;
+}
+
+[data-tenant-theme="cyber-lime"] .booking-primary-badge {
+  background-color: #22c55e !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
 /* Badges e insignias */
 [data-tenant-theme="cyber-lime"] .booking-step-badge,
 [data-tenant-theme="cyber-lime"] .kyrios-badge,
@@ -120,27 +193,89 @@
 [data-tenant-theme="cyber-lime"] .booking-date-capsule {
   border-radius: 9999px !important;
   min-height: 110px !important;
+  border: 1.5px solid rgba(34, 197, 94, 0.25) !important;
 }
 
-[data-tenant-theme="cyber-lime"] .booking-date-capsule--selected {
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-bs-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-date-capsule:not(.booking-date-capsule--selected) {
+  background: #ffffff !important;
+  border-color: rgba(34, 197, 94, 0.28) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__month {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule:disabled,
+[data-bs-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule:disabled {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  opacity: 0.7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule:disabled .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule:disabled .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule:disabled .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule:disabled .booking-date-capsule__empty {
+  color: #94a3b8 !important;
+}
+
+[data-tenant-theme="cyber-lime"] .booking-date-capsule--selected,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule--selected,
+[data-bs-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule--selected {
   background: #22c55e !important;
   border-color: #22c55e !important;
   color: #000000 !important;
-  box-shadow: 0 0 20px rgba(34, 197, 94, 0.6) !important;
+  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.55), 0 0 0 2px #22c55e !important;
+  transform: none !important;
 }
 
 [data-tenant-theme="cyber-lime"] .booking-date-capsule--selected .booking-date-capsule__day,
 [data-tenant-theme="cyber-lime"] .booking-date-capsule--selected .booking-date-capsule__num,
-[data-tenant-theme="cyber-lime"] .booking-date-capsule--selected .booking-date-capsule__month {
+[data-tenant-theme="cyber-lime"] .booking-date-capsule--selected .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule--selected .booking-date-capsule__month {
   color: #000000 !important;
   font-weight: 850 !important;
 }
 
-[data-tenant-theme="cyber-lime"] .booking-slot-pill {
-  border-radius: 9999px !important;
+[data-tenant-theme="cyber-lime"] .booking-date-capsule--selected .booking-date-capsule__badge,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: rgba(0, 0, 0, 0.15) !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  border: 1px solid rgba(0, 0, 0, 0.25) !important;
 }
 
-[data-tenant-theme="cyber-lime"] .booking-slot-pill--active {
+[data-tenant-theme="cyber-lime"] .booking-slot-pill {
+  border-radius: 9999px !important;
+  border: 1.5px solid rgba(34, 197, 94, 0.25) !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-bs-theme="light"][data-tenant-theme="cyber-lime"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-slot-pill:not(.booking-slot-pill--active) {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #64748b !important;
+}
+
+[data-tenant-theme="cyber-lime"] .booking-slot-pill--active,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-slot-pill--active,
+[data-bs-theme="light"][data-tenant-theme="cyber-lime"] .booking-slot-pill--active {
   background: #22c55e !important;
   border-color: #22c55e !important;
   color: #000000 !important;
@@ -148,9 +283,14 @@
   box-shadow: 0 4px 16px rgba(34, 197, 94, 0.5) !important;
 }
 
+[data-tenant-theme="cyber-lime"] .booking-slot-pill--active .booking-slot-time,
 [data-tenant-theme="cyber-lime"] .booking-slot-pill--active .booking-slot-end,
-[data-tenant-theme="cyber-lime"] .booking-slot-pill--active .booking-slot-check {
+[data-tenant-theme="cyber-lime"] .booking-slot-pill--active .booking-slot-check,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-slot-pill--active .booking-slot-check {
   color: #000000 !important;
+  font-weight: 750 !important;
 }
 
 /* Dashboard: Tarjetas de atajos en Cyber Lime */
@@ -170,7 +310,9 @@
 }
 
 /* ── Barberos con Avatar Circular Moderno (Estilo de la imagen de referencia) ── */
-[data-tenant-theme="cyber-lime"] .kyrios-barber-card {
+[data-theme="dark"][data-tenant-theme="cyber-lime"] .kyrios-barber-card,
+[data-bs-theme="dark"][data-tenant-theme="cyber-lime"] .kyrios-barber-card,
+[data-tenant-theme="cyber-lime"]:not([data-theme="light"]):not([data-bs-theme="light"]) .kyrios-barber-card {
   border-radius: 28px !important;
   background: #101411 !important;
   border: 1px solid rgba(34, 197, 94, 0.22) !important;
@@ -186,7 +328,9 @@
   transform: translateY(-6px);
 }
 
-[data-tenant-theme="cyber-lime"] .kyrios-barber-img-wrap {
+[data-theme="dark"][data-tenant-theme="cyber-lime"] .kyrios-barber-img-wrap,
+[data-bs-theme="dark"][data-tenant-theme="cyber-lime"] .kyrios-barber-img-wrap,
+[data-tenant-theme="cyber-lime"]:not([data-theme="light"]):not([data-bs-theme="light"]) .kyrios-barber-img-wrap {
   width: 140px !important;
   height: 140px !important;
   min-height: 140px !important;
@@ -207,7 +351,9 @@
 }
 
 /* ── Tarjetas de Servicios con Esquinas Amplias y Acento Neón ── */
-[data-tenant-theme="cyber-lime"] .kyrios-service-card {
+[data-theme="dark"][data-tenant-theme="cyber-lime"] .kyrios-service-card,
+[data-bs-theme="dark"][data-tenant-theme="cyber-lime"] .kyrios-service-card,
+[data-tenant-theme="cyber-lime"]:not([data-theme="light"]):not([data-bs-theme="light"]) .kyrios-service-card {
   border-radius: 24px !important;
   background: #101411 !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -414,6 +560,10 @@
   --bs-primary-rgb: 22, 163, 74 !important;
   --bs-primary-hover: #15803d !important;
 
+  --tenant-accent: #16a34a !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(22, 163, 74, 0.25) !important;
+
   --k-blue: #16a34a !important;
   --k-blue-hover: #15803d !important;
   --k-blue-glow: rgba(22, 163, 74, 0.25) !important;
@@ -501,6 +651,70 @@
   color: #15803d !important;
   background: #dcfce7 !important;
   border: 1px solid #86efac !important;
+}
+
+/* Stepper y elementos seleccionados en Cyber Lime (Modo Claro) */
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-stepper__step.is-current,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-stepper__step.is-current {
+  background: #16a34a !important;
+  border-color: #16a34a !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.35) !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-stepper__step.is-current svg,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-stepper__step.is-done,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-stepper__step.is-done {
+  background: rgba(22, 163, 74, 0.08) !important;
+  border-color: rgba(22, 163, 74, 0.4) !important;
+  color: #15803d !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-stepper__step.is-done svg,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-stepper__step.is-done svg {
+  color: #15803d !important;
+  stroke: #15803d !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-card__check-indicator,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-card__check-indicator {
+  background: #16a34a !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-card__check-indicator svg,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-barber-status-badge--selected,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-card--selected .badge,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-barber-status-badge--selected,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-card--selected .badge {
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .booking-primary-badge,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .booking-primary-badge {
+  background-color: #16a34a !important;
+  color: #ffffff !important;
 }
 
 /* Sidebar activo en modo claro */
@@ -659,150 +873,64 @@
   border-color: rgba(22, 163, 74, 0.35) !important;
 }
 
-/* ─── 2. TEMA: ORO CHAMPAGNE (Luxury VIP) ────────────────────────────────── */
-[data-tenant-theme="oro-vip"] {
-  --bs-primary: #D4AF37 !important;
-  --bs-primary-rgb: 212, 175, 55 !important;
-  --bs-primary-hover: #b59226 !important;
-
-  --k-blue: #D4AF37 !important;
-  --k-blue-hover: #b59226 !important;
-  --k-blue-glow: rgba(212, 175, 55, 0.4) !important;
-
-  --portal-primary: #D4AF37 !important;
-  --portal-primary-hover: #b59226 !important;
-  --portal-primary-glow: rgba(212, 175, 55, 0.35) !important;
-}
-
-[data-tenant-theme="oro-vip"] .btn-primary,
-[data-tenant-theme="oro-vip"] .btn-kyrios-primary {
-  background-color: #D4AF37 !important;
-  border-color: #D4AF37 !important;
-  color: #000000 !important;
-  font-weight: 750 !important;
-  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.35) !important;
-}
-
-[data-tenant-theme="oro-vip"] .btn-primary:hover,
-[data-tenant-theme="oro-vip"] .btn-kyrios-primary:hover {
-  background-color: #b59226 !important;
-  border-color: #b59226 !important;
-  color: #000000 !important;
-}
-
-[data-tenant-theme="oro-vip"] .booking-stepper-segment.is-active {
-  background: #D4AF37 !important;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.6) !important;
-}
-
-[data-tenant-theme="oro-vip"] .booking-card--selected {
-  border-color: #D4AF37 !important;
-  box-shadow: 0 0 0 2px #D4AF37, 0 12px 28px rgba(212, 175, 55, 0.25) !important;
-  background-color: rgba(212, 175, 55, 0.05) !important;
-}
-
-[data-tenant-theme="oro-vip"] .btn-dark {
-  background-color: #D4AF37 !important;
-  border-color: #D4AF37 !important;
-  color: #000000 !important;
-  font-weight: 750 !important;
+/* ── Botones secundarios en Modo Claro y Oscuro Cyber Lime ── */
+[data-theme="light"][data-tenant-theme="cyber-lime"] a.btn-outline-secondary,
+[data-theme="light"][data-tenant-theme="cyber-lime"] button.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] a.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] button.btn-outline-secondary {
   border-radius: 9999px !important;
-  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3) !important;
-}
-
-[data-tenant-theme="oro-vip"] .btn-dark:hover {
-  background-color: #b59226 !important;
-  border-color: #b59226 !important;
-  color: #000000 !important;
-}
-
-[data-tenant-theme="oro-vip"] .usuarios-tabs-container button[aria-selected="true"],
-[data-tenant-theme="oro-vip"] .usuarios-tabs-container .btn-dark {
-  background-color: #D4AF37 !important;
-  border-color: #D4AF37 !important;
-  color: #000000 !important;
-  border-radius: 9999px !important;
-}
-
-[data-tenant-theme="oro-vip"] .form-control:focus,
-[data-tenant-theme="oro-vip"] .form-select:focus {
-  border-color: #D4AF37 !important;
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25) !important;
-}
-
-[data-tenant-theme="oro-vip"] .form-check-input:checked {
-  background-color: #D4AF37 !important;
-  border-color: #D4AF37 !important;
-}
-
-/* Dashboard: Atajos y Tarjetas en Oro VIP (Modo Oscuro) */
-[data-theme="dark"][data-tenant-theme="oro-vip"] .dash-shortcut-card,
-[data-bs-theme="dark"][data-tenant-theme="oro-vip"] .dash-shortcut-card,
-[data-tenant-theme="oro-vip"]:not([data-theme="light"]):not([data-bs-theme="light"]) .dash-shortcut-card {
-  border-radius: 20px !important;
-  background: #141311 !important;
-  border: 1px solid rgba(212, 175, 55, 0.22) !important;
-  border-left: 4px solid #D4AF37 !important;
-  color: #ffffff !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
-  transition: all 0.25s ease !important;
-}
-
-[data-theme="dark"][data-tenant-theme="oro-vip"] .dash-shortcut-card:hover,
-[data-bs-theme="dark"][data-tenant-theme="oro-vip"] .dash-shortcut-card:hover,
-[data-tenant-theme="oro-vip"]:not([data-theme="light"]):not([data-bs-theme="light"]) .dash-shortcut-card:hover {
-  transform: translateY(-3px);
-  border-color: #D4AF37 !important;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.2) !important;
-}
-
-[data-theme="dark"][data-tenant-theme="oro-vip"] .dash-shortcut-card__icon,
-[data-bs-theme="dark"][data-tenant-theme="oro-vip"] .dash-shortcut-card__icon,
-[data-tenant-theme="oro-vip"]:not([data-theme="light"]):not([data-bs-theme="light"]) .dash-shortcut-card__icon {
-  border-radius: 12px !important;
-  background: rgba(212, 175, 55, 0.15) !important;
-  color: #D4AF37 !important;
-}
-
-/* Dashboard en Modo Claro para Oro VIP */
-[data-theme="light"][data-tenant-theme="oro-vip"] .dash-shortcut-card,
-[data-bs-theme="light"][data-tenant-theme="oro-vip"] .dash-shortcut-card,
-[data-theme="light"] [data-tenant-theme="oro-vip"] .dash-shortcut-card,
-[data-bs-theme="light"] [data-tenant-theme="oro-vip"] .dash-shortcut-card {
-  border-radius: 20px !important;
+  border: 1.5px solid #16a34a !important;
+  color: #166534 !important;
   background: #ffffff !important;
-  border: 1px solid rgba(212, 175, 55, 0.22) !important;
-  border-left: 4px solid #D4AF37 !important;
-  color: #1c1917 !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04) !important;
-  transition: all 0.25s ease !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1.1rem !important;
 }
 
-[data-theme="light"][data-tenant-theme="oro-vip"] .dash-shortcut-card:hover,
-[data-bs-theme="light"][data-tenant-theme="oro-vip"] .dash-shortcut-card:hover,
-[data-theme="light"] [data-tenant-theme="oro-vip"] .dash-shortcut-card:hover,
-[data-bs-theme="light"] [data-tenant-theme="oro-vip"] .dash-shortcut-card:hover {
-  transform: translateY(-3px);
-  border-color: #D4AF37 !important;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08), 0 0 20px rgba(212, 175, 55, 0.15) !important;
+[data-theme="light"][data-tenant-theme="cyber-lime"] a.btn-outline-secondary:hover,
+[data-theme="light"][data-tenant-theme="cyber-lime"] button.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] a.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] button.btn-outline-secondary:hover {
+  background-color: #16a34a !important;
+  border-color: #16a34a !important;
+  color: #ffffff !important;
 }
 
-[data-theme="light"][data-tenant-theme="oro-vip"] .dash-shortcut-card__icon,
-[data-bs-theme="light"][data-tenant-theme="oro-vip"] .dash-shortcut-card__icon,
-[data-theme="light"] [data-tenant-theme="oro-vip"] .dash-shortcut-card__icon,
-[data-bs-theme="light"] [data-tenant-theme="oro-vip"] .dash-shortcut-card__icon {
-  border-radius: 12px !important;
-  background: rgba(212, 175, 55, 0.15) !important;
-  color: #b59226 !important;
+[data-theme="dark"][data-tenant-theme="cyber-lime"] a.btn-outline-secondary,
+[data-theme="dark"][data-tenant-theme="cyber-lime"] button.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="cyber-lime"] a.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="cyber-lime"] button.btn-outline-secondary,
+[data-tenant-theme="cyber-lime"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary,
+[data-tenant-theme="cyber-lime"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary {
+  border-radius: 9999px !important;
+  border: 1.5px solid rgba(34, 197, 94, 0.4) !important;
+  color: #22c55e !important;
+  background: rgba(34, 197, 94, 0.08) !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1.1rem !important;
+}
+
+[data-theme="dark"][data-tenant-theme="cyber-lime"] a.btn-outline-secondary:hover,
+[data-theme="dark"][data-tenant-theme="cyber-lime"] button.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="cyber-lime"] a.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="cyber-lime"] button.btn-outline-secondary:hover,
+[data-tenant-theme="cyber-lime"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary:hover,
+[data-tenant-theme="cyber-lime"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary:hover {
+  background-color: #22c55e !important;
+  border-color: #22c55e !important;
+  color: #000000 !important;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   3. TEMA: SUNSET CORAL / WARM AMBER (Estilo Cálido y Píldoras de la Imagen 2)
+   2. TEMA: SUNSET CORAL / WARM AMBER (Estilo Cálido y Píldoras de la Imagen 2)
    ══════════════════════════════════════════════════════════════════════════ */
 [data-tenant-theme="sunset-amber"] {
   --bs-primary: #ff6b35 !important;
   --bs-primary-rgb: 255, 107, 53 !important;
   --bs-primary-hover: #ea580c !important;
+
+  --tenant-accent: #ff6b35 !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(255, 107, 53, 0.45) !important;
 
   /* Kyrios Overrides */
   --k-blue: #ff6b35 !important;
@@ -984,6 +1112,59 @@
   box-shadow: 0 0 18px rgba(255, 107, 53, 0.55) !important;
 }
 
+/* Stepper activo y completado en Sunset Amber */
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current {
+  background: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 4px 18px rgba(255, 107, 53, 0.45) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done {
+  background: rgba(255, 107, 53, 0.1) !important;
+  border-color: rgba(255, 107, 53, 0.4) !important;
+  color: #ff6b35 !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done svg {
+  color: #ff6b35 !important;
+  stroke: #ff6b35 !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-card__check-indicator {
+  background: #ff6b35 !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(255, 107, 53, 0.45) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-barber-status-badge--selected,
+[data-tenant-theme="sunset-amber"] .booking-card--selected .badge {
+  background-color: #ff6b35 !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 2px 10px rgba(255, 107, 53, 0.35) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-primary-badge {
+  background-color: #ff6b35 !important;
+  color: #ffffff !important;
+}
+
 /* Badges e insignias */
 [data-tenant-theme="sunset-amber"] .booking-step-badge,
 [data-tenant-theme="sunset-amber"] .kyrios-badge,
@@ -1051,32 +1232,104 @@
 [data-tenant-theme="sunset-amber"] .booking-date-capsule {
   border-radius: 16px !important;
   min-height: 106px !important;
-  border: 1.5px solid rgba(255, 107, 53, 0.2) !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.25) !important;
 }
 
-[data-tenant-theme="sunset-amber"] .booking-date-capsule--selected {
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-bs-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-date-capsule:not(.booking-date-capsule--selected) {
+  background: #ffffff !important;
+  border-color: rgba(255, 107, 53, 0.28) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__month {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:disabled,
+[data-bs-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:disabled {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  opacity: 0.7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:disabled .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:disabled .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:disabled .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:disabled .booking-date-capsule__empty {
+  color: #94a3b8 !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-date-capsule--selected,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule--selected,
+[data-bs-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule--selected {
   background: linear-gradient(180deg, #ff6b35 0%, #ea580c 100%) !important;
   border-color: #ff6b35 !important;
   color: #ffffff !important;
-  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.45) !important;
+  box-shadow: 0 8px 24px rgba(255, 107, 53, 0.55), 0 0 0 2px #ff6b35 !important;
+  transform: none !important;
 }
 
 [data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__day,
 [data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__num,
-[data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__month {
+[data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__month {
   color: #ffffff !important;
+  font-weight: 850 !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__badge,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
 }
 
 [data-tenant-theme="sunset-amber"] .booking-slot-pill {
   border-radius: 14px !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.25) !important;
 }
 
-[data-tenant-theme="sunset-amber"] .booking-slot-pill--active {
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-bs-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-slot-pill:not(.booking-slot-pill--active) {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #64748b !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-slot-pill--active,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill--active,
+[data-bs-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill--active {
   background: #ff6b35 !important;
   border-color: #ff6b35 !important;
   color: #ffffff !important;
   font-weight: 750 !important;
   box-shadow: 0 4px 14px rgba(255, 107, 53, 0.4) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-slot-pill--active .booking-slot-time,
+[data-tenant-theme="sunset-amber"] .booking-slot-pill--active .booking-slot-end,
+[data-tenant-theme="sunset-amber"] .booking-slot-pill--active .booking-slot-check,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill--active .booking-slot-check {
+  color: #ffffff !important;
 }
 
 [data-tenant-theme="sunset-amber"] .booking-ticket::before {
@@ -1283,6 +1536,10 @@
   --bs-primary-rgb: 255, 107, 53 !important;
   --bs-primary-hover: #ea580c !important;
 
+  --tenant-accent: #ea580c !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(234, 88, 12, 0.25) !important;
+
   --k-blue: #ff6b35 !important;
   --k-blue-hover: #ea580c !important;
   --k-blue-glow: rgba(255, 107, 53, 0.25) !important;
@@ -1339,6 +1596,69 @@
   color: #c2410c !important;
   background: #ffedd5 !important;
   border: 1px solid #fed7aa !important;
+}
+
+/* Stepper y elementos seleccionados en Sunset Amber (Modo Claro) */
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current {
+  background: #ea580c !important;
+  border-color: #ea580c !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 4px 16px rgba(234, 88, 12, 0.35) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current svg,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done {
+  background: rgba(234, 88, 12, 0.08) !important;
+  border-color: rgba(234, 88, 12, 0.35) !important;
+  color: #c2410c !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done svg,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done svg {
+  color: #c2410c !important;
+  stroke: #c2410c !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-card__check-indicator,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-card__check-indicator {
+  background: #ea580c !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-card__check-indicator svg,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-barber-status-badge--selected,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-card--selected .badge,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-barber-status-badge--selected,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-card--selected .badge {
+  background-color: #ea580c !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-primary-badge,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-primary-badge {
+  background-color: #ea580c !important;
+  color: #ffffff !important;
 }
 
 [data-theme="light"][data-tenant-theme="sunset-amber"] .sidebar-nav-link.active,
@@ -1619,6 +1939,10 @@
   --bs-primary-rgb: 0, 210, 255 !important;
   --bs-primary-hover: #0099ff !important;
 
+  --tenant-accent: #00d2ff !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(0, 210, 255, 0.55) !important;
+
   /* Tipografía tecnológica futurista */
   --font-brand: 'Space Grotesk', 'Inter', sans-serif !important;
 
@@ -1849,6 +2173,59 @@
   box-shadow: 0 0 20px rgba(0, 210, 255, 0.6) !important;
 }
 
+/* Stepper activo y completado en Midnight Cyan */
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 18px rgba(0, 210, 255, 0.45) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done {
+  background: rgba(0, 210, 255, 0.1) !important;
+  border-color: rgba(0, 210, 255, 0.4) !important;
+  color: #00d2ff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done svg {
+  color: #00d2ff !important;
+  stroke: #00d2ff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-card__check-indicator {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(0, 210, 255, 0.45) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-barber-status-badge--selected,
+[data-tenant-theme="midnight-cyan"] .booking-card--selected .badge {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 2px 10px rgba(0, 210, 255, 0.35) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-primary-badge {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+}
+
 [data-tenant-theme="midnight-cyan"] .booking-step-badge,
 [data-tenant-theme="midnight-cyan"] .kyrios-badge,
 [data-tenant-theme="midnight-cyan"] .brand-badge,
@@ -1859,12 +2236,15 @@
   border-radius: 9999px !important;
 }
 
-/* Cápsulas de Fecha y Horas estilo Conexión Cyber de la imagen */
-[data-tenant-theme="midnight-cyan"] .booking-date-capsule {
+/* Cápsulas de Fecha y Horas estilo Conexión Cyber (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-date-capsule,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-date-capsule,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-date-capsule {
   border-radius: 20px !important;
   min-height: 108px !important;
   background: #0c1424 !important;
   border: 1.5px solid rgba(0, 210, 255, 0.2) !important;
+  color: #ffffff !important;
 }
 
 [data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected {
@@ -1881,10 +2261,25 @@
   font-weight: 850 !important;
 }
 
-[data-tenant-theme="midnight-cyan"] .booking-slot-pill {
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill {
   border-radius: 9999px !important;
   background: #0a1120 !important;
   border: 1.5px solid rgba(0, 210, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-time,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-time,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill .booking-slot-time {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-end,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-end,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill .booking-slot-end {
+  color: #94a3b8 !important;
 }
 
 [data-tenant-theme="midnight-cyan"] .booking-slot-pill--active {
@@ -1893,6 +2288,108 @@
   color: #ffffff !important;
   font-weight: 800 !important;
   box-shadow: 0 4px 18px rgba(0, 210, 255, 0.5) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-time,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-end,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-check {
+  color: #ffffff !important;
+}
+
+/* Cápsulas y Horarios en Modo Claro para Midnight Cyan */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) {
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.25) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__month {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  opacity: 0.7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__empty {
+  color: #94a3b8 !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected {
+  background: linear-gradient(180deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(0, 210, 255, 0.55), 0 0 0 2px #00d2ff !important;
+  transform: none !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__month {
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__badge,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active) {
+  border-radius: 9999px !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.25) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #64748b !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 18px rgba(0, 210, 255, 0.5) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-time,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-end,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-check,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-check {
+  color: #ffffff !important;
 }
 
 /* Dashboard: Atajos y Tarjetas con acabado azul medianoche */
@@ -2008,8 +2505,12 @@
   box-shadow: 0 0 14px rgba(0, 210, 255, 0.7) !important;
 }
 
-[data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
-[data-tenant-theme="midnight-cyan"] button.btn-outline-secondary {
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary {
   border-radius: 9999px !important;
   border: 1.5px solid rgba(0, 210, 255, 0.35) !important;
   color: #00d2ff !important;
@@ -2018,8 +2519,12 @@
   padding: 0.4rem 1.1rem !important;
 }
 
-[data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
-[data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover {
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary:hover,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary:hover {
   background-color: #00d2ff !important;
   border-color: #00d2ff !important;
   color: #000000 !important;
@@ -2091,6 +2596,10 @@
   --bs-primary-rgb: 2, 132, 199 !important;
   --bs-primary-hover: #0369a1 !important;
 
+  --tenant-accent: #0284c7 !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(2, 132, 199, 0.25) !important;
+
   --k-blue: #0284c7 !important;
   --k-blue-hover: #0369a1 !important;
   --k-blue-glow: rgba(2, 132, 199, 0.25) !important;
@@ -2144,6 +2653,69 @@
   border-color: #0284c7 !important;
   color: #ffffff !important;
   box-shadow: 0 4px 16px rgba(2, 132, 199, 0.3) !important;
+}
+
+/* Stepper y elementos seleccionados en Midnight Cyan (Modo Claro) */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current {
+  background: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current svg,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done {
+  background: rgba(2, 132, 199, 0.08) !important;
+  border-color: rgba(2, 132, 199, 0.35) !important;
+  color: #0369a1 !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done svg,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done svg {
+  color: #0369a1 !important;
+  stroke: #0369a1 !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-card__check-indicator,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-card__check-indicator {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-card__check-indicator svg,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-barber-status-badge--selected,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-card--selected .badge,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-barber-status-badge--selected,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-card--selected .badge {
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-primary-badge,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-primary-badge {
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
 }
 
 [data-theme="light"][data-tenant-theme="midnight-cyan"] .sidebar-nav-link.active,
@@ -2257,6 +2829,10 @@
   --bs-primary-rgb: 0, 210, 255 !important;
   --bs-primary-hover: #0099ff !important;
 
+  --tenant-accent: #00d2ff !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(0, 210, 255, 0.55) !important;
+
   /* Tipografía tecnológica futurista */
   --font-brand: 'Space Grotesk', 'Inter', sans-serif !important;
 
@@ -2487,6 +3063,59 @@
   box-shadow: 0 0 20px rgba(0, 210, 255, 0.6) !important;
 }
 
+/* Stepper activo y completado en Midnight Cyan */
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 18px rgba(0, 210, 255, 0.45) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done {
+  background: rgba(0, 210, 255, 0.1) !important;
+  border-color: rgba(0, 210, 255, 0.4) !important;
+  color: #00d2ff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done svg {
+  color: #00d2ff !important;
+  stroke: #00d2ff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-card__check-indicator {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(0, 210, 255, 0.45) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-barber-status-badge--selected,
+[data-tenant-theme="midnight-cyan"] .booking-card--selected .badge {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 2px 10px rgba(0, 210, 255, 0.35) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-primary-badge {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+}
+
 [data-tenant-theme="midnight-cyan"] .booking-step-badge,
 [data-tenant-theme="midnight-cyan"] .kyrios-badge,
 [data-tenant-theme="midnight-cyan"] .brand-badge,
@@ -2497,12 +3126,15 @@
   border-radius: 9999px !important;
 }
 
-/* Cápsulas de Fecha y Horas estilo Conexión Cyber de la imagen */
-[data-tenant-theme="midnight-cyan"] .booking-date-capsule {
+/* Cápsulas de Fecha y Horas estilo Conexión Cyber (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-date-capsule,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-date-capsule,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-date-capsule {
   border-radius: 20px !important;
   min-height: 108px !important;
   background: #0c1424 !important;
   border: 1.5px solid rgba(0, 210, 255, 0.2) !important;
+  color: #ffffff !important;
 }
 
 [data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected {
@@ -2519,10 +3151,25 @@
   font-weight: 850 !important;
 }
 
-[data-tenant-theme="midnight-cyan"] .booking-slot-pill {
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill {
   border-radius: 9999px !important;
   background: #0a1120 !important;
   border: 1.5px solid rgba(0, 210, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-time,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-time,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill .booking-slot-time {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-end,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-end,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill .booking-slot-end {
+  color: #94a3b8 !important;
 }
 
 [data-tenant-theme="midnight-cyan"] .booking-slot-pill--active {
@@ -2531,6 +3178,108 @@
   color: #ffffff !important;
   font-weight: 800 !important;
   box-shadow: 0 4px 18px rgba(0, 210, 255, 0.5) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-time,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-end,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-check {
+  color: #ffffff !important;
+}
+
+/* Cápsulas y Horarios en Modo Claro para Midnight Cyan */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) {
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.25) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__month {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  opacity: 0.7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__empty {
+  color: #94a3b8 !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected {
+  background: linear-gradient(180deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(0, 210, 255, 0.55), 0 0 0 2px #00d2ff !important;
+  transform: none !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__month {
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__badge,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active) {
+  border-radius: 9999px !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.25) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #64748b !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 18px rgba(0, 210, 255, 0.5) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-time,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-end,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-check,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-check {
+  color: #ffffff !important;
 }
 
 /* Dashboard: Atajos y Tarjetas con acabado azul medianoche */
@@ -2646,8 +3395,12 @@
   box-shadow: 0 0 14px rgba(0, 210, 255, 0.7) !important;
 }
 
-[data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
-[data-tenant-theme="midnight-cyan"] button.btn-outline-secondary {
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary {
   border-radius: 9999px !important;
   border: 1.5px solid rgba(0, 210, 255, 0.35) !important;
   color: #00d2ff !important;
@@ -2656,8 +3409,12 @@
   padding: 0.4rem 1.1rem !important;
 }
 
-[data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
-[data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover {
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary:hover,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary:hover {
   background-color: #00d2ff !important;
   border-color: #00d2ff !important;
   color: #000000 !important;
@@ -2729,6 +3486,10 @@
   --bs-primary-rgb: 2, 132, 199 !important;
   --bs-primary-hover: #0369a1 !important;
 
+  --tenant-accent: #0284c7 !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(2, 132, 199, 0.25) !important;
+
   --k-blue: #0284c7 !important;
   --k-blue-hover: #0369a1 !important;
   --k-blue-glow: rgba(2, 132, 199, 0.25) !important;
@@ -2782,6 +3543,69 @@
   border-color: #0284c7 !important;
   color: #ffffff !important;
   box-shadow: 0 4px 16px rgba(2, 132, 199, 0.3) !important;
+}
+
+/* Stepper y elementos seleccionados en Midnight Cyan (Modo Claro) */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current {
+  background: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current svg,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done {
+  background: rgba(2, 132, 199, 0.08) !important;
+  border-color: rgba(2, 132, 199, 0.35) !important;
+  color: #0369a1 !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done svg,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done svg {
+  color: #0369a1 !important;
+  stroke: #0369a1 !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-card__check-indicator,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-card__check-indicator {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-card__check-indicator svg,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-barber-status-badge--selected,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-card--selected .badge,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-barber-status-badge--selected,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-card--selected .badge {
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-primary-badge,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-primary-badge {
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
 }
 
 [data-theme="light"][data-tenant-theme="midnight-cyan"] .sidebar-nav-link.active,
@@ -2857,6 +3681,10 @@
   --bs-primary: #ef233c !important;
   --bs-primary-rgb: 239, 35, 60 !important;
   --bs-primary-hover: #d90429 !important;
+
+  --tenant-accent: #ef233c !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(239, 35, 60, 0.55) !important;
 
   /* Tipografía editorial de alta costura */
   --font-brand: 'Playfair Display', Georgia, serif !important;
@@ -3090,6 +3918,59 @@
   box-shadow: 0 0 20px rgba(239, 35, 60, 0.6) !important;
 }
 
+/* Stepper activo y completado en Crimson Velvet */
+[data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-current {
+  background: linear-gradient(135deg, #ef233c 0%, #d90429 100%) !important;
+  border-color: #ef233c !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 4px 18px rgba(239, 35, 60, 0.45) !important;
+}
+
+[data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-done {
+  background: rgba(239, 35, 60, 0.1) !important;
+  border-color: rgba(239, 35, 60, 0.4) !important;
+  color: #ef233c !important;
+}
+
+[data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-done svg {
+  color: #ef233c !important;
+  stroke: #ef233c !important;
+}
+
+[data-tenant-theme="crimson-velvet"] .booking-card__check-indicator {
+  background: #ef233c !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(239, 35, 60, 0.45) !important;
+}
+
+[data-tenant-theme="crimson-velvet"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="crimson-velvet"] .booking-barber-status-badge--selected,
+[data-tenant-theme="crimson-velvet"] .booking-card--selected .badge {
+  background-color: #ef233c !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 2px 10px rgba(239, 35, 60, 0.35) !important;
+}
+
+[data-tenant-theme="crimson-velvet"] .booking-primary-badge {
+  background-color: #ef233c !important;
+  color: #ffffff !important;
+}
+
 [data-tenant-theme="crimson-velvet"] .booking-step-badge,
 [data-tenant-theme="crimson-velvet"] .kyrios-badge,
 [data-tenant-theme="crimson-velvet"] .brand-badge,
@@ -3100,19 +3981,23 @@
   border-radius: 9999px !important;
 }
 
-/* Cápsulas de Fecha y Horas estilo Glow Velvet */
-[data-tenant-theme="crimson-velvet"] .booking-date-capsule {
+/* Cápsulas de Fecha y Horas estilo Glow Velvet (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="crimson-velvet"] .booking-date-capsule,
+[data-bs-theme="dark"][data-tenant-theme="crimson-velvet"] .booking-date-capsule,
+[data-tenant-theme="crimson-velvet"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-date-capsule {
   border-radius: 20px !important;
   min-height: 108px !important;
   background: #17080b !important;
   border: 1.5px solid rgba(239, 35, 60, 0.25) !important;
+  color: #ffffff !important;
 }
 
 [data-tenant-theme="crimson-velvet"] .booking-date-capsule--selected {
   background: linear-gradient(180deg, #ef233c 0%, #9b111e 100%) !important;
   border-color: #ef233c !important;
   color: #ffffff !important;
-  box-shadow: 0 0 22px rgba(239, 35, 60, 0.65) !important;
+  box-shadow: 0 8px 24px rgba(239, 35, 60, 0.65), 0 0 0 2px #ef233c !important;
+  transform: none !important;
 }
 
 [data-tenant-theme="crimson-velvet"] .booking-date-capsule--selected .booking-date-capsule__day,
@@ -3122,18 +4007,141 @@
   font-weight: 850 !important;
 }
 
-[data-tenant-theme="crimson-velvet"] .booking-slot-pill {
+[data-tenant-theme="crimson-velvet"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-theme="dark"][data-tenant-theme="crimson-velvet"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-bs-theme="dark"][data-tenant-theme="crimson-velvet"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-tenant-theme="crimson-velvet"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill:not(.booking-slot-pill--active) {
   border-radius: 14px !important;
   background: #150609 !important;
   border: 1.5px solid rgba(239, 35, 60, 0.25) !important;
+  color: #ffffff !important;
 }
 
-[data-tenant-theme="crimson-velvet"] .booking-slot-pill--active {
+[data-theme="dark"][data-tenant-theme="crimson-velvet"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time,
+[data-bs-theme="dark"][data-tenant-theme="crimson-velvet"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time,
+[data-tenant-theme="crimson-velvet"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="crimson-velvet"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end,
+[data-bs-theme="dark"][data-tenant-theme="crimson-velvet"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end,
+[data-tenant-theme="crimson-velvet"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #94a3b8 !important;
+}
+
+[data-tenant-theme="crimson-velvet"] .booking-slot-pill--active,
+[data-theme="dark"][data-tenant-theme="crimson-velvet"] .booking-slot-pill--active,
+[data-bs-theme="dark"][data-tenant-theme="crimson-velvet"] .booking-slot-pill--active {
   background: linear-gradient(135deg, #ef233c 0%, #d90429 100%) !important;
   border-color: #ef233c !important;
   color: #ffffff !important;
   font-weight: 800 !important;
   box-shadow: 0 4px 18px rgba(239, 35, 60, 0.5) !important;
+}
+
+[data-tenant-theme="crimson-velvet"] .booking-slot-pill--active .booking-slot-time,
+[data-tenant-theme="crimson-velvet"] .booking-slot-pill--active .booking-slot-end,
+[data-tenant-theme="crimson-velvet"] .booking-slot-pill--active .booking-slot-check,
+[data-theme="dark"][data-tenant-theme="crimson-velvet"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="dark"][data-tenant-theme="crimson-velvet"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="dark"][data-tenant-theme="crimson-velvet"] .booking-slot-pill--active .booking-slot-check {
+  color: #ffffff !important;
+}
+
+/* Cápsulas y Horarios en Modo Claro para Crimson Velvet */
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-bs-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-date-capsule:not(.booking-date-capsule--selected) {
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(239, 35, 60, 0.25) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__month {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule:disabled,
+[data-bs-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule:disabled {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  opacity: 0.7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule:disabled .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule:disabled .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule:disabled .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule:disabled .booking-date-capsule__empty {
+  color: #94a3b8 !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule--selected,
+[data-bs-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule--selected,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-date-capsule--selected {
+  background: linear-gradient(180deg, #ef233c 0%, #9b111e 100%) !important;
+  border-color: #ef233c !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(239, 35, 60, 0.6), 0 0 0 2px #ef233c !important;
+  transform: none !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule--selected .booking-date-capsule__month {
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-bs-theme="light"][data-tenant-theme="crimson-velvet"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-slot-pill:not(.booking-slot-pill--active) {
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(239, 35, 60, 0.25) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #64748b !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-slot-pill--active,
+[data-bs-theme="light"][data-tenant-theme="crimson-velvet"] .booking-slot-pill--active,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-slot-pill--active {
+  background: linear-gradient(135deg, #ef233c 0%, #d90429 100%) !important;
+  border-color: #ef233c !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 18px rgba(239, 35, 60, 0.5) !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-slot-pill--active .booking-slot-check {
+  color: #ffffff !important;
 }
 
 /* Dashboard: Atajos y Tarjetas */
@@ -3250,8 +4258,12 @@
   box-shadow: 0 0 14px rgba(239, 35, 60, 0.75) !important;
 }
 
-[data-tenant-theme="crimson-velvet"] a.btn-outline-secondary,
-[data-tenant-theme="crimson-velvet"] button.btn-outline-secondary {
+[data-theme="dark"][data-tenant-theme="crimson-velvet"] a.btn-outline-secondary,
+[data-theme="dark"][data-tenant-theme="crimson-velvet"] button.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="crimson-velvet"] a.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="crimson-velvet"] button.btn-outline-secondary,
+[data-tenant-theme="crimson-velvet"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary,
+[data-tenant-theme="crimson-velvet"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary {
   border-radius: 9999px !important;
   border: 1.5px solid rgba(239, 35, 60, 0.4) !important;
   color: #ff4d6d !important;
@@ -3260,8 +4272,12 @@
   padding: 0.4rem 1.1rem !important;
 }
 
-[data-tenant-theme="crimson-velvet"] a.btn-outline-secondary:hover,
-[data-tenant-theme="crimson-velvet"] button.btn-outline-secondary:hover {
+[data-theme="dark"][data-tenant-theme="crimson-velvet"] a.btn-outline-secondary:hover,
+[data-theme="dark"][data-tenant-theme="crimson-velvet"] button.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="crimson-velvet"] a.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="crimson-velvet"] button.btn-outline-secondary:hover,
+[data-tenant-theme="crimson-velvet"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary:hover,
+[data-tenant-theme="crimson-velvet"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary:hover {
   background-color: #ef233c !important;
   border-color: #ef233c !important;
   color: #ffffff !important;
@@ -3332,6 +4348,10 @@
   --bs-primary: #e11d48 !important;
   --bs-primary-rgb: 225, 29, 72 !important;
   --bs-primary-hover: #be123c !important;
+
+  --tenant-accent: #e11d48 !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(225, 29, 72, 0.25) !important;
 
   --k-blue: #e11d48 !important;
   --k-blue-hover: #be123c !important;
@@ -3447,6 +4467,68 @@
   color: #ffffff !important;
 }
 
+/* Stepper y elementos seleccionados en Crimson Velvet (Modo Claro) */
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-current,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-current {
+  background: #e11d48 !important;
+  border-color: #e11d48 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(225, 29, 72, 0.35) !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-current svg,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-done,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-done {
+  background: rgba(225, 29, 72, 0.08) !important;
+  border-color: rgba(225, 29, 72, 0.35) !important;
+  color: #be123c !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-done svg,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-stepper__step.is-done svg {
+  color: #be123c !important;
+  stroke: #be123c !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-card__check-indicator,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-card__check-indicator {
+  background: #e11d48 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-card__check-indicator svg,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-barber-status-badge--selected,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-card--selected .badge,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-barber-status-badge--selected,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-card--selected .badge {
+  background-color: #e11d48 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .booking-primary-badge,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .booking-primary-badge {
+  background-color: #e11d48 !important;
+  color: #ffffff !important;
+}
+
 [data-theme="light"][data-tenant-theme="crimson-velvet"] .sidebar-nav-link.active,
 [data-theme="light"] [data-tenant-theme="crimson-velvet"] .sidebar-nav-link.active {
   background: #ffe4e6 !important;
@@ -3499,6 +4581,10 @@
   --bs-primary: #ffffff !important;
   --bs-primary-rgb: 255, 255, 255 !important;
   --bs-primary-hover: #e4e4e7 !important;
+
+  --tenant-accent: #ffffff !important;
+  --tenant-btn-text: #000000 !important;
+  --tenant-glow: rgba(255, 255, 255, 0.35) !important;
 
   /* Tipografía limpia, seria y arquitectónica */
   --font-brand: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif !important;
@@ -3733,6 +4819,61 @@
   box-shadow: 0 0 16px rgba(255, 255, 255, 0.5) !important;
 }
 
+/* Stepper activo y completado en Monochrome Noir (Modo Oscuro) */
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.35) !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #ffffff !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-card__check-indicator {
+  background: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: 0 3px 10px rgba(255, 255, 255, 0.35) !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-card__check-indicator svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-barber-status-badge--selected,
+[data-tenant-theme="monochrome-noir"] .booking-card--selected .badge {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 850 !important;
+  border: 1px solid #ffffff !important;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.35) !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-primary-badge {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 850 !important;
+}
+
 [data-tenant-theme="monochrome-noir"] .booking-step-badge,
 [data-tenant-theme="monochrome-noir"] .kyrios-badge,
 [data-tenant-theme="monochrome-noir"] .brand-badge,
@@ -3743,47 +4884,96 @@
   border-radius: 9999px !important;
 }
 
-/* Cápsulas de Fecha estilo John's Barbershop (14-18 sep) */
-[data-tenant-theme="monochrome-noir"] .booking-date-capsule {
+/* Cápsulas de Fecha estilo John's Barbershop (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-date-capsule:not(.booking-date-capsule--selected) {
   border-radius: 16px !important;
   min-height: 104px !important;
   background: #111114 !important;
   border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
 }
 
-[data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected {
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:disabled,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:disabled,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-date-capsule:disabled {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  color: #64748b !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-date-capsule--selected {
   background: #ffffff !important;
   border-color: #ffffff !important;
   color: #000000 !important;
-  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.35) !important;
+  transform: none !important;
 }
 
 [data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__day,
 [data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__num,
-[data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__month {
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__month,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__month {
   color: #000000 !important;
-  font-weight: 900 !important;
+  font-weight: 850 !important;
+  opacity: 1 !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__badge,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid #000000 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
 /* Horarios en modo oscuro: Cuadrícula limpia */
-[data-tenant-theme="monochrome-noir"] .booking-slot-pill {
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill:not(.booking-slot-pill--active) {
   border-radius: 12px !important;
   background: #111114 !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   color: #ffffff !important;
 }
 
-[data-tenant-theme="monochrome-noir"] .booking-slot-pill--active {
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #94a3b8 !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-slot-pill--active,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active {
   background: #ffffff !important;
   border-color: #ffffff !important;
   color: #000000 !important;
   font-weight: 800 !important;
-  box-shadow: 0 2px 14px rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.35) !important;
 }
 
+[data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-time,
 [data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-end,
-[data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-check {
+[data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-check,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-check {
   color: #000000 !important;
+  font-weight: 750 !important;
 }
 
 /* Dashboard: Atajos y Tarjetas (Modo Oscuro) */
@@ -3910,8 +5100,12 @@
   border-color: #ffffff !important;
 }
 
-[data-tenant-theme="monochrome-noir"] a.btn-outline-secondary,
-[data-tenant-theme="monochrome-noir"] button.btn-outline-secondary {
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] a.btn-outline-secondary,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] button.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] a.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] button.btn-outline-secondary,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary {
   border-radius: 9999px !important;
   border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
   color: #ffffff !important;
@@ -3920,8 +5114,12 @@
   padding: 0.4rem 1.1rem !important;
 }
 
-[data-tenant-theme="monochrome-noir"] a.btn-outline-secondary:hover,
-[data-tenant-theme="monochrome-noir"] button.btn-outline-secondary:hover {
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] a.btn-outline-secondary:hover,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] button.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] a.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] button.btn-outline-secondary:hover,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary:hover,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary:hover {
   background-color: #ffffff !important;
   border-color: #ffffff !important;
   color: #000000 !important;
@@ -3993,6 +5191,10 @@
   --bs-primary: #000000 !important;
   --bs-primary-rgb: 0, 0, 0 !important;
   --bs-primary-hover: #18181b !important;
+
+  --tenant-accent: #000000 !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(0, 0, 0, 0.25) !important;
 
   --tenant-color-primario: #000000 !important;
   --k-blue: #000000 !important;
@@ -4378,11 +5580,24 @@
 }
 
 /* Cápsulas de Fecha en Modo Claro (14 Sat = Negro sólido con letras blancas) */
-[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule,
-[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-date-capsule {
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-date-capsule:not(.booking-date-capsule--selected) {
   background: #ffffff !important;
   border: 1px solid #e4e4e7 !important;
   color: #18181b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__month {
+  color: #18181b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:disabled,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-date-capsule:disabled {
+  background: #f4f4f5 !important;
+  border-color: #e4e4e7 !important;
+  color: #a1a1aa !important;
 }
 
 [data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected,
@@ -4390,7 +5605,8 @@
   background: #000000 !important;
   border-color: #000000 !important;
   color: #ffffff !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+  transform: none !important;
 }
 
 [data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__day,
@@ -4403,12 +5619,32 @@
   font-weight: 900 !important;
 }
 
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__badge,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
+}
+
 /* Horarios en Modo Claro (8:00 = Negro sólido) */
-[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill,
-[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-slot-pill {
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) {
   background: #ffffff !important;
   border: 1px solid #e4e4e7 !important;
   color: #18181b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #18181b !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #71717a !important;
 }
 
 [data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active,
@@ -4417,7 +5653,85 @@
   border-color: #000000 !important;
   color: #ffffff !important;
   font-weight: 800 !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-check,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-check {
+  color: #ffffff !important;
+  font-weight: 750 !important;
+}
+
+/* Stepper y elementos seleccionados en Monochrome Noir (Modo Claro) */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current {
+  background: #000000 !important;
+  border-color: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current svg,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.25) !important;
+  color: #000000 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done svg,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-card__check-indicator,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-card__check-indicator {
+  background: #000000 !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-card__check-indicator svg,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-barber-status-badge--selected,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-card--selected .badge,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-barber-status-badge--selected,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-card--selected .badge {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+  border: 1px solid #000000 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-primary-badge,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-primary-badge {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
 }
 
 /* Sidebar activo en Modo Claro */
@@ -4539,45 +5853,6 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
 }
 
-/* 2. ORO CHAMPAGNE (Luxury): Botones outline */
-[data-tenant-theme="oro-vip"] .btn-outline-primary,
-[data-tenant-theme="oro-vip"] .btn-kyrios-outline {
-  border: 1.5px solid #D4AF37 !important;
-  color: #D4AF37 !important;
-  background: transparent !important;
-  border-radius: 9999px !important;
-  font-weight: 700 !important;
-}
-[data-tenant-theme="oro-vip"] .btn-outline-primary:hover,
-[data-tenant-theme="oro-vip"] .btn-kyrios-outline:hover {
-  background-color: #D4AF37 !important;
-  border-color: #D4AF37 !important;
-  color: #000000 !important;
-  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4) !important;
-}
-[data-theme="light"][data-tenant-theme="oro-vip"] .btn-outline-primary,
-[data-theme="light"] [data-tenant-theme="oro-vip"] .btn-outline-primary,
-[data-bs-theme="light"][data-tenant-theme="oro-vip"] .btn-outline-primary,
-[data-bs-theme="light"] [data-tenant-theme="oro-vip"] .btn-outline-primary,
-[data-tenant-theme="oro-vip"] .bg-body-tertiary .btn-outline-primary,
-[data-tenant-theme="oro-vip"] .bg-white .btn-outline-primary,
-[data-tenant-theme="oro-vip"] .card .btn-outline-primary {
-  border: 1.5px solid #967417 !important;
-  color: #967417 !important;
-  background: transparent !important;
-}
-[data-theme="light"][data-tenant-theme="oro-vip"] .btn-outline-primary:hover,
-[data-theme="light"] [data-tenant-theme="oro-vip"] .btn-outline-primary:hover,
-[data-bs-theme="light"][data-tenant-theme="oro-vip"] .btn-outline-primary:hover,
-[data-bs-theme="light"] [data-tenant-theme="oro-vip"] .btn-outline-primary:hover,
-[data-tenant-theme="oro-vip"] .bg-body-tertiary .btn-outline-primary:hover,
-[data-tenant-theme="oro-vip"] .bg-white .btn-outline-primary:hover,
-[data-tenant-theme="oro-vip"] .card .btn-outline-primary:hover {
-  background-color: #967417 !important;
-  border-color: #967417 !important;
-  color: #ffffff !important;
-}
-
 /* 3. MIDNIGHT CYAN: Botones outline en Modo Claro */
 [data-theme="light"][data-tenant-theme="midnight-cyan"] .btn-outline-primary,
 [data-theme="light"] [data-tenant-theme="midnight-cyan"] .btn-outline-primary,
@@ -4649,3 +5924,413 @@
   border-color: #b91c1c !important;
   color: #ffffff !important;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PESTAÑAS, BADGES Y BOTONES DE MODALES SEGÚN TEMA Y MODO (CLARO / OSCURO)
+   Garantiza contraste óptimo y legibilidad (WCAG AAA) en todos los componentes
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. CYBER LIME ── */
+[data-tenant-theme="cyber-lime"] .barber-modal-pill.active {
+  background-color: #22c55e !important;
+  color: #000000 !important;
+  border-color: #22c55e !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.45) !important;
+}
+[data-tenant-theme="cyber-lime"] .barber-modal-cta-primary-btn,
+[data-tenant-theme="cyber-lime"] .barber-modal-service-cta-badge,
+[data-tenant-theme="cyber-lime"] .service-modal-btn-cta,
+[data-tenant-theme="cyber-lime"] .btn-kyrios-agendar {
+  background-color: #22c55e !important;
+  border-color: #22c55e !important;
+  color: #000000 !important;
+  font-weight: 850 !important;
+}
+[data-tenant-theme="cyber-lime"] .auth-split__tab-btn.is-active,
+[data-tenant-theme="cyber-lime"] .reservas-tab-btn.is-active {
+  background-color: #22c55e !important;
+  color: #000000 !important;
+  font-weight: 850 !important;
+}
+[data-tenant-theme="cyber-lime"] .auth-split__brand-badge {
+  background: rgba(34, 197, 94, 0.14) !important;
+  border: 1px solid rgba(34, 197, 94, 0.35) !important;
+  color: #22c55e !important;
+}
+
+[data-theme="light"][data-tenant-theme="cyber-lime"] .barber-modal-pill.active,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .barber-modal-pill.active,
+[data-bs-theme="light"][data-tenant-theme="cyber-lime"] .barber-modal-pill.active,
+[data-bs-theme="light"] [data-tenant-theme="cyber-lime"] .barber-modal-pill.active {
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+  border-color: #16a34a !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3) !important;
+}
+[data-theme="light"][data-tenant-theme="cyber-lime"] .barber-modal-cta-primary-btn,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .barber-modal-service-cta-badge,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .service-modal-btn-cta,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .btn-kyrios-agendar,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .barber-modal-cta-primary-btn,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .barber-modal-service-cta-badge,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .service-modal-btn-cta,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .btn-kyrios-agendar {
+  background-color: #16a34a !important;
+  border-color: #16a34a !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-theme="light"][data-tenant-theme="cyber-lime"] .auth-split__tab-btn.is-active,
+[data-theme="light"][data-tenant-theme="cyber-lime"] .reservas-tab-btn.is-active,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .auth-split__tab-btn.is-active,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .reservas-tab-btn.is-active {
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-theme="light"][data-tenant-theme="cyber-lime"] .auth-split__form-panel .auth-split__brand-badge,
+[data-theme="light"] [data-tenant-theme="cyber-lime"] .auth-split__form-panel .auth-split__brand-badge,
+[data-bs-theme="light"][data-tenant-theme="cyber-lime"] .auth-split__form-panel .auth-split__brand-badge,
+[data-bs-theme="light"] [data-tenant-theme="cyber-lime"] .auth-split__form-panel .auth-split__brand-badge {
+  background: rgba(22, 163, 74, 0.12) !important;
+  border: 1px solid rgba(22, 163, 74, 0.28) !important;
+  color: #15803d !important;
+  font-weight: 750 !important;
+}
+
+/* ── 2. SUNSET AMBER ── */
+[data-tenant-theme="sunset-amber"] .barber-modal-pill.active {
+  background-color: #ff6b35 !important;
+  color: #ffffff !important;
+  border-color: #ff6b35 !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 14px rgba(255, 107, 53, 0.45) !important;
+}
+[data-tenant-theme="sunset-amber"] .barber-modal-cta-primary-btn,
+[data-tenant-theme="sunset-amber"] .barber-modal-service-cta-badge,
+[data-tenant-theme="sunset-amber"] .service-modal-btn-cta,
+[data-tenant-theme="sunset-amber"] .btn-kyrios-agendar {
+  background-color: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-tenant-theme="sunset-amber"] .auth-split__tab-btn.is-active,
+[data-tenant-theme="sunset-amber"] .reservas-tab-btn.is-active {
+  background-color: #ff6b35 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-tenant-theme="sunset-amber"] .auth-split__brand-badge {
+  background: rgba(255, 107, 53, 0.14) !important;
+  border: 1px solid rgba(255, 107, 53, 0.35) !important;
+  color: #ff6b35 !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .barber-modal-pill.active,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .barber-modal-pill.active,
+[data-bs-theme="light"][data-tenant-theme="sunset-amber"] .barber-modal-pill.active,
+[data-bs-theme="light"] [data-tenant-theme="sunset-amber"] .barber-modal-pill.active {
+  background-color: #ea580c !important;
+  color: #ffffff !important;
+  border-color: #ea580c !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3) !important;
+}
+[data-theme="light"][data-tenant-theme="sunset-amber"] .barber-modal-cta-primary-btn,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .barber-modal-service-cta-badge,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .service-modal-btn-cta,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .btn-kyrios-agendar,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .barber-modal-cta-primary-btn,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .barber-modal-service-cta-badge,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .service-modal-btn-cta,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .btn-kyrios-agendar {
+  background-color: #ea580c !important;
+  border-color: #ea580c !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-theme="light"][data-tenant-theme="sunset-amber"] .auth-split__tab-btn.is-active,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .reservas-tab-btn.is-active,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .auth-split__tab-btn.is-active,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .reservas-tab-btn.is-active {
+  background-color: #ea580c !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-theme="light"][data-tenant-theme="sunset-amber"] .auth-split__form-panel .auth-split__brand-badge,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .auth-split__form-panel .auth-split__brand-badge,
+[data-bs-theme="light"][data-tenant-theme="sunset-amber"] .auth-split__form-panel .auth-split__brand-badge,
+[data-bs-theme="light"] [data-tenant-theme="sunset-amber"] .auth-split__form-panel .auth-split__brand-badge {
+  background: rgba(234, 88, 12, 0.1) !important;
+  border: 1px solid rgba(234, 88, 12, 0.28) !important;
+  color: #c2410c !important;
+  font-weight: 750 !important;
+}
+
+/* ── 3. MIDNIGHT CYAN ── */
+[data-tenant-theme="midnight-cyan"] .barber-modal-pill.active {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+  border-color: #00d2ff !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 14px rgba(0, 210, 255, 0.45) !important;
+}
+[data-tenant-theme="midnight-cyan"] .barber-modal-cta-primary-btn,
+[data-tenant-theme="midnight-cyan"] .barber-modal-service-cta-badge,
+[data-tenant-theme="midnight-cyan"] .service-modal-btn-cta,
+[data-tenant-theme="midnight-cyan"] .btn-kyrios-agendar {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-tenant-theme="midnight-cyan"] .auth-split__tab-btn.is-active,
+[data-tenant-theme="midnight-cyan"] .reservas-tab-btn.is-active {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-tenant-theme="midnight-cyan"] .auth-split__brand-badge {
+  background: rgba(0, 210, 255, 0.14) !important;
+  border: 1px solid rgba(0, 210, 255, 0.38) !important;
+  color: #00d2ff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .barber-modal-pill.active,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .barber-modal-pill.active,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .barber-modal-pill.active,
+[data-bs-theme="light"] [data-tenant-theme="midnight-cyan"] .barber-modal-pill.active {
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
+  border-color: #0284c7 !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3) !important;
+}
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .barber-modal-cta-primary-btn,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .barber-modal-service-cta-badge,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .service-modal-btn-cta,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .btn-kyrios-agendar,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .barber-modal-cta-primary-btn,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .barber-modal-service-cta-badge,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .service-modal-btn-cta,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .btn-kyrios-agendar {
+  background-color: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .auth-split__tab-btn.is-active,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .reservas-tab-btn.is-active,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .auth-split__tab-btn.is-active,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .reservas-tab-btn.is-active {
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .auth-split__form-panel .auth-split__brand-badge,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .auth-split__form-panel .auth-split__brand-badge,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .auth-split__form-panel .auth-split__brand-badge,
+[data-bs-theme="light"] [data-tenant-theme="midnight-cyan"] .auth-split__form-panel .auth-split__brand-badge {
+  background: rgba(2, 132, 199, 0.1) !important;
+  border: 1px solid rgba(2, 132, 199, 0.28) !important;
+  color: #0369a1 !important;
+  font-weight: 750 !important;
+}
+
+/* ── 4. CRIMSON VELVET ── */
+[data-tenant-theme="crimson-velvet"] .barber-modal-pill.active {
+  background: linear-gradient(135deg, #ef233c 0%, #a00020 100%) !important;
+  color: #ffffff !important;
+  border-color: #ef233c !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 14px rgba(239, 35, 60, 0.45) !important;
+}
+[data-tenant-theme="crimson-velvet"] .barber-modal-cta-primary-btn,
+[data-tenant-theme="crimson-velvet"] .barber-modal-service-cta-badge,
+[data-tenant-theme="crimson-velvet"] .service-modal-btn-cta,
+[data-tenant-theme="crimson-velvet"] .btn-kyrios-agendar {
+  background: linear-gradient(135deg, #ef233c 0%, #a00020 100%) !important;
+  border-color: #ef233c !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-tenant-theme="crimson-velvet"] .auth-split__tab-btn.is-active,
+[data-tenant-theme="crimson-velvet"] .reservas-tab-btn.is-active {
+  background: linear-gradient(135deg, #ef233c 0%, #a00020 100%) !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-tenant-theme="crimson-velvet"] .auth-split__brand-badge {
+  background: rgba(239, 35, 60, 0.14) !important;
+  border: 1px solid rgba(239, 35, 60, 0.35) !important;
+  color: #ef233c !important;
+}
+
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .barber-modal-pill.active,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .barber-modal-pill.active,
+[data-bs-theme="light"][data-tenant-theme="crimson-velvet"] .barber-modal-pill.active,
+[data-bs-theme="light"] [data-tenant-theme="crimson-velvet"] .barber-modal-pill.active {
+  background-color: #e11d48 !important;
+  color: #ffffff !important;
+  border-color: #e11d48 !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.3) !important;
+}
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .barber-modal-cta-primary-btn,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .barber-modal-service-cta-badge,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .service-modal-btn-cta,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .btn-kyrios-agendar,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .barber-modal-cta-primary-btn,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .barber-modal-service-cta-badge,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .service-modal-btn-cta,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .btn-kyrios-agendar {
+  background-color: #e11d48 !important;
+  border-color: #e11d48 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .auth-split__tab-btn.is-active,
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .reservas-tab-btn.is-active,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .auth-split__tab-btn.is-active,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .reservas-tab-btn.is-active {
+  background-color: #e11d48 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-theme="light"][data-tenant-theme="crimson-velvet"] .auth-split__form-panel .auth-split__brand-badge,
+[data-theme="light"] [data-tenant-theme="crimson-velvet"] .auth-split__form-panel .auth-split__brand-badge,
+[data-bs-theme="light"][data-tenant-theme="crimson-velvet"] .auth-split__form-panel .auth-split__brand-badge,
+[data-bs-theme="light"] [data-tenant-theme="crimson-velvet"] .auth-split__form-panel .auth-split__brand-badge {
+  background: rgba(185, 28, 28, 0.1) !important;
+  border: 1px solid rgba(185, 28, 28, 0.28) !important;
+  color: #b91c1c !important;
+  font-weight: 750 !important;
+}
+
+/* ── 5. MONOCHROME NOIR ── */
+[data-tenant-theme="monochrome-noir"] .barber-modal-pill.active,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .barber-modal-pill.active,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .barber-modal-pill.active,
+[data-theme="dark"] [data-tenant-theme="monochrome-noir"] .barber-modal-pill.active,
+[data-bs-theme="dark"] [data-tenant-theme="monochrome-noir"] .barber-modal-pill.active {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-color: #ffffff !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.35) !important;
+}
+[data-tenant-theme="monochrome-noir"] .barber-modal-cta-primary-btn,
+[data-tenant-theme="monochrome-noir"] .barber-modal-service-cta-badge,
+[data-tenant-theme="monochrome-noir"] .service-modal-btn-cta,
+[data-tenant-theme="monochrome-noir"] .btn-kyrios-agendar,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .barber-modal-cta-primary-btn,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .barber-modal-service-cta-badge,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .service-modal-btn-cta,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .btn-kyrios-agendar,
+[data-theme="dark"] [data-tenant-theme="monochrome-noir"] .barber-modal-cta-primary-btn,
+[data-theme="dark"] [data-tenant-theme="monochrome-noir"] .barber-modal-service-cta-badge,
+[data-theme="dark"] [data-tenant-theme="monochrome-noir"] .service-modal-btn-cta,
+[data-theme="dark"] [data-tenant-theme="monochrome-noir"] .btn-kyrios-agendar {
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.35) !important;
+}
+[data-tenant-theme="monochrome-noir"] .auth-split__tab-btn.is-active,
+[data-tenant-theme="monochrome-noir"] .reservas-tab-btn.is-active,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .auth-split__tab-btn.is-active,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .reservas-tab-btn.is-active {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 850 !important;
+}
+[data-tenant-theme="monochrome-noir"] .auth-split__brand-badge {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .barber-modal-pill.active,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .barber-modal-pill.active,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .barber-modal-pill.active,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .barber-modal-pill.active {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #000000 !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+}
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .barber-modal-cta-primary-btn,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .barber-modal-service-cta-badge,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .service-modal-btn-cta,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .btn-kyrios-agendar,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .barber-modal-cta-primary-btn,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .barber-modal-service-cta-badge,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .service-modal-btn-cta,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .btn-kyrios-agendar {
+  background-color: #000000 !important;
+  border-color: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+}
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .auth-split__tab-btn.is-active,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .reservas-tab-btn.is-active,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .auth-split__tab-btn.is-active,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .reservas-tab-btn.is-active {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .auth-split__form-panel .auth-split__brand-badge,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .auth-split__form-panel .auth-split__brand-badge,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .auth-split__form-panel .auth-split__brand-badge,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .auth-split__form-panel .auth-split__brand-badge {
+  background: rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(0, 0, 0, 0.18) !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+/* ── 6. CLÁSICO AZUL (ZAFIRO) ── */
+[data-tenant-theme="clasico-azul"] .barber-modal-pill.active {
+  background-color: #0071BC !important;
+  color: #ffffff !important;
+  border-color: #0071BC !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 14px rgba(0, 113, 188, 0.45) !important;
+}
+[data-tenant-theme="clasico-azul"] .barber-modal-cta-primary-btn,
+[data-tenant-theme="clasico-azul"] .barber-modal-service-cta-badge,
+[data-tenant-theme="clasico-azul"] .service-modal-btn-cta,
+[data-tenant-theme="clasico-azul"] .btn-kyrios-agendar {
+  background-color: #0071BC !important;
+  border-color: #0071BC !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-tenant-theme="clasico-azul"] .auth-split__tab-btn.is-active,
+[data-tenant-theme="clasico-azul"] .reservas-tab-btn.is-active {
+  background-color: #0071BC !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+[data-tenant-theme="clasico-azul"] .auth-split__brand-badge {
+  background: rgba(59, 130, 246, 0.14) !important;
+  border: 1px solid rgba(59, 130, 246, 0.35) !important;
+  color: #60a5fa !important;
+}
+[data-theme="light"][data-tenant-theme="clasico-azul"] .auth-split__form-panel .auth-split__brand-badge,
+[data-theme="light"] [data-tenant-theme="clasico-azul"] .auth-split__form-panel .auth-split__brand-badge,
+[data-bs-theme="light"][data-tenant-theme="clasico-azul"] .auth-split__form-panel .auth-split__brand-badge,
+[data-bs-theme="light"] [data-tenant-theme="clasico-azul"] .auth-split__form-panel .auth-split__brand-badge {
+  background: rgba(0, 113, 188, 0.1) !important;
+  border: 1px solid rgba(0, 113, 188, 0.28) !important;
+  color: #005fa0 !important;
+  font-weight: 750 !important;
+}
+

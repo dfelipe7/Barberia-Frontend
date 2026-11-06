@@ -163,9 +163,9 @@
 .service-modal-btn-cta {
   width: 100%;
   border-radius: 9999px;
-  background-color: var(--k-blue, #0071BC);
-  color: #ffffff !important;
-  border: 1px solid var(--k-blue, #0071BC);
+  background-color: var(--tenant-accent, var(--k-blue, #0071BC));
+  color: var(--tenant-btn-text, #ffffff) !important;
+  border: 1px solid var(--tenant-accent, var(--k-blue, #0071BC));
   padding: 0.88rem 1.5rem;
   font-size: 0.92rem;
   font-weight: 700;
@@ -177,7 +177,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  box-shadow: 0 4px 14px var(--k-blue-glow, rgba(0, 113, 188, 0.3));
+  box-shadow: 0 4px 14px var(--tenant-glow, rgba(0, 113, 188, 0.3));
   text-decoration: none;
 }
 

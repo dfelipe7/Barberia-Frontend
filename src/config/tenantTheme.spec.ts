@@ -13,11 +13,10 @@ describe('Configuración de Temas Multitenant (tenantTheme.ts)', () => {
   });
 
   describe('TEMAS_TENANT', () => {
-    it('debe registrar los 7 temas oficiales del sistema', () => {
+    it('debe registrar los 6 temas oficiales del sistema', () => {
       const temasDisponibles: TenantThemeId[] = [
         'clasico-azul',
         'cyber-lime',
-        'oro-vip',
         'sunset-amber',
         'midnight-cyan',
         'crimson-velvet',

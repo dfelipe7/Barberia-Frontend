@@ -344,8 +344,36 @@ export default function ConfiguracionNegocioPage() {
   const handleSeleccionarTema = async (temaId: TenantThemeId) => {
     guardarTemaTenant(slugActivo, temaId);
     setTemaActual(temaId);
+
+    // Validar coordenadas actuales si existen
+    const validacion = validarCoordenadasFormulario(latitud, longitud);
+
+    // Construir payload completo preservando toda la información comercial y ubicación existente
+    // para evitar que el PUT del backend sobreescriba con null los campos omitidos.
+    const payload: ActualizarPerfilNegocioDto = {
+      temaKey: temaId,
+      frasePrincipal: frasePrincipal.trim() || perfil?.contenido?.frasePrincipal || undefined,
+      direccion: direccion.trim() || perfil?.ubicacion?.direccion || undefined,
+      ciudad: ciudad.trim() || perfil?.ubicacion?.ciudad || undefined,
+      departamento: departamento.trim() || perfil?.ubicacion?.departamento || undefined,
+      referencia: referencia.trim() || perfil?.ubicacion?.referencia || undefined,
+      latitud:
+        validacion.valid && validacion.latNum !== undefined
+          ? validacion.latNum
+          : perfil?.ubicacion?.latitud != null
+            ? Number(perfil.ubicacion.latitud)
+            : undefined,
+      longitud:
+        validacion.valid && validacion.lngNum !== undefined
+          ? validacion.lngNum
+          : perfil?.ubicacion?.longitud != null
+            ? Number(perfil.ubicacion.longitud)
+            : undefined,
+    };
+
     try {
-      await perfilNegocioApi.actualizarPerfil({ temaKey: temaId });
+      const actualizado = await perfilNegocioApi.actualizarPerfil(payload);
+      setPerfil(actualizado);
       window.dispatchEvent(new CustomEvent('tenant-perfil-actualizado'));
       showToast('success', `Tema guardado en la sede: ${TEMAS_TENANT[temaId]?.nombre}`);
     } catch {

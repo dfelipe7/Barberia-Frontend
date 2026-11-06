@@ -1437,7 +1437,13 @@ export const ReservaClientePage = () => {
                         Master Barber · Profesional
                       </span>
                       <div className="mt-auto">
-                        <span className={`badge rounded-pill ${seleccionado ? 'bg-primary text-white' : 'bg-body-secondary text-surface-muted'}`}>
+                        <span
+                          className={`badge rounded-pill booking-barber-status-badge ${
+                            seleccionado
+                              ? 'booking-barber-status-badge--selected'
+                              : 'booking-barber-status-badge--available'
+                          }`}
+                        >
                           {seleccionado ? 'Seleccionado' : 'Disponible'}
                         </span>
                       </div>
@@ -1670,7 +1676,7 @@ export const ReservaClientePage = () => {
                             onClick={() => setHoraSeleccionada(slot.startTime)}
                           >
                             <span className="booking-slot-time">{slot.startTime}</span>
-                            <span className="booking-slot-end text-surface-muted">a {slot.endTime}</span>
+                            <span className="booking-slot-end">a {slot.endTime}</span>
                             {activo && <Check size={13} className="booking-slot-check" />}
                           </button>
                         );
@@ -1707,7 +1713,7 @@ export const ReservaClientePage = () => {
                             onClick={() => setHoraSeleccionada(slot.startTime)}
                           >
                             <span className="booking-slot-time">{slot.startTime}</span>
-                            <span className="booking-slot-end text-surface-muted">a {slot.endTime}</span>
+                            <span className="booking-slot-end">a {slot.endTime}</span>
                             {activo && <Check size={13} className="booking-slot-check" />}
                           </button>
                         );
@@ -1744,7 +1750,7 @@ export const ReservaClientePage = () => {
                             onClick={() => setHoraSeleccionada(slot.startTime)}
                           >
                             <span className="booking-slot-time">{slot.startTime}</span>
-                            <span className="booking-slot-end text-surface-muted">a {slot.endTime}</span>
+                            <span className="booking-slot-end">a {slot.endTime}</span>
                             {activo && <Check size={13} className="booking-slot-check" />}
                           </button>
                         );
@@ -2191,7 +2197,7 @@ export const ReservaClientePage = () => {
                       </div>
                       <div className="text-end">
                         <span className="fw-semibold d-block text-capitalize">{fechaSeleccionada ? formatearFecha(fechaSeleccionada) : '—'}</span>
-                        <span className="badge bg-primary text-white">{horaSeleccionada ?? '—'}</span>
+                        <span className="badge booking-primary-badge">{horaSeleccionada ?? '—'}</span>
                       </div>
                     </div>
                   </div>
@@ -2322,7 +2328,7 @@ export const ReservaClientePage = () => {
                   {servicioSeleccionado ? servicioSeleccionado.nombre : 'Elige un servicio para continuar'}
                 </strong>
                 {servicioSeleccionado && (
-                  <span className="badge bg-primary text-white">
+                  <span className="badge booking-primary-badge">
                     {formatearPrecio(servicioSeleccionado.precio)}
                   </span>
                 )}
@@ -2383,7 +2389,7 @@ export const ReservaClientePage = () => {
                 {horaSeleccionada && (
                   <>
                     <span className="text-surface-muted">·</span>
-                    <span className="badge bg-primary text-white">{horaSeleccionada}</span>
+                    <span className="badge booking-primary-badge">{horaSeleccionada}</span>
                   </>
                 )}
               </div>

@@ -268,11 +268,11 @@
 }
 
 .barber-modal-pill.active {
-  background-color: var(--k-blue, #0071BC) !important;
-  color: #ffffff !important;
-  font-weight: 700;
-  border-color: var(--k-blue, #0071BC) !important;
-  box-shadow: 0 3px 12px var(--k-blue-glow, rgba(0, 113, 188, 0.35));
+  background-color: var(--tenant-accent, var(--k-blue, #0071BC)) !important;
+  color: var(--tenant-btn-text, #ffffff) !important;
+  font-weight: 750;
+  border-color: var(--tenant-accent, var(--k-blue, #0071BC)) !important;
+  box-shadow: 0 3px 12px var(--tenant-glow, rgba(0, 113, 188, 0.35));
   opacity: 1;
 }
 
@@ -281,10 +281,10 @@
 }
 
 [data-theme="dark"] .barber-modal-pill.active {
-  background-color: var(--k-blue, #0071BC) !important;
-  color: #ffffff !important;
-  border-color: var(--k-blue, #0071BC) !important;
-  box-shadow: 0 4px 14px rgba(0, 113, 188, 0.5);
+  background-color: var(--tenant-accent, var(--k-blue, #0071BC)) !important;
+  color: var(--tenant-btn-text, #ffffff) !important;
+  border-color: var(--tenant-accent, var(--k-blue, #0071BC)) !important;
+  box-shadow: 0 4px 14px var(--tenant-glow, rgba(0, 113, 188, 0.5));
 }
 
 /* ─── Contenedor del Tab Perfil ─── */
@@ -691,9 +691,9 @@
 .barber-modal-cta-primary-btn {
   width: 100%;
   border-radius: 9999px;
-  background-color: var(--k-blue, #0071BC);
-  color: #ffffff !important;
-  border: 1px solid var(--k-blue, #0071BC);
+  background-color: var(--tenant-accent, var(--k-blue, #0071BC));
+  color: var(--tenant-btn-text, #ffffff) !important;
+  border: 1px solid var(--tenant-accent, var(--k-blue, #0071BC));
   padding: 0.85rem 1.4rem;
   font-size: 0.88rem;
   font-weight: 700;
@@ -705,7 +705,7 @@
   gap: 0.6rem;
   cursor: pointer;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 14px var(--k-blue-glow, rgba(0, 113, 188, 0.32));
+  box-shadow: 0 4px 14px var(--tenant-glow, rgba(0, 113, 188, 0.32));
 }
 
 .barber-modal-cta-primary-btn:hover {
@@ -849,13 +849,13 @@
   letter-spacing: 0.08em;
   padding: 0.42rem 1rem;
   border-radius: 9999px;
-  background-color: var(--k-blue, #0071BC);
-  color: #ffffff !important;
-  border: 1px solid var(--k-blue, #0071BC);
+  background-color: var(--tenant-accent, var(--k-blue, #0071BC));
+  color: var(--tenant-btn-text, #ffffff) !important;
+  border: 1px solid var(--tenant-accent, var(--k-blue, #0071BC));
   white-space: nowrap !important;
   flex-shrink: 0;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 2px 8px var(--k-blue-glow, rgba(0, 113, 188, 0.25));
+  box-shadow: 0 2px 8px var(--tenant-glow, rgba(0, 113, 188, 0.25));
   display: inline-flex;
   align-items: center;
   justify-content: center;

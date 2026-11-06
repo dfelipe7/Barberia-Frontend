@@ -10,9 +10,8 @@ import { useAuth } from '../../../auth/AuthContext';
 import { useBodyScrollLock } from '../../../shared/lib/useBodyScrollLock';
 import { esRolApp } from '../../../shared/lib/autorizacion/roles';
 import { ProductosEnDesarrolloModal } from './ProductosEnDesarrolloModal';
-import { SelectorAccesoModal } from './SelectorAccesoModal';
 import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
-import TenantThemeSelector from '../../../shared/layout/TenantThemeSelector';
+import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import UserDropdown from '../../../shared/layout/UserDropdown';
 
 /* ─── Hook: detecta si el usuario hizo scroll más allá de un umbral ─────── */
@@ -58,10 +57,10 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [productosModalOpen, setProductosModalOpen] = useState(false);
-  const [accesoModalOpen, setAccesoModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { slug: paramSlug } = useParams<{ slug?: string }>();
+  const confirm = useConfirm();
   const slug = paramSlug || obtenerNegocioSlugActivo() || undefined;
   const basePrefix = slug ? `/${slug}` : '';
   const rutaHome = slug ? `/${slug}` : '/';
@@ -104,7 +103,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
   const nombre = propNombre !== undefined ? propNombre : authNombre;
   const apellido = authApellido;
   const rutaLogin = slug ? `/${slug}/login` : '/login';
-  const onLogin = propOnLogin || (() => setAccesoModalOpen(true));
+  const onLogin = propOnLogin || (() => { void navigate(rutaLogin); });
   const tieneAcceso = roles.some(esRolApp) && usuarioDb?.estado === 'ACTIVO';
 
   // Solo mostramos avatar si la sesión está resuelta Y autenticada Y el
@@ -139,10 +138,35 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
                          'Seguir sistema (clic para cambiar)';
 
   // Cierra el drawer antes de cerrar sesión para evitar estado zombie en móvil
-  const handleLogout = useCallback(() => {
+  const handleLogout = useCallback(async () => {
     closeMobileMenu();
-    cerrarSesion();
-  }, [closeMobileMenu, cerrarSesion]);
+    const aceptado = await confirm({
+      title: 'Cerrar sesión',
+      message: '¿Estás seguro de que deseas salir del panel de administración?',
+      confirmLabel: 'Cerrar sesión',
+      cancelLabel: 'Cancelar',
+      variant: 'warning',
+    });
+    if (aceptado) {
+      cerrarSesion();
+    }
+  }, [closeMobileMenu, cerrarSesion, confirm]);
+
+  const handleLogoutCliente = useCallback(async () => {
+    closeMobileMenu();
+    const aceptado = await confirm({
+      title: 'Cerrar sesión',
+      message: '¿Estás seguro de que deseas salir de tu cuenta de cliente?',
+      confirmLabel: 'Cerrar sesión',
+      cancelLabel: 'Cancelar',
+      variant: 'warning',
+    });
+    if (aceptado) {
+      clientesService.cerrarSesion(slug);
+      setClienteSesion(null);
+      void navigate(slug ? `/${slug}` : '/');
+    }
+  }, [closeMobileMenu, slug, confirm, navigate]);
 
   const renderDesktopAuth = () => {
     if (isInitializing) {
@@ -189,11 +213,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           <button
             type="button"
             className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
-            onClick={() => {
-              clientesService.cerrarSesion(slug);
-              setClienteSesion(null);
-              void navigate(slug ? `/${slug}` : '/');
-            }}
+            onClick={handleLogoutCliente}
             aria-label="Cerrar sesión"
           >
             <LogOut size={14} strokeWidth={2} />
@@ -207,10 +227,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
         type="button"
         className="btn-kyrios-outline d-inline-flex align-items-center gap-1"
         onClick={() => {
-          const rutaCliente = slug
-            ? `/${slug}/cliente/iniciar-sesion?returnTo=${encodeURIComponent(location.pathname)}`
-            : `/cliente/iniciar-sesion?returnTo=${encodeURIComponent(location.pathname)}`;
-          void navigate(rutaCliente);
+          void navigate(rutaLogin);
         }}
       >
         Iniciar sesión
@@ -322,12 +339,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
           <button
             type="button"
             className="btn-kyrios-outline w-100 d-inline-flex align-items-center justify-content-center gap-2"
-            onClick={() => {
-              closeMobileMenu();
-              clientesService.cerrarSesion(slug);
-              setClienteSesion(null);
-              void navigate(slug ? `/${slug}` : '/');
-            }}
+            onClick={handleLogoutCliente}
           >
             <LogOut size={15} strokeWidth={2} />
             Cerrar sesión
@@ -445,7 +457,6 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
 
         {/* ── CTA Desktop ── */}
         <div className="d-none d-xl-flex align-items-center gap-2 flex-shrink-0">
-          <TenantThemeSelector isDark={isDark} />
           {/* Toggle de tema */}
           <button
             type="button"
@@ -536,11 +547,6 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
       )}
 
       {/* Modal de Productos en Desarrollo */}
-      <SelectorAccesoModal
-        isOpen={accesoModalOpen}
-        onClose={() => setAccesoModalOpen(false)}
-        slug={slug}
-      />
       <ProductosEnDesarrolloModal
         isOpen={productosModalOpen}
         onClose={() => setProductosModalOpen(false)}

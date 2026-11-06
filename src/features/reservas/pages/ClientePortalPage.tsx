@@ -143,17 +143,20 @@ export default function ClientePortalPage() {
   const actualizarPerfil = useActualizarPerfilCliente();
 
   // Estado del formulario de perfil
-  const [telefono, setTelefono] = useState('');
+  const [telefonoEditado, setTelefonoEditado] = useState<string | null>(null);
+  const telefono = telefonoEditado ?? perfil?.telefono ?? '';
   const [guardadoExitoso, setGuardadoExitoso] = useState(false);
   const [errorGuardado, setErrorGuardado] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (perfil?.telefono) {
-      setTelefono(perfil.telefono);
-    }
-  }, [perfil?.telefono]);
-
-  const handleCerrarSesion = () => {
+  const handleCerrarSesion = async () => {
+    const aceptado = await confirm({
+      title: 'Cerrar sesión',
+      message: '¿Estás seguro de que deseas salir de tu cuenta de cliente?',
+      confirmLabel: 'Cerrar sesión',
+      cancelLabel: 'Cancelar',
+      variant: 'warning',
+    });
+    if (!aceptado) return;
     clientesService.cerrarSesion(slugActivo);
     void navigate(slugActivo ? `/${slugActivo}` : '/', { replace: true });
   };
@@ -207,12 +210,11 @@ export default function ClientePortalPage() {
     }
   };
 
-  const reservas = reservasData?.reservas ?? [];
   const hoyStr = new Date().toISOString().split('T')[0];
-  const { proximas: proximasCitas, historial: historialCitas } = useMemo(
-    () => separarCitas(reservas, hoyStr),
-    [reservas, hoyStr]
-  );
+  const { proximas: proximasCitas, historial: historialCitas } = useMemo(() => {
+    const lista = reservasData?.reservas ?? [];
+    return separarCitas(lista, hoyStr);
+  }, [reservasData?.reservas, hoyStr]);
 
   const iniciales = (sesion?.nombre?.[0] || 'C') + (sesion?.apellido?.[0] || '');
 
@@ -411,39 +413,53 @@ export default function ClientePortalPage() {
               <div className="mb-4">
                 {proximasCitas.map((reserva: ReservaClienteDTO) => (
                   <div key={reserva.id} className="cliente-ticket-card">
-                    <div className="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                    <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 pb-2 border-bottom" style={{ borderColor: 'var(--portal-card-border)' }}>
                       <div className="d-flex align-items-center gap-2">
                         <span className={`cliente-ticket__badge-status badge-status--${reserva.estado}`}>
                           ● {mapearEstado(reserva.estado)}
                         </span>
                         <span className="small text-muted font-monospace">#{reserva.id}</span>
                       </div>
-                      <strong className="cliente-ticket__price">
-                        {formatearPrecio(reserva.precio)}
-                      </strong>
+                      <div className="text-end">
+                        <span className="small text-muted d-block" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Valor servicio</span>
+                        <strong className="cliente-ticket__price">
+                          {formatearPrecio(reserva.precio)}
+                        </strong>
+                      </div>
                     </div>
 
-                    <div className="row g-3 align-items-center mb-3">
-                      <div className="col-12 col-md-5">
-                        <div className="cliente-ticket__info-item">
-                          <Scissors size={18} className="cliente-ticket__info-icon" />
-                          <strong className="cliente-ticket__service-title">{reserva.servicio.nombre}</strong>
+                    <div className="cliente-ticket__details-grid mb-3">
+                      <div className="cliente-ticket__cell">
+                        <div className="cliente-ticket__cell-header">
+                          <Scissors size={14} className="cliente-ticket__cell-icon" />
+                          <span className="cliente-ticket__cell-label">Servicio</span>
                         </div>
+                        <div className="cliente-ticket__cell-value cliente-ticket__service-title">
+                          {reserva.servicio.nombre}
+                        </div>
+                        <span className="cliente-ticket__cell-sub">Tratamiento profesional</span>
                       </div>
 
-                      <div className="col-6 col-md-3">
-                        <div className="cliente-ticket__info-item">
-                          <User size={16} className="cliente-ticket__info-icon" />
-                          <span>{reserva.barbero.nombre} {reserva.barbero.apellido}</span>
+                      <div className="cliente-ticket__cell">
+                        <div className="cliente-ticket__cell-header">
+                          <User size={14} className="cliente-ticket__cell-icon" />
+                          <span className="cliente-ticket__cell-label">Barbero</span>
                         </div>
+                        <div className="cliente-ticket__cell-value">
+                          {reserva.barbero.nombre} {reserva.barbero.apellido}
+                        </div>
+                        <span className="cliente-ticket__cell-sub">Especialista asignado</span>
                       </div>
 
-                      <div className="col-6 col-md-4 text-md-end">
-                        <div className="d-flex align-items-center justify-content-md-end gap-1.5 mb-0.5">
-                          <Clock3 size={16} className="cliente-ticket__info-icon" />
-                          <strong className="fs-6">{reserva.hora} – {reserva.horaFin}</strong>
+                      <div className="cliente-ticket__cell">
+                        <div className="cliente-ticket__cell-header">
+                          <Clock3 size={14} className="cliente-ticket__cell-icon" />
+                          <span className="cliente-ticket__cell-label">Fecha y horario</span>
                         </div>
-                        <span className="small text-muted d-block">
+                        <div className="cliente-ticket__cell-value">
+                          {reserva.hora} – {reserva.horaFin}
+                        </div>
+                        <span className="cliente-ticket__cell-sub text-capitalize">
                           {formatearFecha(reserva.fecha)}
                         </span>
                       </div>
@@ -494,17 +510,44 @@ export default function ClientePortalPage() {
                 <div className="d-flex flex-column gap-2">
                   {historialCitas.map((reserva: ReservaClienteDTO) => (
                     <div key={reserva.id} className="cliente-ticket-card cliente-ticket-card--past">
-                      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                        <div>
-                          <strong className="d-block">{reserva.servicio.nombre}</strong>
-                          <span className="small text-muted">
-                            {formatearFecha(reserva.fecha)} a las {reserva.hora} con {reserva.barbero.nombre}
-                          </span>
-                        </div>
-                        <div className="d-flex align-items-center gap-3">
-                          <span className="small font-monospace text-muted">{formatearPrecio(reserva.precio)}</span>
+                      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom" style={{ borderColor: 'var(--portal-card-border)' }}>
+                        <div className="d-flex align-items-center gap-2">
                           <span className={`cliente-ticket__badge-status badge-status--${reserva.estado}`}>
                             {mapearEstado(reserva.estado)}
+                          </span>
+                          <span className="small text-muted font-monospace">#{reserva.id}</span>
+                        </div>
+                        <span className="small font-monospace text-muted fw-bold">{formatearPrecio(reserva.precio)}</span>
+                      </div>
+                      <div className="cliente-ticket__details-grid">
+                        <div className="cliente-ticket__cell">
+                          <div className="cliente-ticket__cell-header">
+                            <Scissors size={13} className="cliente-ticket__cell-icon" />
+                            <span className="cliente-ticket__cell-label">Servicio</span>
+                          </div>
+                          <div className="cliente-ticket__cell-value fs-6">
+                            {reserva.servicio.nombre}
+                          </div>
+                        </div>
+                        <div className="cliente-ticket__cell">
+                          <div className="cliente-ticket__cell-header">
+                            <User size={13} className="cliente-ticket__cell-icon" />
+                            <span className="cliente-ticket__cell-label">Barbero</span>
+                          </div>
+                          <div className="cliente-ticket__cell-value">
+                            {reserva.barbero.nombre} {reserva.barbero.apellido}
+                          </div>
+                        </div>
+                        <div className="cliente-ticket__cell">
+                          <div className="cliente-ticket__cell-header">
+                            <Clock3 size={13} className="cliente-ticket__cell-icon" />
+                            <span className="cliente-ticket__cell-label">Fecha y horario</span>
+                          </div>
+                          <div className="cliente-ticket__cell-value">
+                            {reserva.hora}
+                          </div>
+                          <span className="cliente-ticket__cell-sub text-capitalize">
+                            {formatearFecha(reserva.fecha)}
                           </span>
                         </div>
                       </div>
@@ -625,7 +668,7 @@ export default function ClientePortalPage() {
                         placeholder="Ej. 300 123 4567"
                         maxLength={30}
                         value={telefono}
-                        onChange={(e) => setTelefono(e.target.value)}
+                        onChange={(e) => setTelefonoEditado(e.target.value)}
                         required
                       />
                     </div>
