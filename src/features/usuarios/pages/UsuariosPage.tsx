@@ -123,8 +123,8 @@ export const UsuariosPage: React.FC = () => {
     const mensaje = location.state?.mensaje as string | undefined;
     if (!mensaje) return;
     showToast('success', mensaje);
-    void navigate(location.pathname, { replace: true, state: null });
-  }, [location.state?.mensaje, location.pathname, navigate, showToast]);
+    void navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+  }, [location.state?.mensaje, location.pathname, location.search, navigate, showToast]);
 
   // Handlers
   const handleVerDetalles = (entity: AdministradorGestion | BarberoGestion) => {

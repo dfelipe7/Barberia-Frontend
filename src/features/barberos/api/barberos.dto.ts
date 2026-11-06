@@ -18,6 +18,7 @@ export interface BarberoGestionDTO {
   estadoAdmin?: 'ACTIVO' | 'INACTIVO';
   estadoGlobal: 'ACTIVO' | 'INACTIVO';
   esAdministrador: boolean;
+  esSuperAdmin?: boolean;
   fotoUrl?: string | null; 
 }
 

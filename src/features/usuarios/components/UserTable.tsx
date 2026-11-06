@@ -51,7 +51,8 @@ const AdminActionsDropdown: React.FC<AdminActionsProps> = ({
   onCambiarEstado,
 }) => {
   const esMismoUsuario = currentUserId === admin.id;
-  const puedeEditar = esSuperAdmin || esMismoUsuario;
+  // Inmunidad entre pares: el perfil de otro Superadmin es de solo lectura.
+  const puedeEditar = esMismoUsuario || (esSuperAdmin && !admin.esSuperAdmin);
   const isCurrentUpdating = isUpdatingId === admin.id;
 
   const itemsPerfil = [
@@ -74,7 +75,8 @@ const AdminActionsDropdown: React.FC<AdminActionsProps> = ({
 
   const itemsRolCuenta = [
     esSuperAdmin &&
-      !esMismoUsuario && {
+      !esMismoUsuario &&
+      !admin.esSuperAdmin && {
         key: 'rol',
         label:
           admin.estadoAdmin === 'ACTIVO'
@@ -112,7 +114,7 @@ const AdminActionsDropdown: React.FC<AdminActionsProps> = ({
         <AccionesDropdown
           label="Rol y Cuenta"
           icon={<Shield size={15} />}
-          buttonVariant="btn-outline-dark"
+          buttonVariant="btn-outline-secondary"
           items={itemsRolCuenta}
         />
       )}
@@ -129,7 +131,7 @@ const AdminMobileActions: React.FC<AdminActionsProps> = ({
   onCambiarEstado,
 }) => {
   const esMismoUsuario = currentUserId === admin.id;
-  const puedeEditar = esSuperAdmin || esMismoUsuario;
+  const puedeEditar = esMismoUsuario || (esSuperAdmin && !admin.esSuperAdmin);
   const isCurrentUpdating = isUpdatingId === admin.id;
 
   return (
@@ -156,7 +158,7 @@ const AdminMobileActions: React.FC<AdminActionsProps> = ({
         </Link>
       )}
 
-      {esSuperAdmin && !esMismoUsuario && (
+      {esSuperAdmin && !esMismoUsuario && !admin.esSuperAdmin && (
         <button
           type="button"
           className="btn btn-outline-warning mobile-action-btn"

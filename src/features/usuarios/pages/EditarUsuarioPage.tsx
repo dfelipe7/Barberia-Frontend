@@ -51,7 +51,9 @@ export const EditarUsuarioPage: React.FC = () => {
     error: errorUsuario,
   } = useUsuario(usuarioId);
 
-  const esSuperadminObjetivo = usuario?.rol === 'SUPERADMIN';
+  // El carácter Superadmin vive en la MEMBRESÍA de la barbería (igual que en el backend).
+  const esSuperadminObjetivo =
+    usuario?.administrador?.superadmin === true || usuario?.rol === 'SUPERADMIN';
   const esAdminObjetivo = Boolean(
     usuario?.administrador?.estado === 'ACTIVO' || usuario?.rol === 'ADMINISTRADOR'
   );
@@ -115,6 +117,28 @@ export const EditarUsuarioPage: React.FC = () => {
         <ErrorMessage
           message={errorUsuario ? mapApiError(errorUsuario) : 'No fue posible encontrar el usuario solicitado.'}
         />
+        <button
+          type="button"
+          className="btn btn-outline-secondary"
+          onClick={() => goBack({ fallbackTo: '/usuarios' })}
+        >
+          &larr; Volver
+        </button>
+      </div>
+    );
+  }
+
+  // Inmunidad entre pares: el perfil de un Superadmin solo lo edita él mismo.
+  if (esSuperadminObjetivo && !editandoPropioPerfil) {
+    return (
+      <div className="container py-4">
+        <div className="alert alert-info">
+          El perfil de un Superadministrador es de solo lectura. Solo{' '}
+          <strong>
+            {usuario.nombre} {usuario.apellido}
+          </strong>{' '}
+          puede modificar sus datos desde <em>Mi Perfil</em>.
+        </div>
         <button
           type="button"
           className="btn btn-outline-secondary"
@@ -226,8 +250,9 @@ export const EditarUsuarioPage: React.FC = () => {
         await refrescarPerfil();
       }
 
+      const fallbackTab = usuario?.barbero && !usuario?.administrador ? '/usuarios?tab=barberos' : '/usuarios';
       goBack({
-        fallbackTo: editandoPropioPerfil ? '/mi-perfil' : '/usuarios',
+        fallbackTo: editandoPropioPerfil ? '/mi-perfil' : fallbackTab,
         state: { mensaje: `Usuario ${data.nombre} actualizado correctamente.` },
       });
     } catch (err: unknown) {
@@ -246,7 +271,15 @@ export const EditarUsuarioPage: React.FC = () => {
         <button
           type="button"
           className="btn btn-outline-secondary btn-sm mb-3"
-          onClick={() => goBack({ fallbackTo: editandoPropioPerfil ? '/mi-perfil' : '/usuarios' })}
+          onClick={() =>
+            goBack({
+              fallbackTo: editandoPropioPerfil
+                ? '/mi-perfil'
+                : usuario?.barbero && !usuario?.administrador
+                  ? '/usuarios?tab=barberos'
+                  : '/usuarios',
+            })
+          }
         >
           &larr; Volver
         </button>
@@ -392,7 +425,15 @@ export const EditarUsuarioPage: React.FC = () => {
               <button
                 type="button"
                 className="btn btn-light"
-                onClick={() => goBack({ fallbackTo: editandoPropioPerfil ? '/mi-perfil' : '/usuarios' })}
+                onClick={() =>
+            goBack({
+              fallbackTo: editandoPropioPerfil
+                ? '/mi-perfil'
+                : usuario?.barbero && !usuario?.administrador
+                  ? '/usuarios?tab=barberos'
+                  : '/usuarios',
+            })
+          }
               >
                 Cancelar
               </button>

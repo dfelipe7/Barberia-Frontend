@@ -164,21 +164,37 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (temaId) {
       document.documentElement.setAttribute('data-tenant-theme', temaId);
       document.documentElement.dataset.tenantTheme = temaId;
+      if (slug && perfil?.temaKey) {
+        localStorage.setItem(`tema_negocio_${slug}`, perfil.temaKey);
+        localStorage.setItem('tema_negocio_activo', perfil.temaKey);
+      }
     }
   }, [perfil?.temaKey, slug]);
 
-  // Escuchar evento global cuando se actualice la configuración en ConfiguracionNegocioPage o selector
+  // Escuchar eventos globales y entre pestañas cuando se actualice la configuración
   useEffect(() => {
     const handleActualizado = () => {
       void cargarPerfil();
     };
+    const handleStorage = (e: StorageEvent) => {
+      if (!e.key || e.key.startsWith('tema_negocio_')) {
+        const nuevoTema = resolverTemaTenant(slug);
+        if (nuevoTema) {
+          document.documentElement.setAttribute('data-tenant-theme', nuevoTema);
+          document.documentElement.dataset.tenantTheme = nuevoTema;
+        }
+        void cargarPerfil();
+      }
+    };
     window.addEventListener('tenant-perfil-actualizado', handleActualizado);
     window.addEventListener('tenant-tema-cambiado', handleActualizado);
+    window.addEventListener('storage', handleStorage);
     return () => {
       window.removeEventListener('tenant-perfil-actualizado', handleActualizado);
       window.removeEventListener('tenant-tema-cambiado', handleActualizado);
+      window.removeEventListener('storage', handleStorage);
     };
-  }, [cargarPerfil]);
+  }, [cargarPerfil, slug]);
 
   const value: TenantBrandContextValue = {
     slug,

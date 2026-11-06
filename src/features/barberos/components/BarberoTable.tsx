@@ -24,6 +24,18 @@ interface BarberoTableProps {
   isUpdatingGlobalId?: number | null;
 }
 
+/**
+ * Puede gestionar (editar, comisión, foto, rol) a este barbero:
+ * - Siempre sobre uno mismo.
+ * - Nunca sobre un Superadmin ajeno (inmunidad entre pares, igual que el backend).
+ * - En otro caso, según la jerarquía del actor sobre el rol BARBERO.
+ */
+function puedeGestionarBarbero(rolActor: Rol, barbero: BarberoGestion, currentUserId?: number): boolean {
+  if (currentUserId !== undefined && currentUserId === barbero.id) return true;
+  if (barbero.esSuperAdmin) return false;
+  return puedeGestionarEstado(rolActor, 'BARBERO');
+}
+
 export const BarberoTable: React.FC<BarberoTableProps> = ({
   barberos,
   onSelectBarbero,
@@ -32,7 +44,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
   onCambiarEstado,
   onCambiarEstadoGlobal: _onCambiarEstadoGlobal,
   rolActorPrincipal,
-  currentUserId: _currentUserId,
+  currentUserId,
   isUpdatingId,
   isUpdatingGlobalId: _isUpdatingGlobalId,
 }) => {
@@ -101,7 +113,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
       className: 'text-center',
       render: (barbero) => {
         const isCurrentUpdating = isUpdatingId === barbero.id;
-        const puedeEditar = puedeGestionarEstado(rolActorPrincipal, 'BARBERO');
+        const puedeEditar = puedeGestionarBarbero(rolActorPrincipal, barbero, currentUserId);
 
         const itemsPerfil = [
           {
@@ -119,7 +131,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
             linkState: { from: '/usuarios?tab=barberos' },
             title: 'Editar datos del perfil',
           },
-          {
+          puedeEditar && {
             key: 'comision',
             label: 'Cambiar % de comisión',
             icon: <Percent size={15} className="text-warning-emphasis" />,
@@ -176,7 +188,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
               <AccionesDropdown
                 label="Rol y Cuenta"
                 icon={<Shield size={15} />}
-                buttonVariant="btn-outline-dark"
+                buttonVariant="btn-outline-secondary"
                 items={itemsRolCuenta}
               />
             )}
@@ -207,7 +219,7 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
       <div className="mobile-cards-container d-flex flex-column gap-3">
         {barberos.map((barbero) => {
           const isCurrentUpdating = isUpdatingId === barbero.id;
-          const puedeEditar = puedeGestionarEstado(rolActorPrincipal, 'BARBERO');
+          const puedeEditar = puedeGestionarBarbero(rolActorPrincipal, barbero, currentUserId);
           const isCuentaHabilitada =
             barbero.estado === 'ACTIVO' || (barbero.esAdministrador && barbero.estadoAdmin === 'ACTIVO');
           const borderColor = isCuentaHabilitada ? '#10B981' : '#EF4444';
@@ -284,15 +296,17 @@ export const BarberoTable: React.FC<BarberoTableProps> = ({
                   </Link>
                 )}
 
-                <button
-                  type="button"
-                  className="btn btn-outline-warning mobile-action-btn"
-                  onClick={() => onEditarComision(barbero)}
-                  title="Cambiar % de comisión"
-                  aria-label="Cambiar porcentaje de comisión"
-                >
-                  <Percent size={18} />
-                </button>
+                {puedeEditar && (
+                  <button
+                    type="button"
+                    className="btn btn-outline-warning mobile-action-btn"
+                    onClick={() => onEditarComision(barbero)}
+                    title="Cambiar % de comisión"
+                    aria-label="Cambiar porcentaje de comisión"
+                  >
+                    <Percent size={18} />
+                  </button>
+                )}
 
                 {puedeEditar && (
                   <button

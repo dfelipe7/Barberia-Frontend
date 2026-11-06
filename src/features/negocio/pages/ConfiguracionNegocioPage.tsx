@@ -376,8 +376,9 @@ export default function ConfiguracionNegocioPage() {
       setPerfil(actualizado);
       window.dispatchEvent(new CustomEvent('tenant-perfil-actualizado'));
       showToast('success', `Tema guardado en la sede: ${TEMAS_TENANT[temaId]?.nombre}`);
-    } catch {
-      showToast('success', `Tema actualizado a: ${TEMAS_TENANT[temaId]?.nombre}`);
+    } catch (err: any) {
+      console.error('Error al guardar tema en backend:', err);
+      showToast('warning', `Tema aplicado localmente. Aviso del servidor: ${extraerMensajeApiError(err, 'No fue posible persistir en la base de datos')}`);
     }
   };
 

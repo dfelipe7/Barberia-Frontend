@@ -32,6 +32,7 @@ export const barberosMapper = {
       estadoAdmin: dto.estadoAdmin,
       estadoGlobal: dto.estadoGlobal,
       esAdministrador: Boolean(dto.esAdministrador),
+      esSuperAdmin: Boolean(dto.esSuperAdmin),
       fotoUrl: dto.fotoUrl ?? null,  
     };
   },

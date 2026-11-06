@@ -75,7 +75,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   // Si no hay iniciales válidas tampoco, no renderizar nada
   if (!iniN && !iniA) return null;
 
-  // Fallback: iniciales en círculo azul
+  // Fallback: iniciales con el color de acento del tema de la barbería
   return (
     <div
       className={`d-inline-flex align-items-center justify-content-center rounded-circle fw-bold ${className}`.trim()}
@@ -83,12 +83,12 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
         width: `${size}px`,
         height: `${size}px`,
         fontSize,
-        backgroundColor: '#0071BC',
-        color: '#FFFDFA',
+        backgroundColor: 'var(--tenant-accent, #0071BC)',
+        color: 'var(--tenant-btn-text, #FFFDFA)',
         flexShrink: 0,
         letterSpacing: '0.04em',
-        border: `1px solid ${isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,113,188,0.3)'}`,
-        transition: 'border-color 150ms ease',
+        border: `1px solid ${isDark ? 'rgba(255,255,255,0.2)' : 'var(--tenant-glow, rgba(0,113,188,0.3))'}`,
+        transition: 'all 150ms ease',
       }}
       aria-hidden="true"
     >

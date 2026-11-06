@@ -1876,9 +1876,18 @@
 }
 
 [data-tenant-theme] header .header-action-btn:hover {
-  border-color: var(--bs-primary) !important;
-  color: var(--bs-primary) !important;
-  box-shadow: 0 0 10px rgba(var(--bs-primary-rgb), 0.25) !important;
+  background-color: var(--tenant-accent, var(--bs-primary)) !important;
+  border-color: var(--tenant-accent, var(--bs-primary)) !important;
+  color: var(--tenant-btn-text, #ffffff) !important;
+  box-shadow: 0 4px 14px var(--tenant-glow, rgba(var(--bs-primary-rgb), 0.35)) !important;
+}
+
+[data-tenant-theme] header .header-action-btn:hover,
+[data-tenant-theme] header .header-action-btn:hover *,
+[data-tenant-theme] header .header-action-btn:hover svg,
+[data-tenant-theme] header .header-action-btn:hover span {
+  color: var(--tenant-btn-text, #ffffff) !important;
+  stroke: var(--tenant-btn-text, #ffffff) !important;
 }
 
 [data-tenant-theme] header .rounded-circle.border,
@@ -6335,5 +6344,56 @@
   border: 1px solid rgba(0, 113, 188, 0.28) !important;
   color: #005fa0 !important;
   font-weight: 750 !important;
+}
+
+/* ==========================================================================
+   BOTONES DE TABLA Y DROPDOWNS: CONTRASTE Y LEGIBILIDAD EN MODO OSCURO
+   Garantiza que al pasar el cursor (hover) el texto sea 100% legible
+   ========================================================================== */
+
+/* Modo Oscuro: Botones outline primary en hover */
+[data-theme="dark"] .table-view-container .btn-outline-primary:hover,
+[data-bs-theme="dark"] .table-view-container .btn-outline-primary:hover,
+[data-theme="dark"] .mobile-cards-container .btn-outline-primary:hover,
+[data-bs-theme="dark"] .mobile-cards-container .btn-outline-primary:hover,
+[data-theme="dark"] .dropdown .btn-outline-primary:hover,
+[data-bs-theme="dark"] .dropdown .btn-outline-primary:hover {
+  background-color: var(--tenant-accent, #0071BC) !important;
+  border-color: var(--tenant-accent, #0071BC) !important;
+  color: var(--tenant-btn-text, #ffffff) !important;
+}
+
+/* Modo Oscuro: Botones outline secondary en hover */
+[data-theme="dark"] .table-view-container .btn-outline-secondary:hover,
+[data-bs-theme="dark"] .table-view-container .btn-outline-secondary:hover,
+[data-theme="dark"] .mobile-cards-container .btn-outline-secondary:hover,
+[data-bs-theme="dark"] .mobile-cards-container .btn-outline-secondary:hover,
+[data-theme="dark"] .btn-outline-secondary:hover,
+[data-bs-theme="dark"] .btn-outline-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  color: #ffffff !important;
+}
+
+/* Modo Oscuro: Botones outline dark (compatibilidad) */
+[data-theme="dark"] .table-view-container .btn-outline-dark,
+[data-bs-theme="dark"] .table-view-container .btn-outline-dark,
+[data-theme="dark"] .mobile-cards-container .btn-outline-dark,
+[data-bs-theme="dark"] .mobile-cards-container .btn-outline-dark,
+[data-theme="dark"] .btn-outline-dark,
+[data-bs-theme="dark"] .btn-outline-dark {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .table-view-container .btn-outline-dark:hover,
+[data-bs-theme="dark"] .table-view-container .btn-outline-dark:hover,
+[data-theme="dark"] .mobile-cards-container .btn-outline-dark:hover,
+[data-bs-theme="dark"] .mobile-cards-container .btn-outline-dark:hover,
+[data-theme="dark"] .btn-outline-dark:hover,
+[data-bs-theme="dark"] .btn-outline-dark:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  color: #ffffff !important;
 }
 
