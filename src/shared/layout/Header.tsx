@@ -12,6 +12,7 @@ import { useConfirm } from '../contexts/ConfirmContext';
 import { ROLES_APP, ROL_HIERARCHY } from '../constants/roles';
 import UserAvatar from '../ui/atoms/UserAvatar';
 import RoleBadge from '../ui/atoms/RoleBadge';
+import WhatsAppStatusIndicator from './WhatsAppStatusIndicator';
 
 export default function Header() {
   const { cerrarSesion, nombre, apellido, email, roles, usuarioDb, fotoUrl: fotoGoogle } = useAuth();
@@ -130,6 +131,8 @@ export default function Header() {
 
           {/* ── Zona derecha — Acciones ── */}
           <div className="d-flex align-items-center gap-2">
+            <WhatsAppStatusIndicator />
+
             <button
               type="button"
               onClick={cycleTheme}
