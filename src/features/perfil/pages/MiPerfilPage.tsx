@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../../auth/AuthContext';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
+import ImageCropModal from '../../../shared/ui/molecules/ImageCropModal';
 import { useActualizarUsuario } from '../../usuarios/api/usuarios.facade';
 import { useSubirFotoPropia, useEliminarFotoPropia } from '../../barberos';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
@@ -29,6 +30,8 @@ export const MiPerfilPage: React.FC = () => {
   const { showToast } = useToastContext();
   const confirm = useConfirm();
   const [errorFoto, setErrorFoto] = useState('');
+  const [archivoParaRecortar, setArchivoParaRecortar] = useState<File | null>(null);
+  const [cropperAbierto, setCropperAbierto] = useState(false);
 
   const actualizarUsuarioMutation = useActualizarUsuario();
   const subirFotoMutation = useSubirFotoPropia();
@@ -83,20 +86,29 @@ export const MiPerfilPage: React.FC = () => {
     }
   };
 
-  const handleSeleccionarFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSeleccionarFoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setErrorFoto('');
     if (file.size > 5 * 1024 * 1024) {
       setErrorFoto('La imagen supera el límite permitido de 5 MB.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
     if (!['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(file.type)) {
       setErrorFoto('Formato no válido. Solo se admiten imágenes JPG, PNG o WEBP.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
+    setArchivoParaRecortar(file);
+    setCropperAbierto(true);
+  };
+
+  const handleCropComplete = async (croppedFile: File) => {
+    setCropperAbierto(false);
+    setArchivoParaRecortar(null);
     try {
-      await subirFotoMutation.mutateAsync(file);
+      await subirFotoMutation.mutateAsync(croppedFile);
       await refrescarPerfil();
       showToast('success', '¡Foto de perfil actualizada correctamente!');
     } catch (err: unknown) {
@@ -104,6 +116,12 @@ export const MiPerfilPage: React.FC = () => {
     } finally {
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
+  };
+
+  const handleCropClose = () => {
+    setCropperAbierto(false);
+    setArchivoParaRecortar(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleEliminarFoto = async () => {
@@ -286,6 +304,13 @@ export const MiPerfilPage: React.FC = () => {
               <div className="text-muted mt-2" style={{ fontSize: '0.75rem' }}>
                 Formatos: JPG, PNG o WEBP. Máx. 5 MB.
               </div>
+
+              <ImageCropModal
+                isOpen={cropperAbierto}
+                imageFile={archivoParaRecortar}
+                onClose={handleCropClose}
+                onCropComplete={handleCropComplete}
+              />
             </div>
           )}
 
