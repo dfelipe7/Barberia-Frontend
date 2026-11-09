@@ -56,6 +56,7 @@ export default function WhatsAppStatusIndicator() {
         />
         <MessageSquare size={14} strokeWidth={2} />
         <span className="d-none d-xl-inline">WhatsApp</span>
+        <output className="visually-hidden">WhatsApp conectado</output>
       </Link>
     );
   }
@@ -73,10 +74,9 @@ export default function WhatsAppStatusIndicator() {
       style={{ fontSize: '0.825rem' }}
     >
       <AlertCircle size={14} strokeWidth={2} className="text-danger" />
-      <span className="d-none d-md-inline fw-semibold text-danger">
+      <output className="d-none d-md-inline fw-semibold text-danger">
         WhatsApp offline
-      </span>
-      <span className="d-md-none text-danger">Offline</span>
+      </output>
     </Link>
   );
 }

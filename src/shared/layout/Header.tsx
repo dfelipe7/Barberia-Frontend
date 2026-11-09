@@ -73,14 +73,14 @@ export default function Header() {
           transition: 'background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease',
         }}
       >
-        <div className="container-fluid px-2 px-sm-3 d-flex align-items-center justify-content-between">
+        <div className="container-fluid px-2 px-sm-3 d-flex align-items-center justify-content-between flex-nowrap min-w-0">
           {/* ── Zona izquierda — Marca + Home ── */}
-          <div className="d-flex align-items-center gap-2 gap-sm-3">
+          <div className="d-flex align-items-center gap-1 gap-sm-2 min-w-0">
             <button
               id="hamburger-btn"
               type="button"
               onClick={toggleSidebar}
-              className={`btn btn-sm d-lg-none ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} p-1 header-action-btn`}
+              className={`btn btn-sm d-lg-none ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} header-action-btn touch-target`}
               aria-label={isSidebarOpen ? 'Cerrar menú' : 'Abrir menú'}
               aria-expanded={isSidebarOpen}
               aria-controls="main-sidebar"
@@ -90,25 +90,25 @@ export default function Header() {
 
             <Link
               to={slugActivo ? `/${slugActivo}/dashboard` : "/dashboard"}
-              className="navbar-brand d-flex align-items-center py-0 me-0"
+              className="navbar-brand d-flex align-items-center py-0 me-0 min-w-0"
               aria-label={`Ir al dashboard de ${BRAND.name}`}
             >
               <BrandLogo
                 variant={isDark ? 'white' : 'black'}
-                height={30}
-                className="brand-logo-header"
+                height={28}
+                className="brand-logo-header flex-shrink-0"
                 alt={BRAND.name}
               />
             </Link>
 
             <Link
               to={rutaSitioPublico}
-              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-inline-flex align-items-center gap-1 header-action-btn`}
+              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-none d-md-inline-flex align-items-center gap-1 header-action-btn`}
               title="Ir al sitio público"
               aria-label="Ir al sitio público"
             >
               <Globe size={15} strokeWidth={2} />
-              <span className="d-none d-sm-inline" style={{ fontSize: '0.825rem' }}>
+              <span style={{ fontSize: '0.825rem' }}>
                 Sitio público
               </span>
             </Link>
@@ -130,13 +130,13 @@ export default function Header() {
           </div>
 
           {/* ── Zona derecha — Acciones ── */}
-          <div className="d-flex align-items-center gap-2">
+          <div className="d-flex align-items-center gap-1 gap-sm-2 flex-shrink-0">
             <WhatsAppStatusIndicator />
 
             <button
               type="button"
               onClick={cycleTheme}
-              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-inline-flex align-items-center gap-1 header-action-btn`}
+              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-none d-md-inline-flex align-items-center gap-1 header-action-btn`}
               title={themeLabel}
               aria-label={themeLabel}
             >
@@ -145,12 +145,12 @@ export default function Header() {
 
             <Link
               to="/mi-perfil"
-              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-inline-flex align-items-center gap-1 header-action-btn`}
+              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-none d-md-inline-flex align-items-center gap-1 header-action-btn`}
               title="Mi Perfil"
               aria-label="Ir a Mi Perfil"
             >
               <User size={15} strokeWidth={2} />
-              <span className="d-none d-md-inline" style={{ fontSize: '0.825rem' }}>
+              <span style={{ fontSize: '0.825rem' }}>
                 Mi Perfil
               </span>
             </Link>

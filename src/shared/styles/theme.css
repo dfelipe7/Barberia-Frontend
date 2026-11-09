@@ -808,6 +808,8 @@ a.btn:focus-visible {
   cursor: pointer;
   transition: background-color 150ms ease, border-color 150ms ease;
   color: inherit;
+  min-height: var(--touch-min, 44px);
+  min-width: var(--touch-min, 44px);
 }
 
 .user-dropdown-trigger:hover {
@@ -836,6 +838,7 @@ a.btn:focus-visible {
   top: calc(100% + 8px);
   right: 0;
   min-width: 260px;
+  max-width: calc(100vw - 16px);
   border-radius: 4px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   z-index: 1050;
