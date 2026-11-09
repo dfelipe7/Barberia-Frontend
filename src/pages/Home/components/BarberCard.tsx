@@ -22,23 +22,13 @@ const BarberoImg: React.FC<{ src: string; nombreCompleto: string; iniciales: str
 
   if (!errorImagen) {
     return (
-      <>
-        {/* Fondo ambient blur: expande colores del barbero sin recortes */}
-        <img
-          src={src}
-          alt=""
-          aria-hidden="true"
-          className="kyrios-barber-img-bg"
-        />
-        {/* Foto principal completa contenida sin recorte */}
-        <img
-          src={src}
-          alt={nombreCompleto}
-          className="kyrios-barber-img"
-          loading="lazy"
-          onError={() => setErrorImagen(true)}
-        />
-      </>
+      <img
+        src={src}
+        alt={nombreCompleto}
+        className="kyrios-barber-img"
+        loading="lazy"
+        onError={() => setErrorImagen(true)}
+      />
     );
   }
 
