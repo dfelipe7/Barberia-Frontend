@@ -617,16 +617,16 @@
 }
 
 .booking-voucher__brand-badge {
-  background: rgba(0, 113, 188, 0.12);
-  border: 1px solid rgba(0, 113, 188, 0.28);
-  color: #38bdf8;
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.12);
+  border: 1px solid rgba(var(--bs-primary-rgb, 0, 113, 188), 0.28);
+  color: var(--bs-primary);
 }
 
 [data-theme="light"] .booking-voucher__brand-badge,
 [data-bs-theme="light"] .booking-voucher__brand-badge {
-  background: rgba(0, 113, 188, 0.08);
-  border-color: rgba(0, 113, 188, 0.24);
-  color: #0071BC;
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.08);
+  border-color: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.24);
+  color: var(--bs-primary);
 }
 
 .booking-voucher__check-ring {
@@ -736,8 +736,8 @@
   width: 22px;
   height: 22px;
   border-radius: 6px;
-  background: rgba(0, 113, 188, 0.15);
-  color: #38bdf8;
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.15);
+  color: var(--bs-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -925,7 +925,7 @@
 }
 
 .booking-floating-bar .text-primary {
-  color: #38bdf8 !important; /* High-contrast bright blue on dark acrylic */
+  color: var(--bs-primary) !important;
 }
 
 .booking-floating-bar__btn {
@@ -935,7 +935,7 @@
   white-space: nowrap;
   flex-shrink: 0;
   border-radius: 10px;
-  box-shadow: 0 4px 14px rgba(0, 113, 188, 0.35);
+  box-shadow: 0 4px 14px rgba(var(--bs-primary-rgb, 0, 113, 188), 0.35);
 }
 
 /* ─── Adaptación Responsiva (Mobile First) ─── */
@@ -1214,6 +1214,11 @@
 [data-theme="light"] .booking-floating-bar .text-surface-muted,
 [data-bs-theme="light"] .booking-floating-bar .text-surface-muted {
   color: #64748b !important;
+}
+
+[data-theme="light"] .booking-floating-bar .text-primary,
+[data-bs-theme="light"] .booking-floating-bar .text-primary {
+  color: var(--bs-primary) !important;
 }
 
 /* ── MODO OSCURO (Dark Theme) ── */
