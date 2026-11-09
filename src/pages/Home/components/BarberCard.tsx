@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Maximize2 } from 'lucide-react';
+import { Maximize2, MapPin } from 'lucide-react';
 import type { BarberoCatalogo } from '../../../features/barberos/types/barberos.types';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import BarberProfileModal from './BarberProfileModal';
@@ -10,7 +10,7 @@ interface BarberCardProps {
 }
 
 /**
- * Subcomponente de imagen del barbero con backdrop desenfocado ambiental y fallback a iniciales.
+ * Subcomponente de imagen del barbero con fallback a iniciales.
  * Se monta con key={src} para resetear el estado de error sin useEffect.
  */
 const BarberoImg: React.FC<{ src: string; nombreCompleto: string; iniciales: string }> = ({
@@ -25,7 +25,7 @@ const BarberoImg: React.FC<{ src: string; nombreCompleto: string; iniciales: str
       <img
         src={src}
         alt={nombreCompleto}
-        className="kyrios-barber-img"
+        className="kyrios-card-thumb-img"
         loading="lazy"
         onError={() => setErrorImagen(true)}
       />
@@ -33,9 +33,8 @@ const BarberoImg: React.FC<{ src: string; nombreCompleto: string; iniciales: str
   }
 
   return (
-    <div className="kyrios-barber-img-placeholder">
-      <span className="kyrios-title-display fs-1 text-white-50">{iniciales}</span>
-      <span className="small text-white-50 mt-1">Kyrios Barber</span>
+    <div className="kyrios-card-thumb-placeholder">
+      <span className="kyrios-barber-initials">{iniciales}</span>
     </div>
   );
 };
@@ -52,47 +51,74 @@ export const BarberCard: React.FC<BarberCardProps> = ({
   return (
     <>
       <article className="kyrios-barber-card" aria-label={`Perfil de ${nombreCompleto}`}>
+        {/* Avatar cuadrado a la izquierda */}
         <button
           type="button"
-          className="kyrios-barber-img-wrap border-0 p-0 text-start w-100 bg-transparent"
+          className="kyrios-card-thumb-btn border-0 p-0 text-start bg-transparent"
           onClick={() => setModalAbierto(true)}
           aria-label={`Ver perfil de ${nombreCompleto}`}
         >
-          {fotoCompleta ? (
-            <>
-              {/* key={fotoCompleta}: remonta BarberoImg cuando cambia la URL */}
-              <BarberoImg
-                key={fotoCompleta}
-                src={fotoCompleta}
-                nombreCompleto={nombreCompleto}
-                iniciales={iniciales}
-              />
-              <span
-                className="kyrios-img-expand-btn"
-                aria-hidden="true"
-              >
-                <Maximize2 size={15} />
-              </span>
-            </>
-          ) : (
-            <div className="kyrios-barber-img-placeholder">
-              <span className="kyrios-title-display fs-1 text-white-50">{iniciales}</span>
-              <span className="small text-white-50 mt-1">Kyrios Barber</span>
-            </div>
-          )}
+          <div className="kyrios-card-thumb">
+            {fotoCompleta ? (
+              <>
+                {/* key={fotoCompleta}: remonta BarberoImg cuando cambia la URL */}
+                <BarberoImg
+                  key={fotoCompleta}
+                  src={fotoCompleta}
+                  nombreCompleto={nombreCompleto}
+                  iniciales={iniciales}
+                />
+                <span
+                  className="kyrios-img-expand-btn"
+                  aria-hidden="true"
+                >
+                  <Maximize2 size={13} />
+                </span>
+              </>
+            ) : (
+              <div className="kyrios-card-thumb-placeholder">
+                <span className="kyrios-barber-initials">{iniciales}</span>
+              </div>
+            )}
+          </div>
         </button>
 
+        {/* Contenido a la derecha */}
         <div className="kyrios-barber-body">
-          <h3 className="kyrios-barber-name">{nombreCompleto}</h3>
-          <p className="kyrios-barber-role">Barbero Profesional</p>
+          {/* Fila superior: Nombre y Rol */}
+          <div className="kyrios-barber-header">
+            <h3 className="kyrios-barber-name" title={nombreCompleto}>
+              {nombreCompleto}
+            </h3>
+            <span className="kyrios-barber-role">Barbero Profesional</span>
+          </div>
 
-          <div className="kyrios-barber-footer d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center justify-content-between mt-auto pt-2 gap-1 gap-sm-2">
-            <span className="kyrios-barber-sede small">Atención en sede</span>
+          {/* Fila central: Atención en sede y 'Ver perfil' */}
+          <div className="kyrios-barber-content">
+            <span className="kyrios-barber-sede">
+              <MapPin size={12} className="me-1 opacity-75" aria-hidden="true" />
+              Atención en sede
+            </span>
+            <button
+              type="button"
+              className="kyrios-barber-more-btn"
+              onClick={() => setModalAbierto(true)}
+              aria-label={`Ver perfil completo de ${nombreCompleto}`}
+            >
+              Ver perfil
+            </button>
+          </div>
+
+          {/* Fila inferior: Estado disponible y Botón Reservar */}
+          <div className="kyrios-barber-footer">
+            <div className="kyrios-barber-status">
+              <span className="kyrios-status-dot" aria-hidden="true" />
+              <span>Disponible</span>
+            </div>
 
             <button
               type="button"
-              className="btn-kyrios-primary py-1 px-3 w-100 w-sm-auto text-center"
-              style={{ fontSize: '0.75rem' }}
+              className="btn-kyrios-primary kyrios-barber-book-btn"
               onClick={() => onReservar(barbero)}
               aria-label={`Reservar con ${nombreCompleto}`}
             >

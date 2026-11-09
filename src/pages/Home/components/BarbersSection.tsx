@@ -102,9 +102,9 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
         {/* Estado: Lista de Barberos — máx. 3 en Home */}
         {!isLoading && !error && barberos.length > 0 && (
           <>
-            <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col justify-content-center">
+            <div className="row g-3 g-lg-4 justify-content-center">
               {barberos.slice(0, 3).map((barbero) => (
-                <div key={barbero.id} className="col-6 col-sm-6 col-lg-4">
+                <div key={barbero.id} className="col-12 col-md-6 col-lg-4">
                   <BarberCard
                     barbero={barbero}
                     onReservar={onReservarBarbero}
