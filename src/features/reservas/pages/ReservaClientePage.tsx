@@ -448,6 +448,19 @@ export const ReservaClientePage = () => {
   const [clienteSesion, setClienteSesion] = useState<ClienteSesionDTO | null>(
     () => clientesService.obtenerSesion(),
   );
+  const [mostrarMisReservas, setMostrarMisReservas] = useState<boolean>(
+    () => typeof window !== 'undefined' && (window.location.hash === '#mis-reservas' || searchParams.get('tab') === 'mis-reservas'),
+  );
+
+  useEffect(() => {
+    const onHashChange = () => {
+      if (window.location.hash === '#mis-reservas') {
+        setMostrarMisReservas(true);
+      }
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
   const { data: perfilCliente } = usePerfilCliente(Boolean(clienteSesion));
   const cancelarMiReserva = useCancelarMiReserva();
 
@@ -1095,45 +1108,70 @@ export const ReservaClientePage = () => {
 
       <section className="card card-surface border-0 shadow-sm mb-4">
         <div className="card-body d-flex flex-wrap align-items-center justify-content-between gap-3">
-          <div>
-            {clienteSesion ? (
-              <>
-                <h2 className="h6 fw-bold mb-1">
-                  Sesión de cliente: {clienteSesion.nombre} {clienteSesion.apellido ?? ''}
-                </h2>
-                <p className="small text-surface-muted mb-0">
-                  Tus reservas quedarán asociadas a esta cuenta.
-                </p>
-              </>
-            ) : (
-              <>
-                <h2 className="h6 fw-bold mb-1">Reserva como invitado o con tu cuenta</h2>
-                <p className="small text-surface-muted mb-0">
-                  Con tu cuenta podrás consultar y cambiar tus citas desde aquí.
-                </p>
-              </>
-            )}
+          <div className="d-flex align-items-center gap-3">
+            <div
+              className="rounded-circle d-flex align-items-center justify-content-center bg-primary-subtle text-primary flex-shrink-0"
+              style={{ width: 42, height: 42 }}
+              aria-hidden="true"
+            >
+              <UserRound size={20} />
+            </div>
+            <div>
+              {clienteSesion ? (
+                <>
+                  <div className="d-flex align-items-center gap-2 flex-wrap">
+                    <h2 className="h6 fw-bold mb-0">
+                      {clienteSesion.nombre} {clienteSesion.apellido ?? ''}
+                    </h2>
+                    <span className="badge rounded-pill bg-success-subtle text-success border border-success-subtle small">
+                      Sesión activa
+                    </span>
+                  </div>
+                  <p className="small text-surface-muted mb-0">
+                    Tus reservas quedarán guardadas automáticamente en tu cuenta.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h2 className="h6 fw-bold mb-1">Reserva como invitado o con tu cuenta</h2>
+                  <p className="small text-surface-muted mb-0">
+                    Con tu cuenta podrás consultar y cambiar tus citas en cualquier momento.
+                  </p>
+                </>
+              )}
+            </div>
           </div>
           {clienteSesion ? (
-            <div className="d-flex flex-wrap align-items-center gap-3">
-              <a className="btn btn-sm btn-outline-primary" href="#mis-reservas">
-                Ver mis reservas
-              </a>
-              <button type="button" className="btn btn-sm btn-outline-secondary" onClick={cerrarSesionCliente}>
-                Cerrar sesión de cliente
+            <div className="d-flex flex-wrap align-items-center gap-2">
+              <button
+                type="button"
+                className={`btn btn-sm ${mostrarMisReservas ? 'btn-primary' : 'btn-outline-primary'} d-inline-flex align-items-center gap-1.5`}
+                onClick={() => setMostrarMisReservas((prev) => !prev)}
+                aria-expanded={mostrarMisReservas}
+                aria-controls="mis-reservas"
+              >
+                <CalendarDays size={15} aria-hidden="true" />
+                <span>{mostrarMisReservas ? 'Ocultar mis reservas' : 'Mis reservas'}</span>
+              </button>
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-secondary"
+                onClick={cerrarSesionCliente}
+              >
+                Cerrar sesión
               </button>
             </div>
           ) : (
             <div className="d-flex flex-wrap gap-2">
               <Link
-                className="btn btn-outline-secondary"
+                className="btn btn-outline-secondary btn-sm"
                 to={'/' + slugActivo + '/cliente/iniciar-sesion?returnTo=' + encodeURIComponent(rutaActual)}
                 state={{ returnTo: rutaActual }}
               >
                 Iniciar sesión
               </Link>
               <Link
-                className="btn btn-primary"
+                className="btn btn-primary btn-sm"
                 to={'/' + slugActivo + '/cliente/registro?returnTo=' + encodeURIComponent(rutaActual)}
                 state={{ returnTo: rutaActual }}
               >
@@ -1144,7 +1182,11 @@ export const ReservaClientePage = () => {
         </div>
       </section>
 
-      {clienteSesion && <MisReservasSection />}
+      {clienteSesion && mostrarMisReservas && (
+        <div className="mb-4">
+          <MisReservasSection onCerrar={() => setMostrarMisReservas(false)} />
+        </div>
+      )}
 
       <nav aria-label="Pasos de la reserva" className="mb-4 booking-stepper-container">
         <div className="booking-stepper-segments" aria-hidden="true">
