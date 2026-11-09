@@ -759,7 +759,7 @@ export default function ReservasAdministrativasPage() {
         </div>
       </header>
 
-      <section className="card card-surface border-0 shadow-sm mb-4">
+      <section className="card card-surface border-0 shadow-sm mb-4 reservations-admin__filters-card">
         <div className="card-body p-3 p-lg-4">
           <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
             <div>
@@ -811,9 +811,9 @@ export default function ReservasAdministrativasPage() {
               )}
             </div>
           </div>
-          <div className="row g-3 align-items-end">
-            <div className="col-12 col-sm-6 col-lg-3">
-              <label className="form-label small fw-semibold" htmlFor="admin-reservas-desde">Desde</label>
+          <div className="row g-2 g-md-3 align-items-end">
+            <div className="col-12 col-sm-6 col-lg-2">
+              <label className="form-label" htmlFor="admin-reservas-desde">Desde</label>
               <input
                 id="admin-reservas-desde"
                 type="date"
@@ -835,8 +835,8 @@ export default function ReservasAdministrativasPage() {
                 onChange={(event) => setDesde(event.target.value)}
               />
             </div>
-            <div className="col-12 col-sm-6 col-lg-3">
-              <label className="form-label small fw-semibold" htmlFor="admin-reservas-hasta">Hasta</label>
+            <div className="col-12 col-sm-6 col-lg-2">
+              <label className="form-label" htmlFor="admin-reservas-hasta">Hasta</label>
               <input
                 id="admin-reservas-hasta"
                 type="date"
@@ -858,17 +858,22 @@ export default function ReservasAdministrativasPage() {
                 onChange={(event) => setHasta(event.target.value)}
               />
             </div>
-            <div className="col-12 col-sm-4 col-lg-2">
-              <label className="form-label small fw-semibold" htmlFor="admin-reservas-estado">Estado</label>
-              <select id="admin-reservas-estado" className="form-select" value={estado} onChange={(event) => setEstado(event.target.value as EstadoReservaDTO | '')}>
+            <div className="col-12 col-sm-6 col-lg-2">
+              <label className="form-label" htmlFor="admin-reservas-estado">Estado</label>
+              <select
+                id="admin-reservas-estado"
+                className="form-select"
+                value={estado}
+                onChange={(event) => setEstado(event.target.value as EstadoReservaDTO | '')}
+              >
                 <option value="">Todos</option>
                 {Object.entries(estados).map(([valor, etiqueta]) => (
                   <option key={valor} value={valor}>{etiqueta}</option>
                 ))}
               </select>
             </div>
-            <div className="col-12 col-sm-4 col-lg-2">
-              <label className="form-label small fw-semibold" htmlFor="admin-reservas-barbero">Barbero</label>
+            <div className="col-12 col-sm-6 col-lg-4">
+              <label className="form-label" htmlFor="admin-reservas-barbero">Barbero</label>
               <select
                 id="admin-reservas-barbero"
                 className="form-select"
@@ -883,8 +888,15 @@ export default function ReservasAdministrativasPage() {
                 ))}
               </select>
             </div>
-            <div className="col-12 col-sm-4 col-lg-2">
-              <Button type="button" className="w-100" disabled={filtroInvalido} onClick={aplicarFiltros}>Aplicar</Button>
+            <div className="col-12 col-sm-12 col-lg-2">
+              <Button
+                type="button"
+                className="w-100 reservations-admin__filters-btn"
+                disabled={filtroInvalido}
+                onClick={aplicarFiltros}
+              >
+                Aplicar
+              </Button>
               {hayFiltrosModificados && (
                 <div className="text-center mt-1">
                   <button

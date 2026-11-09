@@ -772,3 +772,52 @@
   }
 }
 
+/* ─── Filtros de Reservas (Compactos, Alineados y sin Desbordes) ─── */
+.reservations-admin__filters-card {
+  border-radius: 14px !important;
+}
+
+.reservations-admin__filters-card .card-body {
+  padding: 1rem 1.25rem !important;
+}
+
+.reservations-admin__filters-card .form-label {
+  font-size: 0.74rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem !important;
+  color: var(--bs-secondary-color) !important;
+}
+
+.reservations-admin__filters-card .form-control,
+.reservations-admin__filters-card .form-select {
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0.38rem 0.75rem !important;
+  font-size: 0.84rem !important;
+  font-weight: 500 !important;
+  border-radius: 9px !important;
+  line-height: 1.4 !important;
+}
+
+.reservations-admin__filters-card .form-select {
+  padding-right: 2.25rem !important;
+  background-position: right 0.75rem center !important;
+  background-size: 14px 10px !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reservations-admin__filters-card .reservations-admin__filters-btn {
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0.38rem 0.85rem !important;
+  font-size: 0.84rem !important;
+  font-weight: 700 !important;
+  border-radius: 9px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
