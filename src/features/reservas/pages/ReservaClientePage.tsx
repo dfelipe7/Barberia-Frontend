@@ -37,7 +37,6 @@ import type {
   ReservaCreadaDTO,
 } from '../api/reservas.dto';
 import { clientesService, reservasService } from '../api/reservas.service';
-import { MisReservasSection } from '../components/MisReservasSection';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import { mapApiError } from '../../../shared/lib/mapApiError';
@@ -448,19 +447,6 @@ export const ReservaClientePage = () => {
   const [clienteSesion, setClienteSesion] = useState<ClienteSesionDTO | null>(
     () => clientesService.obtenerSesion(),
   );
-  const [mostrarMisReservas, setMostrarMisReservas] = useState<boolean>(
-    () => typeof window !== 'undefined' && (window.location.hash === '#mis-reservas' || searchParams.get('tab') === 'mis-reservas'),
-  );
-
-  useEffect(() => {
-    const onHashChange = () => {
-      if (window.location.hash === '#mis-reservas') {
-        setMostrarMisReservas(true);
-      }
-    };
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
-  }, []);
   const { data: perfilCliente } = usePerfilCliente(Boolean(clienteSesion));
   const cancelarMiReserva = useCancelarMiReserva();
 
@@ -1143,16 +1129,13 @@ export const ReservaClientePage = () => {
           </div>
           {clienteSesion ? (
             <div className="d-flex flex-wrap align-items-center gap-2">
-              <button
-                type="button"
-                className={`btn btn-sm ${mostrarMisReservas ? 'btn-primary' : 'btn-outline-primary'} d-inline-flex align-items-center gap-1.5`}
-                onClick={() => setMostrarMisReservas((prev) => !prev)}
-                aria-expanded={mostrarMisReservas}
-                aria-controls="mis-reservas"
+              <Link
+                to={`/${slugActivo}/cliente/mi-cuenta`}
+                className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1.5"
               >
                 <CalendarDays size={15} aria-hidden="true" />
-                <span>{mostrarMisReservas ? 'Ocultar mis reservas' : 'Mis reservas'}</span>
-              </button>
+                <span>Mi Portal · Mis Citas</span>
+              </Link>
               <button
                 type="button"
                 className="btn btn-sm btn-outline-secondary"
@@ -1181,12 +1164,6 @@ export const ReservaClientePage = () => {
           )}
         </div>
       </section>
-
-      {clienteSesion && mostrarMisReservas && (
-        <div className="mb-4">
-          <MisReservasSection onCerrar={() => setMostrarMisReservas(false)} />
-        </div>
-      )}
 
       <nav aria-label="Pasos de la reserva" className="mb-4 booking-stepper-container">
         <div className="booking-stepper-segments" aria-hidden="true">
