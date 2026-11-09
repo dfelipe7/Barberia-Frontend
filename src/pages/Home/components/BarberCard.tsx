@@ -93,12 +93,8 @@ export const BarberCard: React.FC<BarberCardProps> = ({
             <span className="kyrios-barber-role">Barbero Profesional</span>
           </div>
 
-          {/* Fila central: Atención en sede y 'Ver perfil' */}
+          {/* Fila central: Enlace Ver perfil */}
           <div className="kyrios-barber-content">
-            <span className="kyrios-barber-sede">
-              <MapPin size={12} className="me-1 opacity-75" aria-hidden="true" />
-              Atención en sede
-            </span>
             <button
               type="button"
               className="kyrios-barber-more-btn"
@@ -109,12 +105,12 @@ export const BarberCard: React.FC<BarberCardProps> = ({
             </button>
           </div>
 
-          {/* Fila inferior: Estado disponible y Botón Reservar */}
+          {/* Fila inferior: Sede y Botón Reservar */}
           <div className="kyrios-barber-footer">
-            <div className="kyrios-barber-status">
-              <span className="kyrios-status-dot" aria-hidden="true" />
-              <span>Disponible</span>
-            </div>
+            <span className="kyrios-barber-sede">
+              <MapPin size={12} className="me-1 opacity-75" aria-hidden="true" />
+              Atención en sede
+            </span>
 
             <button
               type="button"
