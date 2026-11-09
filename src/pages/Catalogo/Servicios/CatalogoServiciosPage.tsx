@@ -83,7 +83,7 @@ const CatalogoServiciosPage: React.FC = () => {
   const isSearching = query !== debouncedQuery;
 
   return (
-    <div className="kyrios-home d-flex flex-column" style={{ minHeight: '100vh' }}>
+    <div className="kyrios-home d-flex flex-column" style={{ minHeight: '100dvh' }}>
       <HomeNavbar
         isAuthenticated={isAuthenticated}
         nombre={nombre}

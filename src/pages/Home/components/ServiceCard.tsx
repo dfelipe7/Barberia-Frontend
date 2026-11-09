@@ -78,42 +78,29 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   return (
     <>
       <article className="kyrios-service-card" aria-label={servicio.nombre}>
-        <div
-          className="kyrios-service-img-wrap"
+        <button
+          type="button"
+          className="kyrios-service-img-wrap border-0 p-0 text-start w-100 bg-transparent"
           onClick={() => setModalAbierto(true)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              setModalAbierto(true);
-            }
-          }}
           aria-label={`Ver información de ${servicio.nombre}`}
         >
           {fotoCompleta ? (
             <>
               {/* key={fotoCompleta}: remonta ServicioImg cuando cambia la URL */}
               <ServicioImg key={fotoCompleta} src={fotoCompleta} nombre={servicio.nombre} />
-              <button
-                type="button"
+              <span
                 className="kyrios-img-expand-btn"
-                title={`Ver detalles de ${servicio.nombre}`}
-                aria-label={`Ver detalles de ${servicio.nombre}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setModalAbierto(true);
-                }}
+                aria-hidden="true"
               >
                 <Maximize2 size={15} />
-              </button>
+              </span>
             </>
           ) : (
             <div className="kyrios-service-img-placeholder" aria-hidden="true">
               <span>{servicio.nombre.charAt(0)}</span>
             </div>
           )}
-        </div>
+        </button>
 
         <div className="kyrios-service-body">
           <h3 className="kyrios-service-title">{servicio.nombre}</h3>
