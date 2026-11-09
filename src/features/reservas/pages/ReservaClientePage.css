@@ -484,24 +484,45 @@
 
 .booking-slots-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 130px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr));
   gap: 0.65rem;
 }
 
 .booking-slot-pill {
   min-height: 44px;
-  padding: 0.5rem 0.85rem;
+  padding: 0.45rem 0.65rem;
   border-radius: 10px;
   border: 1px solid var(--surface-card-border);
   background: var(--surface-input-bg);
   color: var(--bs-body-color);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 0.4rem;
   font-weight: 600;
   font-size: 0.88rem;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
   transition: all 180ms ease;
   cursor: pointer;
+}
+
+.booking-slot-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.booking-slot-time {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.booking-slot-end {
+  font-weight: 500;
+  opacity: 0.82;
+  white-space: nowrap;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -519,13 +540,13 @@
 }
 
 .booking-slot-pill--active .booking-slot-end {
-  color: rgba(255, 255, 255, 0.75) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  opacity: 1;
 }
 
 .booking-slot-check {
   color: #fff;
   flex-shrink: 0;
-  margin-left: 0.25rem;
 }
 
 /* ─── Ticket Editorial de Resumen (Paso 4) ─── */

@@ -1759,9 +1759,11 @@ export const ReservaClientePage = () => {
                               aria-pressed={activo}
                               onClick={() => setHoraSeleccionada(slot.startTime)}
                             >
-                              <span className="booking-slot-time">{slot.startTime}</span>
-                              <span className="booking-slot-end">a {slot.endTime}</span>
-                              {activo && <Check size={13} className="booking-slot-check" />}
+                              <span className="booking-slot-range">
+                                <span className="booking-slot-time">{slot.startTime}</span>
+                                <span className="booking-slot-end">a {slot.endTime}</span>
+                              </span>
+                              {activo && <Check size={13} className="booking-slot-check" aria-hidden="true" />}
                             </button>
                           );
                         })}
@@ -1802,9 +1804,11 @@ export const ReservaClientePage = () => {
                               aria-pressed={activo}
                               onClick={() => setHoraSeleccionada(slot.startTime)}
                             >
-                              <span className="booking-slot-time">{slot.startTime}</span>
-                              <span className="booking-slot-end">a {slot.endTime}</span>
-                              {activo && <Check size={13} className="booking-slot-check" />}
+                              <span className="booking-slot-range">
+                                <span className="booking-slot-time">{slot.startTime}</span>
+                                <span className="booking-slot-end">a {slot.endTime}</span>
+                              </span>
+                              {activo && <Check size={13} className="booking-slot-check" aria-hidden="true" />}
                             </button>
                           );
                         })}
@@ -1845,9 +1849,11 @@ export const ReservaClientePage = () => {
                               aria-pressed={activo}
                               onClick={() => setHoraSeleccionada(slot.startTime)}
                             >
-                              <span className="booking-slot-time">{slot.startTime}</span>
-                              <span className="booking-slot-end">a {slot.endTime}</span>
-                              {activo && <Check size={13} className="booking-slot-check" />}
+                              <span className="booking-slot-range">
+                                <span className="booking-slot-time">{slot.startTime}</span>
+                                <span className="booking-slot-end">a {slot.endTime}</span>
+                              </span>
+                              {activo && <Check size={13} className="booking-slot-check" aria-hidden="true" />}
                             </button>
                           );
                         })}
