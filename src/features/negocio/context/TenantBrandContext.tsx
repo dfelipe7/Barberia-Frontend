@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { perfilNegocioApi } from '../services/perfilNegocioApi';
 import type { PerfilNegocioPublicoResponse } from '../types/perfilNegocio.types';
@@ -190,26 +190,29 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
     };
   }, [cargarPerfil, slug]);
 
-  const value: TenantBrandContextValue = {
-    slug,
-    nombreNegocio: perfil?.negocio?.nombre || BRAND.name,
-    frasePrincipal: perfil?.frasePrincipal || BRAND.tagline,
-    logoBlancoUrl: resolverUrlRecurso(perfil?.logoBlancoUrl),
-    logoNegroUrl: resolverUrlRecurso(perfil?.logoNegroUrl),
-    bannerUrl: resolverUrlRecurso(perfil?.bannerUrl),
-    faviconUrl: resolverUrlRecurso(perfil?.faviconUrl),
-    direccion: perfil?.direccion || null,
-    ciudad: perfil?.ciudad || null,
-    departamento: perfil?.departamento || null,
-    referencia: perfil?.referencia || null,
-    latitud: perfil?.latitud ?? null,
-    longitud: perfil?.longitud ?? null,
-    mapsUrl: perfil?.mapsUrl || null,
-    temaKey: perfil?.temaKey || resolverTemaTenant(slug),
-    configurado: perfil?.configurado ?? false,
-    redesSociales,
-    recargarPerfil: cargarPerfil,
-  };
+  const value: TenantBrandContextValue = useMemo(
+    () => ({
+      slug,
+      nombreNegocio: perfil?.negocio?.nombre || BRAND.name,
+      frasePrincipal: perfil?.frasePrincipal || BRAND.tagline,
+      logoBlancoUrl: resolverUrlRecurso(perfil?.logoBlancoUrl),
+      logoNegroUrl: resolverUrlRecurso(perfil?.logoNegroUrl),
+      bannerUrl: resolverUrlRecurso(perfil?.bannerUrl),
+      faviconUrl: resolverUrlRecurso(perfil?.faviconUrl),
+      direccion: perfil?.direccion || null,
+      ciudad: perfil?.ciudad || null,
+      departamento: perfil?.departamento || null,
+      referencia: perfil?.referencia || null,
+      latitud: perfil?.latitud ?? null,
+      longitud: perfil?.longitud ?? null,
+      mapsUrl: perfil?.mapsUrl || null,
+      temaKey: perfil?.temaKey || resolverTemaTenant(slug),
+      configurado: perfil?.configurado ?? false,
+      redesSociales,
+      recargarPerfil: cargarPerfil,
+    }),
+    [slug, perfil, redesSociales, cargarPerfil]
+  );
 
   return <TenantBrandContext.Provider value={value}>{children}</TenantBrandContext.Provider>;
 };
