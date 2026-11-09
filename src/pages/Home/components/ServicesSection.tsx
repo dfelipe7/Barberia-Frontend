@@ -105,9 +105,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
         {/* Estado: Lista de Servicios Activos — máx. 3 en Home */}
         {!isLoading && !error && serviciosActivos.length > 0 && (
           <>
-            <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col">
+            <div className="row g-3 g-lg-4">
               {serviciosActivos.slice(0, 3).map((servicio) => (
-                <div key={servicio.id} className="col-6 col-md-6 col-lg-4">
+                <div key={servicio.id} className="col-12 col-md-6 col-lg-4">
                   <ServiceCard
                     servicio={servicio}
                     onReservar={onReservarServicio}

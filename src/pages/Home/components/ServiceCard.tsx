@@ -22,7 +22,7 @@ const ServicioImg: React.FC<{ src: string; nombre: string }> = ({ src, nombre })
       <img
         src={src}
         alt={`Servicio de ${nombre}`}
-        className="kyrios-service-img"
+        className="kyrios-card-thumb-img"
         loading="lazy"
         onError={() => setErrorImagen(true)}
       />
@@ -30,7 +30,7 @@ const ServicioImg: React.FC<{ src: string; nombre: string }> = ({ src, nombre })
   }
 
   return (
-    <div className="kyrios-service-img-placeholder" aria-hidden="true">
+    <div className="kyrios-card-thumb-placeholder" aria-hidden="true">
       <span>{nombre.charAt(0)}</span>
     </div>
   );
@@ -68,49 +68,71 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   return (
     <>
       <article className="kyrios-service-card" aria-label={servicio.nombre}>
+        {/* Miniatura cuadrada a la izquierda */}
         <button
           type="button"
-          className="kyrios-service-img-wrap border-0 p-0 text-start w-100 bg-transparent"
+          className="kyrios-card-thumb-btn border-0 p-0 text-start bg-transparent"
           onClick={() => setModalAbierto(true)}
-          aria-label={`Ver información de ${servicio.nombre}`}
+          aria-label={`Ver detalles de ${servicio.nombre}`}
         >
-          {fotoCompleta ? (
-            <>
-              {/* key={fotoCompleta}: remonta ServicioImg cuando cambia la URL */}
-              <ServicioImg key={fotoCompleta} src={fotoCompleta} nombre={servicio.nombre} />
-              <span
-                className="kyrios-img-expand-btn"
-                aria-hidden="true"
-              >
-                <Maximize2 size={15} />
-              </span>
-            </>
-          ) : (
-            <div className="kyrios-service-img-placeholder" aria-hidden="true">
-              <span>{servicio.nombre.charAt(0)}</span>
-            </div>
-          )}
+          <div className="kyrios-card-thumb">
+            {fotoCompleta ? (
+              <>
+                {/* key={fotoCompleta}: remonta ServicioImg cuando cambia la URL */}
+                <ServicioImg key={fotoCompleta} src={fotoCompleta} nombre={servicio.nombre} />
+                <span
+                  className="kyrios-img-expand-btn"
+                  aria-hidden="true"
+                >
+                  <Maximize2 size={13} />
+                </span>
+              </>
+            ) : (
+              <div className="kyrios-card-thumb-placeholder" aria-hidden="true">
+                <span>{servicio.nombre.charAt(0)}</span>
+              </div>
+            )}
+          </div>
         </button>
 
+        {/* Contenido a la derecha */}
         <div className="kyrios-service-body">
-          <h3 className="kyrios-service-title">{servicio.nombre}</h3>
+          {/* Fila superior: Título y Precio */}
+          <div className="kyrios-service-header">
+            <h3 className="kyrios-service-title" title={servicio.nombre}>
+              {servicio.nombre}
+            </h3>
+            <span className="kyrios-service-price">
+              {formatPrecio(servicio.precio)}
+            </span>
+          </div>
 
-          <p className="kyrios-service-desc">{servicio.descripcion}</p>
+          {/* Fila central: Categoría / Etiqueta y breve descripción con 'Ver más' */}
+          <div className="kyrios-service-content">
+            <span className="kyrios-service-category-tag">Servicio</span>
+            {servicio.descripcion ? (
+              <p className="kyrios-service-desc">{servicio.descripcion}</p>
+            ) : null}
+            <button
+              type="button"
+              className="kyrios-service-more-btn"
+              onClick={() => setModalAbierto(true)}
+              aria-label={`Ver más información de ${servicio.nombre}`}
+            >
+              Ver más
+            </button>
+          </div>
 
-          <div className="kyrios-service-meta">
-            <div>
-              <span className="kyrios-service-price">
-                {formatPrecio(servicio.precio)}
-              </span>
-              <div className="kyrios-service-duration mt-1">
-                <Clock size={14} aria-hidden="true" />
-                <span>{servicio.duracionMinutos} minutos</span>
-              </div>
+          {/* Fila inferior: Duración y Botón Reservar */}
+          <div className="kyrios-service-footer">
+            <div className="kyrios-service-duration">
+              <Clock size={13} aria-hidden="true" />
+              <span>{servicio.duracionMinutos} min</span>
             </div>
 
             <button
               type="button"
-              className="btn-kyrios-dark"
+              className="btn-kyrios-dark kyrios-service-book-btn"
               onClick={() => onReservar(servicio)}
               aria-label={`Reservar ${servicio.nombre}`}
             >
