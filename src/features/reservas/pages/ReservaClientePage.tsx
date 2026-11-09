@@ -61,6 +61,7 @@ interface ReservaLocationState {
 }
 
 type PasoReserva = 1 | 2 | 3 | 4;
+type JornadaHorario = 'manana' | 'tarde' | 'noche';
 
 interface ReservaBorradorStorage {
   servicioId: number | null;
@@ -592,6 +593,20 @@ export const ReservaClientePage = () => {
     () => horariosDisponibles.filter((slot) => slot.startTime >= '17:00'),
     [horariosDisponibles],
   );
+
+  const [jornadaSeleccionada, setJornadaSeleccionada] = useState<JornadaHorario>('manana');
+
+  useEffect(() => {
+    if (horaSeleccionada) {
+      if (horaSeleccionada < '12:00') setJornadaSeleccionada('manana');
+      else if (horaSeleccionada < '17:00') setJornadaSeleccionada('tarde');
+      else setJornadaSeleccionada('noche');
+    } else if (horariosDisponibles.length > 0) {
+      if (horariosManana.length > 0) setJornadaSeleccionada('manana');
+      else if (horariosTarde.length > 0) setJornadaSeleccionada('tarde');
+      else if (horariosNoche.length > 0) setJornadaSeleccionada('noche');
+    }
+  }, [fechaSeleccionada, horaSeleccionada, horariosDisponibles.length, horariosManana.length, horariosTarde.length, horariosNoche.length]);
   const consultasDisponibilidadFechas = useQueries({
     queries: fechasDeLaPagina.map((fecha) => {
       const filtro = servicioSeleccionado && barberoSeleccionado
@@ -1677,10 +1692,47 @@ export const ReservaClientePage = () => {
                 </div>
               </div>
 
-              {/* Bloques temáticos de jornada: Mañana, Tarde, Noche */}
-              <div className="booking-dayparts-grid d-flex flex-column gap-3">
-                {horariosManana.length > 0 && (
-                  <div className="booking-daypart-card card-surface p-3 rounded-3">
+              {/* Pestañas de turnos: Mañana, Tarde, Noche */}
+              <div className="booking-daypart-tabs" role="tablist" aria-label="Turnos disponibles">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={jornadaSeleccionada === 'manana'}
+                  className={`booking-daypart-tab ${jornadaSeleccionada === 'manana' ? 'is-active' : ''}`}
+                  onClick={() => setJornadaSeleccionada('manana')}
+                >
+                  <Sun size={16} aria-hidden="true" />
+                  <span>Mañana</span>
+                  <span className="booking-daypart-tab-badge">{horariosManana.length}</span>
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={jornadaSeleccionada === 'tarde'}
+                  className={`booking-daypart-tab ${jornadaSeleccionada === 'tarde' ? 'is-active' : ''}`}
+                  onClick={() => setJornadaSeleccionada('tarde')}
+                >
+                  <Sunset size={16} aria-hidden="true" />
+                  <span>Tarde</span>
+                  <span className="booking-daypart-tab-badge">{horariosTarde.length}</span>
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={jornadaSeleccionada === 'noche'}
+                  className={`booking-daypart-tab ${jornadaSeleccionada === 'noche' ? 'is-active' : ''}`}
+                  onClick={() => setJornadaSeleccionada('noche')}
+                >
+                  <Moon size={16} aria-hidden="true" />
+                  <span>Noche</span>
+                  <span className="booking-daypart-tab-badge">{horariosNoche.length}</span>
+                </button>
+              </div>
+
+              {/* Contenido del turno activo */}
+              <div className="booking-daypart-card card-surface p-3 rounded-3" role="tabpanel">
+                {jornadaSeleccionada === 'manana' && (
+                  <>
                     <div className="booking-daypart-header d-flex align-items-center justify-content-between mb-3">
                       <div className="d-flex align-items-center gap-2">
                         <span className="booking-daypart-icon booking-daypart-icon--morning">
@@ -1692,32 +1744,38 @@ export const ReservaClientePage = () => {
                         </div>
                       </div>
                       <span className="badge rounded-pill bg-body-tertiary text-surface-muted border">
-                        {horariosManana.length} {horariosManana.length === 1 ? 'hora' : 'horas'}
+                        {horariosManana.length} {horariosManana.length === 1 ? 'hora disponible' : 'horas disponibles'}
                       </span>
                     </div>
-                    <div className="booking-slots-grid">
-                      {horariosManana.map((slot) => {
-                        const activo = slot.startTime === horaSeleccionada;
-                        return (
-                          <button
-                            key={slot.startTime}
-                            type="button"
-                            className={`booking-slot-pill ${activo ? 'booking-slot-pill--active' : ''}`}
-                            aria-pressed={activo}
-                            onClick={() => setHoraSeleccionada(slot.startTime)}
-                          >
-                            <span className="booking-slot-time">{slot.startTime}</span>
-                            <span className="booking-slot-end">a {slot.endTime}</span>
-                            {activo && <Check size={13} className="booking-slot-check" />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                    {horariosManana.length > 0 ? (
+                      <div className="booking-slots-grid">
+                        {horariosManana.map((slot) => {
+                          const activo = slot.startTime === horaSeleccionada;
+                          return (
+                            <button
+                              key={slot.startTime}
+                              type="button"
+                              className={`booking-slot-pill ${activo ? 'booking-slot-pill--active' : ''}`}
+                              aria-pressed={activo}
+                              onClick={() => setHoraSeleccionada(slot.startTime)}
+                            >
+                              <span className="booking-slot-time">{slot.startTime}</span>
+                              <span className="booking-slot-end">a {slot.endTime}</span>
+                              {activo && <Check size={13} className="booking-slot-check" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 text-surface-muted">
+                        <p className="mb-0 small">No hay horarios disponibles en la mañana para este día.</p>
+                      </div>
+                    )}
+                  </>
                 )}
 
-                {horariosTarde.length > 0 && (
-                  <div className="booking-daypart-card card-surface p-3 rounded-3">
+                {jornadaSeleccionada === 'tarde' && (
+                  <>
                     <div className="booking-daypart-header d-flex align-items-center justify-content-between mb-3">
                       <div className="d-flex align-items-center gap-2">
                         <span className="booking-daypart-icon booking-daypart-icon--afternoon">
@@ -1729,32 +1787,38 @@ export const ReservaClientePage = () => {
                         </div>
                       </div>
                       <span className="badge rounded-pill bg-body-tertiary text-surface-muted border">
-                        {horariosTarde.length} {horariosTarde.length === 1 ? 'hora' : 'horas'}
+                        {horariosTarde.length} {horariosTarde.length === 1 ? 'hora disponible' : 'horas disponibles'}
                       </span>
                     </div>
-                    <div className="booking-slots-grid">
-                      {horariosTarde.map((slot) => {
-                        const activo = slot.startTime === horaSeleccionada;
-                        return (
-                          <button
-                            key={slot.startTime}
-                            type="button"
-                            className={`booking-slot-pill ${activo ? 'booking-slot-pill--active' : ''}`}
-                            aria-pressed={activo}
-                            onClick={() => setHoraSeleccionada(slot.startTime)}
-                          >
-                            <span className="booking-slot-time">{slot.startTime}</span>
-                            <span className="booking-slot-end">a {slot.endTime}</span>
-                            {activo && <Check size={13} className="booking-slot-check" />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                    {horariosTarde.length > 0 ? (
+                      <div className="booking-slots-grid">
+                        {horariosTarde.map((slot) => {
+                          const activo = slot.startTime === horaSeleccionada;
+                          return (
+                            <button
+                              key={slot.startTime}
+                              type="button"
+                              className={`booking-slot-pill ${activo ? 'booking-slot-pill--active' : ''}`}
+                              aria-pressed={activo}
+                              onClick={() => setHoraSeleccionada(slot.startTime)}
+                            >
+                              <span className="booking-slot-time">{slot.startTime}</span>
+                              <span className="booking-slot-end">a {slot.endTime}</span>
+                              {activo && <Check size={13} className="booking-slot-check" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 text-surface-muted">
+                        <p className="mb-0 small">No hay horarios disponibles en la tarde para este día.</p>
+                      </div>
+                    )}
+                  </>
                 )}
 
-                {horariosNoche.length > 0 && (
-                  <div className="booking-daypart-card card-surface p-3 rounded-3">
+                {jornadaSeleccionada === 'noche' && (
+                  <>
                     <div className="booking-daypart-header d-flex align-items-center justify-content-between mb-3">
                       <div className="d-flex align-items-center gap-2">
                         <span className="booking-daypart-icon booking-daypart-icon--night">
@@ -1766,28 +1830,34 @@ export const ReservaClientePage = () => {
                         </div>
                       </div>
                       <span className="badge rounded-pill bg-body-tertiary text-surface-muted border">
-                        {horariosNoche.length} {horariosNoche.length === 1 ? 'hora' : 'horas'}
+                        {horariosNoche.length} {horariosNoche.length === 1 ? 'hora disponible' : 'horas disponibles'}
                       </span>
                     </div>
-                    <div className="booking-slots-grid">
-                      {horariosNoche.map((slot) => {
-                        const activo = slot.startTime === horaSeleccionada;
-                        return (
-                          <button
-                            key={slot.startTime}
-                            type="button"
-                            className={`booking-slot-pill ${activo ? 'booking-slot-pill--active' : ''}`}
-                            aria-pressed={activo}
-                            onClick={() => setHoraSeleccionada(slot.startTime)}
-                          >
-                            <span className="booking-slot-time">{slot.startTime}</span>
-                            <span className="booking-slot-end">a {slot.endTime}</span>
-                            {activo && <Check size={13} className="booking-slot-check" />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                    {horariosNoche.length > 0 ? (
+                      <div className="booking-slots-grid">
+                        {horariosNoche.map((slot) => {
+                          const activo = slot.startTime === horaSeleccionada;
+                          return (
+                            <button
+                              key={slot.startTime}
+                              type="button"
+                              className={`booking-slot-pill ${activo ? 'booking-slot-pill--active' : ''}`}
+                              aria-pressed={activo}
+                              onClick={() => setHoraSeleccionada(slot.startTime)}
+                            >
+                              <span className="booking-slot-time">{slot.startTime}</span>
+                              <span className="booking-slot-end">a {slot.endTime}</span>
+                              {activo && <Check size={13} className="booking-slot-check" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 text-surface-muted">
+                        <p className="mb-0 small">No hay horarios disponibles en la noche para este día.</p>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
