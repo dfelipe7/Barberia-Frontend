@@ -337,10 +337,10 @@ function PanelContenidoDetalleAdmin({
         />
       ) : (
         !estadoFinal && (
-          <div className="reservations-admin__detail-actions mt-3">
+          <div className="reservations-admin__detail-actions mt-2">
             <p className="small text-surface-muted mb-2">Acciones para esta cita:</p>
             <div className="d-flex flex-column gap-2">
-              <div className="d-flex flex-column flex-sm-row gap-2">
+              <div className="d-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem' }}>
                 <Button
                   type="button"
                   variant="primary"
@@ -348,7 +348,7 @@ function PanelContenidoDetalleAdmin({
                   disabled={marcarNoAsistidaPending || cancelarPending}
                   onClick={() => onEjecutarAccion('completar')}
                   icon={<CheckCircle2 size={15} />}
-                  className="w-100 flex-sm-fill justify-content-center text-center"
+                  className="w-100 justify-content-center text-center"
                 >
                   Marcar completada
                 </Button>
@@ -360,21 +360,21 @@ function PanelContenidoDetalleAdmin({
                     disabled={completarPending || cancelarPending}
                     onClick={() => onEjecutarAccion('no-asistio')}
                     icon={<UserX size={15} />}
-                    className="w-100 flex-sm-fill justify-content-center text-center"
+                    className="w-100 justify-content-center text-center"
                   >
                     No asistió
                   </Button>
                 )}
               </div>
               {reserva.estado !== 'IN_PROGRESS' && (
-                <div className="d-flex flex-column flex-sm-row gap-2">
+                <div className="d-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem' }}>
                   <Button
                     type="button"
                     variant="outline-primary"
                     onClick={onIniciarEdicion}
                     icon={<Clock3 size={15} />}
                     disabled={completarPending || marcarNoAsistidaPending || cancelarPending}
-                    className="w-100 flex-sm-fill justify-content-center text-center"
+                    className="w-100 justify-content-center text-center"
                   >
                     Reprogramar
                   </Button>
@@ -384,7 +384,7 @@ function PanelContenidoDetalleAdmin({
                     isLoading={cancelarPending}
                     disabled={completarPending || marcarNoAsistidaPending}
                     onClick={onCancelarReserva}
-                    className="w-100 flex-sm-fill justify-content-center text-center"
+                    className="w-100 justify-content-center text-center"
                   >
                     Cancelar reserva
                   </Button>
@@ -905,7 +905,7 @@ export default function ReservasAdministrativasPage() {
       </section>
 
       <div className="row g-4">
-        <section className="col-12 col-xl-7" aria-labelledby="admin-listado-titulo">
+        <section className="col-12 col-xl-7 col-xxl-8" aria-labelledby="admin-listado-titulo">
           <div className="card card-surface border-0 shadow-sm">
             <div className="card-body p-3 p-lg-4">
               <div className="d-flex justify-content-between align-items-center gap-2 mb-3">
@@ -1006,7 +1006,7 @@ export default function ReservasAdministrativasPage() {
           </div>
         </section>
 
-        <aside id="admin-detalle-reserva" className="col-12 col-xl-5 reservations-admin__aside" aria-label="Detalle de reserva">
+        <aside id="admin-detalle-reserva" className="col-12 col-xl-5 col-xxl-4 reservations-admin__aside" aria-label="Detalle de reserva">
           <div className="reservations-admin__detail-sticky">
             {!reservaActiva && (
               <div className="reservations-admin__detail-placeholder card card-surface border-0 shadow-sm">
