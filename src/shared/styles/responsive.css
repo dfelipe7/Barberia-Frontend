@@ -4,6 +4,19 @@
    Estándar unificado de breakpoints, fluidez, ergonomía táctil y vista móvil.
    ══════════════════════════════════════════════════════════════════════════════ */
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
 :root {
   /* ─── Variables de Área Segura (Safe Area Insets) ─────────────────────── */
   --safe-top: env(safe-area-inset-top, 0px);
@@ -11,18 +24,23 @@
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
 
+  /* ─── Ergonomía Táctil y Dimensiones Estándar ────────────────────────── */
+  --touch-min: 44px;
+  --touch-target-min: 44px;
+  --header-h: 60px;
+  --bottom-bar-h: 70px;
+  --radius-standard: 12px;
+
   /* ─── Espaciado Fluido Defensivo (clamp) ──────────────────────────────── */
   --space-page-x: clamp(0.75rem, 3.2vw, 2rem);
   --space-page-y: clamp(0.85rem, 3vw, 2.25rem);
   --space-card-p: clamp(0.85rem, 2.5vw, 1.5rem);
+  --gap-page: clamp(0.75rem, 3.2vw, 2rem);
 
   /* ─── Tipografía Fluida de Encabezados ───────────────────────────────── */
   --text-h1-fluid: clamp(1.65rem, 4.5vw, 2.75rem);
   --text-h2-fluid: clamp(1.35rem, 3.8vw, 2.15rem);
   --text-h3-fluid: clamp(1.15rem, 3vw, 1.65rem);
-
-  /* ─── Alturas de Toque Táctil (Ergonomía Móvil Apple/Google) ────────── */
-  --touch-target-min: 44px;
 }
 
 /* ─── Control Global de Desbordamiento y Altura Dinámica ───────────────── */
@@ -44,13 +62,17 @@ body {
 }
 
 /* ─── Prevención del Zoom Automático Forzado de iOS Safari en Inputs ───── */
-/* En iPhone, cualquier input con font-size < 16px provoca un zoom abrupto
-   que descuadra la pantalla. Fijamos 16px como mínimo seguro en móvil. */
+/* En móviles, font-size < 16px provoca zoom automático en Safari/Chrome.
+   Usamos max(16px, 1em) con especificidad defensiva sin necesidad de !important */
 @media (max-width: 767.98px) {
-  input:not([type='checkbox']):not([type='radio']),
-  select,
-  textarea {
-    font-size: 16px !important;
+  html body input:not([type='checkbox']):not([type='radio']),
+  html body select,
+  html body textarea,
+  html body .form-control,
+  html body .form-select,
+  html body .form-control-sm,
+  html body .form-select-sm {
+    font-size: max(16px, 1em);
   }
 }
 
@@ -64,13 +86,48 @@ body {
   padding-right: var(--space-page-x);
   padding-top: var(--space-page-y);
   padding-bottom: calc(var(--space-page-y) + var(--safe-bottom));
-  box-sizing: border-box;
 }
 
 /* ─── Tarjeta con Padding Fluido ──────────────────────────────────────── */
 .kyrios-card-fluid {
   padding: var(--space-card-p);
-  border-radius: 14px;
+  border-radius: var(--radius-standard, 12px);
+}
+
+/* ─── Ergonomía Táctil Mínima de 44px ──────────────────────────────────── */
+.touch-target,
+.btn-icon {
+  min-width: var(--touch-min, 44px);
+  min-height: var(--touch-min, 44px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 767.98px) {
+  .btn-close,
+  .navbar-toggler,
+  .page-link {
+    min-width: var(--touch-min, 44px);
+    min-height: var(--touch-min, 44px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* ─── Estados Interactivos Protegidos para Puntero Fino ──────────────── */
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover,
+  .card-hover:hover,
+  .interactive-hover:hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--bs-primary, currentColor);
+  outline-offset: 2px;
 }
 
 /* ─── Encabezados Fluidos ─────────────────────────────────────────────── */
@@ -215,13 +272,13 @@ body {
 
 /* Barra inferior flotante segura (Safe Area) */
 .safe-area-bottom-bar {
-  padding-bottom: calc(0.85rem + var(--safe-bottom));
+  padding-bottom: calc(1rem + var(--safe-bottom));
 }
 
 /* Soporte para tablas en móvil con deslizamiento suave */
 .table-responsive {
   -webkit-overflow-scrolling: touch;
-  border-radius: 10px;
+  border-radius: var(--radius-standard, 12px);
 }
 
 /* ─── Catálogo Móvil en Cuadrícula 2 Columnas (col-6) y Truncados ──────── */
@@ -288,6 +345,49 @@ body {
 
   .catalog-grid-2col .barbero-admin-card .card-body {
     padding: 0.75rem 0.4rem !important;
+  }
+}
+
+/* En dispositivos ultra-angostos (< 400px como Galaxy Fold abierto/cerrado),
+   forzamos una sola columna para evitar que las tarjetas se estrujen */
+@media (max-width: 399.98px) {
+  .catalog-grid-2col > * {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* ─── Soporte Móvil en Horizontal (Landscape con altura reducida <= 480px) ─ */
+@media (max-height: 480px) and (orientation: landscape) {
+  .modal-dialog {
+    max-height: 96dvh;
+    margin: 0.25rem auto;
+  }
+
+  .modal-content {
+    max-height: 96dvh;
+    overflow-y: auto;
+  }
+
+  .safe-area-bottom-bar {
+    padding-bottom: calc(0.35rem + var(--safe-bottom));
+  }
+
+  .kyrios-page-container {
+    padding-top: 0.5rem;
+    padding-bottom: calc(0.5rem + var(--safe-bottom));
+  }
+}
+
+/* ─── Accesibilidad: Reducción de Movimiento ───────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
