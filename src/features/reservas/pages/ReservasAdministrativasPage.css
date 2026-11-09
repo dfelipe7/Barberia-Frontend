@@ -214,6 +214,7 @@
   justify-content: space-between;
   gap: 0.75rem;
   margin-bottom: 1.15rem;
+  padding-top: 0.15rem;
 }
 
 .reservations-admin__detail-icon {
@@ -585,8 +586,8 @@
   .reservations-admin__mobile-sheet-body .reservations-admin__detail {
     position: static;
     border: 1px solid var(--bs-border-color) !important;
-    padding: 1.25rem !important;
-    border-radius: 16px !important;
+    padding: 1.25rem 1.35rem !important;
+    border-radius: 20px !important;
     background: var(--surface-card-bg, #1e293b) !important;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16) !important;
     margin-bottom: 1rem;
