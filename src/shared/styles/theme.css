@@ -788,6 +788,16 @@ a.btn:focus-visible {
   }
 }
 
+.brand-logo-name {
+  font-size: clamp(0.76rem, 2.8vw, 0.92rem);
+  max-width: clamp(145px, 46vw, 260px);
+}
+
+.sidebar--mobile .brand-logo-name {
+  max-width: 195px !important;
+  font-size: clamp(0.78rem, 3.2vw, 0.92rem) !important;
+}
+
 .header-action-btn {
   transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
   border-radius: 4px;
