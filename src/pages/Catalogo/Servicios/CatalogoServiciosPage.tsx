@@ -169,9 +169,9 @@ const CatalogoServiciosPage: React.FC = () => {
 
               {/* Grid */}
               {serviciosFiltrados.length > 0 ? (
-                <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col">
+                <div className="row g-3 g-lg-4">
                   {serviciosFiltrados.map((servicio: Servicio) => (
-                    <div key={servicio.id} className="col-6 col-md-6 col-lg-4">
+                    <div key={servicio.id} className="col-12 col-md-6 col-lg-4">
                       <ServiceCard
                         servicio={servicio}
                         onReservar={(s) => {

@@ -167,9 +167,9 @@ const CatalogoBarberosPage: React.FC = () => {
 
               {/* Grid */}
               {barberosFiltrados.length > 0 ? (
-                <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col justify-content-center">
+                <div className="row g-3 g-lg-4 justify-content-center">
                   {barberosFiltrados.map((barbero: BarberoCatalogo) => (
-                    <div key={barbero.id} className="col-6 col-sm-6 col-md-4 col-xl-3">
+                    <div key={barbero.id} className="col-12 col-md-6 col-lg-4">
                       <BarberCard
                         barbero={barbero}
                         onReservar={(b, servicioId) => {

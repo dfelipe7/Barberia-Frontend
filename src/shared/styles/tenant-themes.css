@@ -318,7 +318,7 @@
   padding: 0.85rem !important;
   text-align: left !important;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  max-width: 320px !important;
+  max-width: 100% !important;
 }
 
 [data-tenant-theme="cyber-lime"] .kyrios-barber-card:hover {
@@ -371,7 +371,7 @@
   background: #101411 !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   overflow: hidden !important;
-  max-width: 320px !important;
+  max-width: 100% !important;
   transition: all 0.3s ease !important;
 }
 
@@ -629,7 +629,7 @@
   color: #0f172a !important;
   box-shadow: 0 6px 20px rgba(22, 163, 74, 0.08) !important;
   padding: 0.85rem !important;
-  max-width: 320px !important;
+  max-width: 100% !important;
 }
 
 [data-theme="light"][data-tenant-theme="cyber-lime"] .kyrios-barber-card:hover,
@@ -676,7 +676,7 @@
   border: 1px solid rgba(22, 163, 74, 0.15) !important;
   color: #0f172a !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
-  max-width: 320px !important;
+  max-width: 100% !important;
   border-radius: 16px !important;
 }
 
@@ -1247,7 +1247,7 @@
   padding: 0.85rem !important;
   text-align: left !important;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  max-width: 320px !important;
+  max-width: 100% !important;
 }
 
 [data-tenant-theme="sunset-amber"] .kyrios-barber-card:hover {
@@ -3899,7 +3899,7 @@
   padding: 0.85rem !important;
   text-align: left !important;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  max-width: 320px !important;
+  max-width: 100% !important;
 }
 
 [data-tenant-theme="crimson-velvet"] .kyrios-barber-card:hover {
