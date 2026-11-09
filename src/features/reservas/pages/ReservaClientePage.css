@@ -412,7 +412,7 @@
 
 .booking-slots-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 130px), 1fr));
   gap: 0.65rem;
 }
 
@@ -432,9 +432,11 @@
   cursor: pointer;
 }
 
-.booking-slot-pill:hover {
-  border-color: var(--bs-primary);
-  transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+  .booking-slot-pill:hover {
+    border-color: var(--bs-primary);
+    transform: translateY(-1px);
+  }
 }
 
 .booking-slot-pill--active {
@@ -778,7 +780,7 @@
 .booking-floating-bar {
   position: fixed;
   left: 50%;
-  bottom: max(1rem, env(safe-area-inset-bottom));
+  bottom: max(1rem, var(--safe-bottom, env(safe-area-inset-bottom, 0px)));
   transform: translateX(-50%);
   width: min(calc(100vw - 2rem), 1080px);
   z-index: 1040;
@@ -857,7 +859,7 @@
   }
 
   .booking-floating-bar {
-    bottom: max(0.65rem, env(safe-area-inset-bottom));
+    bottom: max(0.65rem, var(--safe-bottom, env(safe-area-inset-bottom, 0px)));
     padding: 0.65rem 0.85rem;
     border-radius: 12px;
   }
@@ -886,7 +888,8 @@
   }
 
   .booking-slots-grid {
-    grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 96px), 1fr));
+    gap: 0.5rem;
   }
 }
 
