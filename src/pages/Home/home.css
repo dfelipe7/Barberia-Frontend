@@ -793,6 +793,12 @@
   transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
 }
 
+[data-theme="light"] .kyrios-barber-img-bg,
+[data-bs-theme="light"] .kyrios-barber-img-bg {
+  filter: blur(20px) brightness(1.05) saturate(1.1);
+  opacity: 0.22;
+}
+
 .kyrios-barber-img {
   position: relative;
   z-index: 1;
@@ -867,6 +873,22 @@
   justify-content: center;
   background: linear-gradient(180deg, #1b1b1b 0%, #101010 100%);
   color: rgba(255, 255, 255, 0.25);
+}
+
+[data-theme="light"] .kyrios-barber-img-placeholder,
+[data-bs-theme="light"] .kyrios-barber-img-placeholder {
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  color: #475569;
+}
+
+[data-theme="light"] .kyrios-barber-img-placeholder .kyrios-title-display,
+[data-bs-theme="light"] .kyrios-barber-img-placeholder .kyrios-title-display {
+  color: #334155 !important;
+}
+
+[data-theme="light"] .kyrios-barber-img-placeholder .text-white-50,
+[data-bs-theme="light"] .kyrios-barber-img-placeholder .text-white-50 {
+  color: #64748b !important;
 }
 
 .kyrios-barber-body {
