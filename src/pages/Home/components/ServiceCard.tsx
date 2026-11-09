@@ -132,7 +132,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
 
             <button
               type="button"
-              className="btn-kyrios-dark kyrios-service-book-btn"
+              className="btn-kyrios-primary kyrios-service-book-btn"
               onClick={() => onReservar(servicio)}
               aria-label={`Reservar ${servicio.nombre}`}
             >
