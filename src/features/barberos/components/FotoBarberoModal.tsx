@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import Modal from '../../../shared/ui/Modal';
 import Button from '../../../shared/ui/Button';
+import ImageCropModal from '../../../shared/ui/molecules/ImageCropModal';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import type { BarberoGestion } from '../types/barberos.types';
@@ -66,6 +67,8 @@ export const FotoBarberoModal: React.FC<FotoBarberoModalProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [archivoSeleccionado, setArchivoSeleccionado] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [archivoParaRecortar, setArchivoParaRecortar] = useState<File | null>(null);
+  const [cropperAbierto, setCropperAbierto] = useState(false);
   const [errorLocal, setErrorLocal] = useState('');
 
   const handleSeleccionar = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,19 +77,31 @@ export const FotoBarberoModal: React.FC<FotoBarberoModalProps> = ({
     setErrorLocal('');
     if (file.size > 5 * 1024 * 1024) {
       setErrorLocal('La imagen supera el límite permitido de 5 MB.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
     if (!['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(file.type)) {
       setErrorLocal('Formato no válido. Solo se admiten imágenes JPG, PNG o WEBP.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
-    setArchivoSeleccionado(file);
-    setPreviewUrl(URL.createObjectURL(file));
+    setArchivoParaRecortar(file);
+    setCropperAbierto(true);
+  };
+
+  const handleCropComplete = (croppedFile: File) => {
+    setCropperAbierto(false);
+    setArchivoParaRecortar(null);
+    setArchivoSeleccionado(croppedFile);
+    setPreviewUrl(URL.createObjectURL(croppedFile));
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleModalClose = () => {
     setArchivoSeleccionado(null);
     setPreviewUrl(null);
+    setArchivoParaRecortar(null);
+    setCropperAbierto(false);
     setErrorLocal('');
     onClose();
   };
@@ -181,6 +196,17 @@ export const FotoBarberoModal: React.FC<FotoBarberoModalProps> = ({
       <div className="text-muted text-center mt-2" style={{ fontSize: '0.75rem' }}>
         Formatos: JPG, PNG o WEBP. Máx. 5 MB.
       </div>
+
+      <ImageCropModal
+        isOpen={cropperAbierto}
+        imageFile={archivoParaRecortar}
+        onClose={() => {
+          setCropperAbierto(false);
+          setArchivoParaRecortar(null);
+          if (fileInputRef.current) fileInputRef.current.value = '';
+        }}
+        onCropComplete={handleCropComplete}
+      />
     </Modal>
   );
 };
