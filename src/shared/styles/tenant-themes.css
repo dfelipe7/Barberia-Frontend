@@ -339,11 +339,19 @@
   background: #141c16 !important;
 }
 
-[data-tenant-theme="cyber-lime"] .kyrios-barber-img-wrap img {
+[data-tenant-theme="cyber-lime"] .kyrios-barber-img-wrap .kyrios-barber-img-bg {
+  width: calc(100% + 40px) !important;
+  height: calc(100% + 40px) !important;
+  object-fit: cover !important;
+  border-radius: 18px !important;
+}
+
+[data-tenant-theme="cyber-lime"] .kyrios-barber-img-wrap .kyrios-barber-img {
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover !important;
-  object-position: top center !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  padding: 6px !important;
   border-radius: 18px !important;
 }
 
@@ -1248,10 +1256,19 @@
   background: #201a16 !important;
 }
 
-[data-tenant-theme="sunset-amber"] .kyrios-barber-img-wrap img {
+[data-tenant-theme="sunset-amber"] .kyrios-barber-img-wrap .kyrios-barber-img-bg {
+  width: calc(100% + 40px) !important;
+  height: calc(100% + 40px) !important;
+  object-fit: cover !important;
+  border-radius: 18px !important;
+}
+
+[data-tenant-theme="sunset-amber"] .kyrios-barber-img-wrap .kyrios-barber-img {
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  padding: 6px !important;
   border-radius: 18px !important;
 }
 
@@ -3895,10 +3912,19 @@
   background: #250d12 !important;
 }
 
-[data-tenant-theme="crimson-velvet"] .kyrios-barber-img-wrap img {
+[data-tenant-theme="crimson-velvet"] .kyrios-barber-img-wrap .kyrios-barber-img-bg {
+  width: calc(100% + 40px) !important;
+  height: calc(100% + 40px) !important;
+  object-fit: cover !important;
+  border-radius: 20px !important;
+}
+
+[data-tenant-theme="crimson-velvet"] .kyrios-barber-img-wrap .kyrios-barber-img {
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  padding: 6px !important;
   border-radius: 20px !important;
 }
 
