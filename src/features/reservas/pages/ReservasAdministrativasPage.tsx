@@ -191,7 +191,7 @@ function DetalleReservaAdmin({
         <div className="reservations-admin__detail-icon">
           <Scissors size={20} aria-hidden="true" />
         </div>
-        <div className="d-flex align-items-center gap-2">
+        <div className="d-flex align-items-center gap-2 me-1">
           <span className={`reservations-admin__status reservations-admin__status--${reserva.estado.toLowerCase()}`}>
             {estados[reserva.estado]}
           </span>

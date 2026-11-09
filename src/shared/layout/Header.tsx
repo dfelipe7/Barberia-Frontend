@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Globe, User, Menu, Moon, Sun, Monitor } from 'lucide-react';
+import { Globe, Menu, Moon, Sun, Monitor } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import { obtenerUrlFoto } from '../lib/obtenerUrlFoto';
 import { obtenerNegocioSlugActivo } from '../lib/http/axios';
@@ -74,8 +74,8 @@ export default function Header() {
         }}
       >
         <div className="container-fluid px-2 px-sm-3 d-flex align-items-center justify-content-between flex-nowrap min-w-0">
-          {/* ── Zona izquierda — Marca + Home ── */}
-          <div className="d-flex align-items-center gap-1 gap-sm-2 min-w-0">
+          {/* ── Zona izquierda — Marca + Menú Hamburguesa ── */}
+          <div className="d-flex align-items-center gap-2 min-w-0 flex-shrink-0">
             <button
               id="hamburger-btn"
               type="button"
@@ -100,60 +100,49 @@ export default function Header() {
                 alt={BRAND.name}
               />
             </Link>
-
-            <Link
-              to={rutaSitioPublico}
-              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-none d-md-inline-flex align-items-center gap-1 header-action-btn`}
-              title="Ir al sitio público"
-              aria-label="Ir al sitio público"
-            >
-              <Globe size={15} strokeWidth={2} />
-              <span style={{ fontSize: '0.825rem' }}>
-                Sitio público
-              </span>
-            </Link>
           </div>
 
-          {/* ── Zona central — Identidad del usuario (oculta en móvil y tablets < 992px) ── */}
-          <div className="d-none d-lg-flex align-items-center gap-2">
+          {/* ── Zona central — Identidad del usuario (centrada y visible en pantallas grandes >= 1200px) ── */}
+          <div className="d-none d-xl-flex align-items-center gap-2 mx-auto px-3 min-w-0">
             <UserAvatar nombre={nombre} apellido={apellido} fotoUrl={fotoUrl} size={32} />
             <span
               className="fw-semibold text-truncate text-surface-app"
               style={{
                 fontSize: '0.875rem',
-                maxWidth: '200px',
+                maxWidth: '180px',
               }}
             >
               {nombre} {apellido}
             </span>
-            <RoleBadge rol={rolPrincipal} />
+            <RoleBadge rol={rolPrincipal} className="ms-1" />
           </div>
 
           {/* ── Zona derecha — Acciones ── */}
-          <div className="d-flex align-items-center gap-1 gap-sm-2 flex-shrink-0">
+          <div className="d-flex align-items-center gap-1 gap-sm-2 flex-shrink-0 ms-auto">
+            {/* Sitio público en zona de acciones (icono compacto en tablet, expande en desktop) */}
+            <Link
+              to={rutaSitioPublico}
+              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-none d-sm-inline-flex align-items-center gap-1 header-action-btn`}
+              title="Ir al sitio público"
+              aria-label="Ir al sitio público"
+            >
+              <Globe size={15} strokeWidth={2} />
+              <span className="d-none d-xxl-inline" style={{ fontSize: '0.825rem' }}>
+                Sitio público
+              </span>
+            </Link>
+
             <WhatsAppStatusIndicator />
 
             <button
               type="button"
               onClick={cycleTheme}
-              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-none d-md-inline-flex align-items-center gap-1 header-action-btn`}
+              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-none d-sm-inline-flex align-items-center gap-1 header-action-btn`}
               title={themeLabel}
               aria-label={themeLabel}
             >
               <ThemeIcon size={15} strokeWidth={2} />
             </button>
-
-            <Link
-              to="/mi-perfil"
-              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-none d-md-inline-flex align-items-center gap-1 header-action-btn`}
-              title="Mi Perfil"
-              aria-label="Ir a Mi Perfil"
-            >
-              <User size={15} strokeWidth={2} />
-              <span style={{ fontSize: '0.825rem' }}>
-                Mi Perfil
-              </span>
-            </Link>
 
             <UserDropdown
               nombre={nombre}

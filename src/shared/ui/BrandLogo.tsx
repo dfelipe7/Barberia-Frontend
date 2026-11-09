@@ -155,11 +155,12 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
     >
       {imageElement}
       <span
-        className="brand-logo-name fw-bold text-nowrap"
+        className="brand-logo-name fw-bold text-truncate"
         style={{
           fontSize: '0.92rem',
           letterSpacing: '-0.01em',
           lineHeight: 1.1,
+          maxWidth: 'clamp(110px, 18vw, 240px)',
           color: textColor,
           fontFamily: BRAND.typography.body,
         }}
