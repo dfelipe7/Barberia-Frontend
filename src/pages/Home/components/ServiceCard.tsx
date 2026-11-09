@@ -19,23 +19,13 @@ const ServicioImg: React.FC<{ src: string; nombre: string }> = ({ src, nombre })
 
   if (!errorImagen) {
     return (
-      <>
-        {/* Fondo ambient blur: expande colores del servicio sin recortes */}
-        <img
-          src={src}
-          alt=""
-          aria-hidden="true"
-          className="kyrios-service-img-bg"
-        />
-        {/* Foto principal completa contenida sin recorte */}
-        <img
-          src={src}
-          alt={`Servicio de ${nombre}`}
-          className="kyrios-service-img"
-          loading="lazy"
-          onError={() => setErrorImagen(true)}
-        />
-      </>
+      <img
+        src={src}
+        alt={`Servicio de ${nombre}`}
+        className="kyrios-service-img"
+        loading="lazy"
+        onError={() => setErrorImagen(true)}
+      />
     );
   }
 
