@@ -812,7 +812,7 @@ export default function ReservasAdministrativasPage() {
             </div>
           </div>
           <div className="row g-2 g-md-3 align-items-end">
-            <div className="col-12 col-sm-6 col-lg-2">
+            <div className="col-12 col-sm-6 col-md-4 col-xxl-2">
               <label className="form-label" htmlFor="admin-reservas-desde">Desde</label>
               <input
                 id="admin-reservas-desde"
@@ -835,7 +835,7 @@ export default function ReservasAdministrativasPage() {
                 onChange={(event) => setDesde(event.target.value)}
               />
             </div>
-            <div className="col-12 col-sm-6 col-lg-2">
+            <div className="col-12 col-sm-6 col-md-4 col-xxl-2">
               <label className="form-label" htmlFor="admin-reservas-hasta">Hasta</label>
               <input
                 id="admin-reservas-hasta"
@@ -858,7 +858,7 @@ export default function ReservasAdministrativasPage() {
                 onChange={(event) => setHasta(event.target.value)}
               />
             </div>
-            <div className="col-12 col-sm-6 col-lg-2">
+            <div className="col-12 col-sm-6 col-md-4 col-xxl-2">
               <label className="form-label" htmlFor="admin-reservas-estado">Estado</label>
               <select
                 id="admin-reservas-estado"
@@ -872,7 +872,7 @@ export default function ReservasAdministrativasPage() {
                 ))}
               </select>
             </div>
-            <div className="col-12 col-sm-6 col-lg-4">
+            <div className="col-12 col-sm-6 col-md-8 col-xxl-4">
               <label className="form-label" htmlFor="admin-reservas-barbero">Barbero</label>
               <select
                 id="admin-reservas-barbero"
@@ -888,7 +888,7 @@ export default function ReservasAdministrativasPage() {
                 ))}
               </select>
             </div>
-            <div className="col-12 col-sm-12 col-lg-2">
+            <div className="col-12 col-sm-12 col-md-4 col-xxl-2">
               <Button
                 type="button"
                 className="w-100 reservations-admin__filters-btn"
