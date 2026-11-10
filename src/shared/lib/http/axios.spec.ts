@@ -114,6 +114,27 @@ describe('Utilidades de Axios y Resolución Multitenant (axios.ts)', () => {
         userMessage: 'Nombre requerido Email inválido',
       });
 
+      // Error con objeto y propiedad message string o array
+      const errorObjMsgString = {
+        response: {
+          status: 400,
+          data: { message: { message: 'Mensaje directo' } },
+        },
+      };
+      await expect(responseErrorInterceptor(errorObjMsgString)).rejects.toMatchObject({
+        userMessage: 'Mensaje directo',
+      });
+
+      const errorObjMsgArray = {
+        response: {
+          status: 400,
+          data: { message: { message: ['Fallo 1', 'Fallo 2'] } },
+        },
+      };
+      await expect(responseErrorInterceptor(errorObjMsgArray)).rejects.toMatchObject({
+        userMessage: 'Fallo 1 Fallo 2',
+      });
+
       // Error con objeto
       const errorObj = {
         response: {
@@ -142,6 +163,13 @@ describe('Utilidades de Axios y Resolución Multitenant (axios.ts)', () => {
         userMessage: 'Sesión expirada',
       });
       expect(localStorage.getItem('token_barberia_barberia-elite')).toBeNull();
+    });
+
+    it('request error interceptor rechaza el error', async () => {
+      const requestErrorInterceptor = (apiClient.interceptors.request as any).handlers[0]?.rejected;
+      if (requestErrorInterceptor) {
+        await expect(requestErrorInterceptor(new Error('Req error'))).rejects.toThrow('Req error');
+      }
     });
   });
 });
