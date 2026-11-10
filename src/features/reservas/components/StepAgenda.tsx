@@ -348,12 +348,12 @@ export default function StepAgenda({
           {/* Contenido del turno activo */}
           {(() => {
             const configActiva = CONFIG_JORNADAS[jornadaSeleccionada];
-            const horariosActivos =
-              jornadaSeleccionada === 'manana'
-                ? horariosManana
-                : jornadaSeleccionada === 'tarde'
-                ? horariosTarde
-                : horariosNoche;
+            const mapaHorarios: Record<JornadaHorario, typeof horariosManana> = {
+              manana: horariosManana,
+              tarde: horariosTarde,
+              noche: horariosNoche,
+            };
+            const horariosActivos = mapaHorarios[jornadaSeleccionada];
 
             return (
               <div className="booking-daypart-card card-surface p-3 rounded-3" role="tabpanel">

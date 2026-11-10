@@ -280,8 +280,8 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
 
         {/* Visor interactivo de recorte */}
         <div
-          role="region"
-          aria-label="Visor interactivo de recorte"
+          role="button"
+          aria-label="Visor interactivo de recorte. Arrastra con el ratón o usa las flechas del teclado para ajustar el encuadre."
           tabIndex={0}
           className="kyrios-crop-viewport"
           style={{ width: `${cropSize}px`, height: `${cropSize}px` }}
@@ -293,13 +293,19 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
           onKeyDown={(e) => {
             const paso = 10;
             if (e.key === 'ArrowLeft') {
+              e.preventDefault();
               setOffset((prev) => ({ ...prev, x: prev.x - paso }));
             } else if (e.key === 'ArrowRight') {
+              e.preventDefault();
               setOffset((prev) => ({ ...prev, x: prev.x + paso }));
             } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
               setOffset((prev) => ({ ...prev, y: prev.y - paso }));
             } else if (e.key === 'ArrowDown') {
+              e.preventDefault();
               setOffset((prev) => ({ ...prev, y: prev.y + paso }));
+            } else if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
             }
           }}
         >

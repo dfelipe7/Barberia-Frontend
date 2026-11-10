@@ -62,6 +62,108 @@ export interface StepConfirmacionProps {
   readonly modificarInvitado: { readonly isPending: boolean };
 }
 
+interface VoucherGestionInvitadoProps {
+  readonly slugActivo: string;
+  readonly idCita: number | string | null | undefined;
+  readonly tokenCita: string | null | undefined;
+  readonly cambiarReservaDeInvitado: () => void;
+  readonly cambiarBarberoDeInvitado: () => void;
+  readonly cancelarInvitado: { readonly isPending: boolean };
+  readonly cancelarReservaDeInvitado: () => void | Promise<void>;
+}
+
+function VoucherGestionInvitado({
+  slugActivo,
+  idCita,
+  tokenCita,
+  cambiarReservaDeInvitado,
+  cambiarBarberoDeInvitado,
+  cancelarInvitado,
+  cancelarReservaDeInvitado,
+}: Readonly<VoucherGestionInvitadoProps>) {
+  const [enlaceCopiado, setEnlaceCopiado] = useState(false);
+  const enlace = `${window.location.origin}/${slugActivo}/c/${idCita ?? ''}/${tokenCita ?? ''}`;
+
+  const copiarEnlace = () => {
+    void navigator.clipboard.writeText(enlace).then(() => {
+      setEnlaceCopiado(true);
+      setTimeout(() => setEnlaceCopiado(false), 3000);
+    });
+  };
+
+  return (
+    <div className="booking-voucher__management text-center pt-3 border-top">
+      <div
+        className="p-3 rounded-3 border mb-3 text-start"
+        style={{
+          backgroundColor: 'var(--surface-app-bg)',
+          borderColor: 'var(--surface-card-border)',
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+          <strong className="small text-surface-primary d-flex align-items-center gap-1.5">
+            🔗 Enlace personal de tu cita:
+          </strong>
+          <button
+            type="button"
+            className="btn btn-sm btn-outline-primary py-0.5 px-2.5 d-inline-flex align-items-center gap-1"
+            onClick={copiarEnlace}
+          >
+            {enlaceCopiado ? (
+              <span className="text-success fw-bold">¡Enlace copiado!</span>
+            ) : (
+              <>
+                <Copy size={13} />
+                <span>Copiar enlace</span>
+              </>
+            )}
+          </button>
+        </div>
+        <div
+          className="small font-monospace p-2 rounded mb-2 text-truncate border"
+          style={{
+            backgroundColor: 'var(--surface-card-bg)',
+            fontSize: '0.78rem',
+            color: 'var(--surface-muted)',
+          }}
+        >
+          {enlace}
+        </div>
+        <p className="small text-surface-muted mb-0" style={{ fontSize: '0.78rem' }}>
+          💡 <strong>Consejo:</strong> Guarda este enlace. Con él podrás ver, reprogramar o cancelar tu cita en cualquier momento sin necesidad de registrarte.
+        </p>
+      </div>
+      <span className="small text-surface-muted d-block mb-2">
+        ¿Necesitas realizar algún cambio en tu cita?
+      </span>
+      <div className="d-flex justify-content-center gap-2">
+        <button
+          type="button"
+          className="btn btn-sm btn-outline-secondary"
+          onClick={cambiarReservaDeInvitado}
+        >
+          Cambiar fecha u hora
+        </button>
+        <button
+          type="button"
+          className="btn btn-sm btn-outline-secondary"
+          onClick={cambiarBarberoDeInvitado}
+        >
+          Cambiar barbero
+        </button>
+        <button
+          type="button"
+          className="btn btn-sm btn-outline-danger"
+          disabled={cancelarInvitado.isPending}
+          onClick={() => void cancelarReservaDeInvitado()}
+        >
+          {cancelarInvitado.isPending ? 'Cancelando...' : 'Cancelar cita'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Subcomponente de Voucher para citas ya confirmadas o modificadas exitosamente
  */
@@ -89,8 +191,6 @@ function VoucherConfirmado({
   cancelarInvitado,
   cancelarReservaDeInvitado,
 }: Readonly<StepConfirmacionProps>) {
-  const [enlaceCopiado, setEnlaceCopiado] = useState(false);
-
   if (!servicioSeleccionado || !barberoSeleccionado) return null;
 
   const idCita = reservaCreada?.id ?? reservaId;
@@ -99,6 +199,10 @@ function VoucherConfirmado({
     (reservaCreada?.tokenGestion || (reservaModificada && reservaId && reservasService.obtenerTokenGestionInvitado(reservaId))) &&
     !clienteSesion
   );
+
+  const fechaMostrar = reservaCreada?.fecha ?? fechaSeleccionada;
+  const fechaTexto = fechaMostrar ? formatearFecha(fechaMostrar) : '—';
+  const horaTexto = reservaCreada?.hora ?? horaSeleccionada ?? '—';
 
   return (
     <>
@@ -186,7 +290,7 @@ function VoucherConfirmado({
                 <div>
                   <span className="small text-surface-muted d-block">Fecha</span>
                   <strong className="d-block text-capitalize">
-                    {reservaCreada ? formatearFecha(reservaCreada.fecha) : fechaSeleccionada ? formatearFecha(fechaSeleccionada) : '—'}
+                    {fechaTexto}
                   </strong>
                 </div>
               </div>
@@ -198,7 +302,7 @@ function VoucherConfirmado({
                 <div>
                   <span className="small text-surface-muted d-block">Hora</span>
                   <strong className="d-block text-primary fs-5">
-                    {reservaCreada ? reservaCreada.hora : horaSeleccionada ?? '—'}
+                    {horaTexto}
                   </strong>
                 </div>
               </div>
@@ -258,81 +362,15 @@ function VoucherConfirmado({
           </div>
 
           {tieneGestionInvitado && (
-            <div className="booking-voucher__management text-center pt-3 border-top">
-              <div
-                className="p-3 rounded-3 border mb-3 text-start"
-                style={{
-                  backgroundColor: 'var(--surface-app-bg)',
-                  borderColor: 'var(--surface-card-border)',
-                }}
-              >
-                <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
-                  <strong className="small text-surface-primary d-flex align-items-center gap-1.5">
-                    🔗 Enlace personal de tu cita:
-                  </strong>
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-primary py-0.5 px-2.5 d-inline-flex align-items-center gap-1"
-                    onClick={() => {
-                      const enlace = `${window.location.origin}/${slugActivo}/c/${idCita}/${tokenCita}`;
-                      void navigator.clipboard.writeText(enlace).then(() => {
-                        setEnlaceCopiado(true);
-                        setTimeout(() => setEnlaceCopiado(false), 3000);
-                      });
-                    }}
-                  >
-                    {enlaceCopiado ? (
-                      <span className="text-success fw-bold">¡Enlace copiado!</span>
-                    ) : (
-                      <>
-                        <Copy size={13} />
-                        <span>Copiar enlace</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-                <div
-                  className="small font-monospace p-2 rounded mb-2 text-truncate border"
-                  style={{
-                    backgroundColor: 'var(--surface-card-bg)',
-                    fontSize: '0.78rem',
-                    color: 'var(--surface-muted)',
-                  }}
-                >
-                  {`${window.location.origin}/${slugActivo}/c/${idCita}/${tokenCita}`}
-                </div>
-                <p className="small text-surface-muted mb-0" style={{ fontSize: '0.78rem' }}>
-                  💡 <strong>Consejo:</strong> Guarda este enlace. Con él podrás ver, reprogramar o cancelar tu cita en cualquier momento sin necesidad de registrarte.
-                </p>
-              </div>
-              <span className="small text-surface-muted d-block mb-2">
-                ¿Necesitas realizar algún cambio en tu cita?
-              </span>
-              <div className="d-flex justify-content-center gap-2">
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-secondary"
-                  onClick={cambiarReservaDeInvitado}
-                >
-                  Cambiar fecha u hora
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-secondary"
-                  onClick={cambiarBarberoDeInvitado}
-                >
-                  Cambiar barbero
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-danger"
-                  disabled={cancelarInvitado.isPending}
-                  onClick={() => void cancelarReservaDeInvitado()}
-                >
-                  {cancelarInvitado.isPending ? 'Cancelando...' : 'Cancelar cita'}
-                </button>
-              </div>
-            </div>
+            <VoucherGestionInvitado
+              slugActivo={slugActivo}
+              idCita={idCita}
+              tokenCita={tokenCita}
+              cambiarReservaDeInvitado={cambiarReservaDeInvitado}
+              cambiarBarberoDeInvitado={cambiarBarberoDeInvitado}
+              cancelarInvitado={cancelarInvitado}
+              cancelarReservaDeInvitado={cancelarReservaDeInvitado}
+            />
           )}
         </div>
       </div>
