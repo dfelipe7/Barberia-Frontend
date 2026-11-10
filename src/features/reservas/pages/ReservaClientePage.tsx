@@ -7,7 +7,6 @@ import {
   Calendar,
   CalendarDays,
   Check,
-  ChevronRight,
   Clock3,
   Copy,
   MapPin,
@@ -46,6 +45,8 @@ import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import BackLink from '../../../shared/ui/BackLink';
 import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import { useTenantBrand } from '../../negocio/context/TenantBrandContext';
+import BookingStepper, { type PasoReserva } from '../components/BookingStepper';
+import BookingFloatingBar from '../components/BookingFloatingBar';
 import './ReservaClientePage.css';
 
 interface ReservaLocationState {
@@ -59,7 +60,6 @@ interface ReservaLocationState {
   desdeLogin?: boolean;
 }
 
-type PasoReserva = 1 | 2 | 3 | 4;
 type JornadaHorario = 'manana' | 'tarde' | 'noche';
 
 interface ReservaBorradorStorage {
@@ -1165,63 +1165,13 @@ export const ReservaClientePage = () => {
         </div>
       </section>
 
-      <nav aria-label="Pasos de la reserva" className="mb-4 booking-stepper-container">
-        <div className="booking-stepper-segments" aria-hidden="true">
-          <div className={`booking-stepper-segment ${paso >= 1 ? 'is-active' : ''}`} />
-          <div className={`booking-stepper-segment ${paso >= 2 || Boolean(barberoFijoId) ? 'is-active' : ''}`} />
-          <div className={`booking-stepper-segment ${paso >= 3 ? 'is-active' : ''}`} />
-          <div className={`booking-stepper-segment ${paso >= 4 ? 'is-active' : ''}`} />
-        </div>
-        <ol className="booking-stepper list-unstyled d-flex justify-content-between mb-0">
-          {[
-            { numero: 1, label: 'Servicio', icono: <Scissors size={15} /> },
-            { numero: 2, label: 'Barbero', icono: <UserRound size={15} /> },
-            { numero: 3, label: 'Fecha y hora', icono: <CalendarDays size={15} /> },
-            { numero: 4, label: (reservaCreada || reservaModificada) ? 'Confirmada' : 'Confirmar', icono: <Check size={15} /> },
-          ].map((item) => {
-            const estaCompletado = paso > item.numero || (item.numero === 2 && Boolean(barberoFijoId)) || (item.numero === 4 && Boolean(reservaCreada || reservaModificada));
-            const esActual = paso === item.numero;
-            const habilitado = !reservaCreada && !reservaModificada && (item.numero <= paso || (item.numero === 2 && Boolean(barberoFijoId)));
-
-            return (
-              <li key={item.numero} className="booking-stepper__item">
-                <button
-                  type="button"
-                  className={'booking-stepper__step ' + (
-                    esActual
-                      ? 'is-current'
-                      : estaCompletado
-                        ? 'is-done'
-                        : ''
-                  )}
-                  aria-current={esActual ? 'step' : undefined}
-                  disabled={!habilitado}
-                  onClick={() => {
-                    if (item.numero === 1) {
-                      if (!barberoFijoId) {
-                        irAPaso(1, false, { barberoId: null });
-                      } else {
-                        irAPaso(1);
-                      }
-                    } else if (item.numero === 2) {
-                      irAPaso(2);
-                    } else if (item.numero === 3) {
-                      irAPaso(3);
-                    } else if (item.numero === 4) {
-                      irAPaso(4);
-                    }
-                  }}
-                >
-                  <span className="booking-stepper__icon-wrap">
-                    {estaCompletado && !esActual ? <Check size={14} className="booking-stepper__check" /> : item.icono}
-                  </span>
-                  <span className="booking-stepper__label">{item.label}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ol>
-      </nav>
+      <BookingStepper
+        paso={paso}
+        barberoFijoId={barberoFijoId}
+        reservaCreada={Boolean(reservaCreada)}
+        reservaModificada={Boolean(reservaModificada)}
+        irAPaso={irAPaso}
+      />
 
       {paso === 1 && (
         <section aria-labelledby="seleccionar-servicio-titulo" className="booking-section">
@@ -2444,105 +2394,21 @@ export const ReservaClientePage = () => {
       
 
       {/* Barra flotante inferior de acción continua */}
-      {paso === 1 && (
-        <aside className="booking-floating-bar" aria-label="Resumen y avance">
-          <div className="booking-floating-bar__content">
-            <div className="booking-floating-bar__info">
-              <span className="booking-floating-bar__tag">Paso 1 · Servicio</span>
-              <div className="d-flex align-items-center gap-2">
-                <strong className="booking-floating-bar__title">
-                  {servicioSeleccionado ? servicioSeleccionado.nombre : 'Elige un servicio para continuar'}
-                </strong>
-                {servicioSeleccionado && (
-                  <span className="badge booking-primary-badge">
-                    {formatearPrecio(servicioSeleccionado.precio)}
-                  </span>
-                )}
-              </div>
-            </div>
-            <Button
-              type="button"
-              variant="primary"
-              className="booking-floating-bar__btn"
-              disabled={!servicioSeleccionado}
-              onClick={continuarDesdeServicio}
-              icon={<ChevronRight size={18} />}
-            >
-              {barberoFijoId ? 'Elegir fecha y hora' : 'Elegir barbero'}
-            </Button>
-          </div>
-        </aside>
-      )}
-
-      {paso === 2 && (
-        <aside className="booking-floating-bar" aria-label="Resumen y avance">
-          <div className="booking-floating-bar__content">
-            <div className="booking-floating-bar__info">
-              <span className="booking-floating-bar__tag">Paso 2 · Barbero</span>
-              <div className="d-flex align-items-center gap-2 flex-wrap">
-                <strong className="booking-floating-bar__title">
-                  {servicioSeleccionado?.nombre}
-                </strong>
-                <span className="text-surface-muted">·</span>
-                <span className="text-primary fw-semibold">
-                  {barberoSeleccionado ? `${barberoSeleccionado.nombre} ${barberoSeleccionado.apellido}` : 'Elige tu barbero'}
-                </span>
-              </div>
-            </div>
-            <Button
-              type="button"
-              variant="primary"
-              className="booking-floating-bar__btn"
-              disabled={!barberoSeleccionado}
-              onClick={continuarDesdeBarbero}
-              icon={<ChevronRight size={18} />}
-            >
-              Elegir fecha y hora
-            </Button>
-          </div>
-        </aside>
-      )}
-
-      {paso === 3 && (
-        <aside className="booking-floating-bar" aria-label="Resumen y avance">
-          <div className="booking-floating-bar__content">
-            <div className="booking-floating-bar__info">
-              <span className="booking-floating-bar__tag">Paso 3 · Agenda</span>
-              <div className="d-flex align-items-center gap-2 flex-wrap">
-                <strong className="booking-floating-bar__title">
-                  {fechaSeleccionada ? formatearFecha(fechaSeleccionada) : 'Selecciona una fecha'}
-                </strong>
-                {horaSeleccionada && (
-                  <>
-                    <span className="text-surface-muted">·</span>
-                    <span className="badge booking-primary-badge">{horaSeleccionada}</span>
-                  </>
-                )}
-              </div>
-            </div>
-            <Button
-              type="button"
-              variant="primary"
-              className="booking-floating-bar__btn"
-              disabled={!fechaSeleccionada || !horaSeleccionada}
-              onClick={() => irAPaso(4)}
-              icon={<ChevronRight size={18} />}
-            >
-              Continuar al resumen
-            </Button>
-          </div>
-        </aside>
-      )}
-
-      {paso > 1 && !reservaCreada && !reservaModificada && (
-        <div className="mt-4 pt-3 border-top small text-surface-muted">
-          <span className="fw-semibold">Tu selección:</span>{' '}
-          {servicioSeleccionado?.nombre ?? 'elige un servicio'}
-          {barberoSeleccionado ? ' · ' + barberoSeleccionado.nombre + ' ' + barberoSeleccionado.apellido : ''}
-          {fechaSeleccionada ? ' · ' + formatearFecha(fechaSeleccionada) : ''}
-          {horaSeleccionada ? ' · ' + horaSeleccionada : ''}
-        </div>
-      )}
+      <BookingFloatingBar
+        paso={paso}
+        servicioSeleccionado={servicioSeleccionado}
+        barberoSeleccionado={barberoSeleccionado}
+        fechaSeleccionada={fechaSeleccionada}
+        horaSeleccionada={horaSeleccionada}
+        barberoFijoId={barberoFijoId}
+        reservaCreada={Boolean(reservaCreada)}
+        reservaModificada={Boolean(reservaModificada)}
+        formatearPrecio={formatearPrecio}
+        formatearFecha={formatearFecha}
+        continuarDesdeServicio={continuarDesdeServicio}
+        continuarDesdeBarbero={continuarDesdeBarbero}
+        irAPaso={irAPaso}
+      />
 
       {/* Espaciador inferior para que la barra flotante nunca cubra la parte inferior de la vista */}
       <div className="booking-flow__bottom-spacer" aria-hidden="true" />
