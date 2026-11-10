@@ -1,3 +1,21 @@
+# ==============================================================================
+# TÉCNICA DE TESTING / SEGURIDAD: SAST (Static Application Security Testing)
+# + Verificación de Calidad, Cobertura y Quality Gate
+# ==============================================================================
+# Propósito:
+#   Análisis estático de código fuente propio ("Caja Blanca" / White-box) sin ejecutar
+#   la aplicación en un entorno de producción o runtime.
+# Rol en la arquitectura:
+#   - SonarCloud / SonarQube: Rastrea vulnerabilidades de seguridad en el código
+#     (OWASP Top 10, CWEs), fallos de lógica (Bugs), puntos calientes (Security Hotspots)
+#     y complejidad ciclomática/cognitiva.
+#   - Build & Tests: Compila la aplicación y ejecuta pruebas unitarias/componente con
+#     generación de reporte de cobertura (LCOV) para validar el Sonar Quality Gate (> 80%).
+# Momento de activación:
+#   - En cada push a ramas principales y ramas de características configuradas.
+#   - En cada Pull Request al abrirse o sincronizarse.
+# ==============================================================================
+
 name: Build
 on:
   push:

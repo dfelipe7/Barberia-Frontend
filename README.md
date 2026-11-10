@@ -1,7 +1,7 @@
 # Barbería VIP SaaS — Frontend Web App (Portal & Dashboard Multitenant)
 
 > **Especificación de Arquitectura de Software Frontend bajo estándar Arc42 e IEEE 1063**  
-> **Versión:** `2.0.0` · **Estado:** `Producción / Railway` · **Build:** `Vite 8 Clean (1.6s)`
+> **Versión:** `2.0.0` · **Estado:** `Producción / Railway` · **Pruebas:** `142 tests en 21 archivos (Vitest)`
 
 [![React](https://img.shields.io/badge/Framework-React%2019-61dafb?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/Language-TypeScript%205.9-blue?logo=typescript)](https://www.typescriptlang.org/)
@@ -18,7 +18,7 @@ El frontend de **Barbería VIP SaaS** es una Single Page Application (SPA) moder
 
 ### 1.1 Metas de Experiencia de Usuario (UX Goals)
 1. **Resolución Multitenant Transparente:** La aplicación deduce automáticamente la sede activa a través del subdominio (`barberia-demo-2.tudominio.com`) o la ruta base (`/:slug`), sin requerir selección manual por parte del cliente.
-2. **Sistema de Theming Reactivo en Vivo:** Soporta 7 personalidades estéticas de marca configurables por barbería (`data-tenant-theme`), con soporte dual para **Modo Claro** y **Modo Oscuro** cumpliendo con los estándares de contraste accesible WCAG AA.
+2. **Sistema de Theming Reactivo en Vivo:** Soporta 6 personalidades estéticas de marca configurables por barbería (`data-tenant-theme`), con soporte dual para **Modo Claro** y **Modo Oscuro** cumpliendo con los estándares de contraste accesible WCAG AA.
 3. **Agendamiento sin Fricción (Mobile-First):** Flujo de reserva optimizado en 4 pasos táctiles con tiempos de carga inferiores a 2 segundos y confirmación digital sin contraseñas obligatorias.
 4. **Controles de UI Nativos y Desacoplados:** Componentes interactivos como switches de visibilidad (`.redes-switch`), modales de confirmación (`ConfirmDialog`) y selectores de plataforma vectorial inmunes a colapsos de librerías externas.
 
@@ -67,7 +67,7 @@ flowchart TD
 4. **Panel Operativo del Barbero (`/:slug/dashboard`):** Lista de turnos asignados por fecha, visualización de clientes y acciones rápidas ("Completar cita", "No asistió").
 5. **Configuración de Sede SaaS (`/:slug/configuracion`):**
    * **Pestaña 1 · Información Comercial y GPS:** Asistente interactivo con `navigator.geolocation` para autocompletar coordenadas y parser de enlaces de Google Maps.
-   * **Pestaña 2 · Diseño y Recursos de Marca:** Galería de 7 temas visuales con persistencia inmediata y gestor de subida de archivos SVG/PNG.
+   * **Pestaña 2 · Diseño y Recursos de Marca:** Galería de 6 temas visuales con persistencia inmediata y gestor de subida de archivos SVG/PNG.
    * **Pestaña 3 · Redes Sociales Oficiales:** Selector visual (Instagram, WhatsApp, TikTok, Facebook, Otro), control de visibilidad mediante switch ON/OFF y eliminación con `ConfirmDialog`.
 6. **Hub Central de Plataforma (`/plataforma` y `/explorar`):** Catálogo de todas las barberías registradas en el SaaS con métricas consolidadas.
 
@@ -79,27 +79,37 @@ El código sigue una arquitectura modular orientada a dominios (*Feature-Sliced 
 
 ```
 src/
-├── assets/               # Recursos estáticos (logos, fuentes, ilustraciones)
-├── config/               # Configuración de temas (tenantTheme.ts) y rutas
+├── assets/               # Recursos estáticos (logos, ilustraciones)
+├── auth/                 # Contexto de autenticación y sesión
+├── config/               # Marca (brand.ts) y temas por negocio (tenantTheme.ts)
 ├── features/             # Módulos de dominio independientes
-│   ├── auth/             # Login, guardián de sesión, Google OAuth callback
 │   ├── barberos/         # Catálogo y administración de barberos por sede
-│   ├── horarios/         # Gestión de horario semanal, excepciones y bloqueos
-│   ├── negocio/          # Configuración de sede, recursos de marca y Redes Sociales
-│   ├── plataforma/       # Hub global de barberías y onboarding
-│   ├── reservas/         # Wizard de agendamiento, portal cliente y administración
-│   ├── servicios/        # Catálogo de servicios y asignación de precios
-│   ├── usuarios/         # Gestión de administradores y roles de personal
-│   └── whatsapp/         # Configuración de plantillas y estado del servicio
-├── pages/                # Vistas principales de primer nivel (Home, NotFound)
-├── shared/               # Componentes transversales reutilizables
-│   ├── api/              # Cliente Axios configurado con interceptores multitenant
-│   ├── context/          # Contextos de React (ThemeContext, TenantBrandContext)
-│   ├── layout/           # Sidebar, Navbar, Footer, Layout de Dashboard
-│   ├── styles/           # Tokens CSS de marca, temas tenant y temas claro/oscuro
-│   └── ui/               # Componentes atómicos (Button, Modal, ConfirmDialog, Spinner)
+│   ├── horarios/         # Horario semanal, excepciones y bloqueos
+│   ├── negocio/          # Configuración de sede, perfil de marca y redes sociales
+│   ├── perfil/           # Perfil del usuario
+│   ├── reservas/         # Flujo de agendamiento, portal del cliente y administración
+│   ├── servicios/        # Catálogo de servicios y precios
+│   ├── usuarios/         # Administradores y personal
+│   └── whatsapp/         # Estado y configuración de WhatsApp
+├── pages/                # Vistas de primer nivel (Home, Login, Plataforma, Catálogo…)
+├── shared/               # Código transversal
+│   ├── components/       # Componentes compartidos (ProtectedRoute, ErrorBoundary…)
+│   ├── constants/        # Constantes (roles)
+│   ├── context/          # Contextos (tema)
+│   ├── layout/           # Header, Sidebar, Footer, indicador de WhatsApp
+│   ├── lib/              # Utilidades; `lib/http/axios.ts` es el cliente HTTP
+│   ├── routes/           # Configuración de rutas protegidas
+│   ├── styles/           # Tokens CSS y temas por negocio
+│   └── ui/               # Componentes atómicos (Button, Modal, ConfirmDialog…)
+├── test/                 # Configuración de pruebas
 └── App.tsx               # Enrutador principal y proveedores globales
 ```
+
+### 4.1 Aislamiento de rutas y negocio activo
+La función `obtenerNegocioSlugActivo()` (`shared/lib/http/axios.ts`) determina el negocio a partir del primer segmento de la URL. Si ese segmento está en `RUTAS_RESERVADAS` (por ejemplo `login`, `dashboard`, `reservas`, `plataforma`), no se trata como slug.
+* Las rutas raíz de plataforma (`/`, `/plataforma`, `/explorar`) no cargan el perfil de ninguna barbería.
+* La landing de plataforma fuerza el logo oficial de Kyrios con `<BrandLogo forceKyrios />`, para no mostrar la marca de la última sede visitada.
+* El interceptor de Axios usa el token de la sede de la ruta (`token_barberia_<slug>`) y envía `X-Negocio-Slug`.
 
 ---
 
@@ -171,7 +181,35 @@ Cada tema incluye reglas dedicadas en `tenant-themes.css` que aseguran que contr
 
 ---
 
-## 8. Gobernanza y Human-in-the-Loop (HITL)
+## 8. Testing y Seguridad
+
+| Técnica | Estado | Evidencia |
+| :--- | :---: | :--- |
+| **SAST** | ✅ | SonarCloud en cada push y pull request (`.github/workflows/build.yml`), con `tsc -b` estricto y ESLint. |
+| **SCA** | ✅ | `npm audit --audit-level=high` en `.github/workflows/security-audit.yml` (push, PR y cada lunes). |
+| **DAST** | ➖ Fuera de alcance del frontend | Se ejecutaría contra la aplicación desplegada. Pendiente en el backend. |
+| **IAST** | ➖ No aplica por ahora | No hay agente en tiempo de ejecución. |
+
+### Pruebas automatizadas
+* **Herramientas:** Vitest, Testing Library y jsdom.
+* **Alcance actual:** 142 tests en 21 archivos, centrados en servicios HTTP, mappers, resolución de negocio (`axios.ts`), utilidades de fechas, `TenantBrandContext`, historial de citas del cliente e indicador de WhatsApp.
+* **Cobertura:** los archivos de UI (`pages`, `components`, `layout`, `ui`, `context`) se excluyen de la métrica en `vite.config.ts` y `sonar-project.properties`; la cobertura mide la lógica.
+
+```bash
+npm run test            # ejecutar pruebas
+npm run test:coverage   # pruebas con informe de cobertura (lo consume SonarCloud)
+npm run build           # tsc -b + build de producción
+```
+
+---
+
+## 9. Riesgos y Deuda Técnica
+
+El registro vivo está en [`TECH_DEBT.md`](./TECH_DEBT.md). Pendiente de esta documentación: las pruebas actuales cubren lógica y no componentes de pantalla completos.
+
+---
+
+## 10. Gobernanza y Human-in-the-Loop (HITL)
 
 Este repositorio aplica las directrices de gobernanza asistida por IA documentadas en:
 * [`AGENTS.md`](./AGENTS.md): Principios operativos y limitaciones del asistente de desarrollo.

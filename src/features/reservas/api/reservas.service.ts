@@ -80,7 +80,17 @@ reservasApiClient.interceptors.response.use(
   },
 );
 
+/**
+ * Servicio de gestión de autenticación, perfil y ciclo de vida de sesiones de cliente.
+ */
 export const clientesService = {
+  /**
+   * Autentica a un cliente utilizando una credencial JWT emitida por Google Identity Services.
+   *
+   * @param idToken - Credencial JWT de Google generada tras el login del cliente en el popup.
+   * @param slugParam - Slug opcional de la barbería para forzar el contexto multitenant.
+   * @returns Datos de la sesión iniciada incluyendo token JWT propio y perfil de usuario.
+   */
   async iniciarSesionGoogle(idToken: string, slugParam?: string | null): Promise<ClienteSesionResponseDTO> {
     const headers: Record<string, string> = {};
     if (slugParam) {
@@ -94,6 +104,13 @@ export const clientesService = {
     return response.data;
   },
 
+  /**
+   * Almacena en almacenamiento local aislado el token y los datos de perfil del cliente.
+   * Purga automáticamente las cachés de React Query para garantizar frescura de datos.
+   *
+   * @param sesion - Datos de la sesión devueltos por el backend.
+   * @param slugParam - Slug opcional de la barbería para aislar el almacenamiento por tenant.
+   */
   guardarSesion(sesion: ClienteSesionResponseDTO, slugParam?: string | null) {
     const { tokenKey, sesionKey, slug } = resolverClavesCliente(slugParam);
     const clienteConSlug = { ...sesion.cliente, negocioSlug: slug };
@@ -104,6 +121,12 @@ export const clientesService = {
     queryClient.removeQueries({ queryKey: ['reservas', 'mis-reservas'] });
   },
 
+  /**
+   * Recupera la sesión activa del cliente para la barbería especificada o activa.
+   *
+   * @param slugParam - Slug opcional de la barbería.
+   * @returns Datos de sesión del cliente o null si no hay sesión activa.
+   */
   obtenerSesion(slugParam?: string | null): ClienteSesionDTO | null {
     const { tokenKey, sesionKey } = resolverClavesCliente(slugParam);
     const raw = localStorage.getItem(sesionKey);
@@ -123,6 +146,11 @@ export const clientesService = {
     return localStorage.getItem(tokenKey);
   },
 
+  /**
+   * Cierra la sesión activa del cliente, elimina tokens aislados y desconecta Google Identity.
+   *
+   * @param slugParam - Slug opcional de la barbería de la que se desea cerrar sesión.
+   */
   cerrarSesion(slugParam?: string | null) {
     const { tokenKey, sesionKey, slug } = resolverClavesCliente(slugParam);
     localStorage.removeItem(tokenKey);
@@ -166,7 +194,16 @@ export const clientesService = {
   },
 };
 
+/**
+ * Servicio principal de gestión de reservas para el portal de clientes e invitados.
+ */
 export const reservasService = {
+  /**
+   * Obtiene la lista de barberos disponibles capacitados para realizar un servicio específico.
+   *
+   * @param servicioId - Identificador único del servicio seleccionado.
+   * @returns Lista de barberos asignados a dicho servicio.
+   */
   async obtenerBarberosPorServicio(servicioId: number): Promise<BarberoDisponibleReservaDTO[]> {
     const response = await reservasApiClient.get<BarberoDisponibleReservaDTO[]>(
       '/servicios/' + servicioId + '/barberos',
@@ -174,6 +211,12 @@ export const reservasService = {
     return response.data;
   },
 
+  /**
+   * Consulta los horarios y franjas disponibles para un barbero, servicio y fecha dados.
+   *
+   * @param filtro - Criterios de búsqueda (barberoId, servicioId, fecha YYYY-MM-DD).
+   * @returns Mapa de disponibilidad con slots libres, ocupados o bloqueados.
+   */
   async obtenerDisponibilidad(
     filtro: FiltroDisponibilidadReservaDTO,
   ): Promise<DisponibilidadReservaDTO> {
@@ -184,6 +227,13 @@ export const reservasService = {
     return response.data;
   },
 
+  /**
+   * Crea una nueva reserva (como cliente autenticado o como invitado).
+   * Si es invitado, almacena automáticamente el token de gestión en sessionStorage.
+   *
+   * @param datos - Datos de la reserva (barberoId, servicioId, fecha, hora y datos de contacto si es invitado).
+   * @returns Comprobante de la reserva creada con su id y token de gestión si aplica.
+   */
   async crearReserva(datos: CrearReservaDTO): Promise<ReservaCreadaDTO> {
     const response = await reservasApiClient.post<ReservaCreadaDTO>('/reservas', datos);
     if (response.data.tokenGestion) {
@@ -200,6 +250,13 @@ export const reservasService = {
     return sessionStorage.getItem(TOKEN_INVITADO_PREFIX + id);
   },
 
+  /**
+   * Obtiene el detalle de una cita agendada por un invitado validando su token de gestión.
+   *
+   * @param id - Identificador de la reserva.
+   * @param token - Token criptográfico de gestión entregado al crear la cita.
+   * @returns Detalle completo de la reserva.
+   */
   async obtenerReservaInvitado(id: number, token: string): Promise<ReservaClienteDTO> {
     const response = await reservasApiClient.get<ReservaClienteDTO>(
       '/reservas/invitado/' + id,
@@ -224,6 +281,13 @@ export const reservasService = {
     return response.data;
   },
 
+  /**
+   * Cancela la cita de un invitado de forma segura mediante su token de gestión.
+   *
+   * @param id - Identificador de la reserva a cancelar.
+   * @param token - Token de gestión de la reserva.
+   * @returns Confirmación de cancelación.
+   */
   async cancelarReservaInvitado(id: number, token: string): Promise<ReservaAccionDTO> {
     const response = await reservasApiClient.patch<ReservaAccionDTO>(
       '/reservas/invitado/' + id + '/cancelar',
@@ -233,6 +297,11 @@ export const reservasService = {
     return response.data;
   },
 
+  /**
+   * Consulta el historial y las próximas reservas del cliente autenticado.
+   *
+   * @returns Lista de reservas activas e históricas del cliente.
+   */
   async listarMisReservas(): Promise<MisReservasDTO> {
     const response = await reservasApiClient.get<MisReservasDTO>('/reservas/me');
     return response.data;
