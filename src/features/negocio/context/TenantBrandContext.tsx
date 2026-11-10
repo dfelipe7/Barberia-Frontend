@@ -6,7 +6,7 @@ import { redesSocialesApi } from '../services/redesSocialesApi';
 import type { RedSocial } from '../types/redesSociales.types';
 import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import { BRAND } from '../../../config/brand';
-import { resolverTemaTenant, guardarTemaTenant, TEMAS_TENANT, type TenantThemeId } from '../../../config/tenantTheme';
+import { resolverTemaTenant, TEMAS_TENANT, type TenantThemeId } from '../../../config/tenantTheme';
 
 export interface TenantBrandContextValue {
   slug: string | null;
@@ -129,7 +129,9 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
       const temaKeyBackend = perfilData?.temaKey as TenantThemeId | undefined;
       if (slug && temaKeyBackend && TEMAS_TENANT[temaKeyBackend]) {
-        guardarTemaTenant(slug, temaKeyBackend);
+        localStorage.setItem(`tema_negocio_${slug}`, temaKeyBackend);
+        localStorage.setItem('tema_negocio_activo', temaKeyBackend);
+        document.documentElement.dataset.tenantTheme = temaKeyBackend;
       }
     } catch {
       // Si falla o no tiene perfil configurado, queda en null y usará los fallbacks
@@ -140,7 +142,7 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   useEffect(() => {
     void cargarPerfil();
-  }, [cargarPerfil, location.pathname]);
+  }, [cargarPerfil]);
 
   // Actualizar dinámicamente el título y el favicon de la pestaña del navegador
   useEffect(() => {
@@ -175,51 +177,18 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   }, [perfil?.temaKey, slug]);
 
-  // Escuchar eventos globales, cambios entre pestañas, visibilidad y reconexión de ventana
+  // Escuchar eventos cuando el perfil es actualizado desde la configuración administrativa
   useEffect(() => {
     const handleActualizado = () => {
       void cargarPerfil();
     };
-    const handleStorage = (e: StorageEvent) => {
-      if (!e.key || e.key.startsWith('tema_negocio_')) {
-        const nuevoTema = resolverTemaTenant(slug);
-        if (nuevoTema) {
-          document.documentElement.dataset.tenantTheme = nuevoTema;
-        }
-        void cargarPerfil();
-      }
-    };
-    const handleFocus = () => {
-      void cargarPerfil();
-    };
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        void cargarPerfil();
-      }
-    };
 
     window.addEventListener('tenant-perfil-actualizado', handleActualizado);
-    window.addEventListener('tenant-tema-cambiado', handleActualizado);
-    window.addEventListener('storage', handleStorage);
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    // Polling ligero cada 60s para refrescar cambios de marca si el usuario mantiene la app abierta
-    const intervalId = window.setInterval(() => {
-      if (document.visibilityState === 'visible') {
-        void cargarPerfil();
-      }
-    }, 60000);
 
     return () => {
       window.removeEventListener('tenant-perfil-actualizado', handleActualizado);
-      window.removeEventListener('tenant-tema-cambiado', handleActualizado);
-      window.removeEventListener('storage', handleStorage);
-      window.removeEventListener('focus', handleFocus);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.clearInterval(intervalId);
     };
-  }, [cargarPerfil, slug]);
+  }, [cargarPerfil]);
 
   const value: TenantBrandContextValue = useMemo(
     () => ({
