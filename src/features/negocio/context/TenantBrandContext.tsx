@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { perfilNegocioApi } from '../services/perfilNegocioApi';
 import type { PerfilNegocioPublicoResponse } from '../types/perfilNegocio.types';
@@ -111,13 +111,21 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [perfil, setPerfil] = useState<PerfilNegocioPublicoResponse | null>(null);
   const [redesSociales, setRedesSociales] = useState<RedSocial[]>([]);
   const slug = obtenerNegocioSlugActivo();
+  const ultimaCargaRef = useRef<number>(0);
 
-  const cargarPerfil = useCallback(async () => {
+  const cargarPerfil = useCallback(async (forzar = false) => {
     if (!slug || slug === 'plataforma' || slug === 'explorar') {
       setPerfil(null);
       setRedesSociales([]);
       return;
     }
+
+    const ahora = Date.now();
+    // Prevenir peticiones redundantes con un throttle de 4 segundos salvo que sea forzado
+    if (!forzar && ahora - ultimaCargaRef.current < 4000) {
+      return;
+    }
+    ultimaCargaRef.current = ahora;
 
     try {
       const [perfilData, redesData] = await Promise.all([
@@ -141,7 +149,7 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }, [slug]);
 
   useEffect(() => {
-    void cargarPerfil();
+    void cargarPerfil(true);
   }, [cargarPerfil]);
 
   // Actualizar dinámicamente el título y el favicon de la pestaña del navegador
@@ -180,13 +188,39 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
   // Escuchar eventos cuando el perfil es actualizado desde la configuración administrativa
   useEffect(() => {
     const handleActualizado = () => {
-      void cargarPerfil();
+      void cargarPerfil(true);
     };
 
     window.addEventListener('tenant-perfil-actualizado', handleActualizado);
 
     return () => {
       window.removeEventListener('tenant-perfil-actualizado', handleActualizado);
+    };
+  }, [cargarPerfil]);
+
+  // Sincronización entre navegadores y ventanas remotas:
+  // Cuando el usuario regresa a la pestaña (focus / visible), refresca el perfil silenciosamente
+  useEffect(() => {
+    const handleReactivacion = () => {
+      if (document.visibilityState === 'visible') {
+        void cargarPerfil(false);
+      }
+    };
+
+    window.addEventListener('focus', handleReactivacion);
+    document.addEventListener('visibilitychange', handleReactivacion);
+
+    // Polling ligero cada 20 segundos solo si la pestaña está visible
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        void cargarPerfil(false);
+      }
+    }, 20000);
+
+    return () => {
+      window.removeEventListener('focus', handleReactivacion);
+      document.removeEventListener('visibilitychange', handleReactivacion);
+      window.clearInterval(intervalId);
     };
   }, [cargarPerfil]);
 

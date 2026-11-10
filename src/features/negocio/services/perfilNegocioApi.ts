@@ -24,9 +24,18 @@ export const perfilNegocioApi = {
 
   /**
    * Obtiene el perfil público de la barbería (sin autenticación).
+   * Se incluye prevención de caché para garantizar sincronización inmediata entre navegadores.
    */
   async obtenerPerfilPublico(): Promise<PerfilNegocioPublicoResponse> {
-    const response = await apiClient.get<PerfilNegocioPublicoResponse>('/perfil-negocio');
+    const response = await apiClient.get<PerfilNegocioPublicoResponse>('/perfil-negocio', {
+      headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+      },
+      params: {
+        _t: Date.now(),
+      },
+    });
     return response.data;
   },
 
