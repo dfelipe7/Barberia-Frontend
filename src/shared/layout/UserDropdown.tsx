@@ -45,9 +45,20 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
     else setTheme('system');
   };
 
-  const ThemeIcon = theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor;
-  const themeLabel =
-    theme === 'dark' ? 'Tema: Oscuro' : theme === 'light' ? 'Tema: Claro' : 'Tema: Sistema';
+  const THEME_ICONS = {
+    dark: Moon,
+    light: Sun,
+    system: Monitor,
+  } as const;
+
+  const THEME_LABELS = {
+    dark: 'Tema: Oscuro',
+    light: 'Tema: Claro',
+    system: 'Tema: Sistema',
+  } as const;
+
+  const ThemeIcon = THEME_ICONS[theme] ?? Monitor;
+  const themeLabel = THEME_LABELS[theme] ?? 'Tema: Sistema';
 
   const closeDropdown = () => {
     if (!isOpen || isExiting) return;

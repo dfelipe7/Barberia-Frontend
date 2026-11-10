@@ -3,24 +3,24 @@ import type { EstadoReservaDTO } from '../api/reservas.dto';
 import Button from '../../../shared/ui/Button';
 
 export interface ReservasFiltrosBarProps {
-  rango: string;
-  barberoSeleccionadoNombre?: string | null;
-  presetActivo: 'hoy' | 'semana' | 'mes' | null;
-  aplicarPresetFecha: (preset: 'hoy' | 'semana' | 'mes') => void;
-  hayFiltrosModificados: boolean;
-  restablecerFiltros: () => void;
-  desde: string;
-  setDesde: (val: string) => void;
-  hasta: string;
-  setHasta: (val: string) => void;
-  estado: EstadoReservaDTO | '';
-  setEstado: (val: EstadoReservaDTO | '') => void;
-  estados: Record<EstadoReservaDTO, string>;
-  barberoId: string;
-  setBarberoId: (val: string) => void;
-  barberosOrdenados: Array<{ id: number; nombre: string; apellido: string }>;
-  filtroInvalido: boolean;
-  aplicarFiltros: () => void;
+  readonly rango: string;
+  readonly barberoSeleccionadoNombre?: string | null;
+  readonly presetActivo: 'hoy' | 'semana' | 'mes' | null;
+  readonly aplicarPresetFecha: (preset: 'hoy' | 'semana' | 'mes') => void;
+  readonly hayFiltrosModificados: boolean;
+  readonly restablecerFiltros: () => void;
+  readonly desde: string;
+  readonly setDesde: (val: string) => void;
+  readonly hasta: string;
+  readonly setHasta: (val: string) => void;
+  readonly estado: EstadoReservaDTO | '';
+  readonly setEstado: (val: EstadoReservaDTO | '') => void;
+  readonly estados: Record<EstadoReservaDTO, string>;
+  readonly barberoId: string;
+  readonly setBarberoId: (val: string) => void;
+  readonly barberosOrdenados: Array<{ id: number; nombre: string; apellido: string }>;
+  readonly filtroInvalido: boolean;
+  readonly aplicarFiltros: () => void;
 }
 
 export default function ReservasFiltrosBar({
@@ -42,7 +42,7 @@ export default function ReservasFiltrosBar({
   barberosOrdenados,
   filtroInvalido,
   aplicarFiltros,
-}: ReservasFiltrosBarProps) {
+}: Readonly<ReservasFiltrosBarProps>) {
   return (
     <section className="card card-surface border-0 shadow-sm mb-4 reservations-admin__filters-card">
       <div className="card-body p-3 p-lg-4">
@@ -59,7 +59,7 @@ export default function ReservasFiltrosBar({
             </p>
           </div>
           <div className="d-flex align-items-center gap-2 flex-wrap">
-            <div className="reservations-admin__presets-group" role="group" aria-label="Periodos rápidos">
+            <fieldset className="reservations-admin__presets-group border-0 p-0 m-0" aria-label="Periodos rápidos">
               <button
                 type="button"
                 className={`reservations-admin__preset-btn ${presetActivo === 'hoy' ? 'is-active' : ''}`}
@@ -81,7 +81,7 @@ export default function ReservasFiltrosBar({
               >
                 Próximos 30 días
               </button>
-            </div>
+            </fieldset>
 
             {hayFiltrosModificados && (
               <button

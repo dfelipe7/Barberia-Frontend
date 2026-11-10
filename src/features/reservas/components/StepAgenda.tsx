@@ -11,42 +11,58 @@ import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 export type JornadaHorario = 'manana' | 'tarde' | 'noche';
 
 export interface StepAgendaProps {
-  isLoading: boolean;
-  consultaBarberosServicio?: { isLoading?: boolean };
-  servicioSeleccionado?: Servicio | null;
-  barberoSeleccionado?: BarberoDisponibleReservaDTO | null;
-  barberoFijoId: number | null;
-  setBarberoFijoId: (id: number | null) => void;
-  irAPaso: (pasoDestino: PasoReserva, forzar?: boolean, estadoAdicional?: Record<string, string | null>) => void;
-  paginaFechas: number;
-  setPaginaFechas: React.Dispatch<React.SetStateAction<number>>;
-  totalPaginasFechas: number;
-  fechasDeLaPagina: string[];
-  consultasDisponibilidadFechas: {
-    data?: { slots: { available: boolean }[] };
-    isLoading?: boolean;
-    isError?: boolean;
+  readonly isLoading: boolean;
+  readonly consultaBarberosServicio?: { readonly isLoading?: boolean };
+  readonly servicioSeleccionado?: Servicio | null;
+  readonly barberoSeleccionado?: BarberoDisponibleReservaDTO | null;
+  readonly barberoFijoId: number | null;
+  readonly setBarberoFijoId: (id: number | null) => void;
+  readonly irAPaso: (pasoDestino: PasoReserva, forzar?: boolean, estadoAdicional?: Record<string, string | null>) => void;
+  readonly paginaFechas: number;
+  readonly setPaginaFechas: React.Dispatch<React.SetStateAction<number>>;
+  readonly totalPaginasFechas: number;
+  readonly fechasDeLaPagina: readonly string[];
+  readonly consultasDisponibilidadFechas: readonly {
+    readonly data?: { readonly slots: readonly { readonly available: boolean }[] };
+    readonly isLoading?: boolean;
+    readonly isError?: boolean;
   }[];
-  formatearDiaCalendario: (fecha: string) => { semana: string; numero: string; mes: string };
-  fechaSeleccionada: string | null;
-  setFechaSeleccionada: (fecha: string | null) => void;
-  horaSeleccionada: string | null;
-  setHoraSeleccionada: (hora: string | null) => void;
-  erroresDisponibilidadFechas: { error?: unknown; refetch: () => Promise<unknown> | void }[];
-  paginaSinDisponibilidad: boolean;
-  disponibilidad: {
-    isLoading?: boolean;
-    error?: unknown;
-    isFetching?: boolean;
-    refetch: () => Promise<unknown> | void;
+  readonly formatearDiaCalendario: (fecha: string) => { semana: string; numero: string; mes: string };
+  readonly fechaSeleccionada: string | null;
+  readonly setFechaSeleccionada: (fecha: string | null) => void;
+  readonly horaSeleccionada: string | null;
+  readonly setHoraSeleccionada: (hora: string | null) => void;
+  readonly erroresDisponibilidadFechas: readonly { readonly error?: unknown; readonly refetch: () => Promise<unknown> | void }[];
+  readonly paginaSinDisponibilidad: boolean;
+  readonly disponibilidad: {
+    readonly isLoading?: boolean;
+    readonly error?: unknown;
+    readonly isFetching?: boolean;
+    readonly refetch: () => Promise<unknown> | void;
   };
-  horariosDisponibles: { startTime: string; endTime: string; available: boolean }[];
-  formatearFecha: (fechaIso: string) => string;
-  jornadaSeleccionada: JornadaHorario;
-  setJornadaSeleccionada: (jornada: JornadaHorario) => void;
-  horariosManana: { startTime: string; endTime: string }[];
-  horariosTarde: { startTime: string; endTime: string }[];
-  horariosNoche: { startTime: string; endTime: string }[];
+  readonly horariosDisponibles: readonly { readonly startTime: string; readonly endTime: string; readonly available: boolean }[];
+  readonly formatearFecha: (fechaIso: string) => string;
+  readonly jornadaSeleccionada: JornadaHorario;
+  readonly setJornadaSeleccionada: (jornada: JornadaHorario) => void;
+  readonly horariosManana: readonly { readonly startTime: string; readonly endTime: string }[];
+  readonly horariosTarde: readonly { readonly startTime: string; readonly endTime: string }[];
+  readonly horariosNoche: readonly { readonly startTime: string; readonly endTime: string }[];
+}
+
+function renderEstadoCapsula(
+  consulta?: { isLoading?: boolean; isError?: boolean },
+  cantidadHorarios = 0
+) {
+  if (consulta?.isLoading) {
+    return '···';
+  }
+  if (consulta?.isError) {
+    return '—';
+  }
+  if (cantidadHorarios > 0) {
+    return <span className="booking-date-capsule__badge">{cantidadHorarios} disp.</span>;
+  }
+  return <span className="booking-date-capsule__empty">Sin turnos</span>;
 }
 
 export default function StepAgenda({
@@ -77,13 +93,13 @@ export default function StepAgenda({
   horariosManana,
   horariosTarde,
   horariosNoche,
-}: StepAgendaProps) {
+}: Readonly<StepAgendaProps>) {
   if (isLoading || consultaBarberosServicio?.isLoading || !servicioSeleccionado || !barberoSeleccionado) {
     return (
-      <div className="d-flex flex-column align-items-center justify-content-center py-5" role="status">
+      <output className="d-flex flex-column align-items-center justify-content-center py-5 w-100">
         <KyriosSpinner size="md" />
         <span className="small text-surface-muted mt-2">Cargando disponibilidad y horarios...</span>
-      </div>
+      </output>
     );
   }
 
@@ -160,7 +176,7 @@ export default function StepAgenda({
           </div>
         </div>
 
-        <div className="booking-date-carousel" role="group" aria-label="Fechas con disponibilidad">
+        <fieldset className="booking-date-carousel border-0 p-0 m-0" aria-label="Fechas con disponibilidad">
           {fechasDeLaPagina.map((fecha, indice) => {
             const consulta = consultasDisponibilidadFechas[indice];
             const cantidadHorarios = consulta?.data?.slots.filter((slot) => slot.available).length ?? 0;
@@ -187,20 +203,12 @@ export default function StepAgenda({
                 <span className="booking-date-capsule__num">{etiquetasFecha.numero}</span>
                 <span className="booking-date-capsule__month">{etiquetasFecha.mes}</span>
                 <span className="booking-date-capsule__status">
-                  {consulta?.isLoading ? (
-                    '···'
-                  ) : consulta?.isError ? (
-                    '—'
-                  ) : cantidadHorarios > 0 ? (
-                    <span className="booking-date-capsule__badge">{cantidadHorarios} disp.</span>
-                  ) : (
-                    <span className="booking-date-capsule__empty">Sin turnos</span>
-                  )}
+                  {renderEstadoCapsula(consulta, cantidadHorarios)}
                 </span>
               </button>
             );
           })}
-        </div>
+        </fieldset>
       </div>
 
       {erroresDisponibilidadFechas.length > 0 && (
@@ -224,15 +232,15 @@ export default function StepAgenda({
       )}
 
       {!fechaSeleccionada && erroresDisponibilidadFechas.length === 0 && !paginaSinDisponibilidad && (
-        <p className="small text-surface-muted mb-3" role="status">
+        <output className="small text-surface-muted mb-3 d-block">
           Consultando disponibilidad para las fechas de esta semana…
-        </p>
+        </output>
       )}
 
       {fechaSeleccionada && disponibilidad.isLoading && (
-        <div className="d-flex justify-content-center py-4" role="status">
+        <output className="d-flex justify-content-center py-4 w-100">
           <KyriosSpinner size="md" mensaje="Consultando disponibilidad..." />
-        </div>
+        </output>
       )}
 
       {Boolean(fechaSeleccionada && disponibilidad.error) && (

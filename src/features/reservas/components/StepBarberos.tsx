@@ -9,20 +9,20 @@ import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 
 export interface StepBarberosProps {
-  isLoading: boolean;
-  servicioSeleccionado?: Servicio | null;
-  reservaId?: number | null;
-  irAPaso: (pasoDestino: PasoReserva, forzar?: boolean, estadoAdicional?: Record<string, string | null>) => void;
-  consultaBarberosServicio?: {
-    isLoading?: boolean;
-    error?: unknown;
-    isSuccess?: boolean;
-    isFetching?: boolean;
-    refetch: () => Promise<unknown> | void;
+  readonly isLoading: boolean;
+  readonly servicioSeleccionado?: Servicio | null;
+  readonly reservaId?: number | null;
+  readonly irAPaso: (pasoDestino: PasoReserva, forzar?: boolean, estadoAdicional?: Record<string, string | null>) => void;
+  readonly consultaBarberosServicio?: {
+    readonly isLoading?: boolean;
+    readonly error?: unknown;
+    readonly isSuccess?: boolean;
+    readonly isFetching?: boolean;
+    readonly refetch: () => Promise<unknown> | void;
   };
-  barberosDelServicio: BarberoDisponibleReservaDTO[];
-  barberoId: number | null;
-  onSelectBarbero: (barbero: BarberoDisponibleReservaDTO) => void;
+  readonly barberosDelServicio: readonly BarberoDisponibleReservaDTO[];
+  readonly barberoId: number | null;
+  readonly onSelectBarbero: (barbero: BarberoDisponibleReservaDTO) => void;
 }
 
 export default function StepBarberos({
@@ -34,13 +34,13 @@ export default function StepBarberos({
   barberosDelServicio,
   barberoId,
   onSelectBarbero,
-}: StepBarberosProps) {
+}: Readonly<StepBarberosProps>) {
   if (isLoading || !servicioSeleccionado) {
     return (
-      <div className="d-flex flex-column align-items-center justify-content-center py-5" role="status">
+      <output className="d-flex flex-column align-items-center justify-content-center py-5 w-100">
         <KyriosSpinner size="md" />
         <span className="small text-surface-muted mt-2">Cargando datos del servicio...</span>
-      </div>
+      </output>
     );
   }
 
@@ -71,9 +71,9 @@ export default function StepBarberos({
       </div>
 
       {consultaBarberosServicio?.isLoading && (
-        <div className="d-flex justify-content-center py-5" role="status">
+        <output className="d-flex justify-content-center py-5 w-100">
           <KyriosSpinner size="md" mensaje="Cargando barberos habilitados para el servicio..." />
-        </div>
+        </output>
       )}
 
       {Boolean(consultaBarberosServicio?.error) && (

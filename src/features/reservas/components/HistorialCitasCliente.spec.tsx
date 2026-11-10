@@ -79,7 +79,6 @@ describe('HistorialCitasCliente', () => {
       <MemoryRouter>
         <HistorialCitasCliente
           citas={[]}
-          slugActivo="demo-barber"
           formatearFecha={formatearFechaMock}
           formatearPrecio={formatearPrecioMock}
           mapearEstado={mapearEstadoMock}
@@ -94,7 +93,6 @@ describe('HistorialCitasCliente', () => {
       <MemoryRouter>
         <HistorialCitasCliente
           citas={mockCitas}
-          slugActivo="demo-barber"
           formatearFecha={formatearFechaMock}
           formatearPrecio={formatearPrecioMock}
           mapearEstado={mapearEstadoMock}
@@ -113,7 +111,6 @@ describe('HistorialCitasCliente', () => {
       <MemoryRouter>
         <HistorialCitasCliente
           citas={mockCitas}
-          slugActivo="demo-barber"
           formatearFecha={formatearFechaMock}
           formatearPrecio={formatearPrecioMock}
           mapearEstado={mapearEstadoMock}
@@ -135,7 +132,6 @@ describe('HistorialCitasCliente', () => {
       <MemoryRouter>
         <HistorialCitasCliente
           citas={mockCitas}
-          slugActivo="demo-barber"
           formatearFecha={formatearFechaMock}
           formatearPrecio={formatearPrecioMock}
           mapearEstado={mapearEstadoMock}
@@ -159,7 +155,6 @@ describe('HistorialCitasCliente', () => {
       <MemoryRouter>
         <HistorialCitasCliente
           citas={mockCitas}
-          slugActivo="demo-barber"
           formatearFecha={formatearFechaMock}
           formatearPrecio={formatearPrecioMock}
           mapearEstado={mapearEstadoMock}

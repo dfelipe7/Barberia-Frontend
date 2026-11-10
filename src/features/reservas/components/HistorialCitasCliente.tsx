@@ -9,11 +9,10 @@ import {
 import type { ReservaClienteDTO } from '../api/reservas.dto';
 
 export interface HistorialCitasClienteProps {
-  citas: ReservaClienteDTO[];
-  slugActivo?: string;
-  formatearFecha: (fecha: string) => string;
-  formatearPrecio: (precio: number) => string;
-  mapearEstado: (estado: string) => string;
+  readonly citas: readonly ReservaClienteDTO[];
+  readonly formatearFecha: (fecha: string) => string;
+  readonly formatearPrecio: (precio: number) => string;
+  readonly mapearEstado: (estado: string) => string;
 }
 
 const ITEMS_POR_PAGINA = 5;
@@ -28,7 +27,7 @@ const ETIQUETAS_FILTROS: Record<FiltroEstadoKey, string> = {
   NO_SHOW: 'No asistió',
 };
 
-export const HistorialCitasCliente: React.FC<HistorialCitasClienteProps> = ({
+export const HistorialCitasCliente: React.FC<Readonly<HistorialCitasClienteProps>> = ({
   citas,
   formatearFecha,
   formatearPrecio,

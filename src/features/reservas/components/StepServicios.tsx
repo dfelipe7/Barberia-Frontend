@@ -7,19 +7,19 @@ import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 
 export interface StepServiciosProps {
-  barberoFijo: BarberoDisponibleReservaDTO | null;
-  onClearBarberoFijo: () => void;
-  isLoading: boolean;
-  cargandoServiciosDelBarbero: boolean;
-  erroresServiciosDelBarbero: boolean;
-  isFetchingConsultasBarberos: boolean;
-  onRetryConsultasBarberos: () => void;
-  error: unknown;
-  onRetryServicios: () => void;
-  serviciosActivos: Servicio[];
-  servicioId: number | null;
-  onSelectServicio: (servicio: Servicio) => void;
-  formatearPrecio: (valor: number) => string;
+  readonly barberoFijo: BarberoDisponibleReservaDTO | null;
+  readonly onClearBarberoFijo: () => void;
+  readonly isLoading: boolean;
+  readonly cargandoServiciosDelBarbero: boolean;
+  readonly erroresServiciosDelBarbero: boolean;
+  readonly isFetchingConsultasBarberos: boolean;
+  readonly onRetryConsultasBarberos: () => void;
+  readonly error: unknown;
+  readonly onRetryServicios: () => void;
+  readonly serviciosActivos: readonly Servicio[];
+  readonly servicioId: number | null;
+  readonly onSelectServicio: (servicio: Servicio) => void;
+  readonly formatearPrecio: (valor: number) => string;
 }
 
 export default function StepServicios({
@@ -36,7 +36,7 @@ export default function StepServicios({
   servicioId,
   onSelectServicio,
   formatearPrecio,
-}: StepServiciosProps) {
+}: Readonly<StepServiciosProps>) {
   return (
     <section aria-labelledby="seleccionar-servicio-titulo" className="booking-section">
       <div className="booking-section-header mb-3">
@@ -70,12 +70,12 @@ export default function StepServicios({
       )}
 
       {(isLoading || cargandoServiciosDelBarbero) && (
-        <div className="d-flex justify-content-center py-5" role="status">
+        <output className="d-flex justify-content-center py-5 w-100">
           <KyriosSpinner
             size="md"
             mensaje={cargandoServiciosDelBarbero ? 'Buscando servicios del barbero...' : 'Cargando servicios...'}
           />
-        </div>
+        </output>
       )}
 
       {erroresServiciosDelBarbero && (

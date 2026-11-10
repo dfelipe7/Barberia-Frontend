@@ -203,24 +203,22 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
         outputSize
       );
 
-      canvas.toBlob(
-        (blob) => {
-          setIsProcessing(false);
-          if (!blob) return;
+      const blob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, 'image/jpeg', 0.92);
+      });
 
-          // Nombre normalizado con extensión jpg
-          const baseName = imageFile.name.replace(/\.[^/.]+$/, '');
-          const croppedFile = new File([blob], `${baseName}_recorte.jpg`, {
-            type: 'image/jpeg',
-            lastModified: Date.now(),
-          });
+      setIsProcessing(false);
+      if (!blob) return;
 
-          onCropComplete(croppedFile);
-          onClose();
-        },
-        'image/jpeg',
-        0.92
-      );
+      // Nombre normalizado con extensión jpg
+      const baseName = imageFile.name.replace(/\.[^/.]+$/, '');
+      const croppedFile = new File([blob], `${baseName}_recorte.jpg`, {
+        type: 'image/jpeg',
+        lastModified: Date.now(),
+      });
+
+      onCropComplete(croppedFile);
+      onClose();
     } catch {
       setIsProcessing(false);
     }
@@ -282,6 +280,9 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
 
         {/* Visor interactivo de recorte */}
         <div
+          role="region"
+          aria-label="Visor interactivo de recorte"
+          tabIndex={0}
           className="kyrios-crop-viewport"
           style={{ width: `${cropSize}px`, height: `${cropSize}px` }}
           onMouseDown={handleMouseDown}
@@ -289,6 +290,18 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onWheel={handleWheel}
+          onKeyDown={(e) => {
+            const paso = 10;
+            if (e.key === 'ArrowLeft') {
+              setOffset((prev) => ({ ...prev, x: prev.x - paso }));
+            } else if (e.key === 'ArrowRight') {
+              setOffset((prev) => ({ ...prev, x: prev.x + paso }));
+            } else if (e.key === 'ArrowUp') {
+              setOffset((prev) => ({ ...prev, y: prev.y - paso }));
+            } else if (e.key === 'ArrowDown') {
+              setOffset((prev) => ({ ...prev, y: prev.y + paso }));
+            }
+          }}
         >
           <img
             ref={imgRef}
@@ -320,7 +333,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
               max="3"
               step="0.05"
               value={zoom}
-              onChange={(e) => handleZoomChange(parseFloat(e.target.value))}
+              onChange={(e) => handleZoomChange(Number.parseFloat(e.target.value))}
               className="form-range kyrios-crop-slider"
               aria-label="Nivel de zoom para recorte"
             />

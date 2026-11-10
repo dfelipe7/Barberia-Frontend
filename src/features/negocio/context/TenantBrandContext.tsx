@@ -57,6 +57,37 @@ const MAPA_TITULOS_RUTAS: readonly [string, string][] = [
   ['/whatsapp', 'WhatsApp'],
 ];
 
+const TEMAS_PERMITIDOS: readonly TenantThemeId[] = [
+  'clasico-azul',
+  'cyber-lime',
+  'sunset-amber',
+  'midnight-cyan',
+  'crimson-velvet',
+  'monochrome-noir',
+];
+
+const SLUG_SEGURO_REGEX = /^[a-z0-9-]+$/;
+
+/**
+ * Sanitiza y persiste el tema en el almacenamiento local mitigando vulnerabilidades
+ * de Browser Storage Poisoning (CWE) por entradas externas de URL o API.
+ */
+function guardarTemaSeguro(slug: string | null | undefined, tema: string | null | undefined): void {
+  if (!tema) return;
+  const temaSanitizado = TEMAS_PERMITIDOS.find((t) => t === tema);
+  if (!temaSanitizado) return;
+
+  try {
+    localStorage.setItem('tema_negocio_activo', temaSanitizado);
+    if (slug && SLUG_SEGURO_REGEX.test(slug)) {
+      const claveSegura = `tema_negocio_${encodeURIComponent(slug)}`;
+      localStorage.setItem(claveSegura, temaSanitizado);
+    }
+  } catch {
+    // Almacenamiento local restringido o inaccesible
+  }
+}
+
 /**
  * Resuelve el título de la pestaña del navegador combinando el nombre
  * de la barbería y la sección que el usuario está visitando.
@@ -141,8 +172,7 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
       const temaKeyBackend = perfilData?.temaKey as TenantThemeId | undefined;
       if (slug && temaKeyBackend && TEMAS_TENANT[temaKeyBackend]) {
-        localStorage.setItem(`tema_negocio_${slug}`, temaKeyBackend);
-        localStorage.setItem('tema_negocio_activo', temaKeyBackend);
+        guardarTemaSeguro(slug, temaKeyBackend);
         document.documentElement.dataset.tenantTheme = temaKeyBackend;
       }
     } catch {
@@ -175,15 +205,12 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }, [location.pathname, perfil, slug]);
 
 
-  // Sincronizar tema de la barbería en el atributo HTML raíz y persistir en localStorage
+  // Sincronizar tema de la barbería en el atributo HTML raíz y persistir en localStorage de forma segura
   useEffect(() => {
     const temaId = (perfil?.temaKey as TenantThemeId) || resolverTemaTenant(slug);
     if (temaId) {
       document.documentElement.dataset.tenantTheme = temaId;
-      if (slug && TEMAS_TENANT[temaId]) {
-        localStorage.setItem(`tema_negocio_${slug}`, temaId);
-        localStorage.setItem('tema_negocio_activo', temaId);
-      }
+      guardarTemaSeguro(slug, temaId);
     }
   }, [perfil?.temaKey, slug]);
 

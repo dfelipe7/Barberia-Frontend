@@ -505,7 +505,6 @@ export default function ClientePortalPage() {
             {/* HISTORIAL DE CITAS COMPACTO CON FILTROS Y PAGINACIÓN */}
             <HistorialCitasCliente
               citas={historialCitas}
-              slugActivo={slugActivo}
               formatearFecha={formatearFecha}
               formatearPrecio={formatearPrecio}
               mapearEstado={mapearEstado}

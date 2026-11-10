@@ -45,14 +45,18 @@ export const BookingStepper: React.FC<BookingStepperProps> = ({
             !reservaModificada &&
             (item.numero <= paso || (item.numero === 2 && Boolean(barberoFijoId)));
 
+          let claseEstado = '';
+          if (esActual) {
+            claseEstado = 'is-current';
+          } else if (estaCompletado) {
+            claseEstado = 'is-done';
+          }
+
           return (
             <li key={item.numero} className="booking-stepper__item">
               <button
                 type="button"
-                className={
-                  'booking-stepper__step ' +
-                  (esActual ? 'is-current' : estaCompletado ? 'is-done' : '')
-                }
+                className={`booking-stepper__step ${claseEstado}`.trim()}
                 aria-current={esActual ? 'step' : undefined}
                 disabled={!habilitado}
                 onClick={() => {

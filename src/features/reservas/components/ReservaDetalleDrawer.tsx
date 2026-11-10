@@ -59,17 +59,19 @@ const fechaLegible = (fecha: string) => {
   }).format(new Date(partes[0], partes[1] - 1, partes[2], 12));
 };
 
+interface EditorFechaReservaProps {
+  readonly reserva: ReservaAdministrativaDTO;
+  readonly onCancelar: () => void;
+  readonly onGuardar: (fecha: string, hora: string) => void;
+  readonly guardando: boolean;
+}
+
 function EditorFechaReserva({
   reserva,
   onCancelar,
   onGuardar,
   guardando,
-}: {
-  reserva: ReservaAdministrativaDTO;
-  onCancelar: () => void;
-  onGuardar: (fecha: string, hora: string) => void;
-  guardando: boolean;
-}) {
+}: Readonly<EditorFechaReservaProps>) {
   const [fecha, setFecha] = useState(reserva.fecha);
   const [hora, setHora] = useState<string | null>(null);
   const disponibilidad = useDisponibilidadReserva(fecha ? {
@@ -78,6 +80,43 @@ function EditorFechaReserva({
     fecha,
   } : undefined);
   const horas = disponibilidad.data?.slots.filter((slot) => slot.available) ?? [];
+
+  const renderContenidoHorarios = () => {
+    if (!fecha) {
+      return <p className="small text-surface-muted">Selecciona una fecha para consultar horarios.</p>;
+    }
+    if (disponibilidad.isLoading) {
+      return <output className="small text-surface-muted d-block">Consultando horarios...</output>;
+    }
+    if (disponibilidad.isError) {
+      return (
+        <div>
+          <ErrorMessage message={mapApiError(disponibilidad.error)} />
+          <Button type="button" size="sm" variant="outline-secondary" onClick={() => void disponibilidad.refetch()}>
+            Reintentar
+          </Button>
+        </div>
+      );
+    }
+    if (horas.length === 0) {
+      return <p className="small text-surface-muted">No hay horarios libres para ese día.</p>;
+    }
+    return (
+      <div className="d-flex flex-wrap gap-2 mb-3" aria-label="Horarios libres">
+        {horas.map((slot) => (
+          <button
+            key={slot.startTime}
+            type="button"
+            className={'btn ' + (hora === slot.startTime ? 'btn-primary' : 'btn-outline-primary')}
+            aria-pressed={hora === slot.startTime}
+            onClick={() => setHora(slot.startTime)}
+          >
+            {slot.startTime}–{slot.endTime}
+          </button>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="border rounded-3 p-3 mt-3">
@@ -110,34 +149,7 @@ function EditorFechaReserva({
         }}
       />
 
-      {!fecha ? (
-        <p className="small text-surface-muted">Selecciona una fecha para consultar horarios.</p>
-      ) : disponibilidad.isLoading ? (
-        <p className="small text-surface-muted" role="status">Consultando horarios...</p>
-      ) : disponibilidad.isError ? (
-        <div>
-          <ErrorMessage message={mapApiError(disponibilidad.error)} />
-          <Button type="button" size="sm" variant="outline-secondary" onClick={() => void disponibilidad.refetch()}>
-            Reintentar
-          </Button>
-        </div>
-      ) : horas.length === 0 ? (
-        <p className="small text-surface-muted">No hay horarios libres para ese día.</p>
-      ) : (
-        <div className="d-flex flex-wrap gap-2 mb-3" aria-label="Horarios libres">
-          {horas.map((slot) => (
-            <button
-              key={slot.startTime}
-              type="button"
-              className={'btn ' + (hora === slot.startTime ? 'btn-primary' : 'btn-outline-primary')}
-              aria-pressed={hora === slot.startTime}
-              onClick={() => setHora(slot.startTime)}
-            >
-              {slot.startTime}–{slot.endTime}
-            </button>
-          ))}
-        </div>
-      )}
+      {renderContenidoHorarios()}
 
       <div className="d-flex flex-wrap justify-content-end gap-2">
         <Button type="button" variant="outline-secondary" onClick={onCancelar}>Volver</Button>
@@ -155,13 +167,15 @@ function EditorFechaReserva({
   );
 }
 
+interface DetalleReservaAdminProps {
+  readonly reserva: ReservaAdministrativaDTO;
+  readonly onCerrar?: () => void;
+}
+
 function DetalleReservaAdmin({
   reserva,
   onCerrar,
-}: {
-  reserva: ReservaAdministrativaDTO;
-  onCerrar?: () => void;
-}) {
+}: Readonly<DetalleReservaAdminProps>) {
   return (
     <div className="reservations-admin__detail card card-surface border-0 shadow-sm">
       <div className="reservations-admin__detail-top">
@@ -256,6 +270,24 @@ function DetalleReservaAdmin({
   );
 }
 
+interface PanelContenidoDetalleAdminProps {
+  readonly reserva: ReservaAdministrativaDTO;
+  readonly editando: boolean;
+  readonly estadoFinal: boolean;
+  readonly mensajeAccion: string | null;
+  readonly errorAccion: string | null;
+  readonly completarPending: boolean;
+  readonly marcarNoAsistidaPending: boolean;
+  readonly cancelarPending: boolean;
+  readonly modificarPending: boolean;
+  readonly onEjecutarAccion: (accion: 'completar' | 'no-asistio') => void;
+  readonly onIniciarEdicion: () => void;
+  readonly onCancelarEdicion: () => void;
+  readonly onGuardarCambio: (fecha: string, hora: string) => void;
+  readonly onCancelarReserva: () => void;
+  readonly onCerrar?: () => void;
+}
+
 function PanelContenidoDetalleAdmin({
   reserva,
   editando,
@@ -272,31 +304,15 @@ function PanelContenidoDetalleAdmin({
   onGuardarCambio,
   onCancelarReserva,
   onCerrar,
-}: {
-  reserva: ReservaAdministrativaDTO;
-  editando: boolean;
-  estadoFinal: boolean;
-  mensajeAccion: string | null;
-  errorAccion: string | null;
-  completarPending: boolean;
-  marcarNoAsistidaPending: boolean;
-  cancelarPending: boolean;
-  modificarPending: boolean;
-  onEjecutarAccion: (accion: 'completar' | 'no-asistio') => void;
-  onIniciarEdicion: () => void;
-  onCancelarEdicion: () => void;
-  onGuardarCambio: (fecha: string, hora: string) => void;
-  onCancelarReserva: () => void;
-  onCerrar?: () => void;
-}) {
+}: Readonly<PanelContenidoDetalleAdminProps>) {
   return (
     <>
       <DetalleReservaAdmin reserva={reserva} onCerrar={onCerrar} />
 
       {mensajeAccion && (
-        <div className="alert alert-success mt-3" role="status">
+        <output className="alert alert-success mt-3 d-block">
           {mensajeAccion}
-        </div>
+        </output>
       )}
       {errorAccion && (
         <div className="alert alert-warning mt-3" role="alert">
@@ -376,20 +392,20 @@ function PanelContenidoDetalleAdmin({
 }
 
 export interface ReservaDetalleDrawerProps {
-  reservaActiva: ReservaAdministrativaDTO | null;
-  editando: boolean;
-  setEditando: (editando: boolean) => void;
-  estadoFinal: boolean;
-  mensajeAccion: string | null;
-  errorAccion: string | null;
-  completarPending: boolean;
-  marcarNoAsistidaPending: boolean;
-  cancelarPending: boolean;
-  modificarPending: boolean;
-  onEjecutarAccion: (accion: 'completar' | 'no-asistio') => void;
-  onGuardarCambio: (fecha: string, hora: string) => void;
-  onCancelarReserva: () => void;
-  onCerrar: () => void;
+  readonly reservaActiva: ReservaAdministrativaDTO | null;
+  readonly editando: boolean;
+  readonly setEditando: (editando: boolean) => void;
+  readonly estadoFinal: boolean;
+  readonly mensajeAccion: string | null;
+  readonly errorAccion: string | null;
+  readonly completarPending: boolean;
+  readonly marcarNoAsistidaPending: boolean;
+  readonly cancelarPending: boolean;
+  readonly modificarPending: boolean;
+  readonly onEjecutarAccion: (accion: 'completar' | 'no-asistio') => void;
+  readonly onGuardarCambio: (fecha: string, hora: string) => void;
+  readonly onCancelarReserva: () => void;
+  readonly onCerrar: () => void;
 }
 
 export default function ReservaDetalleDrawer({
@@ -407,7 +423,7 @@ export default function ReservaDetalleDrawer({
   onGuardarCambio,
   onCancelarReserva,
   onCerrar,
-}: ReservaDetalleDrawerProps) {
+}: Readonly<ReservaDetalleDrawerProps>) {
   return (
     <>
       <aside id="admin-detalle-reserva" className="col-12 col-xl-5 col-xxl-4 reservations-admin__aside" aria-label="Detalle de reserva">
