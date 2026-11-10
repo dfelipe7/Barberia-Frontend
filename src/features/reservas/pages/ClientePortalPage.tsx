@@ -39,6 +39,7 @@ import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import { useTenantBrand } from '../../negocio/context/TenantBrandContext';
+import { HistorialCitasCliente } from '../components/HistorialCitasCliente';
 import './ClientePortalPage.css';
 
 const formatearFecha = (valor: string) => {
@@ -501,61 +502,14 @@ export default function ClientePortalPage() {
               </div>
             )}
 
-            {/* HISTORIAL DE CITAS */}
-            {historialCitas.length > 0 && (
-              <div className="mt-5">
-                <h3 className="h6 fw-bold text-muted text-uppercase tracking-wider mb-3">
-                  Historial de Citas Anteriores
-                </h3>
-                <div className="d-flex flex-column gap-2">
-                  {historialCitas.map((reserva: ReservaClienteDTO) => (
-                    <div key={reserva.id} className="cliente-ticket-card cliente-ticket-card--past">
-                      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom" style={{ borderColor: 'var(--portal-card-border)' }}>
-                        <div className="d-flex align-items-center gap-2">
-                          <span className={`cliente-ticket__badge-status badge-status--${reserva.estado}`}>
-                            {mapearEstado(reserva.estado)}
-                          </span>
-                          <span className="small text-muted font-monospace">#{reserva.id}</span>
-                        </div>
-                        <span className="small font-monospace text-muted fw-bold">{formatearPrecio(reserva.precio)}</span>
-                      </div>
-                      <div className="cliente-ticket__details-grid">
-                        <div className="cliente-ticket__cell">
-                          <div className="cliente-ticket__cell-header">
-                            <Scissors size={13} className="cliente-ticket__cell-icon" />
-                            <span className="cliente-ticket__cell-label">Servicio</span>
-                          </div>
-                          <div className="cliente-ticket__cell-value fs-6">
-                            {reserva.servicio.nombre}
-                          </div>
-                        </div>
-                        <div className="cliente-ticket__cell">
-                          <div className="cliente-ticket__cell-header">
-                            <User size={13} className="cliente-ticket__cell-icon" />
-                            <span className="cliente-ticket__cell-label">Barbero</span>
-                          </div>
-                          <div className="cliente-ticket__cell-value">
-                            {reserva.barbero.nombre} {reserva.barbero.apellido}
-                          </div>
-                        </div>
-                        <div className="cliente-ticket__cell">
-                          <div className="cliente-ticket__cell-header">
-                            <Clock3 size={13} className="cliente-ticket__cell-icon" />
-                            <span className="cliente-ticket__cell-label">Fecha y horario</span>
-                          </div>
-                          <div className="cliente-ticket__cell-value">
-                            {reserva.hora}
-                          </div>
-                          <span className="cliente-ticket__cell-sub text-capitalize">
-                            {formatearFecha(reserva.fecha)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* HISTORIAL DE CITAS COMPACTO CON FILTROS Y PAGINACIÓN */}
+            <HistorialCitasCliente
+              citas={historialCitas}
+              slugActivo={slugActivo}
+              formatearFecha={formatearFecha}
+              formatearPrecio={formatearPrecio}
+              mapearEstado={mapearEstado}
+            />
           </section>
         )}
 
