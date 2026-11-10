@@ -1,0 +1,1253 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   6. TEMA: MONOCHROME NOIR (John's Barbershop / Minimalista Ejecutivo B&W)
+   Inspirado en el diseño limpio, serio y de alto impacto de Bee O'clock
+   ══════════════════════════════════════════════════════════════════════════ */
+[data-tenant-theme="monochrome-noir"] {
+  --bs-primary: #ffffff !important;
+  --bs-primary-rgb: 255, 255, 255 !important;
+  --bs-primary-hover: #e4e4e7 !important;
+
+  --tenant-accent: #ffffff !important;
+  --tenant-btn-text: #000000 !important;
+  --tenant-glow: rgba(255, 255, 255, 0.35) !important;
+
+  /* Sincronización de tokens heredados */
+  --brand-blue: #ffffff !important;
+  --brand-blue-hover: #e4e4e7 !important;
+  --brand-blue-light: rgba(255, 255, 255, 0.15) !important;
+  --bs-primary-bg-subtle: rgba(255, 255, 255, 0.15) !important;
+  --bs-primary-border-subtle: rgba(255, 255, 255, 0.35) !important;
+  --bs-primary-text-emphasis: #ffffff !important;
+
+  /* Tipografía limpia, seria y arquitectónica */
+  --font-brand: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif !important;
+
+  /* Kyrios Home Overrides */
+  --k-blue: #ffffff !important;
+  --k-blue-hover: #e4e4e7 !important;
+  --k-blue-glow: rgba(255, 255, 255, 0.45) !important;
+  --k-btn-radius: 9999px !important;
+
+  /* Portal Overrides */
+  --portal-primary: #ffffff !important;
+  --portal-primary-hover: #e4e4e7 !important;
+  --portal-primary-glow: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Tipografía de títulos en Monochrome Noir: Limpia, natural case y seria */
+[data-tenant-theme="monochrome-noir"] .kyrios-title-display,
+[data-tenant-theme="monochrome-noir"] h1,
+[data-tenant-theme="monochrome-noir"] h2,
+[data-tenant-theme="monochrome-noir"] .font-brand {
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif !important;
+  letter-spacing: -0.02em !important;
+  font-weight: 800 !important;
+  text-transform: none !important;
+}
+
+/* Título de Hero con resplandor limpio (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .kyrios-hero-title span,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .kyrios-hero-title span,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .kyrios-hero-title span {
+  color: #ffffff !important;
+  text-shadow: 0 0 24px rgba(255, 255, 255, 0.6) !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Hero Eyebrow estilo Badge Ejecutivo (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .kyrios-eyebrow,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .kyrios-eyebrow,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .kyrios-eyebrow {
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+  padding: 0.35rem 0.95rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  font-size: 0.72rem !important;
+}
+
+/* Hero Overlay monocromático (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .kyrios-hero-overlay,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .kyrios-hero-overlay,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .kyrios-hero-overlay {
+  background: radial-gradient(circle at 75% 25%, rgba(255, 255, 255, 0.12) 0%, transparent 65%),
+              linear-gradient(180deg, var(--home-hero-overlay-from) 0%, var(--home-hero-overlay-to) 100%) !important;
+}
+
+/* Selección de texto y scrollbar */
+[data-tenant-theme="monochrome-noir"] ::selection {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+[data-tenant-theme="monochrome-noir"]::-webkit-scrollbar-thumb,
+[data-tenant-theme="monochrome-noir"] *::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  border-radius: 9999px !important;
+}
+
+/* Fondo atmosférico en modo oscuro: Obsidiana limpio */
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] body,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .app-main,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .kyrios-home-page {
+  background-color: #09090b !important;
+}
+
+/* Botones principales en Modo Oscuro: Cápsula blanca con texto negro */
+[data-tenant-theme="monochrome-noir"] .btn-primary,
+[data-tenant-theme="monochrome-noir"] .btn-kyrios-primary,
+[data-tenant-theme="monochrome-noir"] .btn-dark {
+  background-color: #ffffff !important;
+  border: 1.5px solid #ffffff !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.35) !important;
+  letter-spacing: 0.01em !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .btn-primary:hover,
+[data-tenant-theme="monochrome-noir"] .btn-kyrios-primary:hover,
+[data-tenant-theme="monochrome-noir"] .btn-dark:hover {
+  background-color: #e4e4e7 !important;
+  border-color: #e4e4e7 !important;
+  color: #000000 !important;
+  box-shadow: 0 6px 24px rgba(255, 255, 255, 0.5) !important;
+  transform: translateY(-2px);
+}
+
+/* Botones outline */
+[data-tenant-theme="monochrome-noir"] .btn-outline-primary,
+[data-tenant-theme="monochrome-noir"] .btn-kyrios-outline {
+  border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
+  border-radius: 9999px !important;
+  background: transparent !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .btn-outline-primary:hover,
+[data-tenant-theme="monochrome-noir"] .btn-kyrios-outline:hover {
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+/* Botón de catálogo / secundario */
+[data-tenant-theme="monochrome-noir"] .btn-kyrios-dark {
+  border-radius: 9999px !important;
+  background-color: #ffffff !important;
+  border: 1.5px solid #ffffff !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 12px rgba(255, 255, 255, 0.25) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .btn-kyrios-dark:hover {
+  background-color: #e4e4e7 !important;
+  color: #000000 !important;
+  transform: translateY(-2px);
+}
+
+/* ── Tarjetas de Barberos en Monochrome Noir (Estilo 'Select specialist' de la imagen) ── */
+[data-tenant-theme="monochrome-noir"] .kyrios-barber-card {
+  border-radius: 22px !important;
+  background: #111114 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  padding: 1.35rem 1rem !important;
+  text-align: center !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .kyrios-barber-card:hover {
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 255, 255, 0.15) !important;
+  transform: translateY(-4px);
+}
+
+[data-tenant-theme="monochrome-noir"] .kyrios-barber-img-wrap {
+  width: 130px !important;
+  height: 130px !important;
+  min-height: 130px !important;
+  max-width: 130px !important;
+  margin: 0.5rem auto 1.15rem auto !important;
+  border-radius: 50% !important;
+  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.2) !important;
+  overflow: hidden !important;
+  background: #18181b !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .kyrios-barber-img-wrap img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .kyrios-barber-name {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.01em !important;
+  color: #ffffff !important;
+  font-size: 1.15rem !important;
+  margin-bottom: 0.2rem !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .kyrios-barber-role {
+  color: #a1a1aa !important;
+  font-weight: 600 !important;
+  font-size: 0.78rem !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .kyrios-barber-sede {
+  color: #71717a !important;
+  font-size: 0.74rem !important;
+}
+
+/* Tarjetas de Servicios en Monochrome Noir (Estilo 'Men's Haircut' de la imagen) */
+[data-tenant-theme="monochrome-noir"] .kyrios-service-card {
+  border-radius: 20px !important;
+  background: #111114 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .kyrios-service-card:hover {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.6) !important;
+  transform: translateY(-3px);
+}
+
+[data-tenant-theme="monochrome-noir"] .kyrios-service-img-wrap {
+  border-radius: 14px !important;
+  margin: 0.6rem !important;
+  overflow: hidden !important;
+}
+
+/* Stepper y flujo de reservas */
+[data-tenant-theme="monochrome-noir"] .booking-stepper-segment.is-active {
+  background: #ffffff !important;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.6) !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-card--selected {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 2px #ffffff, 0 10px 24px rgba(255, 255, 255, 0.2) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-card--selected .booking-barber-avatar {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Stepper activo y completado en Monochrome Noir (Modo Oscuro) */
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.35) !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #ffffff !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-card__check-indicator {
+  background: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: 0 3px 10px rgba(255, 255, 255, 0.35) !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-card__check-indicator svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-barber-status-badge--selected,
+[data-tenant-theme="monochrome-noir"] .booking-card--selected .badge {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 850 !important;
+  border: 1px solid #ffffff !important;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.35) !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-primary-badge {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 850 !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-step-badge,
+[data-tenant-theme="monochrome-noir"] .kyrios-badge,
+[data-tenant-theme="monochrome-noir"] .brand-badge,
+[data-tenant-theme="monochrome-noir"] .badge-vip {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 9999px !important;
+}
+
+/* Cápsulas de Fecha estilo John's Barbershop (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-date-capsule:not(.booking-date-capsule--selected) {
+  border-radius: 16px !important;
+  min-height: 104px !important;
+  background: #111114 !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:disabled,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:disabled,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-date-capsule:disabled {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  color: #64748b !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-date-capsule--selected {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.35) !important;
+  transform: none !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__month,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__month {
+  color: #000000 !important;
+  font-weight: 850 !important;
+  opacity: 1 !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__badge,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid #000000 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Horarios en modo oscuro: Cuadrícula limpia */
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill:not(.booking-slot-pill--active) {
+  border-radius: 12px !important;
+  background: #111114 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #94a3b8 !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-slot-pill--active,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.35) !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-time,
+[data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-end,
+[data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-check,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-check {
+  color: #000000 !important;
+  font-weight: 750 !important;
+}
+
+/* Dashboard: Atajos y Tarjetas (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .dash-shortcut-card {
+  border-radius: 20px !important;
+  background: #111114 !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-left: 4px solid #ffffff !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .dash-shortcut-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.6) !important;
+}
+
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card__icon,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card__icon,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) .dash-shortcut-card__icon {
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .dash-shortcut-card__arrow,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .dash-shortcut-card__arrow {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .badge,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .badge {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+/* Sidebar del Dashboard */
+[data-tenant-theme="monochrome-noir"] .sidebar-nav-link {
+  border-radius: 9999px !important;
+  margin: 0.2rem 0.6rem !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .sidebar-nav-link.active {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .sidebar-nav-link.active .sidebar-nav-icon,
+[data-tenant-theme="monochrome-noir"] .sidebar--dark .sidebar-nav-link.active .sidebar-nav-icon {
+  color: #ffffff !important;
+}
+
+/* Tabs de Administradores y Barberos */
+[data-tenant-theme="monochrome-noir"] .usuarios-tabs-container {
+  border-radius: 9999px !important;
+  padding: 0.35rem !important;
+  background-color: #18181b !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .usuarios-tabs-container button {
+  border-radius: 9999px !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .usuarios-tabs-container button[aria-selected="true"],
+[data-tenant-theme="monochrome-noir"] .usuarios-tabs-container .btn-dark {
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Formularios de Admin */
+[data-tenant-theme="monochrome-noir"] .card,
+[data-tenant-theme="monochrome-noir"] .card.card-surface,
+[data-tenant-theme="monochrome-noir"] .card-surface {
+  border-radius: 20px !important;
+  background: #111114 !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .form-control,
+[data-tenant-theme="monochrome-noir"] .form-select {
+  border-radius: 12px !important;
+  background-color: #18181b !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
+  padding: 0.72rem 1.15rem !important;
+  font-size: 0.95rem !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .form-control:focus,
+[data-tenant-theme="monochrome-noir"] .form-select:focus {
+  background-color: #202024 !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  outline: none !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .form-check-input {
+  border-radius: 7px !important;
+  background-color: #18181b !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  cursor: pointer !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .form-check-input:checked {
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] a.btn-outline-secondary,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] button.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] a.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] button.btn-outline-secondary,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary {
+  border-radius: 9999px !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1.1rem !important;
+}
+
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] a.btn-outline-secondary:hover,
+[data-theme="dark"][data-tenant-theme="monochrome-noir"] button.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] a.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="monochrome-noir"] button.btn-outline-secondary:hover,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary:hover,
+[data-tenant-theme="monochrome-noir"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary:hover {
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+/* ── Panel de Reservas Administrativas en Monochrome Noir (Modo Oscuro) ── */
+[data-tenant-theme="monochrome-noir"] .reservations-admin__day-header {
+  border-radius: 16px !important;
+  background: #141417 !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  padding: 0.85rem 1.25rem !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .reservations-admin__day-header:hover {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .reservations-admin__day-date-badge {
+  border-radius: 12px !important;
+  background: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.3) !important;
+  min-height: 48px !important;
+  min-width: 48px !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .reservations-admin__day-date-badge span,
+[data-tenant-theme="monochrome-noir"] .reservations-admin__day-date-badge strong {
+  color: #000000 !important;
+  font-weight: 900 !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .reservations-admin__day-count {
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  font-weight: 750 !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .reservations-admin__row {
+  border-radius: 16px !important;
+  background: #111114 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-left: 4px solid #ffffff !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  margin-bottom: 0.85rem !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-tenant-theme="monochrome-noir"] .reservations-admin__row:hover,
+[data-tenant-theme="monochrome-noir"] .reservations-admin__row.is-selected {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  border-left: 5px solid #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   MONOCHROME NOIR - MODO CLARO (John's Barbershop / Editorial Minimalista)
+   Fiel a la maqueta de referencia: fondo blanco puro, botones negro sólido
+   ────────────────────────────────────────────────────────────────────────── */
+[data-theme="light"][data-tenant-theme="monochrome-noir"],
+[data-theme="light"] [data-tenant-theme="monochrome-noir"],
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"],
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] {
+  --bs-primary: #000000 !important;
+  --bs-primary-rgb: 0, 0, 0 !important;
+  --bs-primary-hover: #18181b !important;
+
+  --tenant-accent: #000000 !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(0, 0, 0, 0.25) !important;
+
+  --tenant-color-primario: #000000 !important;
+  --k-blue: #000000 !important;
+  --k-blue-hover: #18181b !important;
+  --k-blue-glow: rgba(0, 0, 0, 0.2) !important;
+
+  /* Sincronización de tokens heredados */
+  --brand-blue: #000000 !important;
+  --brand-blue-hover: #18181b !important;
+  --brand-blue-light: rgba(0, 0, 0, 0.08) !important;
+  --bs-primary-bg-subtle: rgba(0, 0, 0, 0.08) !important;
+  --bs-primary-border-subtle: rgba(0, 0, 0, 0.2) !important;
+  --bs-primary-text-emphasis: #000000 !important;
+
+  --portal-primary: #000000 !important;
+  --portal-primary-hover: #18181b !important;
+  --portal-primary-glow: rgba(0, 0, 0, 0.15) !important;
+
+  /* Variables semánticas de Home para modo claro */
+  --home-bg: #ffffff !important;
+  --home-fg: #09090b !important;
+  --home-fg-muted: #52525b !important;
+  --home-surface: #ffffff !important;
+  --home-surface-alt: #f4f4f5 !important;
+  --home-surface-border: #e4e4e7 !important;
+  --home-meta-border: #e4e4e7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] body,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .app-main,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-home,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] body,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .app-main,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-home {
+  background-color: #ffffff !important;
+  color: #09090b !important;
+}
+
+/* ── Hero en Modo Claro (Monochrome Noir) ── */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e4e4e7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-bg,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-bg,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-bg,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-bg {
+  opacity: 0.35 !important;
+  filter: grayscale(100%) contrast(105%) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-overlay,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-overlay,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-overlay,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-overlay {
+  background: radial-gradient(circle at 75% 25%, rgba(0, 0, 0, 0.02) 0%, transparent 65%),
+              linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.88) 70%, #ffffff 100%) !important;
+}
+
+/* Título de Hero: "Cada cliente. Una obra maestra." 100% visible y con contraste perfecto */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-title,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-title,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-title,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-title {
+  color: #09090b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-title span,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-title span,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-title span,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-title span {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  background: none !important;
+  text-shadow: none !important;
+}
+
+/* Eyebrow / Slogan en cápsula negra con texto blanco nítido */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-eyebrow,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-eyebrow,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-eyebrow,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-eyebrow {
+  border-radius: 9999px !important;
+  background: #09090b !important;
+  border: 1px solid #09090b !important;
+  color: #ffffff !important;
+  padding: 0.35rem 0.95rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  font-size: 0.72rem !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-eyebrow::before,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-eyebrow::before,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-eyebrow::before,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-eyebrow::before {
+  background-color: #a1a1aa !important;
+}
+
+/* Subtítulo del Hero */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-subtitle,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-hero-subtitle,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-subtitle,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-hero-subtitle {
+  color: #3f3f46 !important;
+}
+
+/* ── Diferenciación y Separación de Secciones en Modo Claro ── */
+
+/* Bloque de Confianza (Trust Section) */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-trust-section,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-trust-section,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-trust-section,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-trust-section {
+  background-color: #fafafa !important;
+  border-top: 1px solid #e4e4e7 !important;
+  border-bottom: 1px solid #e4e4e7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-trust-icon-box,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-trust-icon-box,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-trust-icon-box,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-trust-icon-box {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #18181b !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Sección de Servicios / Catálogo: Fondo con tono contrastante (#f4f4f5) para destacar tarjetas */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] #servicios,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] #servicios,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios {
+  background-color: #f4f4f5 !important;
+  border-bottom: 1px solid #e4e4e7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] #servicios .kyrios-section-title,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] #servicios .kyrios-section-title,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios .kyrios-section-title,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios .kyrios-section-title {
+  color: #09090b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card:hover,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card:hover,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card:hover,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] #servicios .kyrios-service-card:hover {
+  border-color: #09090b !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-4px);
+}
+
+/* Sección de Barberos / Equipo */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] #barberos,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-section--alt,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] #barberos,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-section--alt,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] #barberos,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-section--alt,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] #barberos,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-section--alt {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e4e4e7 !important;
+}
+
+/* Sección de Visión / Nosotros */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] #vision,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] #vision,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] #vision,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] #vision {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e4e4e7 !important;
+}
+
+/* Sección de Ubicación */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] #ubicacion,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] #ubicacion,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] #ubicacion,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] #ubicacion {
+  background-color: #f4f4f5 !important;
+  border-bottom: 1px solid #e4e4e7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-location-card,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-location-card,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-location-card,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-location-card {
+  background-color: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Dashboard: Atajos y Tarjetas en Modo Claro (Monochrome Noir) */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card {
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  border-left: 4px solid #18181b !important;
+  color: #18181b !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover {
+  transform: translateY(-3px);
+  border-color: #18181b !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card__icon,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card__icon,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card__icon,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card__icon {
+  border-radius: 14px !important;
+  background: #18181b !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover .dash-shortcut-card__icon,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover .dash-shortcut-card__icon,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover .dash-shortcut-card__icon,
+[data-bs-theme="light"] [data-tenant-theme="monochrome-noir"] .dash-shortcut-card:hover .dash-shortcut-card__icon {
+  background: #000000 !important;
+  transform: scale(1.08);
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card h3,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card h3 {
+  color: #18181b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card p,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card p {
+  color: #71717a !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .dash-shortcut-card__arrow,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .dash-shortcut-card__arrow {
+  color: #18181b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .badge,
+[data-bs-theme="light"][data-tenant-theme="monochrome-noir"] .dash-shortcut-card .badge {
+  background: #f4f4f5 !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #18181b !important;
+}
+
+/* Tarjetas de Barberos en Modo Claro (Círculos limpios con nombre debajo) */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-barber-card,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-barber-card {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #18181b !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-barber-card:hover,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-barber-card:hover {
+  border-color: #18181b !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-barber-name,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-barber-name {
+  color: #18181b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-barber-role,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-barber-role {
+  color: #71717a !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-barber-img-wrap,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-barber-img-wrap {
+  border: 2px solid #18181b !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  background: #f4f4f5 !important;
+}
+
+/* Tarjetas de Servicios en Modo Claro (Formato limpio como la maqueta) */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-service-card,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-service-card {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #18181b !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .kyrios-service-card:hover,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .kyrios-service-card:hover {
+  border-color: #18181b !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.07) !important;
+}
+
+/* Botones principales en Modo Claro: Negro puro con texto blanco */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .btn-primary,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .btn-kyrios-primary,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .btn-dark,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .btn-kyrios-dark,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .btn-primary,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .btn-dark,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .btn-kyrios-dark {
+  background-color: #000000 !important;
+  border: 1.5px solid #000000 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .btn-primary:hover,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .btn-kyrios-primary:hover,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .btn-dark:hover,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .btn-kyrios-dark:hover,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .btn-primary:hover {
+  background-color: #27272a !important;
+  border-color: #27272a !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Botones secundarios / outline en Modo Claro Monochrome Noir */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] a.btn-outline-secondary,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] button.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] a.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] button.btn-outline-secondary {
+  border-radius: 9999px !important;
+  border: 1.5px solid #d4d4d8 !important;
+  color: #18181b !important;
+  background: #f4f4f5 !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1.1rem !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] a.btn-outline-secondary:hover,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] button.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] a.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] button.btn-outline-secondary:hover {
+  background-color: #18181b !important;
+  border-color: #18181b !important;
+  color: #ffffff !important;
+}
+
+/* Tabs de usuarios en Modo Claro Monochrome Noir */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .usuarios-tabs-container,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .usuarios-tabs-container {
+  background: #f4f4f5 !important;
+  border-color: #e4e4e7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .usuarios-tabs-container button[aria-selected="true"],
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .usuarios-tabs-container .btn-dark,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .usuarios-tabs-container button[aria-selected="true"],
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .usuarios-tabs-container .btn-dark {
+  background-color: #000000 !important;
+  border-color: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .usuarios-tabs-container button[aria-selected="true"] .badge,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .usuarios-tabs-container button[aria-selected="true"] .badge {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+/* Cápsulas de Fecha en Modo Claro (14 Sat = Negro sólido con letras blancas) */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-date-capsule:not(.booking-date-capsule--selected) {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #18181b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__month {
+  color: #18181b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule:disabled,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-date-capsule:disabled {
+  background: #f4f4f5 !important;
+  border-color: #e4e4e7 !important;
+  color: #a1a1aa !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected {
+  background: #000000 !important;
+  border-color: #000000 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+  transform: none !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__month,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__month {
+  color: #ffffff !important;
+  font-weight: 900 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__badge,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Horarios en Modo Claro (8:00 = Negro sólido) */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #18181b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #18181b !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #71717a !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-slot-pill--active {
+  background: #000000 !important;
+  border-color: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-check,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-slot-pill--active .booking-slot-check {
+  color: #ffffff !important;
+  font-weight: 750 !important;
+}
+
+/* Stepper y elementos seleccionados en Monochrome Noir (Modo Claro) */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current {
+  background: #000000 !important;
+  border-color: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current svg,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.25) !important;
+  color: #000000 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done svg,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-stepper__step.is-done svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-card__check-indicator,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-card__check-indicator {
+  background: #000000 !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-card__check-indicator svg,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-barber-status-badge--selected,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-card--selected .badge,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-barber-status-badge--selected,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-card--selected .badge {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+  border: 1px solid #000000 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .booking-primary-badge,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .booking-primary-badge {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+
+/* Sidebar activo en Modo Claro */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .sidebar-nav-link.active,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .sidebar-nav-link.active {
+  background: #000000 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .sidebar-nav-link.active .sidebar-nav-icon,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .sidebar-nav-link.active .sidebar-nav-icon {
+  color: #ffffff !important;
+}
+
+/* Tarjetas y Formularios en Modo Claro */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .card,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .card.card-surface,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .card-surface,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .card {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #18181b !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .form-control,
+[data-tenant-theme="monochrome-noir"] .form-select,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .form-control {
+  background-color: #ffffff !important;
+  border: 1px solid #d4d4d8 !important;
+  color: #18181b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .form-control:focus,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .form-select:focus,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .form-control:focus {
+  border-color: #000000 !important;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Reservas Administrativas en Modo Claro */
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .reservations-admin__day-header,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .reservations-admin__day-header {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+  color: #18181b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .reservations-admin__day-date-badge,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .reservations-admin__day-date-badge {
+  background: #000000 !important;
+  border-radius: 12px !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .reservations-admin__day-date-badge span,
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .reservations-admin__day-date-badge strong,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .reservations-admin__day-date-badge span,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .reservations-admin__day-date-badge strong {
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .reservations-admin__row,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .reservations-admin__row {
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  border-left: 4px solid #000000 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
+  color: #18181b !important;
+}
+
+[data-theme="light"][data-tenant-theme="monochrome-noir"] .reservations-admin__row:hover,
+[data-theme="light"] [data-tenant-theme="monochrome-noir"] .reservations-admin__row:hover {
+  border-color: #18181b !important;
+  border-left: 5px solid #000000 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07) !important;
+}

@@ -1,0 +1,71 @@
+/* ==========================================================================
+   ACENTOS DE IDENTIDAD EN HEADER Y FOOTER (Sincronizados con el tema activo)
+   ========================================================================== */
+[data-tenant-theme] header nav.navbar {
+  border-bottom: 1.5px solid rgba(var(--bs-primary-rgb), 0.22) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06), 0 1px 0 rgba(var(--bs-primary-rgb), 0.12) !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+[data-tenant-theme] header .header-action-btn:hover {
+  background-color: var(--tenant-accent, var(--bs-primary)) !important;
+  border-color: var(--tenant-accent, var(--bs-primary)) !important;
+  color: var(--tenant-btn-text, #ffffff) !important;
+  box-shadow: 0 4px 14px var(--tenant-glow, rgba(var(--bs-primary-rgb), 0.35)) !important;
+}
+
+[data-tenant-theme] header .header-action-btn:hover,
+[data-tenant-theme] header .header-action-btn:hover *,
+[data-tenant-theme] header .header-action-btn:hover svg,
+[data-tenant-theme] header .header-action-btn:hover span {
+  color: var(--tenant-btn-text, #ffffff) !important;
+  stroke: var(--tenant-btn-text, #ffffff) !important;
+}
+
+[data-tenant-theme] header .rounded-circle.border,
+[data-tenant-theme] header .user-avatar {
+  border-color: var(--bs-primary) !important;
+  box-shadow: 0 0 8px rgba(var(--bs-primary-rgb), 0.35) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Footer de la Aplicación (Admin) */
+[data-tenant-theme] footer.app-footer {
+  border-top: 1.5px solid rgba(var(--bs-primary-rgb), 0.2) !important;
+  box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.04) !important;
+  transition: border-color 0.3s ease !important;
+}
+
+[data-tenant-theme] .app-footer__link {
+  color: var(--bs-primary) !important;
+  background: rgba(var(--bs-primary-rgb), 0.1) !important;
+  border: 1px solid rgba(var(--bs-primary-rgb), 0.3) !important;
+  border-radius: 9999px !important;
+  padding: 0.15rem 0.55rem !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme] .app-footer__link:hover {
+  background: var(--bs-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(var(--bs-primary-rgb), 0.45) !important;
+}
+
+/* Footer Público (Sitio Web Home) */
+[data-tenant-theme] .kyrios-footer {
+  border-top: 1.5px solid rgba(var(--bs-primary-rgb), 0.22) !important;
+  transition: border-color 0.3s ease !important;
+}
+
+[data-tenant-theme] .kyrios-social-btn:hover {
+  border-color: var(--bs-primary) !important;
+  color: var(--bs-primary) !important;
+  box-shadow: 0 0 14px rgba(var(--bs-primary-rgb), 0.35) !important;
+  transform: translateY(-2px);
+}
+
+[data-tenant-theme] .kyrios-footer-link:hover {
+  color: var(--bs-primary) !important;
+}
