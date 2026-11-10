@@ -153,7 +153,7 @@ describe('HistorialCitasCliente', () => {
     expect(screen.getByText('#6')).toBeInTheDocument();
   });
 
-  it('muestra el botón "Repetir corte" para citas completadas con los IDs correspondientes', () => {
+  it('muestra el nombre del servicio y el barbero claramente separados', () => {
     render(
       <MemoryRouter>
         <HistorialCitasCliente
@@ -166,11 +166,7 @@ describe('HistorialCitasCliente', () => {
       </MemoryRouter>
     );
 
-    const rebookLinks = screen.getAllByRole('link', { name: /Repetir corte/i });
-    expect(rebookLinks.length).toBeGreaterThan(0);
-    expect(rebookLinks[0]).toHaveAttribute(
-      'href',
-      '/demo-barber/reservar?servicio=10&barbero=2'
-    );
+    expect(screen.getAllByText(/Barbero:/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Carlos Gómez').length).toBeGreaterThan(0);
   });
 });

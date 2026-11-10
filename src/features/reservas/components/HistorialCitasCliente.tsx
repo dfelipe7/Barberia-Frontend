@@ -1,10 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import {
   Scissors,
   User,
   Calendar,
-  RotateCcw,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -12,7 +10,7 @@ import type { ReservaClienteDTO } from '../api/reservas.dto';
 
 export interface HistorialCitasClienteProps {
   citas: ReservaClienteDTO[];
-  slugActivo: string;
+  slugActivo?: string;
   formatearFecha: (fecha: string) => string;
   formatearPrecio: (precio: number) => string;
   mapearEstado: (estado: string) => string;
@@ -32,7 +30,6 @@ const ETIQUETAS_FILTROS: Record<FiltroEstadoKey, string> = {
 
 export const HistorialCitasCliente: React.FC<HistorialCitasClienteProps> = ({
   citas,
-  slugActivo,
   formatearFecha,
   formatearPrecio,
   mapearEstado,
@@ -136,57 +133,43 @@ export const HistorialCitasCliente: React.FC<HistorialCitasClienteProps> = ({
       ) : (
         <div className="d-flex flex-column gap-2">
           {citasPaginadas.map((reserva) => {
-            const rutaReagendar = slugActivo
-              ? `/${slugActivo}/reservar?servicio=${reserva.servicio.id}&barbero=${reserva.barbero.id}`
-              : `/reservar?servicio=${reserva.servicio.id}&barbero=${reserva.barbero.id}`;
-
-            const permiteReagendar = reserva.estado === 'COMPLETED' || reserva.estado === 'CONFIRMED';
-
             return (
               <div key={reserva.id} className="historial-row-card">
                 {/* Columna Izquierda: Información de la Cita */}
                 <div className="historial-row__info">
-                  <div className="d-flex flex-wrap align-items-center gap-2 mb-1.5">
+                  <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
                     <span className={`cliente-ticket__badge-status badge-status--${reserva.estado}`}>
                       {mapearEstado(reserva.estado)}
                     </span>
                     <span className="small font-monospace text-muted">#{reserva.id}</span>
                     <span className="historial-row__bullet" aria-hidden="true">•</span>
-                    <span className="small text-muted d-inline-flex align-items-center gap-1">
+                    <span className="small text-muted d-inline-flex align-items-center gap-1.5">
                       <Calendar size={13} className="text-muted flex-shrink-0" />
                       <span className="text-capitalize">{formatearFecha(reserva.fecha)}</span>
                       <span className="ms-1 fw-bold text-portal-fg">{reserva.hora}</span>
                     </span>
                   </div>
 
-                  <div className="d-flex flex-wrap align-items-center gap-x-3 gap-y-1">
+                  <div className="d-flex flex-wrap align-items-center gap-2 gap-sm-3">
                     <div className="d-inline-flex align-items-center gap-1.5 fw-bold text-portal-fg">
                       <Scissors size={14} className="historial-row__icon-service" />
                       <span>{reserva.servicio.nombre}</span>
                     </div>
-                    <div className="small text-muted d-inline-flex align-items-center gap-1">
-                      <User size={13} className="flex-shrink-0" />
-                      <span>{reserva.barbero.nombre} {reserva.barbero.apellido}</span>
+                    <span className="historial-row__bullet d-none d-sm-inline" aria-hidden="true">•</span>
+                    <div className="small text-muted d-inline-flex align-items-center gap-1.5 historial-row__barbero-tag">
+                      <User size={13} className="text-muted flex-shrink-0" />
+                      <span>
+                        Barbero: <strong className="text-portal-fg">{reserva.barbero.nombre} {reserva.barbero.apellido}</strong>
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Columna Derecha: Precio y Acción Rápida */}
+                {/* Columna Derecha: Precio */}
                 <div className="historial-row__action">
                   <span className="historial-row__price">
                     {formatearPrecio(reserva.precio)}
                   </span>
-
-                  {permiteReagendar && (
-                    <Link
-                      to={rutaReagendar}
-                      className="historial-rebook-btn"
-                      title="Volver a agendar este mismo corte con tu barbero"
-                    >
-                      <RotateCcw size={12} />
-                      <span>Repetir corte</span>
-                    </Link>
-                  )}
                 </div>
               </div>
             );
