@@ -46,6 +46,9 @@ describe('WhatsAppStatusIndicator', () => {
 
   beforeEach(() => {
     vi.restoreAllMocks();
+    localStorage.clear();
+    sessionStorage.clear();
+    window.history.pushState({}, '', '/kyrios-studio/dashboard');
     queryClient = new QueryClient({
       defaultOptions: {
         queries: {
@@ -57,6 +60,8 @@ describe('WhatsAppStatusIndicator', () => {
 
   afterEach(() => {
     queryClient.clear();
+    localStorage.clear();
+    sessionStorage.clear();
   });
 
   it('no se renderiza si el usuario no está autenticado', () => {
