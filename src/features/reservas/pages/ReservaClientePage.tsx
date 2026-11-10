@@ -432,7 +432,7 @@ export const ReservaClientePage = () => {
   const [reservaModificada, setReservaModificada] = useState(false);
   const [reservaCancelada, setReservaCancelada] = useState(false);
   const [clienteSesion, setClienteSesion] = useState<ClienteSesionDTO | null>(
-    () => clientesService.obtenerSesion(),
+    () => clientesService.obtenerSesion(slugActivo),
   );
   const { data: perfilCliente } = usePerfilCliente(Boolean(clienteSesion));
   const cancelarMiReserva = useCancelarMiReserva();
