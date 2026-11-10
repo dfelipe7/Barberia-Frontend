@@ -44,8 +44,8 @@
 
 .reservations-admin__day-header:hover {
   background: var(--surface-card-bg);
-  border-color: rgba(0, 113, 188, 0.35);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-color: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.35);
+  box-shadow: 0 2px 8px var(--tenant-glow, rgba(0, 0, 0, 0.05));
 }
 
 .reservations-admin__day-chevron {
@@ -149,12 +149,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.35rem 0.55rem;
+  padding: 0.38rem 0.85rem;
   border-radius: 999px;
   background: var(--bs-tertiary-bg);
-  font-size: 0.68rem;
-  font-weight: 750;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.015em;
   white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 .reservations-admin__status--pending {
@@ -203,7 +205,7 @@
 }
 
 .reservations-admin__detail {
-  padding: 1.35rem;
+  padding: 1rem 1.15rem;
 }
 
 .reservations-admin__detail-top {
@@ -211,26 +213,27 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  margin-bottom: 1.15rem;
+  margin-bottom: 0.65rem;
+  padding-top: 0.1rem;
 }
 
 .reservations-admin__detail-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 11px;
-  background: rgba(0, 113, 188, 0.09);
-  color: var(--brand-blue, #0071BC);
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
+  color: var(--tenant-accent, var(--bs-primary, #0071BC));
 }
 
 .reservations-admin__detail-close-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border: none;
   border-radius: 8px;
   background: transparent;
@@ -240,33 +243,33 @@
 }
 
 .reservations-admin__detail-close-btn:hover {
-  background: rgba(0, 113, 188, 0.1);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
   color: var(--bs-body-color);
 }
 
 .reservations-admin__detail-title {
-  margin: 0.25rem 0 0.35rem;
-  font-size: 1.45rem;
+  margin: 0.15rem 0 0.2rem;
+  font-size: 1.22rem;
   font-weight: 700;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.025em;
   color: var(--bs-body-color);
 }
 
 .reservations-admin__detail-date {
-  margin-bottom: 1.15rem;
+  margin-bottom: 0.75rem;
   color: var(--bs-secondary-color);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 /* Tarjetas de Personas (Cliente y Barbero) */
 .reservations-admin__person-card {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.85rem;
-  padding: 0.85rem;
+  gap: 0.65rem;
+  margin-bottom: 0.55rem;
+  padding: 0.5rem 0.75rem;
   border: 1px solid var(--bs-border-color);
-  border-radius: 10px;
+  border-radius: 9px;
   background: var(--surface-app-bg);
 }
 
@@ -274,11 +277,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: rgba(0, 113, 188, 0.1);
-  color: var(--brand-blue, #0071BC);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
+  color: var(--tenant-accent, var(--bs-primary, #0071BC));
   flex-shrink: 0;
 }
 
@@ -308,19 +311,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border: 1px solid var(--bs-border-color);
   border-radius: 50%;
-  color: var(--brand-blue, #0071BC);
+  color: var(--tenant-accent, var(--bs-primary, #0071BC));
   text-decoration: none;
   flex-shrink: 0;
   transition: all 150ms ease;
 }
 
 .reservations-admin__call-link:hover {
-  border-color: var(--brand-blue, #0071BC);
-  background: rgba(0, 113, 188, 0.1);
+  border-color: var(--tenant-accent, var(--bs-primary, #0071BC));
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
   transform: scale(1.05);
 }
 
@@ -328,14 +331,14 @@
 .reservations-admin__detail-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
+  gap: 0.5rem;
   padding: 0;
   background: transparent;
   border: none;
 }
 
 .reservations-admin__detail-grid > div {
-  padding: 0.75rem;
+  padding: 0.5rem 0.65rem;
   border: 1px solid var(--bs-border-color);
   border-radius: 8px;
   background: var(--surface-card-bg);
@@ -344,17 +347,17 @@
 .reservations-admin__detail-grid dt {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  margin-bottom: 0.4rem;
+  gap: 0.3rem;
+  margin-bottom: 0.25rem;
   color: var(--bs-secondary-color);
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.08em;
 }
 
 .reservations-admin__detail-grid dd {
   margin: 0;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   font-weight: 650;
   font-variant-numeric: tabular-nums;
   color: var(--bs-body-color);
@@ -366,8 +369,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  background: rgba(0, 113, 188, 0.09);
-  border-color: rgba(0, 113, 188, 0.2);
+  padding: 0.5rem 0.8rem;
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.09);
+  border-color: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.25);
 }
 
 .reservations-admin__detail-price dt {
@@ -375,25 +379,27 @@
 }
 
 .reservations-admin__detail-price dd {
-  color: var(--brand-blue, #0071BC);
-  font-size: 1.08rem;
+  color: var(--tenant-accent, var(--bs-primary, #0071BC));
+  font-size: 1rem;
   font-weight: 750;
 }
 
 [data-theme='dark'] .reservations-admin__detail-price dd,
 [data-bs-theme='dark'] .reservations-admin__detail-price dd {
-  color: #38bdf8;
+  color: var(--tenant-accent, var(--bs-primary, #38bdf8));
 }
 
 .reservations-admin__detail-actions {
-  padding: 0.85rem;
+  padding: 0.65rem 0.85rem;
   border-radius: 10px;
   background: var(--surface-card-bg);
   border: 1px solid var(--bs-border-color);
 }
 
 .reservations-admin__detail-actions .btn {
-  min-height: 40px;
+  min-height: 38px;
+  padding: 0.38rem 0.65rem;
+  font-size: 0.82rem;
   font-weight: 600;
 }
 
@@ -416,8 +422,8 @@
   height: 56px;
   margin-bottom: 1rem;
   border-radius: 16px;
-  background: rgba(0, 113, 188, 0.1);
-  color: var(--brand-blue, #0071BC);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
+  color: var(--tenant-accent, var(--bs-primary, #0071BC));
 }
 
 .reservations-admin__detail-placeholder h2 {
@@ -472,8 +478,10 @@
 @media (min-width: 1200px) {
   .reservations-admin__detail-sticky {
     position: sticky;
-    top: calc(58px + 1.25rem);
-    max-height: calc(100vh - 58px - 2.5rem);
+    top: calc(58px + 1rem);
+    max-height: calc(100dvh - 58px - 2rem);
+    max-width: 440px;
+    margin-left: auto;
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
@@ -570,22 +578,24 @@
   }
 
   .reservations-admin__mobile-sheet-close:hover {
-    background: rgba(0, 113, 188, 0.12);
+    background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.12);
     color: var(--bs-body-color);
   }
 
   .reservations-admin__mobile-sheet-body {
-    padding: 0 1.25rem 1.75rem;
+    padding: 0.5rem 1.25rem 2rem;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
 
   .reservations-admin__mobile-sheet-body .reservations-admin__detail {
     position: static;
-    border: none !important;
-    padding: 0;
-    background: transparent !important;
-    box-shadow: none !important;
+    border: 1px solid var(--bs-border-color) !important;
+    padding: 1.25rem 1.35rem !important;
+    border-radius: 20px !important;
+    background: var(--surface-card-bg, #1e293b) !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16) !important;
+    margin-bottom: 1rem;
   }
 
   .reservations-admin__mobile-sheet-body .reservations-admin__detail-close-btn {
@@ -604,16 +614,16 @@
 }
 
 .reservations-admin__row.is-selected {
-  border-color: #0071BC !important;
-  background: rgba(0, 113, 188, 0.08) !important;
-  box-shadow: 0 0 0 1px #0071BC, 0 0.4rem 1.2rem rgba(0, 113, 188, 0.15) !important;
+  border-color: var(--tenant-accent, var(--bs-primary, #0071BC)) !important;
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.08) !important;
+  box-shadow: 0 0 0 1px var(--tenant-accent, var(--bs-primary, #0071BC)), 0 0.4rem 1.2rem var(--tenant-glow, rgba(0, 113, 188, 0.15)) !important;
 }
 
 [data-theme='dark'] .reservations-admin__row.is-selected,
 [data-bs-theme='dark'] .reservations-admin__row.is-selected {
-  border-color: #0071BC !important;
-  background: rgba(0, 113, 188, 0.14) !important;
-  box-shadow: 0 0 0 1px #0071BC, 0 0.4rem 1.2rem rgba(0, 0, 0, 0.4) !important;
+  border-color: var(--tenant-accent, var(--bs-primary, #0071BC)) !important;
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.16) !important;
+  box-shadow: 0 0 0 1px var(--tenant-accent, var(--bs-primary, #0071BC)), 0 0.4rem 1.2rem rgba(0, 0, 0, 0.4) !important;
 }
 
 /* ─── Píldoras de Presets Rápidos de Fecha ────────────────────────────── */
@@ -642,13 +652,13 @@
 
 .reservations-admin__preset-btn:hover {
   color: var(--bs-body-color);
-  background: rgba(0, 113, 188, 0.08);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.08);
 }
 
 .reservations-admin__preset-btn.is-active {
-  background: var(--brand-blue, #0071BC);
-  color: #ffffff;
-  box-shadow: 0 1px 4px rgba(0, 113, 188, 0.3);
+  background: var(--tenant-accent, var(--bs-primary, #0071BC));
+  color: var(--tenant-btn-text, #ffffff);
+  box-shadow: 0 1px 4px var(--tenant-glow, rgba(0, 113, 188, 0.3));
 }
 
 .reservations-admin__reset-link {
@@ -656,7 +666,7 @@
 }
 
 .reservations-admin__reset-link:hover {
-  color: var(--brand-blue, #0071BC) !important;
+  color: var(--tenant-accent, var(--bs-primary, #0071BC)) !important;
 }
 
 /* ─── Badge Distintivo de Barbero en Tarjetas de Cita ────────────────── */
@@ -666,20 +676,20 @@
   gap: 0.35rem;
   padding: 0.18rem 0.55rem;
   border-radius: 9999px;
-  background: rgba(0, 113, 188, 0.09);
-  color: var(--brand-blue, #0071BC);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
+  color: var(--tenant-accent, var(--bs-primary, #0071BC));
   font-size: 0.74rem;
   font-weight: 600;
-  border: 1px solid rgba(0, 113, 188, 0.2);
+  border: 1px solid rgba(var(--bs-primary-rgb, 0, 113, 188), 0.25);
   letter-spacing: 0.01em;
   transition: all 150ms ease;
 }
 
 [data-theme='dark'] .reservations-admin__barber-badge,
 [data-bs-theme='dark'] .reservations-admin__barber-badge {
-  background: rgba(0, 113, 188, 0.18);
-  color: #38bdf8;
-  border-color: rgba(56, 189, 248, 0.28);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.18);
+  color: var(--tenant-accent, var(--bs-primary, #38bdf8));
+  border-color: rgba(var(--bs-primary-rgb, 56, 189, 248), 0.35);
 }
 
 /* ─── Optimizaciones Responsivas en Móvil (< 576px) ─────────────────── */
@@ -760,5 +770,59 @@
   .reservations-admin__day-date-badge strong {
     font-size: 1rem;
   }
+}
+
+/* ─── Filtros de Reservas (Compactos, Alineados y sin Desbordes) ─── */
+.reservations-admin__filters-card {
+  border-radius: 14px !important;
+}
+
+.reservations-admin__filters-card .card-body {
+  padding: 1rem 1.25rem !important;
+}
+
+.reservations-admin__filters-card .form-label {
+  font-size: 0.74rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem !important;
+  color: var(--bs-secondary-color) !important;
+}
+
+.reservations-admin__filters-card .form-control,
+.reservations-admin__filters-card .form-select {
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0.38rem 0.75rem !important;
+  font-size: 0.84rem !important;
+  font-weight: 500 !important;
+  border-radius: 9px !important;
+  line-height: 1.4 !important;
+}
+
+.reservations-admin__filters-card input[type="date"] {
+  min-width: 130px;
+}
+
+.reservations-admin__filters-card .form-select {
+  padding-right: 2.25rem !important;
+  background-position: right 0.75rem center !important;
+  background-size: 14px 10px !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 100px;
+}
+
+.reservations-admin__filters-card .reservations-admin__filters-btn {
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0.38rem 0.85rem !important;
+  font-size: 0.84rem !important;
+  font-weight: 700 !important;
+  border-radius: 9px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 

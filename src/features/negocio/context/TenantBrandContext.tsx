@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { perfilNegocioApi } from '../services/perfilNegocioApi';
 import type { PerfilNegocioPublicoResponse } from '../types/perfilNegocio.types';
@@ -6,7 +6,7 @@ import { redesSocialesApi } from '../services/redesSocialesApi';
 import type { RedSocial } from '../types/redesSociales.types';
 import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import { BRAND } from '../../../config/brand';
-import { resolverTemaTenant, type TenantThemeId } from '../../../config/tenantTheme';
+import { resolverTemaTenant, TEMAS_TENANT, type TenantThemeId } from '../../../config/tenantTheme';
 
 export interface TenantBrandContextValue {
   slug: string | null;
@@ -56,6 +56,37 @@ const MAPA_TITULOS_RUTAS: readonly [string, string][] = [
   ['/reservas', 'Reservas'],
   ['/whatsapp', 'WhatsApp'],
 ];
+
+const TEMAS_PERMITIDOS: readonly TenantThemeId[] = [
+  'clasico-azul',
+  'cyber-lime',
+  'sunset-amber',
+  'midnight-cyan',
+  'crimson-velvet',
+  'monochrome-noir',
+];
+
+const SLUG_SEGURO_REGEX = /^[a-z0-9-]+$/;
+
+/**
+ * Sanitiza y persiste el tema en el almacenamiento local mitigando vulnerabilidades
+ * de Browser Storage Poisoning (CWE) por entradas externas de URL o API.
+ */
+function guardarTemaSeguro(slug: string | null | undefined, tema: string | null | undefined): void {
+  if (!tema) return;
+  const temaSanitizado = TEMAS_PERMITIDOS.find((t) => t === tema);
+  if (!temaSanitizado) return;
+
+  try {
+    localStorage.setItem('tema_negocio_activo', temaSanitizado);
+    if (slug && SLUG_SEGURO_REGEX.test(slug)) {
+      const claveSegura = `tema_negocio_${encodeURIComponent(slug)}`;
+      localStorage.setItem(claveSegura, temaSanitizado);
+    }
+  } catch {
+    // Almacenamiento local restringido o inaccesible
+  }
+}
 
 /**
  * Resuelve el título de la pestaña del navegador combinando el nombre
@@ -111,31 +142,47 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [perfil, setPerfil] = useState<PerfilNegocioPublicoResponse | null>(null);
   const [redesSociales, setRedesSociales] = useState<RedSocial[]>([]);
   const slug = obtenerNegocioSlugActivo();
+  const ultimaCargaRef = useRef<number>(0);
 
-  const cargarPerfil = useCallback(async () => {
+  const cargarPerfil = useCallback(async (forzar = false) => {
     if (!slug || slug === 'plataforma' || slug === 'explorar') {
       setPerfil(null);
       setRedesSociales([]);
       return;
     }
 
+    const ahora = Date.now();
+    // Prevenir peticiones redundantes con un throttle de 4 segundos salvo que sea forzado
+    if (!forzar && ahora - ultimaCargaRef.current < 4000) {
+      return;
+    }
+    ultimaCargaRef.current = ahora;
+
     try {
       const [perfilData, redesData] = await Promise.all([
         perfilNegocioApi.obtenerPerfilPublico().catch(() => null),
-        redesSocialesApi.listar().catch(() => []),
+        redesSocialesApi.listar().catch(() => null),
       ]);
-      setPerfil(perfilData);
-      setRedesSociales(redesData || []);
+      if (perfilData) {
+        setPerfil(perfilData);
+      }
+      if (redesData) {
+        setRedesSociales(redesData);
+      }
+
+      const temaKeyBackend = perfilData?.temaKey as TenantThemeId | undefined;
+      if (slug && temaKeyBackend && TEMAS_TENANT[temaKeyBackend]) {
+        guardarTemaSeguro(slug, temaKeyBackend);
+        document.documentElement.dataset.tenantTheme = temaKeyBackend;
+      }
     } catch {
-      // Si falla o no tiene perfil configurado, queda en null y usará los fallbacks
-      setPerfil(null);
-      setRedesSociales([]);
+      // Prevenir sobreescritura accidental si el perfil ya estaba cargado en memoria
     }
   }, [slug]);
 
   useEffect(() => {
-    void cargarPerfil();
-  }, [cargarPerfil, location.pathname]);
+    void cargarPerfil(true);
+  }, [cargarPerfil]);
 
   // Actualizar dinámicamente el título y el favicon de la pestaña del navegador
   useEffect(() => {
@@ -158,58 +205,77 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }, [location.pathname, perfil, slug]);
 
 
-  // Sincronizar tema de la barbería en el atributo HTML raíz
+  // Sincronizar tema de la barbería en el atributo HTML raíz y persistir en localStorage de forma segura
   useEffect(() => {
     const temaId = (perfil?.temaKey as TenantThemeId) || resolverTemaTenant(slug);
     if (temaId) {
       document.documentElement.dataset.tenantTheme = temaId;
+      guardarTemaSeguro(slug, temaId);
     }
   }, [perfil?.temaKey, slug]);
 
-  // Escuchar eventos globales y entre pestañas cuando se actualice la configuración
+  // Escuchar eventos cuando el perfil es actualizado desde la configuración administrativa
   useEffect(() => {
     const handleActualizado = () => {
-      void cargarPerfil();
+      void cargarPerfil(true);
     };
-    const handleStorage = (e: StorageEvent) => {
-      if (!e.key || e.key.startsWith('tema_negocio_')) {
-        const nuevoTema = resolverTemaTenant(slug);
-        if (nuevoTema) {
-          document.documentElement.dataset.tenantTheme = nuevoTema;
-        }
-        void cargarPerfil();
-      }
-    };
+
     window.addEventListener('tenant-perfil-actualizado', handleActualizado);
-    window.addEventListener('tenant-tema-cambiado', handleActualizado);
-    window.addEventListener('storage', handleStorage);
+
     return () => {
       window.removeEventListener('tenant-perfil-actualizado', handleActualizado);
-      window.removeEventListener('tenant-tema-cambiado', handleActualizado);
-      window.removeEventListener('storage', handleStorage);
     };
-  }, [cargarPerfil, slug]);
+  }, [cargarPerfil]);
 
-  const value: TenantBrandContextValue = {
-    slug,
-    nombreNegocio: perfil?.negocio?.nombre || BRAND.name,
-    frasePrincipal: perfil?.frasePrincipal || BRAND.tagline,
-    logoBlancoUrl: resolverUrlRecurso(perfil?.logoBlancoUrl),
-    logoNegroUrl: resolverUrlRecurso(perfil?.logoNegroUrl),
-    bannerUrl: resolverUrlRecurso(perfil?.bannerUrl),
-    faviconUrl: resolverUrlRecurso(perfil?.faviconUrl),
-    direccion: perfil?.direccion || null,
-    ciudad: perfil?.ciudad || null,
-    departamento: perfil?.departamento || null,
-    referencia: perfil?.referencia || null,
-    latitud: perfil?.latitud ?? null,
-    longitud: perfil?.longitud ?? null,
-    mapsUrl: perfil?.mapsUrl || null,
-    temaKey: perfil?.temaKey || resolverTemaTenant(slug),
-    configurado: perfil?.configurado ?? false,
-    redesSociales,
-    recargarPerfil: cargarPerfil,
-  };
+  // Sincronización entre navegadores y ventanas remotas:
+  // Cuando el usuario regresa a la pestaña (focus / visible), refresca el perfil silenciosamente
+  useEffect(() => {
+    const handleReactivacion = () => {
+      if (document.visibilityState === 'visible') {
+        void cargarPerfil(false);
+      }
+    };
+
+    window.addEventListener('focus', handleReactivacion);
+    document.addEventListener('visibilitychange', handleReactivacion);
+
+    // Polling ligero cada 20 segundos solo si la pestaña está visible
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        void cargarPerfil(false);
+      }
+    }, 20000);
+
+    return () => {
+      window.removeEventListener('focus', handleReactivacion);
+      document.removeEventListener('visibilitychange', handleReactivacion);
+      window.clearInterval(intervalId);
+    };
+  }, [cargarPerfil]);
+
+  const value: TenantBrandContextValue = useMemo(
+    () => ({
+      slug,
+      nombreNegocio: perfil?.negocio?.nombre || BRAND.name,
+      frasePrincipal: perfil?.frasePrincipal || BRAND.tagline,
+      logoBlancoUrl: resolverUrlRecurso(perfil?.logoBlancoUrl),
+      logoNegroUrl: resolverUrlRecurso(perfil?.logoNegroUrl),
+      bannerUrl: resolverUrlRecurso(perfil?.bannerUrl),
+      faviconUrl: resolverUrlRecurso(perfil?.faviconUrl),
+      direccion: perfil?.direccion || null,
+      ciudad: perfil?.ciudad || null,
+      departamento: perfil?.departamento || null,
+      referencia: perfil?.referencia || null,
+      latitud: perfil?.latitud ?? null,
+      longitud: perfil?.longitud ?? null,
+      mapsUrl: perfil?.mapsUrl || null,
+      temaKey: perfil?.temaKey || resolverTemaTenant(slug),
+      configurado: perfil?.configurado ?? false,
+      redesSociales,
+      recargarPerfil: cargarPerfil,
+    }),
+    [slug, perfil, redesSociales, cargarPerfil]
+  );
 
   return <TenantBrandContext.Provider value={value}>{children}</TenantBrandContext.Provider>;
 };

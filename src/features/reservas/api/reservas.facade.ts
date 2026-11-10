@@ -17,11 +17,13 @@ export function useDisponibilidadReserva(filtro?: FiltroDisponibilidadReservaDTO
   });
 }
 
-export function useMisReservas(enabled: boolean) {
+export function useMisReservas(enabled: boolean = true) {
+  const sesion = clientesService.obtenerSesion();
   return useQuery({
-    queryKey: reservasKeys.misReservas(),
+    queryKey: reservasKeys.misReservas(sesion?.id ?? sesion?.email),
     queryFn: reservasService.listarMisReservas,
-    enabled,
+    enabled: enabled && Boolean(sesion),
+    staleTime: 0,
   });
 }
 
@@ -157,10 +159,12 @@ export function useModificarReservaAdministrativa() {
 }
 
 export function usePerfilCliente(enabled: boolean = true) {
+  const sesion = clientesService.obtenerSesion();
   return useQuery({
-    queryKey: reservasKeys.perfilCliente(),
+    queryKey: reservasKeys.perfilCliente(sesion?.id ?? sesion?.email),
     queryFn: () => clientesService.obtenerPerfil(),
-    enabled,
+    enabled: enabled && Boolean(sesion),
+    staleTime: 0,
   });
 }
 
@@ -169,7 +173,7 @@ export function useActualizarPerfilCliente() {
   return useMutation({
     mutationFn: (datos: ActualizarPerfilClienteDTO) => clientesService.actualizarPerfil(datos),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: reservasKeys.perfilCliente() });
+      void queryClient.invalidateQueries({ queryKey: ['clientes', 'perfil'] });
     },
   });
 }

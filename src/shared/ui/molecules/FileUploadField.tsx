@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import Button from '../Button';
+import ImageCropModal from './ImageCropModal';
 
 interface FileUploadFieldProps {
   previewUrl?: string | null;
@@ -37,29 +38,13 @@ const PreviewImg: React.FC<{
           className="position-relative overflow-hidden rounded shadow-sm border d-flex align-items-center justify-content-center bg-black"
           style={{ width: size, height: size }}
         >
-          {/* Ambient blur backdrop */}
-          <img
-            src={src}
-            alt=""
-            aria-hidden="true"
-            className="position-absolute"
-            style={{
-              inset: '-10px',
-              width: 'calc(100% + 20px)',
-              height: 'calc(100% + 20px)',
-              objectFit: 'cover',
-              filter: 'blur(10px) brightness(0.35)',
-              transform: 'scale(1.15)',
-              pointerEvents: 'none',
-            }}
-          />
-          {/* Imagen completa contenida sin recorte */}
+          {/* Imagen recortada nítida en formato cuadrado 1:1 */}
           <img
             src={src}
             alt={alt}
             onError={() => setErrorImagen(true)}
             className="position-relative"
-            style={{ width: '100%', height: '100%', objectFit: 'contain', zIndex: 1 }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         </div>
       );
@@ -102,14 +87,10 @@ export const FileUploadField: React.FC<FileUploadFieldProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [errorLocal, setErrorLocal] = useState('');
+  const [archivoParaRecortar, setArchivoParaRecortar] = useState<File | null>(null);
+  const [cropperAbierto, setCropperAbierto] = useState(false);
 
-  /**
-   * Manejador async: espera a que onFileSelected (potencialmente async,
-   * p.ej. muestra un ConfirmDialog) resuelva antes de resetear el input.
-   * Así, si el padre cancela la operación, el usuario puede volver a
-   * seleccionar el mismo archivo sin que el navegador ignore el evento change.
-   */
-  const handleSeleccionar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSeleccionar = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setErrorLocal('');
@@ -125,9 +106,21 @@ export const FileUploadField: React.FC<FileUploadFieldProps> = ({
       return;
     }
 
-    // Esperamos a que el padre termine (incluyendo cualquier confirm async).
-    // El reset DESPUÉS de que resuelva permite re-seleccionar el mismo archivo.
-    await onFileSelected(file);
+    // Abrir modal de recorte interactivo
+    setArchivoParaRecortar(file);
+    setCropperAbierto(true);
+  };
+
+  const handleCropComplete = async (croppedFile: File) => {
+    setCropperAbierto(false);
+    setArchivoParaRecortar(null);
+    await onFileSelected(croppedFile);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleCropClose = () => {
+    setCropperAbierto(false);
+    setArchivoParaRecortar(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -198,6 +191,13 @@ export const FileUploadField: React.FC<FileUploadFieldProps> = ({
       <div className="text-muted mt-2" style={{ fontSize: '0.75rem' }}>
         Formatos: JPG, PNG o WEBP. Máx. 5 MB.
       </div>
+
+      <ImageCropModal
+        isOpen={cropperAbierto}
+        imageFile={archivoParaRecortar}
+        onClose={handleCropClose}
+        onCropComplete={handleCropComplete}
+      />
     </div>
   );
 };

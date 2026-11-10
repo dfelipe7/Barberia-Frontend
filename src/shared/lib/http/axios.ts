@@ -57,6 +57,14 @@ export function obtenerNegocioSlugActivo(): string | null {
       return primerSegmento;
     }
 
+    // Rutas a nivel global de plataforma (raíz '/', '/plataforma' y '/explorar') NUNCA adoptan contexto de tenant
+    if (!primerSegmento || primerSegmento === 'plataforma' || primerSegmento === 'explorar') {
+      try {
+        sessionStorage.removeItem('tab_negocio_slug');
+      } catch {}
+      return null;
+    }
+
     // 2. Si es una ruta interna sin slug, consultar la memoria aislada de ESTA pestaña (sessionStorage)
     try {
       const tabSlug = sessionStorage.getItem('tab_negocio_slug')?.toLowerCase().trim();

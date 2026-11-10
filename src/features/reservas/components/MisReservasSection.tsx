@@ -6,6 +6,7 @@ import { mapApiError } from '../../../shared/lib/mapApiError';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import Modal from '../../../shared/ui/Modal';
+import { CalendarDays } from 'lucide-react';
 import { useCancelarMiReserva, useDetalleReserva, useMisReservas } from '../api/reservas.facade';
 
 const formatearFecha = (valor: string) => {
@@ -24,6 +25,25 @@ const estadoReserva = (estado: string) =>
     COMPLETED: 'Completada',
     NO_SHOW: 'No asistió',
   })[estado] ?? estado;
+
+const renderBadgeEstado = (estado: string) => {
+  switch (estado) {
+    case 'CONFIRMED':
+      return <span className="badge rounded-pill bg-success-subtle text-success border border-success-subtle">Confirmada</span>;
+    case 'PENDING':
+      return <span className="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle">Pendiente</span>;
+    case 'IN_PROGRESS':
+      return <span className="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle">En progreso</span>;
+    case 'COMPLETED':
+      return <span className="badge rounded-pill bg-info-subtle text-info-emphasis border border-info-subtle">Completada</span>;
+    case 'CANCELLED':
+      return <span className="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle">Cancelada</span>;
+    case 'NO_SHOW':
+      return <span className="badge rounded-pill bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">No asistió</span>;
+    default:
+      return <span className="badge rounded-pill bg-body-tertiary text-surface-muted border">{estadoReserva(estado)}</span>;
+  }
+};
 
 const reservaGestionable = (estado: string) =>
   estado === 'PENDING' || estado === 'CONFIRMED';
@@ -71,7 +91,11 @@ const DetalleReservaBox: React.FC<DetalleReservaBoxProps> = ({ detalle }) => {
   );
 };
 
-export const MisReservasSection = () => {
+export interface MisReservasSectionProps {
+  onCerrar?: () => void;
+}
+
+export const MisReservasSection: React.FC<MisReservasSectionProps> = ({ onCerrar }) => {
   const { slug: paramSlug } = useParams<{ slug?: string }>();
   const slugActivo = paramSlug || obtenerNegocioSlugActivo() || '';
   const rutaReservar = slugActivo ? `/${slugActivo}/reservar` : '/reservar';
@@ -107,9 +131,22 @@ export const MisReservasSection = () => {
 
   return (
     <>
-      <section id="mis-reservas" className="card card-surface border-0 shadow-sm mt-4">
+      <section id="mis-reservas" className="card card-surface border-0 shadow-sm">
         <div className="card-body p-3 p-md-4">
-          <h2 className="h5 fw-bold mb-1">Mis reservas</h2>
+          <div className="d-flex align-items-center justify-content-between mb-2">
+            <div className="d-flex align-items-center gap-2">
+              <CalendarDays size={20} className="text-primary" aria-hidden="true" />
+              <h2 className="h5 fw-bold mb-0">Mis reservas</h2>
+            </div>
+            {onCerrar && (
+              <button
+                type="button"
+                className="btn-close"
+                onClick={onCerrar}
+                aria-label="Cerrar mis reservas"
+              />
+            )}
+          </div>
           <p className="small text-surface-muted mb-3">
             Consulta tus citas, modifica una reserva activa o cancélala si cambian tus planes.
           </p>
@@ -154,18 +191,20 @@ export const MisReservasSection = () => {
               {consulta.data?.reservas.map((reserva) => (
                 <li
                   key={reserva.id}
-                  className="list-group-item card-surface px-0 d-flex flex-wrap align-items-center justify-content-between gap-3"
+                  className="list-group-item card-surface px-0 py-3 d-flex flex-wrap align-items-center justify-content-between gap-3 border-bottom"
                 >
-                  <div className="flex-grow-1">
-                    <span className="fw-semibold d-block">
-                      {reserva.servicio.nombre} · {formatearFecha(reserva.fecha)}
-                    </span>
-                    <span className="small text-surface-muted">
+                  <div className="flex-grow-1 min-w-0">
+                    <div className="d-flex align-items-center flex-wrap gap-2 mb-1">
+                      <span className="fw-semibold text-truncate">
+                        {reserva.servicio.nombre} · {formatearFecha(reserva.fecha)}
+                      </span>
+                      {renderBadgeEstado(reserva.estado)}
+                    </div>
+                    <span className="small text-surface-muted d-block">
                       {reserva.hora}–{reserva.horaFin} con {reserva.barbero.nombre} {reserva.barbero.apellido}
-                      {' · ' + estadoReserva(reserva.estado)}
                     </span>
                   </div>
-                  <div className="d-flex flex-wrap gap-2">
+                  <div className="d-flex flex-wrap align-items-center gap-2">
                     {reservaGestionable(reserva.estado) && (
                       <>
                         <Link
@@ -177,7 +216,7 @@ export const MisReservasSection = () => {
                             barberoId: reserva.barbero.id,
                           }}
                         >
-                          Modificar reserva
+                          Modificar
                         </Link>
                         <Button
                           type="button"
@@ -188,7 +227,7 @@ export const MisReservasSection = () => {
                             setReservaCancelarId(reserva.id);
                           }}
                         >
-                          Cancelar reserva
+                          Cancelar
                         </Button>
                       </>
                     )}
@@ -201,7 +240,7 @@ export const MisReservasSection = () => {
                         setReservaSeleccionadaId((actual) => actual === reserva.id ? null : reserva.id)
                       }
                     >
-                      {reservaSeleccionadaId === reserva.id ? 'Ocultar detalle' : 'Ver detalle'}
+                      {reservaSeleccionadaId === reserva.id ? 'Ocultar' : 'Detalle'}
                     </Button>
                   </div>
                 </li>

@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useCallback, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
 interface UiContextType {
   isSidebarOpen: boolean;
@@ -44,25 +44,24 @@ export function UiProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  return (
-    <UiContext.Provider
-      value={{
-        isSidebarOpen,
-        openSidebar,
-        closeSidebar,
-        toggleSidebar,
-        isCollapsed,
-        toggleCollapse,
-        // Alias de compatibilidad
-        isMobileOpen: isSidebarOpen,
-        openMobile: openSidebar,
-        closeMobile: closeSidebar,
-        toggleMobile: toggleSidebar,
-      }}
-    >
-      {children}
-    </UiContext.Provider>
+  const value = useMemo(
+    () => ({
+      isSidebarOpen,
+      openSidebar,
+      closeSidebar,
+      toggleSidebar,
+      isCollapsed,
+      toggleCollapse,
+      // Alias de compatibilidad
+      isMobileOpen: isSidebarOpen,
+      openMobile: openSidebar,
+      closeMobile: closeSidebar,
+      toggleMobile: toggleSidebar,
+    }),
+    [isSidebarOpen, openSidebar, closeSidebar, toggleSidebar, isCollapsed, toggleCollapse]
   );
+
+  return <UiContext.Provider value={value}>{children}</UiContext.Provider>;
 }
 
 export function useUi(): UiContextType {

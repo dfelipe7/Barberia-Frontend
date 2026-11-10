@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
+import { useServiciosCatalogo, esServicioActivoConBarberos } from '../../../features/servicios/api/servicios.facade';
 import type { Servicio } from '../../../features/servicios/types/servicios.types';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import ServiceCard from './ServiceCard';
@@ -21,9 +21,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
   // deben mostrarse a los clientes en la HomePage pública.
   // El backend restringe la respuesta a ACTIVOS, y esta cláusula client-side garantiza
   // que ningún servicio inactivo sea visible o seleccionable.
-  const serviciosActivos = servicios.filter(
-    (s) => s.estado === 'ACTIVO' && s.barberos && s.barberos.length > 0,
-  );
+  const serviciosActivos = servicios.filter(esServicioActivoConBarberos);
 
   return (
     <section id="servicios" className="kyrios-section" aria-labelledby="servicios-heading">
@@ -105,9 +103,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
         {/* Estado: Lista de Servicios Activos — máx. 3 en Home */}
         {!isLoading && !error && serviciosActivos.length > 0 && (
           <>
-            <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col">
+            <div className="row g-3 g-lg-4">
               {serviciosActivos.slice(0, 3).map((servicio) => (
-                <div key={servicio.id} className="col-6 col-md-6 col-lg-4">
+                <div key={servicio.id} className="col-12 col-md-6 col-lg-4">
                   <ServiceCard
                     servicio={servicio}
                     onReservar={onReservarServicio}

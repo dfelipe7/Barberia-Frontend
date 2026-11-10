@@ -200,7 +200,7 @@ function PanelContenidoDetalle({
         reserva.estado !== 'NO_SHOW' && (
         <div className="barber-agenda__detail-actions card-surface">
           <p>Actualiza el estado cuando termine la cita o si el cliente no llega.</p>
-          <div className="d-flex flex-wrap gap-2">
+          <div className="barber-agenda__detail-actions-grid">
             <Button
               type="button"
               variant="primary"

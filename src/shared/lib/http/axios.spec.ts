@@ -1,11 +1,34 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import apiClient, { RUTAS_RESERVADAS, obtenerNegocioSlugActivo } from './axios';
 
 describe('Utilidades de Axios y Resolución Multitenant (axios.ts)', () => {
+  const originalLocation = window.location;
+
+  function mockLocation(pathname: string) {
+    Object.defineProperty(window, 'location', {
+      value: {
+        ...originalLocation,
+        origin: 'http://localhost',
+        href: `http://localhost${pathname}`,
+        pathname,
+      },
+      writable: true,
+      configurable: true,
+    });
+  }
+
   beforeEach(() => {
     localStorage.clear();
     sessionStorage.clear();
     vi.restoreAllMocks();
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, 'location', {
+      value: originalLocation,
+      writable: true,
+      configurable: true,
+    });
   });
 
   describe('RUTAS_RESERVADAS', () => {
@@ -25,10 +48,7 @@ describe('Utilidades de Axios y Resolución Multitenant (axios.ts)', () => {
 
   describe('obtenerNegocioSlugActivo', () => {
     it('debe extraer el slug del primer segmento de la URL si no es ruta reservada', () => {
-      Object.defineProperty(window, 'location', {
-        value: { pathname: '/barberia-elite/servicios' },
-        writable: true,
-      });
+      mockLocation('/barberia-elite/servicios');
 
       const slug = obtenerNegocioSlugActivo();
       expect(slug).toBe('barberia-elite');
@@ -36,10 +56,7 @@ describe('Utilidades de Axios y Resolución Multitenant (axios.ts)', () => {
     });
 
     it('no debe considerar rutas reservadas como slug y consultar sessionStorage', () => {
-      Object.defineProperty(window, 'location', {
-        value: { pathname: '/login' },
-        writable: true,
-      });
+      mockLocation('/login');
 
       sessionStorage.setItem('tab_negocio_slug', 'barberia-persisted');
       const slug = obtenerNegocioSlugActivo();
@@ -47,10 +64,7 @@ describe('Utilidades de Axios y Resolución Multitenant (axios.ts)', () => {
     });
 
     it('debe consultar localStorage como último fallback si no hay ruta ni tabSlug', () => {
-      Object.defineProperty(window, 'location', {
-        value: { pathname: '/dashboard' },
-        writable: true,
-      });
+      mockLocation('/dashboard');
 
       localStorage.setItem('negocio_sesion_slug', 'barberia-fallback');
       const slug = obtenerNegocioSlugActivo();
@@ -58,10 +72,7 @@ describe('Utilidades de Axios y Resolución Multitenant (axios.ts)', () => {
     });
 
     it('debe retornar null si ninguna fuente proporciona un slug válido', () => {
-      Object.defineProperty(window, 'location', {
-        value: { pathname: '/login' },
-        writable: true,
-      });
+      mockLocation('/login');
 
       expect(obtenerNegocioSlugActivo()).toBeNull();
     });
@@ -73,10 +84,7 @@ describe('Utilidades de Axios y Resolución Multitenant (axios.ts)', () => {
       if (!requestInterceptor) return;
 
       localStorage.setItem('token_barberia_barberia-elite', 'token-elite-123');
-      Object.defineProperty(window, 'location', {
-        value: { pathname: '/barberia-elite' },
-        writable: true,
-      });
+      mockLocation('/barberia-elite');
 
       const config = { headers: {} as Record<string, string> };
       const modified = requestInterceptor(config);
@@ -89,10 +97,7 @@ describe('Utilidades de Axios y Resolución Multitenant (axios.ts)', () => {
       if (!requestInterceptor) return;
 
       localStorage.setItem('token_barberia', 'token-global');
-      Object.defineProperty(window, 'location', {
-        value: { pathname: '/dashboard' },
-        writable: true,
-      });
+      mockLocation('/dashboard');
 
       const config = { headers: {} as Record<string, string> };
       const modified = requestInterceptor(config);
@@ -114,6 +119,27 @@ describe('Utilidades de Axios y Resolución Multitenant (axios.ts)', () => {
         userMessage: 'Nombre requerido Email inválido',
       });
 
+      // Error con objeto y propiedad message string o array
+      const errorObjMsgString = {
+        response: {
+          status: 400,
+          data: { message: { message: 'Mensaje directo' } },
+        },
+      };
+      await expect(responseErrorInterceptor(errorObjMsgString)).rejects.toMatchObject({
+        userMessage: 'Mensaje directo',
+      });
+
+      const errorObjMsgArray = {
+        response: {
+          status: 400,
+          data: { message: { message: ['Fallo 1', 'Fallo 2'] } },
+        },
+      };
+      await expect(responseErrorInterceptor(errorObjMsgArray)).rejects.toMatchObject({
+        userMessage: 'Fallo 1 Fallo 2',
+      });
+
       // Error con objeto
       const errorObj = {
         response: {
@@ -126,10 +152,7 @@ describe('Utilidades de Axios y Resolución Multitenant (axios.ts)', () => {
       });
 
       // 401 error
-      Object.defineProperty(window, 'location', {
-        value: { pathname: '/barberia-elite' },
-        writable: true,
-      });
+      mockLocation('/barberia-elite');
       localStorage.setItem('token_barberia_barberia-elite', 'expired');
       const error401 = {
         response: {
@@ -142,6 +165,13 @@ describe('Utilidades de Axios y Resolución Multitenant (axios.ts)', () => {
         userMessage: 'Sesión expirada',
       });
       expect(localStorage.getItem('token_barberia_barberia-elite')).toBeNull();
+    });
+
+    it('request error interceptor rechaza el error', async () => {
+      const requestErrorInterceptor = (apiClient.interceptors.request as any).handlers[0]?.rejected;
+      if (requestErrorInterceptor) {
+        await expect(requestErrorInterceptor(new Error('Req error'))).rejects.toThrow('Req error');
+      }
     });
   });
 });

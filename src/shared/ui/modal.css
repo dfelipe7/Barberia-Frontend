@@ -68,6 +68,22 @@
   gap: 0.5rem;
 }
 
+@media (max-width: 575.98px) {
+  .kyrios-modal-footer > * {
+    width: 100%;
+  }
+}
+
+/* En móvil horizontal (landscape), limitamos altura máxima y compactamos footer */
+@media (max-height: 480px) and (orientation: landscape) {
+  .kyrios-modal-content {
+    max-height: calc(100dvh - 1rem) !important;
+  }
+  .kyrios-modal-footer {
+    padding: 0.5rem 1rem !important;
+  }
+}
+
 /* Dark mode: heredado de los tokens --surface-card-*, no requiere override */
 
 /* prefers-reduced-motion: Bootstrap 5 ya deshabilita la transición fade.

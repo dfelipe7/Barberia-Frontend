@@ -2,7 +2,8 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { Users } from 'lucide-react';
 import '../../Home/home.css';
-import { useBarberosCatalogo } from '../../../features/barberos/api/barberos.facade';
+import { useBarberosCatalogo, filtrarBarberosConServiciosActivos } from '../../../features/barberos/api/barberos.facade';
+import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
 import type { BarberoCatalogo } from '../../../features/barberos/types/barberos.types';
 import HomeNavbar from '../../Home/components/HomeNavbar';
 import HomeFooter from '../../Home/components/HomeFooter';
@@ -66,10 +67,19 @@ const CatalogoBarberosPage: React.FC = () => {
 
   // Título dinámico gestionado por TenantBrandContext
 
-  const { data: barberos = [], isLoading, error, refetch } = useBarberosCatalogo();
+  const { data: barberos = [], isLoading: isLoadingBarberos, error, refetch } = useBarberosCatalogo();
+  const { data: servicios = [], isLoading: isLoadingServicios } = useServiciosCatalogo();
+  const isLoading = isLoadingBarberos || isLoadingServicios;
+
+  // Filtro de negocio: solo mostrar en catálogo a barberos que tengan al menos 1 servicio activo asignado
+  const barberosConServicios = useMemo(
+    () => filtrarBarberosConServiciosActivos(barberos, servicios),
+    [barberos, servicios]
+  );
+
   const barberosFiltrados = useMemo(
-    () => filtrarBarberos(barberos, debouncedQuery),
-    [barberos, debouncedQuery]
+    () => filtrarBarberos(barberosConServicios, debouncedQuery),
+    [barberosConServicios, debouncedQuery]
   );
 
   const handleLogin = useCallback(() => {
@@ -81,7 +91,7 @@ const CatalogoBarberosPage: React.FC = () => {
   const isSearching = query !== debouncedQuery;
 
   return (
-    <div className="kyrios-home d-flex flex-column" style={{ minHeight: '100vh' }}>
+    <div className="kyrios-home d-flex flex-column" style={{ minHeight: '100dvh' }}>
       <HomeNavbar
         isAuthenticated={isAuthenticated}
         nombre={nombre}
@@ -167,9 +177,9 @@ const CatalogoBarberosPage: React.FC = () => {
 
               {/* Grid */}
               {barberosFiltrados.length > 0 ? (
-                <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col justify-content-center">
+                <div className="row g-3 g-lg-4 justify-content-center">
                   {barberosFiltrados.map((barbero: BarberoCatalogo) => (
-                    <div key={barbero.id} className="col-6 col-sm-6 col-md-4 col-xl-3">
+                    <div key={barbero.id} className="col-12 col-md-6 col-lg-4">
                       <BarberCard
                         barbero={barbero}
                         onReservar={(b, servicioId) => {

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useBarberosCatalogo } from '../../../features/barberos/api/barberos.facade';
+import { useBarberosCatalogo, filtrarBarberosConServiciosActivos } from '../../../features/barberos/api/barberos.facade';
+import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
 import type { BarberoCatalogo } from '../../../features/barberos/types/barberos.types';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import BarberCard from './BarberCard';
@@ -15,7 +16,15 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
 }) => {
   const { slug } = useParams<{ slug?: string }>();
   const basePrefix = slug ? `/${slug}` : '';
-  const { data: barberos = [], isLoading, error, refetch } = useBarberosCatalogo();
+  const { data: barberos = [], isLoading: isLoadingBarberos, error, refetch } = useBarberosCatalogo();
+  const { data: servicios = [], isLoading: isLoadingServicios } = useServiciosCatalogo();
+  const isLoading = isLoadingBarberos || isLoadingServicios;
+
+  // Filtro de negocio: solo mostrar en la sección pública a barberos con al menos 1 servicio activo asignado
+  const barberosConServicios = useMemo(
+    () => filtrarBarberosConServiciosActivos(barberos, servicios),
+    [barberos, servicios]
+  );
 
   return (
     <section
@@ -88,7 +97,7 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
         )}
 
         {/* Estado: Sin barberos disponibles */}
-        {!isLoading && !error && barberos.length === 0 && (
+        {!isLoading && !error && barberosConServicios.length === 0 && (
           <div
             className="text-center py-5 border border-dashed rounded p-4"
             style={{ borderColor: 'var(--home-surface-border)' }}
@@ -100,11 +109,11 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
         )}
 
         {/* Estado: Lista de Barberos — máx. 3 en Home */}
-        {!isLoading && !error && barberos.length > 0 && (
+        {!isLoading && !error && barberosConServicios.length > 0 && (
           <>
-            <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col justify-content-center">
-              {barberos.slice(0, 3).map((barbero) => (
-                <div key={barbero.id} className="col-6 col-sm-6 col-lg-4">
+            <div className="row g-3 g-lg-4 justify-content-center">
+              {barberosConServicios.slice(0, 3).map((barbero) => (
+                <div key={barbero.id} className="col-12 col-md-6 col-lg-4">
                   <BarberCard
                     barbero={barbero}
                     onReservar={onReservarBarbero}
@@ -114,7 +123,7 @@ export const BarbersSection: React.FC<BarbersSectionProps> = ({
             </div>
 
             {/* CTA: solo visible si hay más de 3 barberos */}
-            {barberos.length > 3 && (
+            {barberosConServicios.length > 3 && (
               <div className="text-center mt-5">
                 <Link
                   to={`${basePrefix}/catalogo/barberos`}

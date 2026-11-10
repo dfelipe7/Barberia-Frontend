@@ -1,0 +1,1775 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   4. TEMA: MIDNIGHT CYAN (Cyber Tech / Azul Medianoche + Cian Eléctrico)
+   Inspirado en la interfaz de alta tecnología con cápsulas luminosas
+   ══════════════════════════════════════════════════════════════════════════ */
+[data-tenant-theme="midnight-cyan"] {
+  --bs-primary: #00d2ff !important;
+  --bs-primary-rgb: 0, 210, 255 !important;
+  --bs-primary-hover: #0099ff !important;
+
+  --tenant-accent: #00d2ff !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(0, 210, 255, 0.55) !important;
+
+  /* Sincronización de tokens heredados */
+  --brand-blue: #00d2ff !important;
+  --brand-blue-hover: #0099ff !important;
+  --brand-blue-light: rgba(0, 210, 255, 0.15) !important;
+  --bs-primary-bg-subtle: rgba(0, 210, 255, 0.15) !important;
+  --bs-primary-border-subtle: rgba(0, 210, 255, 0.35) !important;
+  --bs-primary-text-emphasis: #00d2ff !important;
+
+  /* Tipografía tecnológica futurista */
+  --font-brand: 'Space Grotesk', 'Inter', sans-serif !important;
+
+  /* Kyrios Home Overrides */
+  --k-blue: #00d2ff !important;
+  --k-blue-hover: #0099ff !important;
+  --k-blue-glow: rgba(0, 210, 255, 0.55) !important;
+  --k-btn-radius: 9999px !important;
+
+  /* Portal Overrides */
+  --portal-primary: #00d2ff !important;
+  --portal-primary-hover: #0099ff !important;
+  --portal-primary-glow: rgba(0, 210, 255, 0.5) !important;
+}
+
+/* Tipografía de títulos en Midnight Cyan */
+[data-tenant-theme="midnight-cyan"] .kyrios-title-display,
+[data-tenant-theme="midnight-cyan"] h1,
+[data-tenant-theme="midnight-cyan"] h2,
+[data-tenant-theme="midnight-cyan"] .font-brand {
+  font-family: 'Space Grotesk', 'Inter', sans-serif !important;
+  letter-spacing: 0.02em !important;
+  font-weight: 800 !important;
+}
+
+/* Título de Hero con degradado cian eléctrico y resplandor cyber */
+[data-tenant-theme="midnight-cyan"] .kyrios-hero-title span {
+  background: linear-gradient(135deg, #00d2ff 0%, #38bdf8 50%, #0066ff 100%) !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.45)) !important;
+}
+
+/* Hero Eyebrow en cápsula azul medianoche con borde neón cian */
+[data-tenant-theme="midnight-cyan"] .kyrios-eyebrow {
+  border-radius: 9999px !important;
+  background: rgba(0, 210, 255, 0.12) !important;
+  border: 1px solid rgba(0, 210, 255, 0.4) !important;
+  color: #00d2ff !important;
+  padding: 0.35rem 0.95rem !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+}
+
+/* Hero Overlay con resplandor cian radial */
+[data-tenant-theme="midnight-cyan"] .kyrios-hero-overlay {
+  background: radial-gradient(circle at 75% 25%, rgba(0, 210, 255, 0.28) 0%, transparent 65%),
+              linear-gradient(180deg, var(--home-hero-overlay-from) 0%, var(--home-hero-overlay-to) 100%) !important;
+}
+
+/* Selección de texto y scrollbar */
+[data-tenant-theme="midnight-cyan"] ::selection {
+  background-color: #00d2ff !important;
+  color: #000000 !important;
+}
+
+[data-tenant-theme="midnight-cyan"]::-webkit-scrollbar-thumb,
+[data-tenant-theme="midnight-cyan"] *::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 210, 255, 0.5) !important;
+  border-radius: 9999px !important;
+}
+
+/* Fondo atmosférico en modo oscuro: Azul medianoche profundo */
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] body,
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .app-main,
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .kyrios-home-page {
+  background-color: #060b14 !important;
+}
+
+/* Botones principales: Cápsula gradiente azul cian eléctrico con brillo neón */
+[data-tenant-theme="midnight-cyan"] .btn-primary,
+[data-tenant-theme="midnight-cyan"] .btn-kyrios-primary,
+[data-tenant-theme="midnight-cyan"] .btn-dark {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border: 1px solid #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 4px 20px rgba(0, 210, 255, 0.45), 0 0 25px rgba(0, 102, 255, 0.25) !important;
+  letter-spacing: 0.04em !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .btn-primary:hover,
+[data-tenant-theme="midnight-cyan"] .btn-kyrios-primary:hover,
+[data-tenant-theme="midnight-cyan"] .btn-dark:hover {
+  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%) !important;
+  border-color: #38bdf8 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 28px rgba(0, 210, 255, 0.7), 0 0 35px rgba(0, 102, 255, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+/* Botones outline en Cian Eléctrico */
+[data-tenant-theme="midnight-cyan"] .btn-outline-primary,
+[data-tenant-theme="midnight-cyan"] .btn-kyrios-outline {
+  border: 1.5px solid #00d2ff !important;
+  color: #00d2ff !important;
+  border-radius: 9999px !important;
+  background: rgba(0, 210, 255, 0.06) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .btn-outline-primary:hover,
+[data-tenant-theme="midnight-cyan"] .btn-kyrios-outline:hover {
+  background-color: #00d2ff !important;
+  color: #000000 !important;
+  box-shadow: 0 4px 18px rgba(0, 210, 255, 0.5) !important;
+  transform: translateY(-2px);
+}
+
+/* Botón de catálogo / secundario en Midnight Cyan */
+[data-tenant-theme="midnight-cyan"] .btn-kyrios-dark {
+  border-radius: 9999px !important;
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border: 1px solid #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+  box-shadow: 0 4px 16px rgba(0, 210, 255, 0.4) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .btn-kyrios-dark:hover {
+  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%) !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 0 6px 24px rgba(0, 210, 255, 0.6) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+}
+
+/* ── Tarjetas de Barberos en Midnight Cyan: AVATAR SQUIRCLE FUTURISTA (Estilo Apps de la imagen) ── */
+[data-tenant-theme="midnight-cyan"] .kyrios-barber-card {
+  border-radius: 26px !important;
+  background: linear-gradient(180deg, #0e172a 0%, #080d19 100%) !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.25) !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 210, 255, 0.1), inset 0 1px 0 rgba(0, 210, 255, 0.15) !important;
+  padding: 1.35rem 1rem !important;
+  text-align: center !important;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-barber-card:hover {
+  border-color: #00d2ff !important;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.7), 0 0 32px rgba(0, 210, 255, 0.32), inset 0 1px 0 rgba(0, 210, 255, 0.35) !important;
+  transform: translateY(-5px);
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-barber-img-wrap {
+  width: 135px !important;
+  height: 135px !important;
+  min-height: 135px !important;
+  max-width: 135px !important;
+  margin: 0.5rem auto 1.25rem auto !important;
+  border-radius: 26px !important;
+  border: 3px solid #00d2ff !important;
+  box-shadow: 0 0 24px rgba(0, 210, 255, 0.5) !important;
+  overflow: hidden !important;
+  background: #0d1728 !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-barber-img-wrap img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 22px !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-barber-name {
+  font-family: 'Space Grotesk', 'Inter', sans-serif !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  color: #ffffff !important;
+  font-size: 1.15rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-barber-role {
+  color: #00d2ff !important;
+  font-weight: 700 !important;
+  font-size: 0.76rem !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-barber-sede {
+  color: #94a3b8 !important;
+  font-size: 0.74rem !important;
+}
+
+/* Tarjetas de Servicios en Midnight Cyan */
+[data-tenant-theme="midnight-cyan"] .kyrios-service-card {
+  border-radius: 24px !important;
+  background: linear-gradient(180deg, #0e172a 0%, #090e1c 100%) !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.2) !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(0, 210, 255, 0.12) !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-service-card:hover {
+  border-color: #00d2ff !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 210, 255, 0.25) !important;
+  transform: translateY(-4px);
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-service-img-wrap {
+  border-radius: 18px !important;
+  margin: 0.6rem !important;
+  overflow: hidden !important;
+}
+
+/* Stepper y flujo de reservas */
+[data-tenant-theme="midnight-cyan"] .booking-stepper-segment.is-active {
+  background: linear-gradient(90deg, #00d2ff, #0066ff) !important;
+  box-shadow: 0 0 16px rgba(0, 210, 255, 0.8) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-card--selected {
+  border-color: #00d2ff !important;
+  box-shadow: 0 0 0 2px #00d2ff, 0 12px 28px rgba(0, 210, 255, 0.35) !important;
+  background-color: rgba(0, 210, 255, 0.08) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-card--selected .booking-barber-avatar {
+  border-color: #00d2ff !important;
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.6) !important;
+}
+
+/* Stepper activo y completado en Midnight Cyan */
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 18px rgba(0, 210, 255, 0.45) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done {
+  background: rgba(0, 210, 255, 0.1) !important;
+  border-color: rgba(0, 210, 255, 0.4) !important;
+  color: #00d2ff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done svg {
+  color: #00d2ff !important;
+  stroke: #00d2ff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-card__check-indicator {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(0, 210, 255, 0.45) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-barber-status-badge--selected,
+[data-tenant-theme="midnight-cyan"] .booking-card--selected .badge {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 2px 10px rgba(0, 210, 255, 0.35) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-primary-badge {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-step-badge,
+[data-tenant-theme="midnight-cyan"] .kyrios-badge,
+[data-tenant-theme="midnight-cyan"] .brand-badge,
+[data-tenant-theme="midnight-cyan"] .badge-vip {
+  color: #00d2ff !important;
+  background: rgba(0, 210, 255, 0.12) !important;
+  border: 1px solid rgba(0, 210, 255, 0.4) !important;
+  border-radius: 9999px !important;
+}
+
+/* Cápsulas de Fecha y Horas estilo Conexión Cyber (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-date-capsule,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-date-capsule,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-date-capsule {
+  border-radius: 20px !important;
+  min-height: 108px !important;
+  background: #0c1424 !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected {
+  background: linear-gradient(180deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 22px rgba(0, 210, 255, 0.6) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__month {
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill {
+  border-radius: 9999px !important;
+  background: #0a1120 !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-time,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-time,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill .booking-slot-time {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-end,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-end,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill .booking-slot-end {
+  color: #94a3b8 !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 18px rgba(0, 210, 255, 0.5) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-time,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-end,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-check {
+  color: #ffffff !important;
+}
+
+/* Cápsulas y Horarios en Modo Claro para Midnight Cyan */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) {
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.25) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__month {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  opacity: 0.7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__empty {
+  color: #94a3b8 !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected {
+  background: linear-gradient(180deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(0, 210, 255, 0.55), 0 0 0 2px #00d2ff !important;
+  transform: none !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__month {
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__badge,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active) {
+  border-radius: 9999px !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.25) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #64748b !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 18px rgba(0, 210, 255, 0.5) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-time,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-end,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-check,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-check {
+  color: #ffffff !important;
+}
+
+/* Dashboard: Atajos y Tarjetas con acabado azul medianoche */
+[data-tenant-theme="midnight-cyan"] .dash-shortcut-card {
+  border-radius: 22px !important;
+  background: linear-gradient(180deg, #0d1628 0%, #080d1a 100%) !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.22) !important;
+  border-left: 5px solid #00d2ff !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(0, 210, 255, 0.15) !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .dash-shortcut-card:hover {
+  transform: translateY(-3px);
+  border-color: #00d2ff !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 24px rgba(0, 210, 255, 0.3) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .dash-shortcut-card__icon {
+  border-radius: 16px !important;
+  background: rgba(0, 210, 255, 0.14) !important;
+  color: #00d2ff !important;
+}
+
+/* Sidebar del Dashboard */
+[data-tenant-theme="midnight-cyan"] .sidebar-nav-link {
+  border-radius: 9999px !important;
+  margin: 0.2rem 0.6rem !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .sidebar-nav-link.active {
+  background: rgba(0, 210, 255, 0.16) !important;
+  color: #00d2ff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 0 18px rgba(0, 210, 255, 0.25) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .sidebar-nav-link.active .sidebar-nav-icon,
+[data-tenant-theme="midnight-cyan"] .sidebar--dark .sidebar-nav-link.active .sidebar-nav-icon {
+  color: #00d2ff !important;
+  filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.75));
+}
+
+[data-tenant-theme="midnight-cyan"] .sidebar-nav-link:hover {
+  color: #00d2ff !important;
+  background: rgba(0, 210, 255, 0.08) !important;
+}
+
+/* Tabs de Administradores y Barberos */
+[data-tenant-theme="midnight-cyan"] .usuarios-tabs-container {
+  border-radius: 9999px !important;
+  padding: 0.35rem !important;
+  background-color: #090e1c !important;
+  border: 1px solid rgba(0, 210, 255, 0.25) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .usuarios-tabs-container button {
+  border-radius: 9999px !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .usuarios-tabs-container button[aria-selected="true"],
+[data-tenant-theme="midnight-cyan"] .usuarios-tabs-container .btn-dark {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 14px rgba(0, 210, 255, 0.45) !important;
+}
+
+/* Formularios de Admin */
+[data-tenant-theme="midnight-cyan"] .card,
+[data-tenant-theme="midnight-cyan"] .card.card-surface,
+[data-tenant-theme="midnight-cyan"] .card-surface {
+  border-radius: 24px !important;
+  background: linear-gradient(180deg, #0e172a 0%, #080d19 100%) !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.22) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 210, 255, 0.08), inset 0 1px 0 rgba(0, 210, 255, 0.12) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .form-control,
+[data-tenant-theme="midnight-cyan"] .form-select {
+  border-radius: 14px !important;
+  background-color: #0b1322 !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.25) !important;
+  color: #ffffff !important;
+  padding: 0.72rem 1.15rem !important;
+  font-size: 0.95rem !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .form-control:focus,
+[data-tenant-theme="midnight-cyan"] .form-select:focus {
+  background-color: #0e192c !important;
+  border-color: #00d2ff !important;
+  box-shadow: 0 0 0 3.5px rgba(0, 210, 255, 0.3), 0 0 16px rgba(0, 210, 255, 0.25) !important;
+  color: #ffffff !important;
+  outline: none !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .form-check-input {
+  border-radius: 7px !important;
+  background-color: #0b1322 !important;
+  border: 2px solid rgba(0, 210, 255, 0.45) !important;
+  cursor: pointer !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .form-check-input:checked {
+  background-color: #00d2ff !important;
+  border-color: #00d2ff !important;
+  box-shadow: 0 0 14px rgba(0, 210, 255, 0.7) !important;
+}
+
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary {
+  border-radius: 9999px !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.35) !important;
+  color: #00d2ff !important;
+  background: rgba(0, 210, 255, 0.08) !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1.1rem !important;
+}
+
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary:hover,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary:hover {
+  background-color: #00d2ff !important;
+  border-color: #00d2ff !important;
+  color: #000000 !important;
+  box-shadow: 0 4px 16px rgba(0, 210, 255, 0.45) !important;
+}
+
+/* ── Panel de Reservas Administrativas en Midnight Cyan ── */
+[data-tenant-theme="midnight-cyan"] .reservations-admin__day-header {
+  border-radius: 18px !important;
+  background: linear-gradient(135deg, #0e172a 0%, #080d19 100%) !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.3) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(0, 210, 255, 0.15) !important;
+  padding: 0.85rem 1.25rem !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .reservations-admin__day-header:hover {
+  border-color: #00d2ff !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 24px rgba(0, 210, 255, 0.25), inset 0 1px 0 rgba(0, 210, 255, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+[data-tenant-theme="midnight-cyan"] .reservations-admin__day-date-badge {
+  border-radius: 16px !important;
+  background: linear-gradient(180deg, #00d2ff 0%, #0066ff 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(0, 210, 255, 0.5) !important;
+  min-height: 48px !important;
+  min-width: 48px !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .reservations-admin__day-date-badge span,
+[data-tenant-theme="midnight-cyan"] .reservations-admin__day-date-badge strong {
+  color: #ffffff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .reservations-admin__day-count {
+  border-radius: 9999px !important;
+  background: rgba(0, 210, 255, 0.15) !important;
+  color: #00d2ff !important;
+  border: 1px solid rgba(0, 210, 255, 0.4) !important;
+  font-weight: 750 !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .reservations-admin__row {
+  border-radius: 20px !important;
+  background: linear-gradient(180deg, #0d1526 0%, #080d19 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+  border-left: 5px solid #00d2ff !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45) !important;
+  margin-bottom: 0.85rem !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .reservations-admin__row:hover,
+[data-tenant-theme="midnight-cyan"] .reservations-admin__row.is-selected {
+  border-color: #00d2ff !important;
+  border-left: 6px solid #00d2ff !important;
+  transform: translateY(-3px) scale(1.004);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 28px rgba(0, 210, 255, 0.3) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   MIDNIGHT CYAN - MODO CLARO (Glacial Tech Clean)
+   ────────────────────────────────────────────────────────────────────────── */
+[data-theme="light"][data-tenant-theme="midnight-cyan"],
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] {
+  --bs-primary: #0284c7 !important;
+  --bs-primary-rgb: 2, 132, 199 !important;
+  --bs-primary-hover: #0369a1 !important;
+
+  --tenant-accent: #0284c7 !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(2, 132, 199, 0.25) !important;
+
+  --k-blue: #0284c7 !important;
+  --k-blue-hover: #0369a1 !important;
+  --k-blue-glow: rgba(2, 132, 199, 0.25) !important;
+
+  /* Sincronización de tokens heredados */
+  --brand-blue: #0284c7 !important;
+  --brand-blue-hover: #0369a1 !important;
+  --brand-blue-light: rgba(2, 132, 199, 0.12) !important;
+  --bs-primary-bg-subtle: rgba(2, 132, 199, 0.12) !important;
+  --bs-primary-border-subtle: rgba(2, 132, 199, 0.28) !important;
+  --bs-primary-text-emphasis: #0284c7 !important;
+
+  --portal-primary: #0284c7 !important;
+  --portal-primary-hover: #0369a1 !important;
+  --portal-primary-glow: rgba(2, 132, 199, 0.2) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] body,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .app-main,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .kyrios-home-page {
+  background-color: #f0f7ff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .kyrios-barber-card,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .kyrios-barber-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(2, 132, 199, 0.2) !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 30px rgba(2, 132, 199, 0.08) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .kyrios-barber-name,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .kyrios-barber-name {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .kyrios-barber-img-wrap,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .kyrios-barber-img-wrap {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 20px rgba(2, 132, 199, 0.25) !important;
+  background: #e0f2fe !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .kyrios-service-card,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .kyrios-service-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(2, 132, 199, 0.18) !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .btn-primary,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .btn-kyrios-primary,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .btn-dark,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .btn-kyrios-dark,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .btn-primary,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .btn-dark {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.3) !important;
+}
+
+/* Stepper y elementos seleccionados en Midnight Cyan (Modo Claro) */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current {
+  background: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current svg,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done {
+  background: rgba(2, 132, 199, 0.08) !important;
+  border-color: rgba(2, 132, 199, 0.35) !important;
+  color: #0369a1 !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done svg,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done svg {
+  color: #0369a1 !important;
+  stroke: #0369a1 !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-card__check-indicator,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-card__check-indicator {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-card__check-indicator svg,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-barber-status-badge--selected,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-card--selected .badge,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-barber-status-badge--selected,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-card--selected .badge {
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-primary-badge,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-primary-badge {
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .sidebar-nav-link.active,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .sidebar-nav-link.active {
+  background: #e0f2fe !important;
+  color: #0369a1 !important;
+  box-shadow: 0 0 14px rgba(2, 132, 199, 0.15) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .card,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .card.card-surface,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .card-surface,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .card {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.18) !important;
+  color: #0f172a !important;
+  box-shadow: 0 8px 24px rgba(2, 132, 199, 0.06) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .form-control,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .form-select,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .form-control {
+  background-color: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.28) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .reservations-admin__day-header,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .reservations-admin__day-header {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.22) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .reservations-admin__row,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .reservations-admin__row {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.16) !important;
+  border-left: 5px solid #0284c7 !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04) !important;
+  color: #0f172a !important;
+}
+
+/* Dashboard en Modo Claro para Midnight Cyan */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .dash-shortcut-card,
+[data-bs-theme="light"] [data-tenant-theme="midnight-cyan"] .dash-shortcut-card {
+  border-radius: 22px !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.18) !important;
+  border-left: 5px solid #0284c7 !important;
+  color: #0f172a !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card:hover,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card:hover,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .dash-shortcut-card:hover,
+[data-bs-theme="light"] [data-tenant-theme="midnight-cyan"] .dash-shortcut-card:hover {
+  transform: translateY(-3px);
+  border-color: #0284c7 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08), 0 0 20px rgba(2, 132, 199, 0.15) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card__icon,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card__icon,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .dash-shortcut-card__icon,
+[data-bs-theme="light"] [data-tenant-theme="midnight-cyan"] .dash-shortcut-card__icon {
+  border-radius: 16px !important;
+  background: rgba(2, 132, 199, 0.12) !important;
+  color: #0284c7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card .dash-shortcut-card__arrow,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .dash-shortcut-card .dash-shortcut-card__arrow {
+  color: #0284c7 !important;
+}
+
+/* Botones secundarios en Modo Claro Midnight Cyan */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] button.btn-outline-secondary {
+  border-radius: 9999px !important;
+  border: 1.5px solid #0284c7 !important;
+  color: #0369a1 !important;
+  background: rgba(2, 132, 199, 0.08) !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1.1rem !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover {
+  background-color: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   4. TEMA: MIDNIGHT CYAN (Cyber Tech / Azul Medianoche + Cian Eléctrico)
+   Inspirado en la interfaz de alta tecnología con cápsulas luminosas
+   ══════════════════════════════════════════════════════════════════════════ */
+[data-tenant-theme="midnight-cyan"] {
+  --bs-primary: #00d2ff !important;
+  --bs-primary-rgb: 0, 210, 255 !important;
+  --bs-primary-hover: #0099ff !important;
+
+  --tenant-accent: #00d2ff !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(0, 210, 255, 0.55) !important;
+
+  /* Sincronización de tokens heredados */
+  --brand-blue: #00d2ff !important;
+  --brand-blue-hover: #0099ff !important;
+  --brand-blue-light: rgba(0, 210, 255, 0.15) !important;
+  --bs-primary-bg-subtle: rgba(0, 210, 255, 0.15) !important;
+  --bs-primary-border-subtle: rgba(0, 210, 255, 0.35) !important;
+  --bs-primary-text-emphasis: #00d2ff !important;
+
+  /* Tipografía tecnológica futurista */
+  --font-brand: 'Space Grotesk', 'Inter', sans-serif !important;
+
+  /* Kyrios Home Overrides */
+  --k-blue: #00d2ff !important;
+  --k-blue-hover: #0099ff !important;
+  --k-blue-glow: rgba(0, 210, 255, 0.55) !important;
+  --k-btn-radius: 9999px !important;
+
+  /* Portal Overrides */
+  --portal-primary: #00d2ff !important;
+  --portal-primary-hover: #0099ff !important;
+  --portal-primary-glow: rgba(0, 210, 255, 0.5) !important;
+}
+
+/* Tipografía de títulos en Midnight Cyan */
+[data-tenant-theme="midnight-cyan"] .kyrios-title-display,
+[data-tenant-theme="midnight-cyan"] h1,
+[data-tenant-theme="midnight-cyan"] h2,
+[data-tenant-theme="midnight-cyan"] .font-brand {
+  font-family: 'Space Grotesk', 'Inter', sans-serif !important;
+  letter-spacing: 0.02em !important;
+  font-weight: 800 !important;
+}
+
+/* Título de Hero con degradado cian eléctrico y resplandor cyber */
+[data-tenant-theme="midnight-cyan"] .kyrios-hero-title span {
+  background: linear-gradient(135deg, #00d2ff 0%, #38bdf8 50%, #0066ff 100%) !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.45)) !important;
+}
+
+/* Hero Eyebrow en cápsula azul medianoche con borde neón cian */
+[data-tenant-theme="midnight-cyan"] .kyrios-eyebrow {
+  border-radius: 9999px !important;
+  background: rgba(0, 210, 255, 0.12) !important;
+  border: 1px solid rgba(0, 210, 255, 0.4) !important;
+  color: #00d2ff !important;
+  padding: 0.35rem 0.95rem !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+}
+
+/* Hero Overlay con resplandor cian radial */
+[data-tenant-theme="midnight-cyan"] .kyrios-hero-overlay {
+  background: radial-gradient(circle at 75% 25%, rgba(0, 210, 255, 0.28) 0%, transparent 65%),
+              linear-gradient(180deg, var(--home-hero-overlay-from) 0%, var(--home-hero-overlay-to) 100%) !important;
+}
+
+/* Selección de texto y scrollbar */
+[data-tenant-theme="midnight-cyan"] ::selection {
+  background-color: #00d2ff !important;
+  color: #000000 !important;
+}
+
+[data-tenant-theme="midnight-cyan"]::-webkit-scrollbar-thumb,
+[data-tenant-theme="midnight-cyan"] *::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 210, 255, 0.5) !important;
+  border-radius: 9999px !important;
+}
+
+/* Fondo atmosférico en modo oscuro: Azul medianoche profundo */
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] body,
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .app-main,
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .kyrios-home-page {
+  background-color: #060b14 !important;
+}
+
+/* Botones principales: Cápsula gradiente azul cian eléctrico con brillo neón */
+[data-tenant-theme="midnight-cyan"] .btn-primary,
+[data-tenant-theme="midnight-cyan"] .btn-kyrios-primary,
+[data-tenant-theme="midnight-cyan"] .btn-dark {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border: 1px solid #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 4px 20px rgba(0, 210, 255, 0.45), 0 0 25px rgba(0, 102, 255, 0.25) !important;
+  letter-spacing: 0.04em !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .btn-primary:hover,
+[data-tenant-theme="midnight-cyan"] .btn-kyrios-primary:hover,
+[data-tenant-theme="midnight-cyan"] .btn-dark:hover {
+  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%) !important;
+  border-color: #38bdf8 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 28px rgba(0, 210, 255, 0.7), 0 0 35px rgba(0, 102, 255, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+/* Botones outline en Cian Eléctrico */
+[data-tenant-theme="midnight-cyan"] .btn-outline-primary,
+[data-tenant-theme="midnight-cyan"] .btn-kyrios-outline {
+  border: 1.5px solid #00d2ff !important;
+  color: #00d2ff !important;
+  border-radius: 9999px !important;
+  background: rgba(0, 210, 255, 0.06) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .btn-outline-primary:hover,
+[data-tenant-theme="midnight-cyan"] .btn-kyrios-outline:hover {
+  background-color: #00d2ff !important;
+  color: #000000 !important;
+  box-shadow: 0 4px 18px rgba(0, 210, 255, 0.5) !important;
+  transform: translateY(-2px);
+}
+
+/* Botón de catálogo / secundario en Midnight Cyan */
+[data-tenant-theme="midnight-cyan"] .btn-kyrios-dark {
+  border-radius: 9999px !important;
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border: 1px solid #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+  box-shadow: 0 4px 16px rgba(0, 210, 255, 0.4) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .btn-kyrios-dark:hover {
+  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%) !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 0 6px 24px rgba(0, 210, 255, 0.6) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+}
+
+/* ── Tarjetas de Barberos en Midnight Cyan: AVATAR SQUIRCLE FUTURISTA (Estilo Apps de la imagen) ── */
+[data-tenant-theme="midnight-cyan"] .kyrios-barber-card {
+  border-radius: 26px !important;
+  background: linear-gradient(180deg, #0e172a 0%, #080d19 100%) !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.25) !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 210, 255, 0.1), inset 0 1px 0 rgba(0, 210, 255, 0.15) !important;
+  padding: 1.35rem 1rem !important;
+  text-align: center !important;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-barber-card:hover {
+  border-color: #00d2ff !important;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.7), 0 0 32px rgba(0, 210, 255, 0.32), inset 0 1px 0 rgba(0, 210, 255, 0.35) !important;
+  transform: translateY(-5px);
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-barber-img-wrap {
+  width: 135px !important;
+  height: 135px !important;
+  min-height: 135px !important;
+  max-width: 135px !important;
+  margin: 0.5rem auto 1.25rem auto !important;
+  border-radius: 26px !important;
+  border: 3px solid #00d2ff !important;
+  box-shadow: 0 0 24px rgba(0, 210, 255, 0.5) !important;
+  overflow: hidden !important;
+  background: #0d1728 !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-barber-img-wrap img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 22px !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-barber-name {
+  font-family: 'Space Grotesk', 'Inter', sans-serif !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  color: #ffffff !important;
+  font-size: 1.15rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-barber-role {
+  color: #00d2ff !important;
+  font-weight: 700 !important;
+  font-size: 0.76rem !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-barber-sede {
+  color: #94a3b8 !important;
+  font-size: 0.74rem !important;
+}
+
+/* Tarjetas de Servicios en Midnight Cyan */
+[data-tenant-theme="midnight-cyan"] .kyrios-service-card {
+  border-radius: 24px !important;
+  background: linear-gradient(180deg, #0e172a 0%, #090e1c 100%) !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.2) !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(0, 210, 255, 0.12) !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-service-card:hover {
+  border-color: #00d2ff !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 210, 255, 0.25) !important;
+  transform: translateY(-4px);
+}
+
+[data-tenant-theme="midnight-cyan"] .kyrios-service-img-wrap {
+  border-radius: 18px !important;
+  margin: 0.6rem !important;
+  overflow: hidden !important;
+}
+
+/* Stepper y flujo de reservas */
+[data-tenant-theme="midnight-cyan"] .booking-stepper-segment.is-active {
+  background: linear-gradient(90deg, #00d2ff, #0066ff) !important;
+  box-shadow: 0 0 16px rgba(0, 210, 255, 0.8) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-card--selected {
+  border-color: #00d2ff !important;
+  box-shadow: 0 0 0 2px #00d2ff, 0 12px 28px rgba(0, 210, 255, 0.35) !important;
+  background-color: rgba(0, 210, 255, 0.08) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-card--selected .booking-barber-avatar {
+  border-color: #00d2ff !important;
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.6) !important;
+}
+
+/* Stepper activo y completado en Midnight Cyan */
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 18px rgba(0, 210, 255, 0.45) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done {
+  background: rgba(0, 210, 255, 0.1) !important;
+  border-color: rgba(0, 210, 255, 0.4) !important;
+  color: #00d2ff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done svg {
+  color: #00d2ff !important;
+  stroke: #00d2ff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-card__check-indicator {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(0, 210, 255, 0.45) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-barber-status-badge--selected,
+[data-tenant-theme="midnight-cyan"] .booking-card--selected .badge {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 2px 10px rgba(0, 210, 255, 0.35) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-primary-badge {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-step-badge,
+[data-tenant-theme="midnight-cyan"] .kyrios-badge,
+[data-tenant-theme="midnight-cyan"] .brand-badge,
+[data-tenant-theme="midnight-cyan"] .badge-vip {
+  color: #00d2ff !important;
+  background: rgba(0, 210, 255, 0.12) !important;
+  border: 1px solid rgba(0, 210, 255, 0.4) !important;
+  border-radius: 9999px !important;
+}
+
+/* Cápsulas de Fecha y Horas estilo Conexión Cyber (Modo Oscuro) */
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-date-capsule,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-date-capsule,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-date-capsule {
+  border-radius: 20px !important;
+  min-height: 108px !important;
+  background: #0c1424 !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected {
+  background: linear-gradient(180deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 22px rgba(0, 210, 255, 0.6) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__month {
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill {
+  border-radius: 9999px !important;
+  background: #0a1120 !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-time,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-time,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill .booking-slot-time {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-end,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] .booking-slot-pill .booking-slot-end,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) .booking-slot-pill .booking-slot-end {
+  color: #94a3b8 !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 18px rgba(0, 210, 255, 0.5) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-time,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-end,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-check {
+  color: #ffffff !important;
+}
+
+/* Cápsulas y Horarios en Modo Claro para Midnight Cyan */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) {
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.25) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__month {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  opacity: 0.7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule:disabled .booking-date-capsule__empty {
+  color: #94a3b8 !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected {
+  background: linear-gradient(180deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(0, 210, 255, 0.55), 0 0 0 2px #00d2ff !important;
+  transform: none !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__month {
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__badge,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active) {
+  border-radius: 9999px !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.25) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #64748b !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active,
+[data-bs-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 18px rgba(0, 210, 255, 0.5) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-time,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-end,
+[data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-check,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-slot-pill--active .booking-slot-check {
+  color: #ffffff !important;
+}
+
+/* Dashboard: Atajos y Tarjetas con acabado azul medianoche */
+[data-tenant-theme="midnight-cyan"] .dash-shortcut-card {
+  border-radius: 22px !important;
+  background: linear-gradient(180deg, #0d1628 0%, #080d1a 100%) !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.22) !important;
+  border-left: 5px solid #00d2ff !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(0, 210, 255, 0.15) !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .dash-shortcut-card:hover {
+  transform: translateY(-3px);
+  border-color: #00d2ff !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 24px rgba(0, 210, 255, 0.3) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .dash-shortcut-card__icon {
+  border-radius: 16px !important;
+  background: rgba(0, 210, 255, 0.14) !important;
+  color: #00d2ff !important;
+}
+
+/* Sidebar del Dashboard */
+[data-tenant-theme="midnight-cyan"] .sidebar-nav-link {
+  border-radius: 9999px !important;
+  margin: 0.2rem 0.6rem !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .sidebar-nav-link.active {
+  background: rgba(0, 210, 255, 0.16) !important;
+  color: #00d2ff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 0 18px rgba(0, 210, 255, 0.25) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .sidebar-nav-link.active .sidebar-nav-icon,
+[data-tenant-theme="midnight-cyan"] .sidebar--dark .sidebar-nav-link.active .sidebar-nav-icon {
+  color: #00d2ff !important;
+  filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.75));
+}
+
+[data-tenant-theme="midnight-cyan"] .sidebar-nav-link:hover {
+  color: #00d2ff !important;
+  background: rgba(0, 210, 255, 0.08) !important;
+}
+
+/* Tabs de Administradores y Barberos */
+[data-tenant-theme="midnight-cyan"] .usuarios-tabs-container {
+  border-radius: 9999px !important;
+  padding: 0.35rem !important;
+  background-color: #090e1c !important;
+  border: 1px solid rgba(0, 210, 255, 0.25) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .usuarios-tabs-container button {
+  border-radius: 9999px !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .usuarios-tabs-container button[aria-selected="true"],
+[data-tenant-theme="midnight-cyan"] .usuarios-tabs-container .btn-dark {
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  border-color: #00d2ff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 14px rgba(0, 210, 255, 0.45) !important;
+}
+
+/* Formularios de Admin */
+[data-tenant-theme="midnight-cyan"] .card,
+[data-tenant-theme="midnight-cyan"] .card.card-surface,
+[data-tenant-theme="midnight-cyan"] .card-surface {
+  border-radius: 24px !important;
+  background: linear-gradient(180deg, #0e172a 0%, #080d19 100%) !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.22) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 210, 255, 0.08), inset 0 1px 0 rgba(0, 210, 255, 0.12) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .form-control,
+[data-tenant-theme="midnight-cyan"] .form-select {
+  border-radius: 14px !important;
+  background-color: #0b1322 !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.25) !important;
+  color: #ffffff !important;
+  padding: 0.72rem 1.15rem !important;
+  font-size: 0.95rem !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .form-control:focus,
+[data-tenant-theme="midnight-cyan"] .form-select:focus {
+  background-color: #0e192c !important;
+  border-color: #00d2ff !important;
+  box-shadow: 0 0 0 3.5px rgba(0, 210, 255, 0.3), 0 0 16px rgba(0, 210, 255, 0.25) !important;
+  color: #ffffff !important;
+  outline: none !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .form-check-input {
+  border-radius: 7px !important;
+  background-color: #0b1322 !important;
+  border: 2px solid rgba(0, 210, 255, 0.45) !important;
+  cursor: pointer !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .form-check-input:checked {
+  background-color: #00d2ff !important;
+  border-color: #00d2ff !important;
+  box-shadow: 0 0 14px rgba(0, 210, 255, 0.7) !important;
+}
+
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary {
+  border-radius: 9999px !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.35) !important;
+  color: #00d2ff !important;
+  background: rgba(0, 210, 255, 0.08) !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1.1rem !important;
+}
+
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-bs-theme="dark"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) a.btn-outline-secondary:hover,
+[data-tenant-theme="midnight-cyan"]:not([data-theme="light"]):not([data-bs-theme="light"]) button.btn-outline-secondary:hover {
+  background-color: #00d2ff !important;
+  border-color: #00d2ff !important;
+  color: #000000 !important;
+  box-shadow: 0 4px 16px rgba(0, 210, 255, 0.45) !important;
+}
+
+/* ── Panel de Reservas Administrativas en Midnight Cyan ── */
+[data-tenant-theme="midnight-cyan"] .reservations-admin__day-header {
+  border-radius: 18px !important;
+  background: linear-gradient(135deg, #0e172a 0%, #080d19 100%) !important;
+  border: 1.5px solid rgba(0, 210, 255, 0.3) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(0, 210, 255, 0.15) !important;
+  padding: 0.85rem 1.25rem !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .reservations-admin__day-header:hover {
+  border-color: #00d2ff !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 24px rgba(0, 210, 255, 0.25), inset 0 1px 0 rgba(0, 210, 255, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+[data-tenant-theme="midnight-cyan"] .reservations-admin__day-date-badge {
+  border-radius: 16px !important;
+  background: linear-gradient(180deg, #00d2ff 0%, #0066ff 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(0, 210, 255, 0.5) !important;
+  min-height: 48px !important;
+  min-width: 48px !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .reservations-admin__day-date-badge span,
+[data-tenant-theme="midnight-cyan"] .reservations-admin__day-date-badge strong {
+  color: #ffffff !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .reservations-admin__day-count {
+  border-radius: 9999px !important;
+  background: rgba(0, 210, 255, 0.15) !important;
+  color: #00d2ff !important;
+  border: 1px solid rgba(0, 210, 255, 0.4) !important;
+  font-weight: 750 !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .reservations-admin__row {
+  border-radius: 20px !important;
+  background: linear-gradient(180deg, #0d1526 0%, #080d19 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+  border-left: 5px solid #00d2ff !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45) !important;
+  margin-bottom: 0.85rem !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-tenant-theme="midnight-cyan"] .reservations-admin__row:hover,
+[data-tenant-theme="midnight-cyan"] .reservations-admin__row.is-selected {
+  border-color: #00d2ff !important;
+  border-left: 6px solid #00d2ff !important;
+  transform: translateY(-3px) scale(1.004);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 28px rgba(0, 210, 255, 0.3) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   MIDNIGHT CYAN - MODO CLARO (Glacial Tech Clean)
+   ────────────────────────────────────────────────────────────────────────── */
+[data-theme="light"][data-tenant-theme="midnight-cyan"],
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] {
+  --bs-primary: #0284c7 !important;
+  --bs-primary-rgb: 2, 132, 199 !important;
+  --bs-primary-hover: #0369a1 !important;
+
+  --tenant-accent: #0284c7 !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(2, 132, 199, 0.25) !important;
+
+  --k-blue: #0284c7 !important;
+  --k-blue-hover: #0369a1 !important;
+  --k-blue-glow: rgba(2, 132, 199, 0.25) !important;
+
+  /* Sincronización de tokens heredados */
+  --brand-blue: #0284c7 !important;
+  --brand-blue-hover: #0369a1 !important;
+  --brand-blue-light: rgba(2, 132, 199, 0.12) !important;
+  --bs-primary-bg-subtle: rgba(2, 132, 199, 0.12) !important;
+  --bs-primary-border-subtle: rgba(2, 132, 199, 0.28) !important;
+  --bs-primary-text-emphasis: #0284c7 !important;
+
+  --portal-primary: #0284c7 !important;
+  --portal-primary-hover: #0369a1 !important;
+  --portal-primary-glow: rgba(2, 132, 199, 0.2) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] body,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .app-main,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .kyrios-home-page {
+  background-color: #f0f7ff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .kyrios-barber-card,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .kyrios-barber-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(2, 132, 199, 0.2) !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 30px rgba(2, 132, 199, 0.08) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .kyrios-barber-name,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .kyrios-barber-name {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .kyrios-barber-img-wrap,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .kyrios-barber-img-wrap {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 20px rgba(2, 132, 199, 0.25) !important;
+  background: #e0f2fe !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .kyrios-service-card,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .kyrios-service-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(2, 132, 199, 0.18) !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .btn-primary,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .btn-kyrios-primary,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .btn-dark,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .btn-kyrios-dark,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .btn-primary,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .btn-dark {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.3) !important;
+}
+
+/* Stepper y elementos seleccionados en Midnight Cyan (Modo Claro) */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current {
+  background: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current svg,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done {
+  background: rgba(2, 132, 199, 0.08) !important;
+  border-color: rgba(2, 132, 199, 0.35) !important;
+  color: #0369a1 !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done svg,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-stepper__step.is-done svg {
+  color: #0369a1 !important;
+  stroke: #0369a1 !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-card__check-indicator,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-card__check-indicator {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-card__check-indicator svg,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-barber-status-badge--selected,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-card--selected .badge,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-barber-status-badge--selected,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-card--selected .badge {
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .booking-primary-badge,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .booking-primary-badge {
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .sidebar-nav-link.active,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .sidebar-nav-link.active {
+  background: #e0f2fe !important;
+  color: #0369a1 !important;
+  box-shadow: 0 0 14px rgba(2, 132, 199, 0.15) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .card,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .card.card-surface,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .card-surface,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .card {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.18) !important;
+  color: #0f172a !important;
+  box-shadow: 0 8px 24px rgba(2, 132, 199, 0.06) !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .form-control,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .form-select,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .form-control {
+  background-color: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.28) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .reservations-admin__day-header,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .reservations-admin__day-header {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.22) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] .reservations-admin__row,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] .reservations-admin__row {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(2, 132, 199, 0.16) !important;
+  border-left: 5px solid #0284c7 !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04) !important;
+  color: #0f172a !important;
+}
+
+/* Botones secundarios en Modo Claro Midnight Cyan */
+[data-theme="light"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] a.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] button.btn-outline-secondary {
+  border-radius: 9999px !important;
+  border: 1.5px solid #0284c7 !important;
+  color: #0369a1 !important;
+  background: rgba(2, 132, 199, 0.08) !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1.1rem !important;
+}
+
+[data-theme="light"][data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-theme="light"][data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] a.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="midnight-cyan"] button.btn-outline-secondary:hover {
+  background-color: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+}

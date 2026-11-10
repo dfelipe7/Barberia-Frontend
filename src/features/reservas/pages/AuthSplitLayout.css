@@ -1,8 +1,7 @@
 /* ─── Layout Split-Screen de Autenticación ────────────────────────── */
 
 .auth-split {
-  min-height: 100vh;
-  min-height: 100svh;
+  min-height: 100dvh;
   display: flex;
   background-color: #09090b;
   color: #f4f4f5;

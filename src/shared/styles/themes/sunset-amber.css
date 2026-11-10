@@ -1,0 +1,966 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   2. TEMA: SUNSET CORAL / WARM AMBER (Estilo Cálido y Píldoras de la Imagen 2)
+   ══════════════════════════════════════════════════════════════════════════ */
+[data-tenant-theme="sunset-amber"] {
+  --bs-primary: #ff6b35 !important;
+  --bs-primary-rgb: 255, 107, 53 !important;
+  --bs-primary-hover: #ea580c !important;
+
+  --tenant-accent: #ff6b35 !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(255, 107, 53, 0.45) !important;
+
+  /* Kyrios Overrides */
+  --k-blue: #ff6b35 !important;
+  --k-blue-hover: #ea580c !important;
+  --k-blue-glow: rgba(255, 107, 53, 0.45) !important;
+  --k-btn-radius: 9999px !important;
+
+  /* Sincronización de tokens heredados */
+  --brand-blue: #ff6b35 !important;
+  --brand-blue-hover: #ea580c !important;
+  --brand-blue-light: rgba(255, 107, 53, 0.15) !important;
+  --bs-primary-bg-subtle: rgba(255, 107, 53, 0.15) !important;
+  --bs-primary-border-subtle: rgba(255, 107, 53, 0.35) !important;
+  --bs-primary-text-emphasis: #ff6b35 !important;
+
+  /* Portal Overrides */
+  --portal-primary: #ff6b35 !important;
+  --portal-primary-hover: #ea580c !important;
+  --portal-primary-glow: rgba(255, 107, 53, 0.4) !important;
+}
+
+/* ── Formularios y Tarjetas con Profundidad / Relieve ── */
+[data-tenant-theme="sunset-amber"] .card,
+[data-tenant-theme="sunset-amber"] .card.card-surface,
+[data-tenant-theme="sunset-amber"] .card-surface {
+  border-radius: 24px !important;
+  background: linear-gradient(180deg, #171311 0%, #100d0c 100%) !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.22) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), 0 0 24px rgba(255, 107, 53, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Inputs de Formulario (Elegantes, oscuros y con foco cálido) */
+[data-tenant-theme="sunset-amber"] .form-control,
+[data-tenant-theme="sunset-amber"] .form-select {
+  border-radius: 14px !important;
+  background-color: #1e1916 !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.25) !important;
+  color: #ffffff !important;
+  padding: 0.72rem 1.15rem !important;
+  font-size: 0.95rem !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="sunset-amber"] .form-control:focus,
+[data-tenant-theme="sunset-amber"] .form-select:focus {
+  background-color: #241d19 !important;
+  border-color: #ff6b35 !important;
+  box-shadow: 0 0 0 3.5px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 107, 53, 0.2) !important;
+  color: #ffffff !important;
+  outline: none !important;
+}
+
+[data-tenant-theme="sunset-amber"] .form-control::placeholder {
+  color: #8c827a !important;
+}
+
+[data-tenant-theme="sunset-amber"] .form-label {
+  color: #f5f5f4 !important;
+  font-weight: 700 !important;
+  font-size: 0.88rem !important;
+  letter-spacing: 0.02em !important;
+  margin-bottom: 0.45rem !important;
+}
+
+/* Botón Volver y acciones secundarias */
+[data-tenant-theme="sunset-amber"] a.btn-outline-secondary,
+[data-tenant-theme="sunset-amber"] button.btn-outline-secondary {
+  border-radius: 9999px !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.35) !important;
+  color: #ff6b35 !important;
+  background: rgba(255, 107, 53, 0.08) !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1.1rem !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="sunset-amber"] a.btn-outline-secondary:hover,
+[data-tenant-theme="sunset-amber"] button.btn-outline-secondary:hover {
+  background-color: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(255, 107, 53, 0.45) !important;
+  transform: translateY(-1px);
+}
+
+[data-tenant-theme="sunset-amber"] .btn-light {
+  border-radius: 9999px !important;
+  background: #231c18 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #d6d3d1 !important;
+  font-weight: 600 !important;
+}
+
+[data-tenant-theme="sunset-amber"] .btn-light:hover {
+  background: #2d2420 !important;
+  color: #ffffff !important;
+}
+
+/* Checkboxes y Switches en formularios */
+[data-tenant-theme="sunset-amber"] .form-check-input {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  border-radius: 7px !important;
+  background-color: #221a15 !important;
+  border: 2px solid rgba(255, 107, 53, 0.4) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="sunset-amber"] .form-check-input:checked {
+  background-color: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+  box-shadow: 0 0 12px rgba(255, 107, 53, 0.6) !important;
+}
+
+/* Sub-bloques y contenedores dentro del formulario */
+[data-tenant-theme="sunset-amber"] .border-surface-card,
+[data-tenant-theme="sunset-amber"] .bg-surface-card {
+  border-radius: 20px !important;
+  background: rgba(255, 107, 53, 0.04) !important;
+  border: 1px solid rgba(255, 107, 53, 0.2) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .alert-info {
+  border-radius: 18px !important;
+  background: rgba(255, 107, 53, 0.08) !important;
+  border: 1px solid rgba(255, 107, 53, 0.25) !important;
+  color: #fed7aa !important;
+}
+
+/* Botones principales estilo Píldora Sunset */
+[data-tenant-theme="sunset-amber"] .btn-primary,
+[data-tenant-theme="sunset-amber"] .btn-kyrios-primary,
+[data-tenant-theme="sunset-amber"] .btn-dark {
+  background-color: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 4px 18px rgba(255, 107, 53, 0.42) !important;
+  letter-spacing: 0.03em !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="sunset-amber"] .btn-primary:hover,
+[data-tenant-theme="sunset-amber"] .btn-kyrios-primary:hover,
+[data-tenant-theme="sunset-amber"] .btn-dark:hover {
+  background-color: #ea580c !important;
+  border-color: #ea580c !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 24px rgba(255, 107, 53, 0.6) !important;
+  transform: translateY(-2px);
+}
+
+/* Botones outline en Sunset Coral */
+[data-tenant-theme="sunset-amber"] .btn-outline-primary,
+[data-tenant-theme="sunset-amber"] .btn-kyrios-outline {
+  border-color: #ff6b35 !important;
+  color: #ff6b35 !important;
+  border-radius: 9999px !important;
+}
+
+[data-tenant-theme="sunset-amber"] .btn-outline-primary:hover,
+[data-tenant-theme="sunset-amber"] .btn-kyrios-outline:hover {
+  background-color: #ff6b35 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(255, 107, 53, 0.35) !important;
+}
+
+/* Stepper y segmentos activos */
+[data-tenant-theme="sunset-amber"] .booking-stepper-segment.is-active {
+  background: #ff6b35 !important;
+  box-shadow: 0 0 14px rgba(255, 107, 53, 0.7) !important;
+}
+
+/* Tarjetas seleccionadas en el flujo de reserva */
+[data-tenant-theme="sunset-amber"] .booking-card--selected {
+  border-color: #ff6b35 !important;
+  box-shadow: 0 0 0 2px #ff6b35, 0 12px 28px rgba(255, 107, 53, 0.3) !important;
+  background-color: rgba(255, 107, 53, 0.06) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-card--selected .booking-barber-avatar {
+  border-color: #ff6b35 !important;
+  box-shadow: 0 0 18px rgba(255, 107, 53, 0.55) !important;
+}
+
+/* Stepper activo y completado en Sunset Amber */
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current {
+  background: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 4px 18px rgba(255, 107, 53, 0.45) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done {
+  background: rgba(255, 107, 53, 0.1) !important;
+  border-color: rgba(255, 107, 53, 0.4) !important;
+  color: #ff6b35 !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done svg {
+  color: #ff6b35 !important;
+  stroke: #ff6b35 !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-card__check-indicator {
+  background: #ff6b35 !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(255, 107, 53, 0.45) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-barber-status-badge--selected,
+[data-tenant-theme="sunset-amber"] .booking-card--selected .badge {
+  background-color: #ff6b35 !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 2px 10px rgba(255, 107, 53, 0.35) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-primary-badge {
+  background-color: #ff6b35 !important;
+  color: #ffffff !important;
+}
+
+/* Badges e insignias */
+[data-tenant-theme="sunset-amber"] .booking-step-badge,
+[data-tenant-theme="sunset-amber"] .kyrios-badge,
+[data-tenant-theme="sunset-amber"] .brand-badge,
+[data-tenant-theme="sunset-amber"] .badge-vip {
+  color: #ff6b35 !important;
+  background: rgba(255, 107, 53, 0.12) !important;
+  border: 1px solid rgba(255, 107, 53, 0.35) !important;
+  border-radius: 9999px !important;
+}
+
+/* Horarios y slots seleccionados */
+[data-tenant-theme="sunset-amber"] .slot-btn.is-selected,
+[data-tenant-theme="sunset-amber"] .horario-chip.is-active {
+  background-color: #ff6b35 !important;
+  color: #ffffff !important;
+  border-color: #ff6b35 !important;
+  box-shadow: 0 2px 12px rgba(255, 107, 53, 0.5) !important;
+}
+
+/* Tarjetas de Barberos en Sunset Amber: ESTILO LOOKBOOK EDITORIAL (Retrato vertical amplio) */
+[data-tenant-theme="sunset-amber"] .kyrios-barber-card {
+  border-radius: 26px !important;
+  background: #171311 !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.22) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 16px rgba(255, 107, 53, 0.08) !important;
+  padding: 0.85rem !important;
+  text-align: left !important;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  max-width: 100% !important;
+}
+
+[data-tenant-theme="sunset-amber"] .kyrios-barber-card:hover {
+  border-color: #ff6b35 !important;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6), 0 0 28px rgba(255, 107, 53, 0.25) !important;
+  transform: translateY(-4px);
+}
+
+[data-tenant-theme="sunset-amber"] .kyrios-barber-img-wrap {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 180px !important;
+  max-height: 180px !important;
+  aspect-ratio: unset !important;
+  margin: 0 0 0.75rem 0 !important;
+  border-radius: 14px !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.28) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+  overflow: hidden !important;
+  background: #201a16 !important;
+}
+
+[data-tenant-theme="sunset-amber"] .kyrios-barber-img-wrap .kyrios-barber-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: top center !important;
+  padding: 0 !important;
+  border-radius: 18px !important;
+}
+
+/* Hero de la Home con Ambient Glow Cálido Atardecer */
+[data-tenant-theme="sunset-amber"] .kyrios-hero-overlay {
+  background: radial-gradient(circle at 70% 30%, rgba(255, 107, 53, 0.25) 0%, transparent 65%),
+    linear-gradient(180deg, var(--home-hero-overlay-from) 0%, var(--home-hero-overlay-to) 100%) !important;
+}
+
+/* Flujo de Reserva: Cápsulas de Fecha y Horas estilo Tarjeta 3D Esculpida */
+[data-tenant-theme="sunset-amber"] .booking-date-capsule {
+  border-radius: 16px !important;
+  min-height: 106px !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.25) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-bs-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:not(.booking-date-capsule--selected),
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-date-capsule:not(.booking-date-capsule--selected) {
+  background: #ffffff !important;
+  border-color: rgba(255, 107, 53, 0.28) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:not(.booking-date-capsule--selected) .booking-date-capsule__month {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:disabled,
+[data-bs-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:disabled {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  opacity: 0.7 !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:disabled .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:disabled .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:disabled .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule:disabled .booking-date-capsule__empty {
+  color: #94a3b8 !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-date-capsule--selected,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule--selected,
+[data-bs-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule--selected {
+  background: linear-gradient(180deg, #ff6b35 0%, #ea580c 100%) !important;
+  border-color: #ff6b35 !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(255, 107, 53, 0.55), 0 0 0 2px #ff6b35 !important;
+  transform: none !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__month,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__day,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__num,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__month {
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__badge,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-date-capsule--selected .booking-date-capsule__badge {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-slot-pill {
+  border-radius: 14px !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.25) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-bs-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill:not(.booking-slot-pill--active),
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-slot-pill:not(.booking-slot-pill--active) {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-time {
+  color: #0f172a !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill:not(.booking-slot-pill--active) .booking-slot-end {
+  color: #64748b !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-slot-pill--active,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill--active,
+[data-bs-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill--active {
+  background: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 4px 14px rgba(255, 107, 53, 0.4) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-slot-pill--active .booking-slot-time,
+[data-tenant-theme="sunset-amber"] .booking-slot-pill--active .booking-slot-end,
+[data-tenant-theme="sunset-amber"] .booking-slot-pill--active .booking-slot-check,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill--active .booking-slot-time,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill--active .booking-slot-end,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-slot-pill--active .booking-slot-check {
+  color: #ffffff !important;
+}
+
+[data-tenant-theme="sunset-amber"] .booking-ticket::before {
+  background: linear-gradient(90deg, #ff6b35, #fb923c) !important;
+}
+
+/* Dashboard: Tarjetas de atajos en Sunset Amber con relieve 3D */
+[data-tenant-theme="sunset-amber"] .dash-shortcut-card {
+  border-radius: 24px !important;
+  border-left: 5px solid #ff6b35 !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35) !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-tenant-theme="sunset-amber"] .dash-shortcut-card:hover {
+  transform: translateY(-3px);
+  border-color: #ff6b35 !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 20px rgba(255, 107, 53, 0.2) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .dash-shortcut-card__icon {
+  border-radius: 14px !important;
+}
+
+/* Tarjetas de Servicios */
+[data-tenant-theme="sunset-amber"] .kyrios-service-card {
+  border-radius: 24px !important;
+  background: #151210 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  overflow: hidden !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-tenant-theme="sunset-amber"] .kyrios-service-card:hover {
+  border-color: #ff6b35 !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 24px rgba(255, 107, 53, 0.2) !important;
+  transform: translateY(-4px);
+}
+
+[data-tenant-theme="sunset-amber"] .kyrios-service-img-wrap {
+  border-radius: 18px !important;
+  margin: 0.6rem !important;
+  overflow: hidden !important;
+}
+
+/* Menú lateral (Sidebar) */
+[data-tenant-theme="sunset-amber"] .sidebar-nav-link {
+  border-radius: 9999px !important;
+  margin: 0.2rem 0.6rem !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="sunset-amber"] .sidebar-nav-link.active {
+  background: rgba(255, 107, 53, 0.16) !important;
+  border-left: none !important;
+  color: #ff6b35 !important;
+  font-weight: 750 !important;
+  box-shadow: 0 0 18px rgba(255, 107, 53, 0.2) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .sidebar-nav-link.active .sidebar-nav-icon,
+[data-tenant-theme="sunset-amber"] .sidebar--dark .sidebar-nav-link.active .sidebar-nav-icon {
+  color: #ff6b35 !important;
+  filter: drop-shadow(0 0 8px rgba(255, 107, 53, 0.7));
+}
+
+[data-tenant-theme="sunset-amber"] .sidebar-nav-link:hover {
+  color: #ff6b35 !important;
+  background: rgba(255, 107, 53, 0.08) !important;
+}
+
+/* Pestañas de Admin (Usuarios: Admins vs Barberos) */
+[data-tenant-theme="sunset-amber"] .usuarios-tabs-container {
+  border-radius: 9999px !important;
+  padding: 0.35rem !important;
+  background-color: #151210 !important;
+  border-color: rgba(255, 107, 53, 0.25) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .usuarios-tabs-container button {
+  border-radius: 9999px !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-tenant-theme="sunset-amber"] .usuarios-tabs-container button[aria-selected="true"],
+[data-tenant-theme="sunset-amber"] .usuarios-tabs-container .btn-dark {
+  background-color: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 2px 14px rgba(255, 107, 53, 0.45) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .usuarios-tabs-container button[aria-selected="true"] .badge,
+[data-tenant-theme="sunset-amber"] .usuarios-tabs-container .btn-dark .badge {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  border-radius: 9999px !important;
+}
+
+/* Tarjetas móviles y formularios */
+[data-tenant-theme="sunset-amber"] .mobile-user-card {
+  border-radius: 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: #151210 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-tenant-theme="sunset-amber"] .mobile-user-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 107, 53, 0.4) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 107, 53, 0.15) !important;
+}
+
+[data-tenant-theme="sunset-amber"] input[type="range"]::-webkit-slider-thumb {
+  background: #ff6b35 !important;
+  box-shadow: 0 0 12px rgba(255, 107, 53, 0.7) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .barbero-selection-counter-badge {
+  background-color: #ff6b35 !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+}
+
+[data-tenant-theme="sunset-amber"] .barbero-card:hover,
+[data-tenant-theme="sunset-amber"] .barbero-card.selected {
+  border-color: #ff6b35 !important;
+  background-color: rgba(255, 107, 53, 0.08) !important;
+  box-shadow: 0 0 14px rgba(255, 107, 53, 0.22) !important;
+}
+
+/* ── PANEL DE RESERVAS ADMINISTRATIVAS: ALTO RELIEVE Y PROFUNDIDAD 3D ── */
+[data-tenant-theme="sunset-amber"] .reservations-admin__day-header {
+  border-radius: 18px !important;
+  background: linear-gradient(135deg, #221a16 0%, #15110e 100%) !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.3) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  padding: 0.85rem 1.25rem !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-tenant-theme="sunset-amber"] .reservations-admin__day-header:hover {
+  border-color: #ff6b35 !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 24px rgba(255, 107, 53, 0.2), inset 0 1px 0 rgba(255, 107, 53, 0.3) !important;
+  transform: translateY(-1px);
+}
+
+[data-tenant-theme="sunset-amber"] .reservations-admin__day-date-badge {
+  border-radius: 16px !important;
+  background: linear-gradient(180deg, #ff6b35 0%, #c2410c 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(255, 107, 53, 0.5) !important;
+  min-height: 48px !important;
+  min-width: 48px !important;
+}
+
+[data-tenant-theme="sunset-amber"] .reservations-admin__day-date-badge span {
+  color: rgba(255, 255, 255, 0.88) !important;
+  font-weight: 800 !important;
+  font-size: 0.65rem !important;
+}
+
+[data-tenant-theme="sunset-amber"] .reservations-admin__day-date-badge strong {
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  font-size: 1.25rem !important;
+}
+
+[data-tenant-theme="sunset-amber"] .reservations-admin__day-count {
+  border-radius: 9999px !important;
+  background: rgba(255, 107, 53, 0.15) !important;
+  color: #ff6b35 !important;
+  border: 1px solid rgba(255, 107, 53, 0.4) !important;
+  font-weight: 750 !important;
+  padding: 0.3rem 0.8rem !important;
+}
+
+[data-tenant-theme="sunset-amber"] .reservations-admin__row {
+  border-radius: 20px !important;
+  background: linear-gradient(180deg, #1c1714 0%, #130f0e 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+  border-left: 5px solid #ff6b35 !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  margin-bottom: 0.85rem !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-tenant-theme="sunset-amber"] .reservations-admin__row:hover,
+[data-tenant-theme="sunset-amber"] .reservations-admin__row.is-selected {
+  border-color: #ff6b35 !important;
+  border-left: 6px solid #ff6b35 !important;
+  transform: translateY(-3px) scale(1.004);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 28px rgba(255, 107, 53, 0.22), inset 0 1px 0 rgba(255, 107, 53, 0.3) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   SUNSET AMBER - MODO CLARO (Warm Studio con acabado cerámico limpio)
+   ────────────────────────────────────────────────────────────────────────── */
+[data-theme="light"][data-tenant-theme="sunset-amber"],
+[data-theme="light"] [data-tenant-theme="sunset-amber"] {
+  --bs-primary: #ff6b35 !important;
+  --bs-primary-rgb: 255, 107, 53 !important;
+  --bs-primary-hover: #ea580c !important;
+
+  --tenant-accent: #ea580c !important;
+  --tenant-btn-text: #ffffff !important;
+  --tenant-glow: rgba(234, 88, 12, 0.25) !important;
+
+  --k-blue: #ff6b35 !important;
+  --k-blue-hover: #ea580c !important;
+  --k-blue-glow: rgba(255, 107, 53, 0.25) !important;
+
+  /* Sincronización de tokens heredados */
+  --brand-blue: #ea580c !important;
+  --brand-blue-hover: #c2410c !important;
+  --brand-blue-light: rgba(234, 88, 12, 0.12) !important;
+  --bs-primary-bg-subtle: rgba(234, 88, 12, 0.12) !important;
+  --bs-primary-border-subtle: rgba(234, 88, 12, 0.28) !important;
+  --bs-primary-text-emphasis: #ea580c !important;
+
+  --portal-primary: #ff6b35 !important;
+  --portal-primary-hover: #ea580c !important;
+  --portal-primary-glow: rgba(255, 107, 53, 0.2) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .kyrios-barber-card,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .kyrios-barber-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(255, 107, 53, 0.2) !important;
+  color: #1c1917 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 0 15px rgba(255, 107, 53, 0.06) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .kyrios-barber-card:hover,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .kyrios-barber-card:hover {
+  border-color: #ff6b35 !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08), 0 0 24px rgba(255, 107, 53, 0.18) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .kyrios-barber-img-wrap,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .kyrios-barber-img-wrap {
+  width: 100% !important;
+  max-width: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  height: auto !important;
+  min-height: unset !important;
+  border-radius: 20px !important;
+  border-color: #ff6b35 !important;
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.22) !important;
+  background: #fff7ed !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .kyrios-service-card,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .kyrios-service-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(255, 107, 53, 0.16) !important;
+  color: #1c1917 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .kyrios-service-card:hover,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .kyrios-service-card:hover {
+  border-color: #ff6b35 !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08), 0 0 20px rgba(255, 107, 53, 0.14) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-step-badge,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .kyrios-badge,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .brand-badge,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .badge-vip {
+  color: #c2410c !important;
+  background: #ffedd5 !important;
+  border: 1px solid #fed7aa !important;
+}
+
+/* Stepper y elementos seleccionados en Sunset Amber (Modo Claro) */
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current {
+  background: #ea580c !important;
+  border-color: #ea580c !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 4px 16px rgba(234, 88, 12, 0.35) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current svg,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-current svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done {
+  background: rgba(234, 88, 12, 0.08) !important;
+  border-color: rgba(234, 88, 12, 0.35) !important;
+  color: #c2410c !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done svg,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done .booking-stepper__label,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done .booking-stepper__icon-wrap,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-stepper__step.is-done svg {
+  color: #c2410c !important;
+  stroke: #c2410c !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-card__check-indicator,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-card__check-indicator {
+  background: #ea580c !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-card__check-indicator svg,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-card__check-indicator svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-barber-status-badge--selected,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-card--selected .badge,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-barber-status-badge--selected,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-card--selected .badge {
+  background-color: #ea580c !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .booking-primary-badge,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .booking-primary-badge {
+  background-color: #ea580c !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .sidebar-nav-link.active,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .sidebar-nav-link.active {
+  background: #ffedd5 !important;
+  color: #c2410c !important;
+  box-shadow: 0 0 14px rgba(255, 107, 53, 0.15) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .usuarios-tabs-container,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .usuarios-tabs-container {
+  background-color: #f5f5f4 !important;
+  border-color: rgba(255, 107, 53, 0.22) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .usuarios-tabs-container button[aria-selected="true"],
+[data-theme="light"][data-tenant-theme="sunset-amber"] .usuarios-tabs-container .btn-dark,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .usuarios-tabs-container button[aria-selected="true"],
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .usuarios-tabs-container .btn-dark {
+  background-color: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .mobile-user-card,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .mobile-user-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(255, 107, 53, 0.16) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .form-control:focus,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .form-select:focus,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .form-control:focus,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .form-select:focus {
+  background-color: #fffaf5 !important;
+  border-color: #ff6b35 !important;
+  color: #1c1917 !important;
+  box-shadow: 0 0 0 3.5px rgba(255, 107, 53, 0.2), 0 4px 12px rgba(255, 107, 53, 0.12) !important;
+}
+
+/* Tarjetas y Formularios en Modo Claro */
+[data-theme="light"][data-tenant-theme="sunset-amber"] .card,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .card.card-surface,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .card-surface,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .card,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .card.card-surface,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .card-surface {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.18) !important;
+  color: #1c1917 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04), 0 0 14px rgba(255, 107, 53, 0.05) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .form-control,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .form-select,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .form-control,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .form-select {
+  background-color: #ffffff !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.28) !important;
+  color: #1c1917 !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .form-control::placeholder,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .form-control::placeholder {
+  color: #948b83 !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .form-label,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .form-label {
+  color: #1c1917 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .border-surface-card,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .bg-surface-card,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .border-surface-card,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .bg-surface-card {
+  background: #fffaf5 !important;
+  border: 1px solid rgba(255, 107, 53, 0.22) !important;
+  color: #1c1917 !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] a.btn-outline-secondary,
+[data-theme="light"][data-tenant-theme="sunset-amber"] button.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] a.btn-outline-secondary,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] button.btn-outline-secondary {
+  background: #fff7ed !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.38) !important;
+  color: #c2410c !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] a.btn-outline-secondary:hover,
+[data-theme="light"][data-tenant-theme="sunset-amber"] button.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] a.btn-outline-secondary:hover,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] button.btn-outline-secondary:hover {
+  background: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(255, 107, 53, 0.35) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .btn-light,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .btn-light {
+  background: #f5f5f4 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  color: #44403c !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .form-check-input,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .form-check-input {
+  background-color: #ffffff !important;
+  border: 2px solid rgba(255, 107, 53, 0.45) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .form-check-input:checked,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .form-check-input:checked {
+  background-color: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .alert-info,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .alert-info {
+  background: #fff7ed !important;
+  border: 1px solid #fed7aa !important;
+  color: #9a3412 !important;
+}
+
+/* ── Reservas Administrativas en Modo Claro ── */
+[data-theme="light"][data-tenant-theme="sunset-amber"] .reservations-admin__day-header,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .reservations-admin__day-header {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.22) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04), 0 0 12px rgba(255, 107, 53, 0.05) !important;
+  color: #1c1917 !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .reservations-admin__day-header:hover,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .reservations-admin__day-header:hover {
+  border-color: #ff6b35 !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08), 0 0 16px rgba(255, 107, 53, 0.15) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .reservations-admin__day-date-badge,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .reservations-admin__day-date-badge {
+  background: linear-gradient(180deg, #ff6b35 0%, #ea580c 100%) !important;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.35) !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .reservations-admin__day-date-badge span,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .reservations-admin__day-date-badge span {
+  color: #ffffff !important;
+  opacity: 0.9 !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .reservations-admin__day-date-badge strong,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .reservations-admin__day-date-badge strong {
+  color: #ffffff !important;
+  font-weight: 900 !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .reservations-admin__day-count,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .reservations-admin__day-count {
+  background: #fff7ed !important;
+  color: #c2410c !important;
+  border: 1px solid rgba(255, 107, 53, 0.3) !important;
+  font-weight: 750 !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .reservations-admin__row,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .reservations-admin__row {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.15) !important;
+  border-left: 5px solid #ff6b35 !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04), 0 0 10px rgba(255, 107, 53, 0.04) !important;
+  color: #1c1917 !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .reservations-admin__row:hover,
+[data-theme="light"][data-tenant-theme="sunset-amber"] .reservations-admin__row.is-selected,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .reservations-admin__row:hover,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .reservations-admin__row.is-selected {
+  border-color: #ff6b35 !important;
+  border-left: 6px solid #ff6b35 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08), 0 0 20px rgba(255, 107, 53, 0.18) !important;
+  transform: translateY(-2px);
+}
+
+/* Dashboard en Modo Claro para Sunset Amber */
+[data-theme="light"][data-tenant-theme="sunset-amber"] .dash-shortcut-card,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .dash-shortcut-card {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(255, 107, 53, 0.16) !important;
+  border-left: 5px solid #ff6b35 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04), 0 0 12px rgba(255, 107, 53, 0.04) !important;
+  color: #1c1917 !important;
+}
+
+[data-theme="light"][data-tenant-theme="sunset-amber"] .dash-shortcut-card:hover,
+[data-theme="light"] [data-tenant-theme="sunset-amber"] .dash-shortcut-card:hover {
+  border-color: #ff6b35 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08), 0 0 20px rgba(255, 107, 53, 0.18) !important;
+}

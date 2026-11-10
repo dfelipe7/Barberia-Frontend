@@ -106,7 +106,7 @@ export function CrudPage<T>({
   };
 
   return (
-    <div className="crud-page-container">
+    <div className="crud-page-container kyrios-page-container">
       {/* Header & Acciones */}
       <PageHeader
         eyebrow={eyebrow}

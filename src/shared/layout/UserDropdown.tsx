@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, User, Globe, LogOut } from 'lucide-react';
+import { ChevronDown, User, Globe, LogOut, Moon, Sun, Monitor } from 'lucide-react';
 import { ROLES_APP } from '../constants/roles';
 import UserAvatar from '../ui/atoms/UserAvatar';
 import RoleBadge from '../ui/atoms/RoleBadge';
 import { obtenerNegocioSlugActivo } from '../lib/http/axios';
+import { useTheme } from '../context/ThemeContext';
 
 export interface UserDropdownProps {
   nombre?: string;
@@ -36,6 +37,28 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
   const rolesAMostrar = rolesApp.length > 0 ? rolesApp : roles;
   const slugActivo = obtenerNegocioSlugActivo() || localStorage.getItem('negocio_slug') || 'kyrios-studio';
   const rutaSitioPublico = `/${slugActivo}`;
+  const { theme, setTheme } = useTheme();
+
+  const cycleTheme = () => {
+    if (theme === 'system') setTheme('light');
+    else if (theme === 'light') setTheme('dark');
+    else setTheme('system');
+  };
+
+  const THEME_ICONS = {
+    dark: Moon,
+    light: Sun,
+    system: Monitor,
+  } as const;
+
+  const THEME_LABELS = {
+    dark: 'Tema: Oscuro',
+    light: 'Tema: Claro',
+    system: 'Tema: Sistema',
+  } as const;
+
+  const ThemeIcon = THEME_ICONS[theme] ?? Monitor;
+  const themeLabel = THEME_LABELS[theme] ?? 'Tema: Sistema';
 
   const closeDropdown = () => {
     if (!isOpen || isExiting) return;
@@ -225,6 +248,20 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
             <Globe size={16} strokeWidth={2} />
             <span>Sitio público</span>
           </Link>
+
+          <button
+            type="button"
+            role="menuitem"
+            className="user-dropdown-item d-md-none d-flex align-items-center justify-content-between w-100 text-start border-0 bg-transparent px-3 py-2 rounded"
+            onClick={cycleTheme}
+            aria-label={`Cambiar tema actual: ${themeLabel}`}
+          >
+            <div className="d-flex align-items-center gap-2">
+              <ThemeIcon size={16} strokeWidth={2} />
+              <span>{themeLabel}</span>
+            </div>
+            <span className="badge bg-secondary-subtle text-body small">Cambiar</span>
+          </button>
 
           <hr className="my-1 user-dropdown-divider" />
 

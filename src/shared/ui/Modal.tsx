@@ -74,11 +74,11 @@ export const Modal: React.FC<ModalProps> = ({
         top: 0,
         left: 0,
         width: '100vw',
-        height: '100vh',
+        height: '100dvh',
         backgroundColor: 'rgba(0, 0, 0, 0.65)',
         backdropFilter: 'blur(6px)',
         WebkitBackdropFilter: 'blur(6px)',
-        padding: '1.25rem 1rem',
+        padding: 'clamp(0.5rem, 2vw, 1.25rem) clamp(0.5rem, 2vw, 1rem)',
         overflowY: 'auto',
         zIndex: 1060,
       }}
@@ -101,10 +101,10 @@ export const Modal: React.FC<ModalProps> = ({
         <div
           className="modal-content shadow-lg kyrios-modal-content"
           style={{
-            maxHeight: 'calc(100vh - 3rem)',
+            maxHeight: 'calc(100dvh - 2rem)',
             display: 'flex',
             flexDirection: 'column',
-            borderRadius: '24px',
+            borderRadius: 'clamp(14px, 3vw, 24px)',
             overflow: 'hidden',
           }}
         >
@@ -112,13 +112,13 @@ export const Modal: React.FC<ModalProps> = ({
             <div className="modal-header flex-shrink-0 px-4 pt-4 pb-2 border-0">
               <h5
                 id={ariaLabelledBy}
-                className="modal-title fw-bold kyrios-modal-title fs-5"
+                className="modal-title fw-bold kyrios-modal-title fs-5 text-break"
               >
                 {title}
               </h5>
               <button
                 type="button"
-                className="btn-close"
+                className="btn-close touch-target"
                 aria-label="Cerrar"
                 onClick={onClose}
               />

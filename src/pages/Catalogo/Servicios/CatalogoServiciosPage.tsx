@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { Scissors } from 'lucide-react';
 import '../../Home/home.css';
-import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
+import { useServiciosCatalogo, esServicioActivoConBarberos } from '../../../features/servicios/api/servicios.facade';
 import type { Servicio } from '../../../features/servicios/types/servicios.types';
 import HomeNavbar from '../../Home/components/HomeNavbar';
 import HomeFooter from '../../Home/components/HomeFooter';
@@ -31,9 +31,7 @@ const ServiceSkeleton: React.FC = () => (
 );
 
 function filtrarServicios(servicios: Servicio[], query: string): Servicio[] {
-  const activos = servicios.filter(
-    (s) => s.estado === 'ACTIVO' && s.barberos && s.barberos.length > 0
-  );
+  const activos = servicios.filter(esServicioActivoConBarberos);
   const limpio = query.trim().toLowerCase();
   if (!limpio) return activos;
   return activos.filter((s) => s.nombre.toLowerCase().includes(limpio));
@@ -83,7 +81,7 @@ const CatalogoServiciosPage: React.FC = () => {
   const isSearching = query !== debouncedQuery;
 
   return (
-    <div className="kyrios-home d-flex flex-column" style={{ minHeight: '100vh' }}>
+    <div className="kyrios-home d-flex flex-column" style={{ minHeight: '100dvh' }}>
       <HomeNavbar
         isAuthenticated={isAuthenticated}
         nombre={nombre}
@@ -169,9 +167,9 @@ const CatalogoServiciosPage: React.FC = () => {
 
               {/* Grid */}
               {serviciosFiltrados.length > 0 ? (
-                <div className="row g-2 g-sm-3 g-md-4 catalog-grid-2col">
+                <div className="row g-3 g-lg-4">
                   {serviciosFiltrados.map((servicio: Servicio) => (
-                    <div key={servicio.id} className="col-6 col-md-6 col-lg-4">
+                    <div key={servicio.id} className="col-12 col-md-6 col-lg-4">
                       <ServiceCard
                         servicio={servicio}
                         onReservar={(s) => {

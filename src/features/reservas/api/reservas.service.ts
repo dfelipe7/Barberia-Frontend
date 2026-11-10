@@ -1,5 +1,7 @@
 import axios from 'axios';
+import { googleLogout } from '@react-oauth/google';
 import apiClient, { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
+import { queryClient } from '../../../shared/lib/queryClient';
 import type {
   ClienteSesionDTO,
   PerfilClienteDTO,
@@ -97,6 +99,9 @@ export const clientesService = {
     const clienteConSlug = { ...sesion.cliente, negocioSlug: slug };
     localStorage.setItem(tokenKey, sesion.accessToken);
     localStorage.setItem(sesionKey, JSON.stringify(clienteConSlug));
+    // Purgar caché residual previa para que el cliente entrante tenga datos 100% frescos
+    queryClient.removeQueries({ queryKey: ['clientes'] });
+    queryClient.removeQueries({ queryKey: ['reservas', 'mis-reservas'] });
   },
 
   obtenerSesion(slugParam?: string | null): ClienteSesionDTO | null {
@@ -119,9 +124,20 @@ export const clientesService = {
   },
 
   cerrarSesion(slugParam?: string | null) {
-    const { tokenKey, sesionKey } = resolverClavesCliente(slugParam);
+    const { tokenKey, sesionKey, slug } = resolverClavesCliente(slugParam);
     localStorage.removeItem(tokenKey);
     localStorage.removeItem(sesionKey);
+    if (slug !== 'global') {
+      localStorage.removeItem('token_cliente_global');
+      localStorage.removeItem('cliente_global');
+    }
+    // Deshabilitar la autoselección de cuenta en Google Identity Services para permitir escoger otra cuenta
+    try {
+      googleLogout();
+    } catch {}
+    // Purgar inmediatamente las consultas en memoria de React Query asociadas al cliente anterior
+    queryClient.removeQueries({ queryKey: ['clientes'] });
+    queryClient.removeQueries({ queryKey: ['reservas', 'mis-reservas'] });
   },
 
   async obtenerPerfil(): Promise<PerfilClienteDTO> {

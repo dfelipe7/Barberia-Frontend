@@ -1,6 +1,6 @@
 .barber-agenda {
-  --agenda-accent: var(--brand-blue, #0071bc);
-  --agenda-accent-soft: rgba(0, 113, 188, 0.09);
+  --agenda-accent: var(--tenant-accent, var(--bs-primary, var(--brand-blue, #0071bc)));
+  --agenda-accent-soft: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.09);
   --agenda-border: var(--surface-card-border, #e5e3dc);
   --agenda-muted: var(--surface-app-muted, #6b6375);
   max-width: 1640px;
@@ -171,7 +171,7 @@
 
 .barber-agenda__content {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.8fr);
+  grid-template-columns: minmax(0, 1.6fr) minmax(310px, 400px);
   gap: 1.2rem;
 }
 
@@ -183,7 +183,7 @@
 .barber-agenda__details-sticky {
   position: sticky;
   top: calc(58px + 1.25rem);
-  max-height: calc(100vh - 58px - 2.5rem);
+  max-height: calc(100dvh - 58px - 2.5rem);
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
@@ -391,10 +391,10 @@
   align-items: center;
   justify-content: center;
   width: fit-content;
-  padding: 0.27rem 0.52rem;
+  padding: 0.32rem 0.68rem;
   border: 1px solid transparent;
   border-radius: 999px;
-  font-size: 0.64rem;
+  font-size: 0.72rem;
   font-weight: 650;
   line-height: 1.15;
   white-space: nowrap;
@@ -472,7 +472,7 @@
 }
 
 .barber-agenda__detail {
-  padding: 1.35rem;
+  padding: 1rem 1.15rem;
 }
 
 .barber-agenda__detail-top {
@@ -480,44 +480,45 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  margin-bottom: 1.15rem;
+  margin-bottom: 0.65rem;
+  padding-top: 0.1rem;
 }
 
 .barber-agenda__detail-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 11px;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
   background: var(--agenda-accent-soft);
   color: var(--agenda-accent);
 }
 
 .barber-agenda__detail-title {
-  margin: 0.25rem 0 0.35rem;
-  font-size: 1.45rem;
+  margin: 0.15rem 0 0.2rem;
+  font-size: 1.22rem;
   font-weight: 700;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.025em;
 }
 
 .barber-agenda__detail-date {
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.75rem;
   color: var(--agenda-muted);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
 }
 
 .barber-agenda__client-card {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  padding: 0.85rem;
+  gap: 0.65rem;
+  margin-bottom: 0.65rem;
+  padding: 0.55rem 0.75rem;
   border: 1px solid var(--agenda-border);
   border-radius: 9px;
   background: var(--surface-app-bg);
 }
 
 .barber-agenda__client-avatar {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: var(--agenda-accent-soft);
   color: var(--agenda-accent);
@@ -528,15 +529,15 @@
 }
 
 .barber-agenda__client-card p {
-  font-size: 0.88rem;
+  font-size: 0.86rem;
 }
 
 .barber-agenda__call-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border: 1px solid var(--agenda-border);
   border-radius: 50%;
   color: var(--agenda-accent);
@@ -552,11 +553,11 @@
 .barber-agenda__detail-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .barber-agenda__detail-grid > div {
-  padding: 0.75rem;
+  padding: 0.5rem 0.65rem;
   border: 1px solid var(--agenda-border);
   border-radius: 8px;
   background: var(--surface-card-bg);
@@ -565,8 +566,8 @@
 .barber-agenda__detail-grid dt {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  margin-bottom: 0.4rem;
+  gap: 0.3rem;
+  margin-bottom: 0.25rem;
   color: var(--agenda-muted);
   font-size: 0.6rem;
   font-weight: 700;
@@ -575,7 +576,7 @@
 
 .barber-agenda__detail-grid dd {
   margin: 0;
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
@@ -586,6 +587,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  padding: 0.5rem 0.8rem;
   background: var(--agenda-accent-soft);
 }
 
@@ -595,7 +597,7 @@
 
 .barber-agenda__detail-price dd {
   color: var(--agenda-accent);
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
 .barber-agenda__detail-placeholder {
@@ -851,22 +853,35 @@
 }
 
 .barber-agenda__detail-actions {
-  margin-top: 0.75rem;
-  padding: 1rem;
+  margin-top: 0.5rem;
+  padding: 0.75rem 0.95rem;
   border: 1px solid var(--agenda-border);
   border-radius: 12px;
 }
 
 .barber-agenda__detail-actions p {
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.45rem;
   color: var(--agenda-muted);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
 }
 
-@media (max-width: 575px) {
-  .barber-agenda__detail-actions .btn {
-    flex: 1 1 auto;
-  }
+.barber-agenda__detail-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.barber-agenda__detail-actions-grid .btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  min-height: 40px;
+  white-space: nowrap;
 }
 
 /* Modal Bottom Sheet para móvil */
@@ -892,7 +907,7 @@
   .barber-agenda__mobile-sheet-content {
     width: 100%;
     max-width: 600px;
-    max-height: 85vh;
+    max-height: min(88dvh, 88vh);
     display: flex;
     flex-direction: column;
     background: var(--surface-card-bg);
@@ -929,8 +944,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 38px;
+    height: 38px;
     padding: 0;
     border: none;
     border-radius: 8px;
@@ -940,23 +955,27 @@
     transition: background-color 150ms ease, color 150ms ease;
   }
 
-  .barber-agenda__mobile-sheet-close:hover {
-    background: var(--agenda-accent-soft);
-    color: var(--surface-card-text);
+  @media (hover: hover) and (pointer: fine) {
+    .barber-agenda__mobile-sheet-close:hover {
+      background: var(--agenda-accent-soft);
+      color: var(--surface-card-text);
+    }
   }
 
   .barber-agenda__mobile-sheet-body {
-    padding: 0 1.25rem 1.75rem;
+    padding: 0.5rem 1.25rem 2rem;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
 
   .barber-agenda__mobile-sheet-body .barber-agenda__detail {
     position: static;
-    border: none;
-    padding: 0;
-    background: transparent;
-    box-shadow: none;
+    border: 1px solid var(--bs-border-color, rgba(255, 255, 255, 0.08)) !important;
+    padding: 1.25rem 1.35rem !important;
+    border-radius: 20px !important;
+    background: var(--surface-card-bg) !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16) !important;
+    margin-bottom: 1rem;
   }
 }
 

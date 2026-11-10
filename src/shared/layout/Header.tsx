@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Globe, User, Menu, Moon, Sun, Monitor } from 'lucide-react';
+import { Globe, Menu, Moon, Sun, Monitor } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import { obtenerUrlFoto } from '../lib/obtenerUrlFoto';
 import { obtenerNegocioSlugActivo } from '../lib/http/axios';
@@ -12,6 +12,7 @@ import { useConfirm } from '../contexts/ConfirmContext';
 import { ROLES_APP, ROL_HIERARCHY } from '../constants/roles';
 import UserAvatar from '../ui/atoms/UserAvatar';
 import RoleBadge from '../ui/atoms/RoleBadge';
+import WhatsAppStatusIndicator from './WhatsAppStatusIndicator';
 
 export default function Header() {
   const { cerrarSesion, nombre, apellido, email, roles, usuarioDb, fotoUrl: fotoGoogle } = useAuth();
@@ -72,14 +73,14 @@ export default function Header() {
           transition: 'background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease',
         }}
       >
-        <div className="container-fluid px-2 px-sm-3 d-flex align-items-center justify-content-between">
-          {/* ── Zona izquierda — Marca + Home ── */}
-          <div className="d-flex align-items-center gap-2 gap-sm-3">
+        <div className="container-fluid px-2 px-sm-3 d-flex align-items-center justify-content-between flex-nowrap min-w-0">
+          {/* ── Zona izquierda — Marca + Menú Hamburguesa ── */}
+          <div className="d-flex align-items-center gap-2 min-w-0 flex-shrink-0">
             <button
               id="hamburger-btn"
               type="button"
               onClick={toggleSidebar}
-              className={`btn btn-sm d-lg-none ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} p-1 header-action-btn`}
+              className={`btn btn-sm d-lg-none ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} header-action-btn touch-target`}
               aria-label={isSidebarOpen ? 'Cerrar menú' : 'Abrir menú'}
               aria-expanded={isSidebarOpen}
               aria-controls="main-sidebar"
@@ -89,68 +90,59 @@ export default function Header() {
 
             <Link
               to={slugActivo ? `/${slugActivo}/dashboard` : "/dashboard"}
-              className="navbar-brand d-flex align-items-center py-0 me-0"
+              className="navbar-brand d-flex align-items-center py-0 me-0 min-w-0"
               aria-label={`Ir al dashboard de ${BRAND.name}`}
             >
               <BrandLogo
                 variant={isDark ? 'white' : 'black'}
-                height={30}
-                className="brand-logo-header"
+                height={28}
+                className="brand-logo-header flex-shrink-0"
                 alt={BRAND.name}
               />
             </Link>
-
-            <Link
-              to={rutaSitioPublico}
-              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-inline-flex align-items-center gap-1 header-action-btn`}
-              title="Ir al sitio público"
-              aria-label="Ir al sitio público"
-            >
-              <Globe size={15} strokeWidth={2} />
-              <span className="d-none d-sm-inline" style={{ fontSize: '0.825rem' }}>
-                Sitio público
-              </span>
-            </Link>
           </div>
 
-          {/* ── Zona central — Identidad del usuario (oculta en móvil y tablets < 992px) ── */}
-          <div className="d-none d-lg-flex align-items-center gap-2">
+          {/* ── Zona central — Identidad del usuario (centrada y visible en pantallas grandes >= 1200px) ── */}
+          <div className="d-none d-xl-flex align-items-center gap-2 mx-auto px-3 min-w-0">
             <UserAvatar nombre={nombre} apellido={apellido} fotoUrl={fotoUrl} size={32} />
             <span
               className="fw-semibold text-truncate text-surface-app"
               style={{
                 fontSize: '0.875rem',
-                maxWidth: '200px',
+                maxWidth: '180px',
               }}
             >
               {nombre} {apellido}
             </span>
-            <RoleBadge rol={rolPrincipal} />
+            <RoleBadge rol={rolPrincipal} className="ms-1" />
           </div>
 
           {/* ── Zona derecha — Acciones ── */}
-          <div className="d-flex align-items-center gap-2">
+          <div className="d-flex align-items-center gap-1 gap-sm-2 flex-shrink-0 ms-auto">
+            {/* Sitio público en zona de acciones (icono compacto en tablet, expande en desktop) */}
+            <Link
+              to={rutaSitioPublico}
+              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-none d-sm-inline-flex align-items-center gap-1 header-action-btn`}
+              title="Ir al sitio público"
+              aria-label="Ir al sitio público"
+            >
+              <Globe size={15} strokeWidth={2} />
+              <span className="d-none d-xxl-inline" style={{ fontSize: '0.825rem' }}>
+                Sitio público
+              </span>
+            </Link>
+
+            <WhatsAppStatusIndicator />
+
             <button
               type="button"
               onClick={cycleTheme}
-              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-inline-flex align-items-center gap-1 header-action-btn`}
+              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-none d-sm-inline-flex align-items-center gap-1 header-action-btn`}
               title={themeLabel}
               aria-label={themeLabel}
             >
               <ThemeIcon size={15} strokeWidth={2} />
             </button>
-
-            <Link
-              to="/mi-perfil"
-              className={`btn btn-sm ${isDark ? 'btn-outline-secondary text-light' : 'btn-outline-dark'} d-inline-flex align-items-center gap-1 header-action-btn`}
-              title="Mi Perfil"
-              aria-label="Ir a Mi Perfil"
-            >
-              <User size={15} strokeWidth={2} />
-              <span className="d-none d-md-inline" style={{ fontSize: '0.825rem' }}>
-                Mi Perfil
-              </span>
-            </Link>
 
             <UserDropdown
               nombre={nombre}

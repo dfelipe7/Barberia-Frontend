@@ -30,9 +30,9 @@
 }
 
 .horario-stat-badge {
-  background: rgba(0, 113, 188, 0.1);
-  color: var(--brand-blue, #0071bc);
-  border: 1px solid rgba(0, 113, 188, 0.22);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.12);
+  color: var(--bs-primary);
+  border: 1px solid rgba(var(--bs-primary-rgb, 0, 113, 188), 0.25);
   font-size: 0.8rem;
   font-weight: 600;
   padding: 0.35rem 0.75rem;
@@ -165,8 +165,8 @@
 }
 
 .horario-switch input:checked + .horario-switch-slider {
-  background-color: var(--brand-blue, #0071bc);
-  border-color: var(--brand-blue, #0071bc);
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
 }
 
 .horario-switch input:checked + .horario-switch-slider::before {
@@ -226,16 +226,16 @@
 }
 
 .horario-badge-hours--active {
-  background: rgba(0, 113, 188, 0.1);
-  color: var(--brand-blue, #0071bc);
-  border-color: rgba(0, 113, 188, 0.25);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.12);
+  color: var(--bs-primary);
+  border-color: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.25);
 }
 
 [data-theme="dark"] .horario-badge-hours--active,
 [data-bs-theme="dark"] .horario-badge-hours--active {
-  background: rgba(0, 113, 188, 0.15);
-  color: #38bdf8;
-  border-color: rgba(0, 113, 188, 0.3);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.18);
+  color: var(--bs-primary);
+  border-color: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.35);
 }
 
 .horario-chevron-icon {
@@ -379,15 +379,15 @@
 }
 
 .horario-slot-chip:hover {
-  border-color: var(--brand-blue, #0071bc);
+  border-color: var(--bs-primary);
   transform: translateY(-1px);
-  background: rgba(0, 113, 188, 0.05);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.06);
 }
 
 .horario-slot-chip--active {
-  background: rgba(0, 113, 188, 0.1);
-  border-color: var(--brand-blue, #0071bc);
-  box-shadow: 0 0 8px rgba(0, 113, 188, 0.15);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.12);
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 8px rgba(var(--bs-primary-rgb, 0, 113, 188), 0.18);
 }
 
 [data-theme="dark"] .horario-slot-chip,
@@ -398,15 +398,15 @@
 
 [data-theme="dark"] .horario-slot-chip:hover,
 [data-bs-theme="dark"] .horario-slot-chip:hover {
-  background: rgba(0, 113, 188, 0.08);
-  border-color: var(--brand-blue, #0071bc);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
+  border-color: var(--bs-primary);
 }
 
 [data-theme="dark"] .horario-slot-chip--active,
 [data-bs-theme="dark"] .horario-slot-chip--active {
-  background: rgba(0, 113, 188, 0.18);
-  border-color: var(--brand-blue, #0071bc);
-  box-shadow: 0 0 10px rgba(0, 113, 188, 0.22);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.22);
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 10px rgba(var(--bs-primary-rgb, 0, 113, 188), 0.28);
 }
 
 .horario-slot-time {
@@ -416,7 +416,7 @@
 }
 
 .horario-slot-chip--active .horario-slot-time {
-  color: var(--brand-blue, #0071bc);
+  color: var(--bs-primary);
 }
 
 [data-theme="dark"] .horario-slot-time,
@@ -426,7 +426,7 @@
 
 [data-theme="dark"] .horario-slot-chip--active .horario-slot-time,
 [data-bs-theme="dark"] .horario-slot-chip--active .horario-slot-time {
-  color: #38bdf8;
+  color: var(--bs-primary);
 }
 
 .horario-slot-range {
@@ -436,12 +436,13 @@
 }
 
 .horario-slot-chip--active .horario-slot-range {
-  color: var(--brand-blue, #0071bc);
+  color: var(--bs-primary);
 }
 
 [data-theme="dark"] .horario-slot-chip--active .horario-slot-range,
 [data-bs-theme="dark"] .horario-slot-chip--active .horario-slot-range {
-  color: rgba(56, 189, 248, 0.7);
+  color: var(--bs-primary);
+  opacity: 0.85;
 }
 
 /* Panel de "Replicar a otros días" */
@@ -496,9 +497,9 @@
 
 .horario-copy-day-btn--shortcut {
   font-weight: 600;
-  border-color: var(--brand-blue, #0071bc);
-  color: var(--brand-blue, #0071bc);
-  background: rgba(0, 113, 188, 0.05);
+  border-color: var(--bs-primary);
+  color: var(--bs-primary);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.08);
 }
 
 [data-theme="dark"] .horario-copy-day-btn,
@@ -516,14 +517,14 @@
 
 [data-theme="dark"] .horario-copy-day-btn--shortcut,
 [data-bs-theme="dark"] .horario-copy-day-btn--shortcut {
-  background: rgba(0, 113, 188, 0.15);
-  border-color: rgba(0, 113, 188, 0.4);
-  color: #38bdf8;
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.16);
+  border-color: var(--bs-primary);
+  color: var(--bs-primary);
 }
 
 .horario-copy-day-btn--selected {
-  background: var(--brand-blue, #0071bc) !important;
-  border-color: var(--brand-blue, #0071bc) !important;
+  background: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
   color: #ffffff !important;
 }
 
@@ -577,23 +578,23 @@
 }
 
 .horario-nav-tab.active {
-  color: var(--brand-blue, #0071bc);
-  background: rgba(0, 113, 188, 0.09);
-  border-color: rgba(0, 113, 188, 0.25);
-  box-shadow: 0 2px 8px rgba(0, 113, 188, 0.08);
+  color: var(--bs-primary);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
+  border-color: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.28);
+  box-shadow: 0 2px 8px rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
 }
 
 [data-theme="dark"] .horario-nav-tab.active,
 [data-bs-theme="dark"] .horario-nav-tab.active {
-  color: #38bdf8;
-  background: rgba(0, 113, 188, 0.16);
-  border-color: rgba(56, 189, 248, 0.3);
+  color: var(--bs-primary);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.18);
+  border-color: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.35);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .horario-tab-badge {
-  background: rgba(0, 113, 188, 0.12);
-  color: var(--brand-blue, #0071bc);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.14);
+  color: var(--bs-primary);
   font-size: 0.75rem;
   font-weight: 700;
   padding: 0.15rem 0.5rem;
@@ -602,8 +603,8 @@
 
 [data-theme="dark"] .horario-tab-badge,
 [data-bs-theme="dark"] .horario-tab-badge {
-  background: rgba(56, 189, 248, 0.18);
-  color: #7dd3fc;
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.2);
+  color: var(--bs-primary);
 }
 
 .horario-tab-panel > section.card {
@@ -681,16 +682,16 @@
   font-weight: 600;
   padding: 0.15rem 0.55rem;
   border-radius: 6px;
-  background: rgba(0, 113, 188, 0.08);
-  color: var(--brand-blue, #0071bc);
-  border: 1px solid rgba(0, 113, 188, 0.18);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
+  color: var(--bs-primary);
+  border: 1px solid rgba(var(--bs-primary-rgb, 0, 113, 188), 0.25);
 }
 
 [data-theme="dark"] .bloqueo-time-badge,
 [data-bs-theme="dark"] .bloqueo-time-badge {
-  background: rgba(56, 189, 248, 0.12);
-  color: #7dd3fc;
-  border-color: rgba(56, 189, 248, 0.25);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.16);
+  color: var(--bs-primary);
+  border-color: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.32);
 }
 
 .bloqueo-reason-chip {
@@ -807,31 +808,32 @@
 }
 
 .disp-quick-pill:hover {
-  background: rgba(0, 113, 188, 0.08);
-  border-color: var(--brand-blue, #0071bc);
-  color: var(--brand-blue, #0071bc);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.08);
+  border-color: var(--bs-primary);
+  color: var(--bs-primary);
 }
 
 [data-theme="dark"] .disp-quick-pill:hover,
 [data-bs-theme="dark"] .disp-quick-pill:hover {
-  background: rgba(56, 189, 248, 0.12);
-  border-color: #38bdf8;
-  color: #7dd3fc;
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.14);
+  border-color: var(--bs-primary);
+  color: var(--bs-primary);
 }
 
 .disp-quick-pill--active {
-  background: var(--brand-blue, #0071bc) !important;
+  background: var(--bs-primary) !important;
   color: #ffffff !important;
-  border-color: var(--brand-blue, #0071bc) !important;
+  border-color: var(--bs-primary) !important;
   font-weight: 600;
-  box-shadow: 0 2px 6px rgba(0, 113, 188, 0.25);
+  box-shadow: 0 2px 6px rgba(var(--bs-primary-rgb, 0, 113, 188), 0.25);
 }
 
 [data-theme="dark"] .disp-quick-pill--active,
 [data-bs-theme="dark"] .disp-quick-pill--active {
-  background: #0284c7 !important;
-  border-color: #38bdf8 !important;
-  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+  background: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(var(--bs-primary-rgb, 0, 113, 188), 0.35);
 }
 
 /* Grilla de Franjas de Disponibilidad */
@@ -884,12 +886,12 @@
 }
 
 .disp-slot-card--reserved {
-  border-left: 3px solid #0071bc;
+  border-left: 3px solid var(--bs-primary);
 }
 
 [data-theme="dark"] .disp-slot-card--reserved,
 [data-bs-theme="dark"] .disp-slot-card--reserved {
-  border-left-color: #38bdf8;
+  border-left-color: var(--bs-primary);
 }
 
 .disp-slot-card--blocked {
@@ -937,16 +939,16 @@
 }
 
 .disp-status-badge--reserved {
-  background: rgba(0, 113, 188, 0.1);
-  color: var(--brand-blue, #0071bc);
-  border: 1px solid rgba(0, 113, 188, 0.25);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.12);
+  color: var(--bs-primary);
+  border: 1px solid rgba(var(--bs-primary-rgb, 0, 113, 188), 0.28);
 }
 
 [data-theme="dark"] .disp-status-badge--reserved,
 [data-bs-theme="dark"] .disp-status-badge--reserved {
-  background: rgba(56, 189, 248, 0.15);
-  color: #38bdf8;
-  border-color: rgba(56, 189, 248, 0.35);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.18);
+  color: var(--bs-primary);
+  border-color: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.35);
 }
 
 .disp-status-badge--blocked {
