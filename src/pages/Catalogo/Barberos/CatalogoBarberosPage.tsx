@@ -3,6 +3,7 @@ import { Link, useSearchParams, useNavigate, useParams } from 'react-router-dom'
 import { Users } from 'lucide-react';
 import '../../Home/home.css';
 import { useBarberosCatalogo } from '../../../features/barberos/api/barberos.facade';
+import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
 import type { BarberoCatalogo } from '../../../features/barberos/types/barberos.types';
 import HomeNavbar from '../../Home/components/HomeNavbar';
 import HomeFooter from '../../Home/components/HomeFooter';
@@ -66,10 +67,24 @@ const CatalogoBarberosPage: React.FC = () => {
 
   // Título dinámico gestionado por TenantBrandContext
 
-  const { data: barberos = [], isLoading, error, refetch } = useBarberosCatalogo();
+  const { data: barberos = [], isLoading: isLoadingBarberos, error, refetch } = useBarberosCatalogo();
+  const { data: servicios = [], isLoading: isLoadingServicios } = useServiciosCatalogo();
+  const isLoading = isLoadingBarberos || isLoadingServicios;
+
+  // Filtro de negocio: solo mostrar en catálogo a barberos que tengan al menos 1 servicio activo asignado
+  const barberosConServicios = useMemo(() => {
+    const idsValidos = new Set<number>();
+    servicios.forEach((s) => {
+      if (s.estado === 'ACTIVO' && Array.isArray(s.barberos)) {
+        s.barberos.forEach((b) => idsValidos.add(b.id));
+      }
+    });
+    return barberos.filter((b) => idsValidos.has(b.id));
+  }, [barberos, servicios]);
+
   const barberosFiltrados = useMemo(
-    () => filtrarBarberos(barberos, debouncedQuery),
-    [barberos, debouncedQuery]
+    () => filtrarBarberos(barberosConServicios, debouncedQuery),
+    [barberosConServicios, debouncedQuery]
   );
 
   const handleLogin = useCallback(() => {
