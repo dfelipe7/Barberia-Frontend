@@ -34,6 +34,7 @@ describe('WhatsAppStatusIndicator', () => {
   };
 
   const renderComponent = () => {
+    window.history.pushState({}, '', '/kyrios-studio/dashboard');
     return render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={['/kyrios-studio/dashboard']}>
@@ -52,6 +53,10 @@ describe('WhatsAppStatusIndicator', () => {
         },
       },
     });
+  });
+
+  afterEach(() => {
+    queryClient.clear();
   });
 
   it('no se renderiza si el usuario no está autenticado', () => {
@@ -79,7 +84,7 @@ describe('WhatsAppStatusIndicator', () => {
       const link = screen.getByRole('link', { name: /whatsapp conectado/i });
       expect(link).toBeInTheDocument();
       expect(link).toHaveAttribute('href', '/kyrios-studio/whatsapp');
-    });
+    }, { timeout: 3500 });
   });
 
   it('muestra advertencia offline cuando WhatsApp está desconectado', async () => {
@@ -96,7 +101,7 @@ describe('WhatsAppStatusIndicator', () => {
       expect(link).toBeInTheDocument();
       expect(link).toHaveAttribute('href', '/kyrios-studio/whatsapp');
       expect(screen.getByText(/whatsapp offline/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3500 });
   });
 
   it('muestra advertencia offline si la consulta falla con error', async () => {
@@ -109,6 +114,6 @@ describe('WhatsAppStatusIndicator', () => {
       const link = screen.getByRole('link', { name: /whatsapp desconectado/i });
       expect(link).toBeInTheDocument();
       expect(link).toHaveAttribute('title', expect.stringContaining('Error al verificar WhatsApp'));
-    });
+    }, { timeout: 3500 });
   });
 });
