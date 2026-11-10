@@ -9,6 +9,14 @@
   --tenant-accent: #0071BC !important;
   --tenant-btn-text: #ffffff !important;
   --tenant-glow: rgba(0, 113, 188, 0.35) !important;
+
+  /* Sincronización de tokens heredados con el tema activo */
+  --brand-blue: var(--tenant-accent) !important;
+  --brand-blue-hover: #005fa0 !important;
+  --brand-blue-light: rgba(0, 113, 188, 0.12) !important;
+  --bs-primary-bg-subtle: rgba(0, 113, 188, 0.12) !important;
+  --bs-primary-border-subtle: rgba(0, 113, 188, 0.28) !important;
+  --bs-primary-text-emphasis: var(--tenant-accent) !important;
 }
 
 [data-theme="dark"],
@@ -17,6 +25,13 @@
   --tenant-accent: #0071BC !important;
   --tenant-btn-text: #ffffff !important;
   --tenant-glow: rgba(0, 113, 188, 0.5) !important;
+
+  --brand-blue: var(--tenant-accent) !important;
+  --brand-blue-hover: #005fa0 !important;
+  --brand-blue-light: rgba(0, 113, 188, 0.18) !important;
+  --bs-primary-bg-subtle: rgba(0, 113, 188, 0.18) !important;
+  --bs-primary-border-subtle: rgba(0, 113, 188, 0.35) !important;
+  --bs-primary-text-emphasis: var(--tenant-accent) !important;
 }
 
 /* ─── 1. TEMA: CYBER LIME (Verde Neón + Botones Píldora de la Imagen) ───── */
@@ -34,6 +49,14 @@
   --k-blue-hover: #16a34a !important;
   --k-blue-glow: rgba(34, 197, 94, 0.45) !important;
   --k-btn-radius: 9999px !important;
+
+  /* Sincronización de tokens heredados */
+  --brand-blue: #22c55e !important;
+  --brand-blue-hover: #16a34a !important;
+  --brand-blue-light: rgba(34, 197, 94, 0.15) !important;
+  --bs-primary-bg-subtle: rgba(34, 197, 94, 0.15) !important;
+  --bs-primary-border-subtle: rgba(34, 197, 94, 0.35) !important;
+  --bs-primary-text-emphasis: #22c55e !important;
 
   /* Portal Overrides */
   --portal-primary: #22c55e !important;
@@ -584,6 +607,14 @@
   --k-blue-hover: #15803d !important;
   --k-blue-glow: rgba(22, 163, 74, 0.25) !important;
 
+  /* Sincronización de tokens heredados */
+  --brand-blue: #16a34a !important;
+  --brand-blue-hover: #15803d !important;
+  --brand-blue-light: rgba(22, 163, 74, 0.12) !important;
+  --bs-primary-bg-subtle: rgba(22, 163, 74, 0.12) !important;
+  --bs-primary-border-subtle: rgba(22, 163, 74, 0.28) !important;
+  --bs-primary-text-emphasis: #16a34a !important;
+
   --portal-primary: #16a34a !important;
   --portal-primary-hover: #15803d !important;
   --portal-primary-glow: rgba(22, 163, 74, 0.2) !important;
@@ -990,6 +1021,14 @@
   --k-blue-hover: #ea580c !important;
   --k-blue-glow: rgba(255, 107, 53, 0.45) !important;
   --k-btn-radius: 9999px !important;
+
+  /* Sincronización de tokens heredados */
+  --brand-blue: #ff6b35 !important;
+  --brand-blue-hover: #ea580c !important;
+  --brand-blue-light: rgba(255, 107, 53, 0.15) !important;
+  --bs-primary-bg-subtle: rgba(255, 107, 53, 0.15) !important;
+  --bs-primary-border-subtle: rgba(255, 107, 53, 0.35) !important;
+  --bs-primary-text-emphasis: #ff6b35 !important;
 
   /* Portal Overrides */
   --portal-primary: #ff6b35 !important;
@@ -1601,6 +1640,14 @@
   --k-blue-hover: #ea580c !important;
   --k-blue-glow: rgba(255, 107, 53, 0.25) !important;
 
+  /* Sincronización de tokens heredados */
+  --brand-blue: #ea580c !important;
+  --brand-blue-hover: #c2410c !important;
+  --brand-blue-light: rgba(234, 88, 12, 0.12) !important;
+  --bs-primary-bg-subtle: rgba(234, 88, 12, 0.12) !important;
+  --bs-primary-border-subtle: rgba(234, 88, 12, 0.28) !important;
+  --bs-primary-text-emphasis: #ea580c !important;
+
   --portal-primary: #ff6b35 !important;
   --portal-primary-hover: #ea580c !important;
   --portal-primary-glow: rgba(255, 107, 53, 0.2) !important;
@@ -2010,6 +2057,14 @@
   --tenant-btn-text: #ffffff !important;
   --tenant-glow: rgba(0, 210, 255, 0.55) !important;
 
+  /* Sincronización de tokens heredados */
+  --brand-blue: #00d2ff !important;
+  --brand-blue-hover: #0099ff !important;
+  --brand-blue-light: rgba(0, 210, 255, 0.15) !important;
+  --bs-primary-bg-subtle: rgba(0, 210, 255, 0.15) !important;
+  --bs-primary-border-subtle: rgba(0, 210, 255, 0.35) !important;
+  --bs-primary-text-emphasis: #00d2ff !important;
+
   /* Tipografía tecnológica futurista */
   --font-brand: 'Space Grotesk', 'Inter', sans-serif !important;
 
@@ -2671,6 +2726,14 @@
   --k-blue: #0284c7 !important;
   --k-blue-hover: #0369a1 !important;
   --k-blue-glow: rgba(2, 132, 199, 0.25) !important;
+
+  /* Sincronización de tokens heredados */
+  --brand-blue: #0284c7 !important;
+  --brand-blue-hover: #0369a1 !important;
+  --brand-blue-light: rgba(2, 132, 199, 0.12) !important;
+  --bs-primary-bg-subtle: rgba(2, 132, 199, 0.12) !important;
+  --bs-primary-border-subtle: rgba(2, 132, 199, 0.28) !important;
+  --bs-primary-text-emphasis: #0284c7 !important;
 
   --portal-primary: #0284c7 !important;
   --portal-primary-hover: #0369a1 !important;
@@ -2901,6 +2964,14 @@
   --tenant-btn-text: #ffffff !important;
   --tenant-glow: rgba(0, 210, 255, 0.55) !important;
 
+  /* Sincronización de tokens heredados */
+  --brand-blue: #00d2ff !important;
+  --brand-blue-hover: #0099ff !important;
+  --brand-blue-light: rgba(0, 210, 255, 0.15) !important;
+  --bs-primary-bg-subtle: rgba(0, 210, 255, 0.15) !important;
+  --bs-primary-border-subtle: rgba(0, 210, 255, 0.35) !important;
+  --bs-primary-text-emphasis: #00d2ff !important;
+
   /* Tipografía tecnológica futurista */
   --font-brand: 'Space Grotesk', 'Inter', sans-serif !important;
 
@@ -3563,6 +3634,14 @@
   --k-blue-hover: #0369a1 !important;
   --k-blue-glow: rgba(2, 132, 199, 0.25) !important;
 
+  /* Sincronización de tokens heredados */
+  --brand-blue: #0284c7 !important;
+  --brand-blue-hover: #0369a1 !important;
+  --brand-blue-light: rgba(2, 132, 199, 0.12) !important;
+  --bs-primary-bg-subtle: rgba(2, 132, 199, 0.12) !important;
+  --bs-primary-border-subtle: rgba(2, 132, 199, 0.28) !important;
+  --bs-primary-text-emphasis: #0284c7 !important;
+
   --portal-primary: #0284c7 !important;
   --portal-primary-hover: #0369a1 !important;
   --portal-primary-glow: rgba(2, 132, 199, 0.2) !important;
@@ -3754,6 +3833,14 @@
   --tenant-accent: #ef233c !important;
   --tenant-btn-text: #ffffff !important;
   --tenant-glow: rgba(239, 35, 60, 0.55) !important;
+
+  /* Sincronización de tokens heredados */
+  --brand-blue: #ef233c !important;
+  --brand-blue-hover: #d90429 !important;
+  --brand-blue-light: rgba(239, 35, 60, 0.15) !important;
+  --bs-primary-bg-subtle: rgba(239, 35, 60, 0.15) !important;
+  --bs-primary-border-subtle: rgba(239, 35, 60, 0.35) !important;
+  --bs-primary-text-emphasis: #ef233c !important;
 
   /* Tipografía editorial de alta costura */
   --font-brand: 'Playfair Display', Georgia, serif !important;
@@ -4431,6 +4518,14 @@
   --k-blue-hover: #be123c !important;
   --k-blue-glow: rgba(225, 29, 72, 0.25) !important;
 
+  /* Sincronización de tokens heredados */
+  --brand-blue: #e11d48 !important;
+  --brand-blue-hover: #be123c !important;
+  --brand-blue-light: rgba(225, 29, 72, 0.12) !important;
+  --bs-primary-bg-subtle: rgba(225, 29, 72, 0.12) !important;
+  --bs-primary-border-subtle: rgba(225, 29, 72, 0.28) !important;
+  --bs-primary-text-emphasis: #e11d48 !important;
+
   --portal-primary: #e11d48 !important;
   --portal-primary-hover: #be123c !important;
   --portal-primary-glow: rgba(225, 29, 72, 0.2) !important;
@@ -4659,6 +4754,14 @@
   --tenant-accent: #ffffff !important;
   --tenant-btn-text: #000000 !important;
   --tenant-glow: rgba(255, 255, 255, 0.35) !important;
+
+  /* Sincronización de tokens heredados */
+  --brand-blue: #ffffff !important;
+  --brand-blue-hover: #e4e4e7 !important;
+  --brand-blue-light: rgba(255, 255, 255, 0.15) !important;
+  --bs-primary-bg-subtle: rgba(255, 255, 255, 0.15) !important;
+  --bs-primary-border-subtle: rgba(255, 255, 255, 0.35) !important;
+  --bs-primary-text-emphasis: #ffffff !important;
 
   /* Tipografía limpia, seria y arquitectónica */
   --font-brand: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif !important;
@@ -5274,6 +5377,14 @@
   --k-blue: #000000 !important;
   --k-blue-hover: #18181b !important;
   --k-blue-glow: rgba(0, 0, 0, 0.2) !important;
+
+  /* Sincronización de tokens heredados */
+  --brand-blue: #000000 !important;
+  --brand-blue-hover: #18181b !important;
+  --brand-blue-light: rgba(0, 0, 0, 0.08) !important;
+  --bs-primary-bg-subtle: rgba(0, 0, 0, 0.08) !important;
+  --bs-primary-border-subtle: rgba(0, 0, 0, 0.2) !important;
+  --bs-primary-text-emphasis: #000000 !important;
 
   --portal-primary: #000000 !important;
   --portal-primary-hover: #18181b !important;
@@ -6458,4 +6569,58 @@
   border-color: rgba(255, 255, 255, 0.5) !important;
   color: #ffffff !important;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RESERVAS ADMINISTRATIVAS - ADAPTACIÓN DINÁMICA MULTITENANT
+   ══════════════════════════════════════════════════════════════════════════ */
+[data-tenant-theme] .reservations-admin__preset-btn.is-active {
+  background: var(--tenant-accent) !important;
+  color: var(--tenant-btn-text, #ffffff) !important;
+  box-shadow: 0 1px 4px var(--tenant-glow) !important;
+}
+
+[data-tenant-theme] .reservations-admin__preset-btn:hover:not(.is-active) {
+  background: rgba(var(--bs-primary-rgb), 0.1) !important;
+  color: var(--tenant-accent) !important;
+}
+
+[data-tenant-theme] .reservations-admin__barber-badge {
+  background: rgba(var(--bs-primary-rgb), 0.1) !important;
+  color: var(--tenant-accent) !important;
+  border-color: rgba(var(--bs-primary-rgb), 0.28) !important;
+}
+
+[data-tenant-theme] .reservations-admin__detail-placeholder > span {
+  background: rgba(var(--bs-primary-rgb), 0.1) !important;
+  color: var(--tenant-accent) !important;
+}
+
+[data-tenant-theme] .reservations-admin__detail-icon {
+  background: rgba(var(--bs-primary-rgb), 0.1) !important;
+  color: var(--tenant-accent) !important;
+}
+
+[data-tenant-theme] .reservations-admin__row.is-selected {
+  border-color: var(--tenant-accent) !important;
+  background: rgba(var(--bs-primary-rgb), 0.08) !important;
+  box-shadow: 0 0 0 1px var(--tenant-accent), 0 0.4rem 1.2rem var(--tenant-glow) !important;
+}
+
+[data-tenant-theme] .reservations-admin__reset-link:hover {
+  color: var(--tenant-accent) !important;
+}
+
+[data-tenant-theme] .reservations-admin__call-link {
+  color: var(--tenant-accent) !important;
+}
+
+[data-tenant-theme] .reservations-admin__call-link:hover {
+  border-color: var(--tenant-accent) !important;
+  background: rgba(var(--bs-primary-rgb), 0.1) !important;
+}
+
+[data-tenant-theme] .reservations-admin__detail-price dd {
+  color: var(--tenant-accent) !important;
+}
+
 

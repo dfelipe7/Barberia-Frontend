@@ -1,6 +1,6 @@
 .barber-agenda {
-  --agenda-accent: var(--brand-blue, #0071bc);
-  --agenda-accent-soft: rgba(0, 113, 188, 0.09);
+  --agenda-accent: var(--tenant-accent, var(--bs-primary, var(--brand-blue, #0071bc)));
+  --agenda-accent-soft: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.09);
   --agenda-border: var(--surface-card-border, #e5e3dc);
   --agenda-muted: var(--surface-app-muted, #6b6375);
   max-width: 1640px;

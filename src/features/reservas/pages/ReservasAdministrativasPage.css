@@ -44,8 +44,8 @@
 
 .reservations-admin__day-header:hover {
   background: var(--surface-card-bg);
-  border-color: rgba(0, 113, 188, 0.35);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-color: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.35);
+  box-shadow: 0 2px 8px var(--tenant-glow, rgba(0, 0, 0, 0.05));
 }
 
 .reservations-admin__day-chevron {
@@ -224,8 +224,8 @@
   width: 36px;
   height: 36px;
   border-radius: 9px;
-  background: rgba(0, 113, 188, 0.09);
-  color: var(--brand-blue, #0071BC);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
+  color: var(--tenant-accent, var(--bs-primary, #0071BC));
 }
 
 .reservations-admin__detail-close-btn {
@@ -243,7 +243,7 @@
 }
 
 .reservations-admin__detail-close-btn:hover {
-  background: rgba(0, 113, 188, 0.1);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
   color: var(--bs-body-color);
 }
 
@@ -280,8 +280,8 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: rgba(0, 113, 188, 0.1);
-  color: var(--brand-blue, #0071BC);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
+  color: var(--tenant-accent, var(--bs-primary, #0071BC));
   flex-shrink: 0;
 }
 
@@ -315,15 +315,15 @@
   height: 34px;
   border: 1px solid var(--bs-border-color);
   border-radius: 50%;
-  color: var(--brand-blue, #0071BC);
+  color: var(--tenant-accent, var(--bs-primary, #0071BC));
   text-decoration: none;
   flex-shrink: 0;
   transition: all 150ms ease;
 }
 
 .reservations-admin__call-link:hover {
-  border-color: var(--brand-blue, #0071BC);
-  background: rgba(0, 113, 188, 0.1);
+  border-color: var(--tenant-accent, var(--bs-primary, #0071BC));
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
   transform: scale(1.05);
 }
 
@@ -370,8 +370,8 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.5rem 0.8rem;
-  background: rgba(0, 113, 188, 0.09);
-  border-color: rgba(0, 113, 188, 0.2);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.09);
+  border-color: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.25);
 }
 
 .reservations-admin__detail-price dt {
@@ -379,14 +379,14 @@
 }
 
 .reservations-admin__detail-price dd {
-  color: var(--brand-blue, #0071BC);
+  color: var(--tenant-accent, var(--bs-primary, #0071BC));
   font-size: 1rem;
   font-weight: 750;
 }
 
 [data-theme='dark'] .reservations-admin__detail-price dd,
 [data-bs-theme='dark'] .reservations-admin__detail-price dd {
-  color: #38bdf8;
+  color: var(--tenant-accent, var(--bs-primary, #38bdf8));
 }
 
 .reservations-admin__detail-actions {
@@ -422,8 +422,8 @@
   height: 56px;
   margin-bottom: 1rem;
   border-radius: 16px;
-  background: rgba(0, 113, 188, 0.1);
-  color: var(--brand-blue, #0071BC);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
+  color: var(--tenant-accent, var(--bs-primary, #0071BC));
 }
 
 .reservations-admin__detail-placeholder h2 {
@@ -578,7 +578,7 @@
   }
 
   .reservations-admin__mobile-sheet-close:hover {
-    background: rgba(0, 113, 188, 0.12);
+    background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.12);
     color: var(--bs-body-color);
   }
 
@@ -614,16 +614,16 @@
 }
 
 .reservations-admin__row.is-selected {
-  border-color: #0071BC !important;
-  background: rgba(0, 113, 188, 0.08) !important;
-  box-shadow: 0 0 0 1px #0071BC, 0 0.4rem 1.2rem rgba(0, 113, 188, 0.15) !important;
+  border-color: var(--tenant-accent, var(--bs-primary, #0071BC)) !important;
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.08) !important;
+  box-shadow: 0 0 0 1px var(--tenant-accent, var(--bs-primary, #0071BC)), 0 0.4rem 1.2rem var(--tenant-glow, rgba(0, 113, 188, 0.15)) !important;
 }
 
 [data-theme='dark'] .reservations-admin__row.is-selected,
 [data-bs-theme='dark'] .reservations-admin__row.is-selected {
-  border-color: #0071BC !important;
-  background: rgba(0, 113, 188, 0.14) !important;
-  box-shadow: 0 0 0 1px #0071BC, 0 0.4rem 1.2rem rgba(0, 0, 0, 0.4) !important;
+  border-color: var(--tenant-accent, var(--bs-primary, #0071BC)) !important;
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.16) !important;
+  box-shadow: 0 0 0 1px var(--tenant-accent, var(--bs-primary, #0071BC)), 0 0.4rem 1.2rem rgba(0, 0, 0, 0.4) !important;
 }
 
 /* ─── Píldoras de Presets Rápidos de Fecha ────────────────────────────── */
@@ -652,13 +652,13 @@
 
 .reservations-admin__preset-btn:hover {
   color: var(--bs-body-color);
-  background: rgba(0, 113, 188, 0.08);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.08);
 }
 
 .reservations-admin__preset-btn.is-active {
-  background: var(--brand-blue, #0071BC);
-  color: #ffffff;
-  box-shadow: 0 1px 4px rgba(0, 113, 188, 0.3);
+  background: var(--tenant-accent, var(--bs-primary, #0071BC));
+  color: var(--tenant-btn-text, #ffffff);
+  box-shadow: 0 1px 4px var(--tenant-glow, rgba(0, 113, 188, 0.3));
 }
 
 .reservations-admin__reset-link {
@@ -666,7 +666,7 @@
 }
 
 .reservations-admin__reset-link:hover {
-  color: var(--brand-blue, #0071BC) !important;
+  color: var(--tenant-accent, var(--bs-primary, #0071BC)) !important;
 }
 
 /* ─── Badge Distintivo de Barbero en Tarjetas de Cita ────────────────── */
@@ -676,20 +676,20 @@
   gap: 0.35rem;
   padding: 0.18rem 0.55rem;
   border-radius: 9999px;
-  background: rgba(0, 113, 188, 0.09);
-  color: var(--brand-blue, #0071BC);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.1);
+  color: var(--tenant-accent, var(--bs-primary, #0071BC));
   font-size: 0.74rem;
   font-weight: 600;
-  border: 1px solid rgba(0, 113, 188, 0.2);
+  border: 1px solid rgba(var(--bs-primary-rgb, 0, 113, 188), 0.25);
   letter-spacing: 0.01em;
   transition: all 150ms ease;
 }
 
 [data-theme='dark'] .reservations-admin__barber-badge,
 [data-bs-theme='dark'] .reservations-admin__barber-badge {
-  background: rgba(0, 113, 188, 0.18);
-  color: #38bdf8;
-  border-color: rgba(56, 189, 248, 0.28);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.18);
+  color: var(--tenant-accent, var(--bs-primary, #38bdf8));
+  border-color: rgba(var(--bs-primary-rgb, 56, 189, 248), 0.35);
 }
 
 /* ─── Optimizaciones Responsivas en Móvil (< 576px) ─────────────────── */

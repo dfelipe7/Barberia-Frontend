@@ -21,14 +21,14 @@
   font-size: 0.75rem;
   font-weight: 700;
   border-radius: 999px;
-  background-color: var(--brand-blue, #0071BC);
-  color: #ffffff;
+  background-color: var(--tenant-accent, var(--bs-primary, var(--brand-blue, #0071BC)));
+  color: var(--tenant-btn-text, #ffffff);
   margin-right: 0.45rem;
 }
 
 [data-theme="dark"] .barbero-selection-counter-badge {
-  background-color: #4DA6E8;
-  color: #0b1320;
+  background-color: var(--tenant-accent, var(--bs-primary, #4DA6E8));
+  color: var(--tenant-btn-text, #0b1320);
 }
 
 .barbero-action-btn {
@@ -94,34 +94,34 @@
 }
 
 .barbero-card:hover {
-  border-color: var(--brand-blue, #0071BC);
-  background-color: rgba(0, 113, 188, 0.04);
+  border-color: var(--tenant-accent, var(--bs-primary, var(--brand-blue, #0071BC)));
+  background-color: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.04);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px var(--tenant-glow, rgba(0, 0, 0, 0.06));
 }
 
 [data-theme="dark"] .barbero-card:hover {
-  border-color: #4DA6E8;
+  border-color: var(--tenant-accent, var(--bs-primary, #4DA6E8));
   background-color: rgba(255, 255, 255, 0.06);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .barbero-card:focus-visible {
-  outline: 2px solid var(--brand-blue, #0071BC);
+  outline: 2px solid var(--tenant-accent, var(--bs-primary, var(--brand-blue, #0071BC)));
   outline-offset: 2px;
 }
 
 /* Estado Seleccionado */
 .barbero-card--selected {
-  background: rgba(0, 113, 188, 0.08) !important;
-  border-color: var(--brand-blue, #0071BC) !important;
-  box-shadow: 0 0 0 1px var(--brand-blue, #0071BC);
+  background: rgba(var(--bs-primary-rgb, 0, 113, 188), 0.08) !important;
+  border-color: var(--tenant-accent, var(--bs-primary, var(--brand-blue, #0071BC))) !important;
+  box-shadow: 0 0 0 1px var(--tenant-accent, var(--bs-primary, var(--brand-blue, #0071BC)));
 }
 
 [data-theme="dark"] .barbero-card--selected {
-  background: rgba(77, 166, 232, 0.12) !important;
-  border-color: #4DA6E8 !important;
-  box-shadow: 0 0 0 1px #4DA6E8;
+  background: rgba(var(--bs-primary-rgb, 77, 166, 232), 0.12) !important;
+  border-color: var(--tenant-accent, var(--bs-primary, #4DA6E8)) !important;
+  box-shadow: 0 0 0 1px var(--tenant-accent, var(--bs-primary, #4DA6E8));
 }
 
 /* Contenido izquierdo: Avatar + Nombre y Estado */
@@ -147,11 +147,11 @@
 }
 
 .barbero-card--selected .barbero-card-name {
-  color: var(--brand-blue, #0071BC);
+  color: var(--tenant-accent, var(--bs-primary, var(--brand-blue, #0071BC)));
 }
 
 [data-theme="dark"] .barbero-card--selected .barbero-card-name {
-  color: #60b5f5;
+  color: var(--tenant-accent, var(--bs-primary, #60b5f5));
 }
 
 .barbero-card-role {
@@ -161,12 +161,12 @@
 }
 
 .barbero-card--selected .barbero-card-role {
-  color: var(--brand-blue, #0071BC);
+  color: var(--tenant-accent, var(--bs-primary, var(--brand-blue, #0071BC)));
   opacity: 0.85;
 }
 
 [data-theme="dark"] .barbero-card--selected .barbero-card-role {
-  color: #4DA6E8;
+  color: var(--tenant-accent, var(--bs-primary, #4DA6E8));
   opacity: 0.9;
 }
 
@@ -189,23 +189,23 @@
 }
 
 .barbero-card:hover .barbero-card-checkbox {
-  border-color: var(--brand-blue, #0071BC);
+  border-color: var(--tenant-accent, var(--bs-primary, var(--brand-blue, #0071BC)));
 }
 
 [data-theme="dark"] .barbero-card:hover .barbero-card-checkbox {
-  border-color: #4DA6E8;
+  border-color: var(--tenant-accent, var(--bs-primary, #4DA6E8));
 }
 
 .barbero-card-checkbox--checked {
-  background: var(--brand-blue, #0071BC) !important;
-  border-color: var(--brand-blue, #0071BC) !important;
-  color: #ffffff !important;
+  background: var(--tenant-accent, var(--bs-primary, var(--brand-blue, #0071BC))) !important;
+  border-color: var(--tenant-accent, var(--bs-primary, var(--brand-blue, #0071BC))) !important;
+  color: var(--tenant-btn-text, #ffffff) !important;
 }
 
 [data-theme="dark"] .barbero-card-checkbox--checked {
-  background: #4DA6E8 !important;
-  border-color: #4DA6E8 !important;
-  color: #0b1320 !important;
+  background: var(--tenant-accent, var(--bs-primary, #4DA6E8)) !important;
+  border-color: var(--tenant-accent, var(--bs-primary, #4DA6E8)) !important;
+  color: var(--tenant-btn-text, #0b1320) !important;
 }
 
 @media (max-width: 576px) {
@@ -324,8 +324,8 @@
 }
 
 .servicio-form-wrapper .form-control:focus {
-  border-color: var(--brand-blue, #0071BC);
-  box-shadow: 0 0 0 3px rgba(0, 113, 188, 0.18);
+  border-color: var(--tenant-accent, var(--bs-primary, #0071BC));
+  box-shadow: 0 0 0 3px var(--tenant-glow, rgba(var(--bs-primary-rgb, 0, 113, 188), 0.18));
 }
 
 .servicio-form-wrapper .input-group-text {
