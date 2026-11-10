@@ -10,6 +10,36 @@ import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 
 export type JornadaHorario = 'manana' | 'tarde' | 'noche';
 
+const CONFIG_JORNADAS: Record<JornadaHorario, {
+  readonly titulo: string;
+  readonly rango: string;
+  readonly icono: React.ReactNode;
+  readonly iconoClase: string;
+  readonly mensajeVacio: string;
+}> = {
+  manana: {
+    titulo: 'Mañana',
+    rango: '09:00 – 12:00',
+    icono: <Sun size={17} />,
+    iconoClase: 'booking-daypart-icon--morning',
+    mensajeVacio: 'No hay horarios disponibles en la mañana para este día.',
+  },
+  tarde: {
+    titulo: 'Tarde',
+    rango: '12:00 – 17:00',
+    icono: <Sunset size={17} />,
+    iconoClase: 'booking-daypart-icon--afternoon',
+    mensajeVacio: 'No hay horarios disponibles en la tarde para este día.',
+  },
+  noche: {
+    titulo: 'Noche',
+    rango: '17:00 – 20:00',
+    icono: <Moon size={17} />,
+    iconoClase: 'booking-daypart-icon--night',
+    mensajeVacio: 'No hay horarios disponibles en la noche para este día.',
+  },
+};
+
 export interface StepAgendaProps {
   readonly isLoading: boolean;
   readonly consultaBarberosServicio?: { readonly isLoading?: boolean };
@@ -316,71 +346,34 @@ export default function StepAgenda({
           </div>
 
           {/* Contenido del turno activo */}
-          <div className="booking-daypart-card card-surface p-3 rounded-3" role="tabpanel">
-            {jornadaSeleccionada === 'manana' && (
-              <>
-                <div className="booking-daypart-header d-flex align-items-center justify-content-between mb-3">
-                  <div className="d-flex align-items-center gap-2">
-                    <span className="booking-daypart-icon booking-daypart-icon--morning">
-                      <Sun size={17} />
-                    </span>
-                    <div>
-                      <strong className="booking-daypart-title">Mañana</strong>
-                      <span className="booking-daypart-range small text-surface-muted ms-2">09:00 – 12:00</span>
-                    </div>
-                  </div>
-                  <span className="badge rounded-pill bg-body-tertiary text-surface-muted border">
-                    {horariosManana.length} {horariosManana.length === 1 ? 'hora disponible' : 'horas disponibles'}
-                  </span>
-                </div>
-                {horariosManana.length > 0 ? (
-                  <div className="booking-slots-grid">
-                    {horariosManana.map((slot) => {
-                      const activo = slot.startTime === horaSeleccionada;
-                      return (
-                        <button
-                          key={slot.startTime}
-                          type="button"
-                          className={`booking-slot-pill ${activo ? 'booking-slot-pill--active' : ''}`}
-                          aria-pressed={activo}
-                          onClick={() => setHoraSeleccionada(slot.startTime)}
-                        >
-                          <span className="booking-slot-range">
-                            <span className="booking-slot-time">{slot.startTime}</span>
-                            <span className="booking-slot-end">a {slot.endTime}</span>
-                          </span>
-                          {activo && <Check size={13} className="booking-slot-check" aria-hidden="true" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-4 text-surface-muted">
-                    <p className="mb-0 small">No hay horarios disponibles en la mañana para este día.</p>
-                  </div>
-                )}
-              </>
-            )}
+          {(() => {
+            const configActiva = CONFIG_JORNADAS[jornadaSeleccionada];
+            const horariosActivos =
+              jornadaSeleccionada === 'manana'
+                ? horariosManana
+                : jornadaSeleccionada === 'tarde'
+                ? horariosTarde
+                : horariosNoche;
 
-            {jornadaSeleccionada === 'tarde' && (
-              <>
+            return (
+              <div className="booking-daypart-card card-surface p-3 rounded-3" role="tabpanel">
                 <div className="booking-daypart-header d-flex align-items-center justify-content-between mb-3">
                   <div className="d-flex align-items-center gap-2">
-                    <span className="booking-daypart-icon booking-daypart-icon--afternoon">
-                      <Sunset size={17} />
+                    <span className={`booking-daypart-icon ${configActiva.iconoClase}`}>
+                      {configActiva.icono}
                     </span>
                     <div>
-                      <strong className="booking-daypart-title">Tarde</strong>
-                      <span className="booking-daypart-range small text-surface-muted ms-2">12:00 – 17:00</span>
+                      <strong className="booking-daypart-title">{configActiva.titulo}</strong>
+                      <span className="booking-daypart-range small text-surface-muted ms-2">{configActiva.rango}</span>
                     </div>
                   </div>
                   <span className="badge rounded-pill bg-body-tertiary text-surface-muted border">
-                    {horariosTarde.length} {horariosTarde.length === 1 ? 'hora disponible' : 'horas disponibles'}
+                    {horariosActivos.length} {horariosActivos.length === 1 ? 'hora disponible' : 'horas disponibles'}
                   </span>
                 </div>
-                {horariosTarde.length > 0 ? (
+                {horariosActivos.length > 0 ? (
                   <div className="booking-slots-grid">
-                    {horariosTarde.map((slot) => {
+                    {horariosActivos.map((slot) => {
                       const activo = slot.startTime === horaSeleccionada;
                       return (
                         <button
@@ -401,57 +394,12 @@ export default function StepAgenda({
                   </div>
                 ) : (
                   <div className="text-center py-4 text-surface-muted">
-                    <p className="mb-0 small">No hay horarios disponibles en la tarde para este día.</p>
+                    <p className="mb-0 small">{configActiva.mensajeVacio}</p>
                   </div>
                 )}
-              </>
-            )}
-
-            {jornadaSeleccionada === 'noche' && (
-              <>
-                <div className="booking-daypart-header d-flex align-items-center justify-content-between mb-3">
-                  <div className="d-flex align-items-center gap-2">
-                    <span className="booking-daypart-icon booking-daypart-icon--night">
-                      <Moon size={17} />
-                    </span>
-                    <div>
-                      <strong className="booking-daypart-title">Noche</strong>
-                      <span className="booking-daypart-range small text-surface-muted ms-2">17:00 – 20:00</span>
-                    </div>
-                  </div>
-                  <span className="badge rounded-pill bg-body-tertiary text-surface-muted border">
-                    {horariosNoche.length} {horariosNoche.length === 1 ? 'hora disponible' : 'horas disponibles'}
-                  </span>
-                </div>
-                {horariosNoche.length > 0 ? (
-                  <div className="booking-slots-grid">
-                    {horariosNoche.map((slot) => {
-                      const activo = slot.startTime === horaSeleccionada;
-                      return (
-                        <button
-                          key={slot.startTime}
-                          type="button"
-                          className={`booking-slot-pill ${activo ? 'booking-slot-pill--active' : ''}`}
-                          aria-pressed={activo}
-                          onClick={() => setHoraSeleccionada(slot.startTime)}
-                        >
-                          <span className="booking-slot-range">
-                            <span className="booking-slot-time">{slot.startTime}</span>
-                            <span className="booking-slot-end">a {slot.endTime}</span>
-                          </span>
-                          {activo && <Check size={13} className="booking-slot-check" aria-hidden="true" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-4 text-surface-muted">
-                    <p className="mb-0 small">No hay horarios disponibles en la noche para este día.</p>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+              </div>
+            );
+          })()}
         </div>
       )}
     </section>

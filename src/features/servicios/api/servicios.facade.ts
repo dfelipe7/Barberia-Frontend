@@ -106,3 +106,13 @@ export function useServiciosPorBarbero(barberoId: number | null | undefined) {
   });
 }
 
+/**
+ * Valida si un servicio se encuentra en estado ACTIVO y tiene barberos vinculados.
+ */
+export function esServicioActivoConBarberos(s: {
+  estado: string;
+  barberos?: readonly unknown[];
+}): boolean {
+  return s.estado === 'ACTIVO' && Array.isArray(s.barberos) && s.barberos.length > 0;
+}
+

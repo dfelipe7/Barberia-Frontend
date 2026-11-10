@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { Users } from 'lucide-react';
 import '../../Home/home.css';
-import { useBarberosCatalogo } from '../../../features/barberos/api/barberos.facade';
+import { useBarberosCatalogo, filtrarBarberosConServiciosActivos } from '../../../features/barberos/api/barberos.facade';
 import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
 import type { BarberoCatalogo } from '../../../features/barberos/types/barberos.types';
 import HomeNavbar from '../../Home/components/HomeNavbar';
@@ -72,15 +72,10 @@ const CatalogoBarberosPage: React.FC = () => {
   const isLoading = isLoadingBarberos || isLoadingServicios;
 
   // Filtro de negocio: solo mostrar en catálogo a barberos que tengan al menos 1 servicio activo asignado
-  const barberosConServicios = useMemo(() => {
-    const idsValidos = new Set<number>();
-    servicios.forEach((s) => {
-      if (s.estado === 'ACTIVO' && Array.isArray(s.barberos)) {
-        s.barberos.forEach((b) => idsValidos.add(b.id));
-      }
-    });
-    return barberos.filter((b) => idsValidos.has(b.id));
-  }, [barberos, servicios]);
+  const barberosConServicios = useMemo(
+    () => filtrarBarberosConServiciosActivos(barberos, servicios),
+    [barberos, servicios]
+  );
 
   const barberosFiltrados = useMemo(
     () => filtrarBarberos(barberosConServicios, debouncedQuery),

@@ -131,3 +131,19 @@ export function useSubirFotoAdmin() {
     },
   });
 }
+
+/**
+ * Filtro de catálogo: selecciona los barberos que tienen al menos un servicio activo asignado.
+ */
+export function filtrarBarberosConServiciosActivos<
+  B extends { id: number },
+  S extends { estado: string; barberos?: Array<{ id: number }> }
+>(barberos: readonly B[], servicios: readonly S[]): B[] {
+  const idsValidos = new Set<number>();
+  servicios.forEach((s) => {
+    if (s.estado === 'ACTIVO' && Array.isArray(s.barberos)) {
+      s.barberos.forEach((b) => idsValidos.add(b.id));
+    }
+  });
+  return barberos.filter((b) => idsValidos.has(b.id));
+}

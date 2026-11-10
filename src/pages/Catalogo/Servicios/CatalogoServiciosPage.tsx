@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { Scissors } from 'lucide-react';
 import '../../Home/home.css';
-import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
+import { useServiciosCatalogo, esServicioActivoConBarberos } from '../../../features/servicios/api/servicios.facade';
 import type { Servicio } from '../../../features/servicios/types/servicios.types';
 import HomeNavbar from '../../Home/components/HomeNavbar';
 import HomeFooter from '../../Home/components/HomeFooter';
@@ -31,9 +31,7 @@ const ServiceSkeleton: React.FC = () => (
 );
 
 function filtrarServicios(servicios: Servicio[], query: string): Servicio[] {
-  const activos = servicios.filter(
-    (s) => s.estado === 'ACTIVO' && s.barberos && s.barberos.length > 0
-  );
+  const activos = servicios.filter(esServicioActivoConBarberos);
   const limpio = query.trim().toLowerCase();
   if (!limpio) return activos;
   return activos.filter((s) => s.nombre.toLowerCase().includes(limpio));

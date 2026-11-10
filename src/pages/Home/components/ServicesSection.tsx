@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useServiciosCatalogo } from '../../../features/servicios/api/servicios.facade';
+import { useServiciosCatalogo, esServicioActivoConBarberos } from '../../../features/servicios/api/servicios.facade';
 import type { Servicio } from '../../../features/servicios/types/servicios.types';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import ServiceCard from './ServiceCard';
@@ -21,9 +21,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
   // deben mostrarse a los clientes en la HomePage pública.
   // El backend restringe la respuesta a ACTIVOS, y esta cláusula client-side garantiza
   // que ningún servicio inactivo sea visible o seleccionable.
-  const serviciosActivos = servicios.filter(
-    (s) => s.estado === 'ACTIVO' && s.barberos && s.barberos.length > 0,
-  );
+  const serviciosActivos = servicios.filter(esServicioActivoConBarberos);
 
   return (
     <section id="servicios" className="kyrios-section" aria-labelledby="servicios-heading">

@@ -30,39 +30,13 @@ import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import { useToastContext } from '../../../shared/ui/ToastContext';
 import ReservasFiltrosBar from '../components/ReservasFiltrosBar';
 import ReservaDetalleDrawer from '../components/ReservaDetalleDrawer';
+import {
+  ESTADOS_RESERVA_LABELS as estados,
+  hoyISO,
+  fechaEnNDias,
+  fechaLegible,
+} from '../lib/reservaFechas';
 import './ReservasAdministrativasPage.css';
-
-const estados: Record<EstadoReservaDTO, string> = {
-  PENDING: 'Pendiente',
-  CONFIRMED: 'Confirmada',
-  IN_PROGRESS: 'En progreso',
-  COMPLETED: 'Completada',
-  CANCELLED: 'Cancelada',
-  NO_SHOW: 'No asistió',
-};
-
-const hoyISO = (fecha = new Date()) => {
-  const anio = fecha.getFullYear();
-  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-  const dia = String(fecha.getDate()).padStart(2, '0');
-  return anio + '-' + mes + '-' + dia;
-};
-
-const fechaEnNDias = (dias: number) => {
-  const fecha = new Date();
-  fecha.setDate(fecha.getDate() + dias);
-  return hoyISO(fecha);
-};
-
-const fechaLegible = (fecha: string) => {
-  const partes = fecha.split('-').map(Number);
-  return new Intl.DateTimeFormat('es-CO', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  }).format(new Date(partes[0], partes[1] - 1, partes[2], 12));
-};
 
 export default function ReservasAdministrativasPage() {
   const confirm = useConfirm();

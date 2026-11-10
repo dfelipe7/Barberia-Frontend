@@ -9,55 +9,21 @@ import {
   UserX,
   X,
 } from 'lucide-react';
-import type { EstadoReservaDTO, ReservaAdministrativaDTO } from '../api/reservas.dto';
+import type { ReservaAdministrativaDTO } from '../api/reservas.dto';
 import { useDisponibilidadReserva } from '../api/reservas.facade';
+import {
+  ESTADOS_RESERVA_LABELS,
+  hoyISO,
+  fechaEnTreintaDias,
+  precioCOP,
+  formatearDuracionMinutos as formatearDuracion,
+  fechaLegible,
+} from '../lib/reservaFechas';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 
-export const ESTADOS_RESERVA_LABELS: Record<EstadoReservaDTO, string> = {
-  PENDING: 'Pendiente',
-  CONFIRMED: 'Confirmada',
-  IN_PROGRESS: 'En progreso',
-  COMPLETED: 'Completada',
-  CANCELLED: 'Cancelada',
-  NO_SHOW: 'No asistió',
-};
-
-const hoyISO = (fecha = new Date()) => {
-  const anio = fecha.getFullYear();
-  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-  const dia = String(fecha.getDate()).padStart(2, '0');
-  return anio + '-' + mes + '-' + dia;
-};
-
-const fechaEnNDias = (dias: number) => {
-  const fecha = new Date();
-  fecha.setDate(fecha.getDate() + dias);
-  return hoyISO(fecha);
-};
-
-const fechaEnTreintaDias = () => fechaEnNDias(30);
-
-const precioCOP = (precio: number) =>
-  new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(precio);
-
-const formatearDuracion = (minutos: number) => {
-  const horas = Math.floor(minutos / 60);
-  const minutosRestantes = minutos % 60;
-  if (horas === 0) return `${minutosRestantes} min`;
-  return minutosRestantes === 0 ? `${horas} h` : `${horas} h ${minutosRestantes} min`;
-};
-
-const fechaLegible = (fecha: string) => {
-  const partes = fecha.split('-').map(Number);
-  return new Intl.DateTimeFormat('es-CO', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  }).format(new Date(partes[0], partes[1] - 1, partes[2], 12));
-};
+export { ESTADOS_RESERVA_LABELS };
 
 interface EditorFechaReservaProps {
   readonly reserva: ReservaAdministrativaDTO;
