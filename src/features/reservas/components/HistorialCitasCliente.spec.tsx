@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
+import '@testing-library/jest-dom/vitest';
 import { HistorialCitasCliente } from './HistorialCitasCliente';
 import type { ReservaClienteDTO } from '../api/reservas.dto';
 
@@ -17,8 +18,8 @@ const mockCitas: ReservaClienteDTO[] = [
     horaFin: '10:45',
     estado: 'COMPLETED',
     precio: 35000,
-    servicio: { id: 10, nombre: 'Corte Clásico', duracionMinutos: 45, precio: 35000 },
-    barbero: { id: 2, nombre: 'Carlos', apellido: 'Gómez', fotoUrl: null },
+    servicio: { id: 10, nombre: 'Corte Clásico' },
+    barbero: { id: 2, nombre: 'Carlos', apellido: 'Gómez' },
   },
   {
     id: 2,
@@ -27,8 +28,8 @@ const mockCitas: ReservaClienteDTO[] = [
     horaFin: '14:30',
     estado: 'CANCELLED',
     precio: 25000,
-    servicio: { id: 11, nombre: 'Barba Express', duracionMinutos: 30, precio: 25000 },
-    barbero: { id: 3, nombre: 'Mateo', apellido: 'López', fotoUrl: null },
+    servicio: { id: 11, nombre: 'Barba Express' },
+    barbero: { id: 3, nombre: 'Mateo', apellido: 'López' },
   },
   {
     id: 3,
@@ -37,8 +38,8 @@ const mockCitas: ReservaClienteDTO[] = [
     horaFin: '16:45',
     estado: 'COMPLETED',
     precio: 40000,
-    servicio: { id: 12, nombre: 'Afeitado Clásico', duracionMinutos: 45, precio: 40000 },
-    barbero: { id: 2, nombre: 'Carlos', apellido: 'Gómez', fotoUrl: null },
+    servicio: { id: 12, nombre: 'Afeitado Clásico' },
+    barbero: { id: 2, nombre: 'Carlos', apellido: 'Gómez' },
   },
   {
     id: 4,
@@ -47,8 +48,8 @@ const mockCitas: ReservaClienteDTO[] = [
     horaFin: '11:45',
     estado: 'COMPLETED',
     precio: 35000,
-    servicio: { id: 10, nombre: 'Corte Clásico', duracionMinutos: 45, precio: 35000 },
-    barbero: { id: 2, nombre: 'Carlos', apellido: 'Gómez', fotoUrl: null },
+    servicio: { id: 10, nombre: 'Corte Clásico' },
+    barbero: { id: 2, nombre: 'Carlos', apellido: 'Gómez' },
   },
   {
     id: 5,
@@ -57,8 +58,8 @@ const mockCitas: ReservaClienteDTO[] = [
     horaFin: '15:45',
     estado: 'COMPLETED',
     precio: 35000,
-    servicio: { id: 10, nombre: 'Corte Clásico', duracionMinutos: 45, precio: 35000 },
-    barbero: { id: 2, nombre: 'Carlos', apellido: 'Gómez', fotoUrl: null },
+    servicio: { id: 10, nombre: 'Corte Clásico' },
+    barbero: { id: 2, nombre: 'Carlos', apellido: 'Gómez' },
   },
   {
     id: 6,
@@ -67,8 +68,8 @@ const mockCitas: ReservaClienteDTO[] = [
     horaFin: '17:45',
     estado: 'COMPLETED',
     precio: 35000,
-    servicio: { id: 10, nombre: 'Corte Clásico', duracionMinutos: 45, precio: 35000 },
-    barbero: { id: 2, nombre: 'Carlos', apellido: 'Gómez', fotoUrl: null },
+    servicio: { id: 10, nombre: 'Corte Clásico' },
+    barbero: { id: 2, nombre: 'Carlos', apellido: 'Gómez' },
   },
 ];
 
