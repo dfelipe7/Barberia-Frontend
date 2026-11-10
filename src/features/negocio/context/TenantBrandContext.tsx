@@ -6,7 +6,7 @@ import { redesSocialesApi } from '../services/redesSocialesApi';
 import type { RedSocial } from '../types/redesSociales.types';
 import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import { BRAND } from '../../../config/brand';
-import { resolverTemaTenant, type TenantThemeId } from '../../../config/tenantTheme';
+import { resolverTemaTenant, guardarTemaTenant, TEMAS_TENANT, type TenantThemeId } from '../../../config/tenantTheme';
 
 export interface TenantBrandContextValue {
   slug: string | null;
@@ -126,6 +126,11 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
       ]);
       setPerfil(perfilData);
       setRedesSociales(redesData || []);
+
+      const temaKeyBackend = perfilData?.temaKey as TenantThemeId | undefined;
+      if (slug && temaKeyBackend && TEMAS_TENANT[temaKeyBackend]) {
+        guardarTemaTenant(slug, temaKeyBackend);
+      }
     } catch {
       // Si falla o no tiene perfil configurado, queda en null y usará los fallbacks
       setPerfil(null);
@@ -158,15 +163,19 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }, [location.pathname, perfil, slug]);
 
 
-  // Sincronizar tema de la barbería en el atributo HTML raíz
+  // Sincronizar tema de la barbería en el atributo HTML raíz y persistir en localStorage
   useEffect(() => {
     const temaId = (perfil?.temaKey as TenantThemeId) || resolverTemaTenant(slug);
     if (temaId) {
       document.documentElement.dataset.tenantTheme = temaId;
+      if (slug && TEMAS_TENANT[temaId]) {
+        localStorage.setItem(`tema_negocio_${slug}`, temaId);
+        localStorage.setItem('tema_negocio_activo', temaId);
+      }
     }
   }, [perfil?.temaKey, slug]);
 
-  // Escuchar eventos globales y entre pestañas cuando se actualice la configuración
+  // Escuchar eventos globales, cambios entre pestañas, visibilidad y reconexión de ventana
   useEffect(() => {
     const handleActualizado = () => {
       void cargarPerfil();
@@ -180,13 +189,35 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
         void cargarPerfil();
       }
     };
+    const handleFocus = () => {
+      void cargarPerfil();
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void cargarPerfil();
+      }
+    };
+
     window.addEventListener('tenant-perfil-actualizado', handleActualizado);
     window.addEventListener('tenant-tema-cambiado', handleActualizado);
     window.addEventListener('storage', handleStorage);
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Polling ligero cada 60s para refrescar cambios de marca si el usuario mantiene la app abierta
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        void cargarPerfil();
+      }
+    }, 60000);
+
     return () => {
       window.removeEventListener('tenant-perfil-actualizado', handleActualizado);
       window.removeEventListener('tenant-tema-cambiado', handleActualizado);
       window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.clearInterval(intervalId);
     };
   }, [cargarPerfil, slug]);
 

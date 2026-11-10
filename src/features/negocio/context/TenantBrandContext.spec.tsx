@@ -107,6 +107,37 @@ describe('TenantBrandContext y resolverUrlRecurso', () => {
       expect(result.current.redesSociales).toHaveLength(1);
       expect(result.current.configurado).toBe(true);
     });
+
+    it('debe persistir el temaKey del perfil público en localStorage y en dataset.tenantTheme', async () => {
+      vi.spyOn(axiosHelper, 'obtenerNegocioSlugActivo').mockReturnValue('barberia-amber');
+      localStorage.clear();
+
+      const mockPerfil = {
+        id: 2,
+        negocioId: 20,
+        nombreNegocio: 'Amber Barber',
+        frasePrincipal: 'Estilo clásico',
+        temaKey: 'sunset-amber',
+        configurado: true,
+        redesSociales: [],
+      };
+
+      vi.spyOn(perfilNegocioApi, 'obtenerPerfilPublico').mockResolvedValueOnce(mockPerfil as any);
+      vi.spyOn(redesSocialesApi, 'listar').mockResolvedValueOnce([]);
+
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <MemoryRouter initialEntries={['/barberia-amber']}>
+          <TenantBrandProvider>{children}</TenantBrandProvider>
+        </MemoryRouter>
+      );
+
+      renderHook(() => useTenantBrand(), { wrapper });
+
+      await waitFor(() => {
+        expect(localStorage.getItem('tema_negocio_barberia-amber')).toBe('sunset-amber');
+        expect(document.documentElement.dataset.tenantTheme).toBe('sunset-amber');
+      });
+    });
   });
 });
 

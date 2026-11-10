@@ -50,7 +50,12 @@ function App() {
   useEffect(() => {
     const slug = obtenerNegocioSlugActivo();
     const tema = resolverTemaTenant(slug);
-    document.documentElement.dataset.tenantTheme = tema;
+    const guardado = slug ? localStorage.getItem(`tema_negocio_${slug}`) : null;
+    if (guardado) {
+      document.documentElement.dataset.tenantTheme = tema;
+    } else if (!document.documentElement.dataset.tenantTheme) {
+      document.documentElement.dataset.tenantTheme = tema;
+    }
   }, [location.pathname]);
 
   return (
