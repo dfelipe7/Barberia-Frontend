@@ -26,7 +26,7 @@ export default function LandingPlataformaPage() {
         {/* Navbar */}
         <header className="saas-nav">
           <div className="saas-nav__logo-wrap">
-            <BrandLogo variant="white" height={32} />
+            <BrandLogo variant="white" height={32} forceKyrios showName={false} />
             <span className="saas-nav__platform-tag">SaaS Platform</span>
           </div>
 

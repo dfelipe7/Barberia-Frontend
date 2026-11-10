@@ -182,7 +182,7 @@ export default function PlataformaHubPage() {
             className="d-flex align-items-center gap-3 text-decoration-none"
             title="Ir a la página principal de la plataforma"
           >
-            <BrandLogo variant="white" height={34} alt="Kyrios Studio" />
+            <BrandLogo variant="white" height={34} alt="Kyrios Studio" forceKyrios showName={false} />
             <span className="hub-plataforma__badge">
               <Sparkles size={11} /> Consola de Plataforma Multitenant
             </span>

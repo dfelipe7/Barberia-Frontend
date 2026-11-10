@@ -29,6 +29,11 @@ export interface BrandLogoProps {
    * personalizado o su nombre es diferente a la marca predeterminada.
    */
   showName?: boolean;
+  /**
+   * Fuerza el uso exclusivo del logo oficial de Kyrios / Plataforma SaaS,
+   * omitiendo cualquier marca personalizada o nombre de tenant.
+   */
+  forceKyrios?: boolean;
 }
 
 /**
@@ -89,6 +94,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   alt,
   style,
   showName,
+  forceKyrios = false,
 }) => {
   const systemTheme = useSystemTheme();
   const { nombreNegocio, logoBlancoUrl, logoNegroUrl } = useTenantBrand();
@@ -101,22 +107,24 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
 
   const resolvedVariant = resolverVarianteLogo(variant, systemTheme);
 
-  const isDifferentTenant = Boolean(
+  const isDifferentTenant = !forceKyrios && Boolean(
     nombreNegocio &&
     nombreNegocio.toLowerCase().trim() !== BRAND.name.toLowerCase().trim()
   );
 
-  const { src, isCustomLogo } = resolverSrcLogo({
-    resolvedVariant,
-    imageError,
-    logoBlancoUrl,
-    logoNegroUrl,
-    isDifferentTenant,
-  });
+  const { src, isCustomLogo } = forceKyrios
+    ? { src: resolvedVariant === 'white' ? BRAND.assets.logoWhite : BRAND.assets.logoBlack, isCustomLogo: false }
+    : resolverSrcLogo({
+        resolvedVariant,
+        imageError,
+        logoBlancoUrl,
+        logoNegroUrl,
+        isDifferentTenant,
+      });
 
   const effectiveMaxHeight = maxHeight ?? height;
-  const effectiveAlt = alt || nombreNegocio || BRAND.name;
-  const shouldShowName = showName ?? (isCustomLogo || isDifferentTenant);
+  const effectiveAlt = alt || (forceKyrios ? BRAND.name : (nombreNegocio || BRAND.name));
+  const shouldShowName = !forceKyrios && (showName ?? (isCustomLogo || isDifferentTenant));
   const textColor = resolvedVariant === 'white' ? '#FFFFFF' : '#0C0C0C';
 
   const imageElement = (
