@@ -24,12 +24,7 @@ describe('perfilNegocioApi', () => {
 
     const result = await perfilNegocioApi.obtenerPerfilPublico();
 
-    expect(apiClient.get).toHaveBeenCalledWith(
-      '/perfil-negocio',
-      expect.objectContaining({
-        headers: expect.objectContaining({ 'Cache-Control': 'no-cache' }),
-      })
-    );
+    expect(apiClient.get).toHaveBeenCalledWith('/perfil-negocio');
     expect(result).toEqual(mockData);
   });
 

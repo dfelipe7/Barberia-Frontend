@@ -130,10 +130,14 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
     try {
       const [perfilData, redesData] = await Promise.all([
         perfilNegocioApi.obtenerPerfilPublico().catch(() => null),
-        redesSocialesApi.listar().catch(() => []),
+        redesSocialesApi.listar().catch(() => null),
       ]);
-      setPerfil(perfilData);
-      setRedesSociales(redesData || []);
+      if (perfilData) {
+        setPerfil(perfilData);
+      }
+      if (redesData) {
+        setRedesSociales(redesData);
+      }
 
       const temaKeyBackend = perfilData?.temaKey as TenantThemeId | undefined;
       if (slug && temaKeyBackend && TEMAS_TENANT[temaKeyBackend]) {
@@ -142,9 +146,7 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
         document.documentElement.dataset.tenantTheme = temaKeyBackend;
       }
     } catch {
-      // Si falla o no tiene perfil configurado, queda en null y usará los fallbacks
-      setPerfil(null);
-      setRedesSociales([]);
+      // Prevenir sobreescritura accidental si el perfil ya estaba cargado en memoria
     }
   }, [slug]);
 
