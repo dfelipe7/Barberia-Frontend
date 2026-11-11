@@ -6,10 +6,17 @@ import type {
   ActualizarPlantillasDTO,
 } from '../types/whatsapp.types';
 
+/**
+ * SERVICIO HTTP PURO (Capa API de WhatsApp):
+ * Realiza las llamadas REST para gestionar la vinculación de WhatsApp Web mediante Baileys,
+ * consulta de código QR y parametrización de plantillas de notificación.
+ */
 export const whatsappService = {
   /**
    * Consulta el estado de conexión de WhatsApp Web y obtiene el QR actual en base64 si está pendiente.
-   * Endpoint público sin autenticación para garantizar polling estable.
+   * Endpoint público sin autenticación para garantizar polling estable en componentes de status.
+   *
+   * @returns Estado actual del servicio WhatsApp (conectado, desconectado, qr, error).
    */
   async getStatus(): Promise<WhatsAppStatus> {
     const response = await apiClient.get<WhatsAppStatus>('/whatsapp/status');
@@ -18,6 +25,8 @@ export const whatsappService = {
 
   /**
    * Reactiva el socket bajo demanda para vincular WhatsApp y generar un código QR nuevo.
+   *
+   * @returns Mensaje de confirmación del backend.
    */
   async iniciar(): Promise<{ mensaje: string }> {
     const response = await apiClient.post<{ mensaje: string }>('/whatsapp/iniciar');
@@ -26,6 +35,8 @@ export const whatsappService = {
 
   /**
    * Pone la vinculación de WhatsApp en modo reposo cerrando el socket activo para ahorrar recursos.
+   *
+   * @returns Mensaje de confirmación del backend.
    */
   async pausar(): Promise<{ mensaje: string }> {
     const response = await apiClient.post<{ mensaje: string }>('/whatsapp/pausar');
@@ -35,6 +46,8 @@ export const whatsappService = {
   /**
    * Desvincula la sesión activa de WhatsApp Web en el backend y genera un nuevo código QR.
    * Requiere rol ADMINISTRADOR o SUPERADMIN.
+   *
+   * @returns Resultado de la desconexión.
    */
   async desconectar(): Promise<DesconectarResponse> {
     const response = await apiClient.post<DesconectarResponse>('/whatsapp/desconectar');
@@ -43,6 +56,8 @@ export const whatsappService = {
 
   /**
    * Obtiene las plantillas de mensajes activas para confirmación y recordatorio.
+   *
+   * @returns Objeto con las plantillas configuradas.
    */
   async getPlantillas(): Promise<WhatsAppPlantillas> {
     const response = await apiClient.get<WhatsAppPlantillas>('/whatsapp/plantillas');
@@ -52,6 +67,9 @@ export const whatsappService = {
   /**
    * Guarda las plantillas de mensajes modificadas.
    * Requiere rol ADMINISTRADOR o SUPERADMIN.
+   *
+   * @param datos - Plantillas con texto y placeholders para confirmación y recordatorio.
+   * @returns Las plantillas guardadas y activas.
    */
   async guardarPlantillas(datos: ActualizarPlantillasDTO): Promise<WhatsAppPlantillas> {
     const response = await apiClient.put<WhatsAppPlantillas>('/whatsapp/plantillas', datos);
@@ -61,6 +79,8 @@ export const whatsappService = {
   /**
    * Restablece las plantillas a los textos oficiales originales por defecto.
    * Requiere rol ADMINISTRADOR o SUPERADMIN.
+   *
+   * @returns Plantillas por defecto restauradas.
    */
   async resetPlantillas(): Promise<WhatsAppPlantillas> {
     const response = await apiClient.post<WhatsAppPlantillas>('/whatsapp/plantillas/reset');

@@ -2,10 +2,27 @@ import { useEffect, useState } from 'react';
 import { AuthContextProvider } from './AuthContext';
 import { obtenerNegocioSlugActivo } from '../shared/lib/http/axios';
 
-interface AuthProviderProps {
+/**
+ * Propiedades del proveedor `AuthProvider`.
+ */
+export interface AuthProviderProps {
+  /** Componentes secundarios o árbol de la aplicación envuelto en el contexto. */
   children: React.ReactNode;
 }
 
+/**
+ * Proveedor de nivel superior para la sincronización del ciclo de vida de la sesión.
+ *
+ * @remarks
+ * **Sincronización Inter-Pestaña Aislada:**
+ * Monitorea eventos `StorageEvent` en el canal `'barberia_logout_event'`. Cuando un usuario
+ * cierra sesión en una pestaña específica, notifica únicamente a las pestañas abiertas
+ * que correspondan al mismo slug de la barbería (`data.slug === currentSlug`), recargando
+ * su estado de forma limpia sin perturbar pestañas que tengan abierta otra sede o la plataforma global.
+ *
+ * @param props - Propiedades conteniendo los elementos hijos.
+ * @returns El árbol de componentes protegido con el `AuthContextProvider`.
+ */
 export default function AuthProvider({ children }: AuthProviderProps) {
   const [initialized, setInitialized] = useState(false);
 

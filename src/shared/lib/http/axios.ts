@@ -41,10 +41,14 @@ export const RUTAS_RESERVADAS = new Set([
 ]);
 
 /**
- * Resuelve dinámicamente el slug de la barbería activa:
- * 1. Del primer segmento del pathname de la URL (ej: /barberia-demo-2/login -> 'barberia-demo-2').
- * 2. O del valor guardado en localStorage ('negocio_slug').
- * 3. Si el valor almacenado coincide con una ruta reservada (ej: 'plataforma'), se purga automáticamente.
+ * Resuelve dinámicamente el slug de la barbería activa para aislamiento multitenant.
+ *
+ * Sigue la siguiente precedencia:
+ * 1. Primer segmento de la URL en la pestaña activa (ej. `/barberia-elite/reservar` -> `'barberia-elite'`).
+ * 2. Memoria aislada de la pestaña (`sessionStorage['tab_negocio_slug']`).
+ * 3. Fallback de sesión en `localStorage['negocio_sesion_slug']`.
+ *
+ * @returns Slug en minúsculas del negocio activo, o `null` si se está en la plataforma global.
  */
 export function obtenerNegocioSlugActivo(): string | null {
   try {
@@ -53,7 +57,9 @@ export function obtenerNegocioSlugActivo(): string | null {
     if (primerSegmento && !RUTAS_RESERVADAS.has(primerSegmento)) {
       try {
         sessionStorage.setItem('tab_negocio_slug', primerSegmento);
-      } catch {}
+      } catch {
+        // Fallback defensivo si sessionStorage no está disponible o bloqueado por el navegador
+      }
       return primerSegmento;
     }
 
@@ -61,7 +67,9 @@ export function obtenerNegocioSlugActivo(): string | null {
     if (!primerSegmento || primerSegmento === 'plataforma' || primerSegmento === 'explorar') {
       try {
         sessionStorage.removeItem('tab_negocio_slug');
-      } catch {}
+      } catch {
+        // Ignorar fallo de acceso a sessionStorage
+      }
       return null;
     }
 
@@ -71,7 +79,9 @@ export function obtenerNegocioSlugActivo(): string | null {
       if (tabSlug && !RUTAS_RESERVADAS.has(tabSlug)) {
         return tabSlug;
       }
-    } catch {}
+    } catch {
+      // Ignorar fallo de lectura de sessionStorage
+    }
 
     // 3. Fallback de respaldo solo si la pestaña nunca ha visitado una sede con prefijo
     const localSlug = (localStorage.getItem('negocio_sesion_slug') || localStorage.getItem('negocio_slug'))?.toLowerCase().trim();
