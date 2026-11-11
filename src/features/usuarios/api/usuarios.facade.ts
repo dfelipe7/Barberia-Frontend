@@ -17,6 +17,12 @@ import type { AdministradorGestion, Usuario } from '../types/usuarios.types';
  * La capa de presentación (components y pages) SOLO consume estos custom hooks.
  */
 
+/**
+ * Hook de consulta React Query para obtener el listado administrativo de administradores de la barbería.
+ *
+ * @param enabled - Indicador booleano para habilitar la consulta.
+ * @returns Lista de administradores mapeados al modelo de dominio.
+ */
 export function useAdministradores(enabled = true) {
   return useQuery<AdministradorGestion[], Error>({
     queryKey: usuariosKeys.administradores(),
@@ -30,6 +36,12 @@ export function useAdministradores(enabled = true) {
   });
 }
 
+/**
+ * Hook de consulta React Query para obtener la ficha de detalle de un usuario.
+ *
+ * @param id - Identificador del usuario a consultar.
+ * @returns El usuario mapeado al modelo de dominio.
+ */
 export function useUsuario(id: number | null | undefined) {
   return useQuery<Usuario, Error>({
     queryKey: usuariosKeys.detail(id ?? 0),
@@ -42,6 +54,9 @@ export function useUsuario(id: number | null | undefined) {
   });
 }
 
+/**
+ * Hook de mutación React Query para registrar y vincular un nuevo administrador a la barbería.
+ */
 export function useCrearAdministrador() {
   const queryClient = useQueryClient();
 
@@ -53,6 +68,9 @@ export function useCrearAdministrador() {
   });
 }
 
+/**
+ * Hook de mutación React Query para actualizar datos básicos de un usuario.
+ */
 export function useActualizarUsuario() {
   const queryClient = useQueryClient();
 
@@ -68,6 +86,9 @@ export function useActualizarUsuario() {
   });
 }
 
+/**
+ * Hook de mutación React Query para cambiar el estado global de una cuenta de usuario.
+ */
 export function useCambiarEstadoUsuarioGlobal() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -80,6 +101,9 @@ export function useCambiarEstadoUsuarioGlobal() {
   });
 }
 
+/**
+ * Hook de mutación React Query para cambiar el estado de acceso de un usuario.
+ */
 export function useCambiarEstadoUsuario() {
   const queryClient = useQueryClient();
 
@@ -93,6 +117,9 @@ export function useCambiarEstadoUsuario() {
   });
 }
 
+/**
+ * Hook de mutación React Query para cambiar el estado del rol de administrador en la sede.
+ */
 export function useCambiarEstadoAdministrador() {
   const queryClient = useQueryClient();
 
@@ -106,6 +133,9 @@ export function useCambiarEstadoAdministrador() {
   });
 }
 
+/**
+ * Hook de mutación React Query para asignar o modificar el perfil de barbero a un usuario.
+ */
 export function useConfigurarBarbero() {
   const queryClient = useQueryClient();
 
@@ -119,6 +149,9 @@ export function useConfigurarBarbero() {
   });
 }
 
+/**
+ * Hook de mutación React Query para que el usuario autenticado active su rol como barbero.
+ */
 export function useConfigurarMeComoBarbero() {
   const queryClient = useQueryClient();
 

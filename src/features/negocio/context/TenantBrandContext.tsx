@@ -8,27 +8,55 @@ import { obtenerNegocioSlugActivo } from '../../../shared/lib/http/axios';
 import { BRAND } from '../../../config/brand';
 import { resolverTemaTenant, TEMAS_TENANT, type TenantThemeId } from '../../../config/tenantTheme';
 
+/**
+ * Valores y recursos visuales expuestos por el contexto de personalización de marca de la barbería.
+ */
 export interface TenantBrandContextValue {
+  /** Slug activo de la barbería actual en minúsculas, o `null` si se está en la plataforma global. */
   slug: string | null;
+  /** Nombre comercial de la barbería (o nombre por defecto de la plataforma SaaS). */
   nombreNegocio: string;
+  /** Lema o frase promocional de la barbería. */
   frasePrincipal: string;
+  /** URL absoluta al logotipo en versión clara/blanca (para fondos oscuros). */
   logoBlancoUrl: string | null;
+  /** URL absoluta al logotipo en versión oscura/negra (para fondos claros). */
   logoNegroUrl: string | null;
+  /** URL absoluta al banner o imagen de portada de la barbería. */
   bannerUrl: string | null;
+  /** URL absoluta al favicon personalizado de la pestaña del navegador. */
   faviconUrl: string | null;
+  /** Dirección física del local. */
   direccion: string | null;
+  /** Municipio o ciudad de ubicación. */
   ciudad: string | null;
+  /** Departamento o provincia de ubicación. */
   departamento: string | null;
+  /** Indicaciones adicionales de llegada al establecimiento. */
   referencia: string | null;
+  /** Coordenada geográfica de latitud. */
   latitud: number | null;
+  /** Coordenada geográfica de longitud. */
   longitud: number | null;
+  /** Enlace a Google Maps para navegación GPS directa. */
   mapsUrl: string | null;
+  /** Clave del tema visual activo aplicado al documento (`clasico-azul`, etc.). */
   temaKey: string;
+  /** Indica si la barbería ha completado la configuración inicial de su perfil público. */
   configurado: boolean;
+  /** Lista de perfiles y canales de redes sociales activos de la barbería. */
   redesSociales: RedSocial[];
+  /** Función para forzar la recarga del perfil y tema desde el backend. */
   recargarPerfil: () => Promise<void>;
 }
 
+/**
+ * Normaliza y resuelve una ruta de recurso estático (imágenes, logos) asegurando
+ * que devuelva una URL absoluta accesible en el navegador.
+ *
+ * @param url - Ruta relativa o URL absoluta proveniente del backend.
+ * @returns URL absoluta completamente calificada, o `null` si no se proporcionó ruta.
+ */
 export function resolverUrlRecurso(url: string | null | undefined): string | null {
   if (!url) return null;
   if (url.startsWith('http://') || url.startsWith('https://')) return url;
@@ -137,6 +165,20 @@ const TenantBrandContext = createContext<TenantBrandContextValue>({
   recargarPerfil: async () => {},
 });
 
+/**
+ * Proveedor React que inyecta la identidad visual, metadatos y temas dinámicos
+ * de la barbería en función de la URL activa.
+ *
+ * @remarks
+ * **Funcionalidades Clave:**
+ * 1. Resuelve el `slug` del tenant a partir de la ruta o del estado de la pestaña.
+ * 2. Consulta de forma asíncrona el perfil público del negocio y sus redes sociales.
+ * 3. Inyecta el atributo `data-tenant-theme` en el elemento raíz `<html>` del documento.
+ * 4. Actualiza dinámicamente el título `<title>` y el `<link rel="icon">` (favicon) del navegador.
+ * 5. Mantiene sincronización pasiva periódica y ante eventos de foco en la pestaña.
+ *
+ * @param props - Componentes secundarios de la aplicación.
+ */
 export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   const [perfil, setPerfil] = useState<PerfilNegocioPublicoResponse | null>(null);
@@ -280,6 +322,11 @@ export const TenantBrandProvider: React.FC<{ children: React.ReactNode }> = ({ c
   return <TenantBrandContext.Provider value={value}>{children}</TenantBrandContext.Provider>;
 };
 
+/**
+ * Hook personalizado para acceder a los datos de identidad visual, temas y perfil de la barbería.
+ *
+ * @returns El contexto de personalización de marca de tipo `TenantBrandContextValue`.
+ */
 export function useTenantBrand() {
   return useContext(TenantBrandContext);
 }

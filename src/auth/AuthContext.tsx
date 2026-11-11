@@ -5,37 +5,87 @@ import type { Usuario } from '../features/usuarios/types/usuarios.types';
 import apiClient, { obtenerNegocioSlugActivo } from '../shared/lib/http/axios';
 import { queryClient } from '../shared/lib/queryClient';
 
-interface UsuarioSesion {
+/**
+ * Información mínima del usuario persistida en almacenamiento local durante la sesión.
+ */
+export interface UsuarioSesion {
+  /** Identificador numérico del usuario en la base de datos. */
   id: number;
+  /** Correo electrónico verificado del usuario. */
   email: string;
+  /** Nombre de pila del usuario. */
   nombre: string;
+  /** Apellidos del usuario. */
   apellido?: string;
+  /** Rol primario o identificador de tipo (ej. `PERSONAL`, `ADMINISTRADOR`). */
   rol: string;
+  /** Lista opcional de roles RBAC asignados (`SUPERADMIN`, `ADMINISTRADOR`, `BARBERO`). */
   roles?: string[];
+  /** Estado de la cuenta (`ACTIVO`, `INACTIVO`). */
   estado: string;
+  /** URL de la fotografía de perfil del usuario. */
   fotoUrl?: string | null;
 }
 
-interface AuthContextType {
+/**
+ * Contrato de valores y operaciones expuestas por el contexto global de autenticación (`AuthContext`).
+ */
+export interface AuthContextType {
+  /**
+   * Cierra la sesión activa purgando tokens y cachés de forma aislada para la sede indicada.
+   *
+   * @param slugParam - Slug opcional de la sede cuyo acceso se desea finalizar.
+   */
   cerrarSesion: (slugParam?: unknown) => void;
+  /** Indica si existe un token JWT válido de usuario activo. */
   isAuthenticated: boolean;
+  /** Indica si la sesión está en fase inicial de lectura de almacenamiento. */
   isInitializing: boolean;
+  /** Token Bearer JWT actual del usuario autenticado. */
   token: string | null;
+  /** Nombre del usuario en sesión. */
   nombre?: string;
+  /** Apellido del usuario en sesión. */
   apellido?: string;
+  /** Correo del usuario en sesión. */
   email?: string;
+  /** URL de la fotografía de perfil del usuario. */
   fotoUrl?: string | null;
+  /** Lista consolidada de roles RBAC efectivos del usuario. */
   roles: string[];
+  /** Modelo completo del usuario sincronizado en tiempo real con la base de datos. */
   usuarioDb: Usuario | null;
+  /** Slug de la barbería a la que pertenece la sesión activa del personal. */
   negocioSesionSlug: string | null;
+  /** Nombre comercial de la barbería asociada a la sesión. */
   negocioSesionNombre: string | null;
+  /**
+   * Valida si el usuario en sesión es personal perteneciente a la sede indicada en la ruta.
+   *
+   * @param slugRuta - Slug de la barbería extraído de la URL.
+   * @returns `true` si el usuario tiene membresía en dicha sede.
+   */
   esStaffDeSede: (slugRuta?: string | null) => boolean;
+  /**
+   * Intercambia el ID Token de Google OAuth por un JWT de sesión en el backend.
+   *
+   * @param idToken - Token emitido por Google Identity Services.
+   * @returns Resultado del login con indicador de éxito o mensaje de error.
+   */
   loginConGoogle: (idToken: string) => Promise<{ success: boolean; error?: string }>;
+  /**
+   * Sincroniza el perfil del usuario contra el backend renovando roles y estados.
+   */
   refrescarPerfil: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * Resuelve el token JWT inicial dando prioridad a la clave específica de la sede activa.
+ *
+ * @returns El token JWT encontrado en `localStorage` o `null`.
+ */
 function obtenerTokenInicial(): string | null {
   const slug = obtenerNegocioSlugActivo();
   if (slug) {
@@ -44,6 +94,12 @@ function obtenerTokenInicial(): string | null {
   return localStorage.getItem('token_barberia');
 }
 
+/**
+ * Parsea de forma segura una cadena JSON que contiene los datos del usuario en sesión.
+ *
+ * @param raw - Cadena de texto serializada en formato JSON.
+ * @returns Objeto `UsuarioSesion` válido o `null` ante fallos de formato.
+ */
 function parseUsuarioJson(raw: string | null): UsuarioSesion | null {
   if (!raw) return null;
   try {
@@ -53,6 +109,11 @@ function parseUsuarioJson(raw: string | null): UsuarioSesion | null {
   }
 }
 
+/**
+ * Obtiene los datos del usuario en sesión deserializados desde `localStorage`.
+ *
+ * @returns Datos de sesión del usuario o `null`.
+ */
 function obtenerUsuarioSesionInicial(): UsuarioSesion | null {
   const slug = obtenerNegocioSlugActivo();
   if (slug) {
@@ -61,6 +122,11 @@ function obtenerUsuarioSesionInicial(): UsuarioSesion | null {
   return parseUsuarioJson(localStorage.getItem('usuario_barberia'));
 }
 
+/**
+ * Determina el slug del negocio al que está asociada la sesión inicial.
+ *
+ * @returns Slug en minúsculas del negocio o `null`.
+ */
 function obtenerNegocioSesionSlugInicial(): string | null {
   const slug = obtenerNegocioSlugActivo();
   if (slug) {
@@ -69,6 +135,11 @@ function obtenerNegocioSesionSlugInicial(): string | null {
   return localStorage.getItem('negocio_sesion_slug');
 }
 
+/**
+ * Obtiene el nombre comercial de la barbería guardada en la sesión.
+ *
+ * @returns Nombre del negocio o `null`.
+ */
 function obtenerNegocioSesionNombreInicial(): string | null {
   const slug = obtenerNegocioSlugActivo();
   if (slug) {
@@ -77,6 +148,13 @@ function obtenerNegocioSesionNombreInicial(): string | null {
   return localStorage.getItem('negocio_sesion_nombre');
 }
 
+/**
+ * Fusiona los roles declarados en el JWT de sesión con los roles activos de la base de datos.
+ *
+ * @param usuarioSesion - Datos de sesión almacenados en cliente.
+ * @param usuarioDb - Perfil fresco obtenido de la base de datos.
+ * @returns Lista normalizada de roles válidos (`SUPERADMIN`, `ADMINISTRADOR`, `BARBERO`).
+ */
 function calcularRoles(usuarioSesion: UsuarioSesion | null, usuarioDb: Usuario | null): string[] {
   let rolesFromSesion: string[] = [];
   if (Array.isArray(usuarioSesion?.roles) && usuarioSesion.roles.length > 0) {
@@ -153,6 +231,19 @@ function guardarSesionEnStorage(
   return { slugNegocio, nombreNegocio };
 }
 
+/**
+ * Proveedor de contexto React que administra el ciclo de vida de autenticación del personal.
+ *
+ * @remarks
+ * **Capacidades Principales:**
+ * 1. Mantiene el token JWT y el perfil de usuario en memoria y almacenamiento local aislado por sede.
+ * 2. Verifica en tiempo de ejecución si el usuario pertenece al personal de la barbería visitada (`esStaffDeSede`).
+ * 3. Gestiona el intercambio seguro de tokens de Google Identity Services (`loginConGoogle`).
+ * 4. Actualiza los roles y el estado de la cuenta en segundo plano mediante sondeo pasivo.
+ * 5. Notifica y reacciona ante eventos de cierre de sesión en otras pestañas de la misma sede.
+ *
+ * @param props - Componentes hijos y bandera de inicialización.
+ */
 export function AuthContextProvider({
   children,
   isInitializing,
@@ -398,6 +489,16 @@ export function AuthContextProvider({
   );
 }
 
+/**
+ * Hook personalizado para acceder a los valores y operaciones de autenticación de personal.
+ *
+ * @remarks
+ * Debe utilizarse obligatoriamente dentro de un componente envuelto por `AuthProvider`
+ * o `AuthContextProvider`. Si se invoca fuera de este contexto, arroja una excepción explicativa.
+ *
+ * @returns El contexto de autenticación de tipo `AuthContextType`.
+ * @throws {Error} Si se consume fuera de `AuthContextProvider`.
+ */
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

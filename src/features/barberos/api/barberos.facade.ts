@@ -9,6 +9,12 @@ import type {
 } from './barberos.dto';
 import type { BarberoCatalogo, BarberoGestion } from '../types/barberos.types';
 
+/**
+ * Hook de consulta React Query para el catálogo público de barberos.
+ *
+ * @param enabled - Bandera booleana para condicionar la ejecución de la consulta.
+ * @returns Objeto `useQuery` con los barberos mapeados al modelo de dominio.
+ */
 export function useBarberosCatalogo(enabled = true) {
   return useQuery<BarberoCatalogo[], Error>({
     queryKey: barberosKeys.catalogo(),
@@ -22,6 +28,13 @@ export function useBarberosCatalogo(enabled = true) {
   });
 }
 
+/**
+ * Hook de consulta React Query para la grilla administrativa de barberos de la sede.
+ *
+ * @param filtroOrEnabled - Filtros de búsqueda (estado, nombre) o indicador booleano de habilitación.
+ * @param enabledArg - Parámetro secundario para habilitar la consulta si el primer argumento es un filtro.
+ * @returns Objeto `useQuery` con los barberos para gestión interna.
+ */
 export function useBarberosGestion(
   filtroOrEnabled?: { estado?: 'ACTIVO' | 'INACTIVO'; nombre?: string } | boolean,
   enabledArg = true,
@@ -41,6 +54,9 @@ export function useBarberosGestion(
   });
 }
 
+/**
+ * Hook de mutación React Query para registrar y vincular un nuevo barbero a la sede.
+ */
 export function useCrearBarbero() {
   const queryClient = useQueryClient();
 
@@ -53,6 +69,9 @@ export function useCrearBarbero() {
   });
 }
 
+/**
+ * Hook de mutación React Query para cambiar el estado operativo (`ACTIVO`/`INACTIVO`) de un barbero.
+ */
 export function useCambiarEstadoBarbero() {
   const queryClient = useQueryClient();
 
@@ -66,6 +85,9 @@ export function useCambiarEstadoBarbero() {
   });
 }
 
+/**
+ * Hook de mutación React Query para cambiar el estado global de la cuenta del barbero en la plataforma.
+ */
 export function useCambiarEstadoGlobalBarbero() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -86,6 +108,9 @@ export function useCambiarEstadoGlobalBarbero() {
   });
 }
 
+/**
+ * Hook de mutación React Query para actualizar la comisión porcentual de un barbero.
+ */
 export function useActualizarComision() {
   const queryClient = useQueryClient();
 
@@ -98,6 +123,9 @@ export function useActualizarComision() {
   });
 }
 
+/**
+ * Hook de mutación React Query para que el barbero autenticado actualice su foto de perfil.
+ */
 export function useSubirFotoPropia() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -109,6 +137,9 @@ export function useSubirFotoPropia() {
   });
 }
 
+/**
+ * Hook de mutación React Query para que el barbero autenticado elimine su foto de perfil.
+ */
 export function useEliminarFotoPropia() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -120,6 +151,9 @@ export function useEliminarFotoPropia() {
   });
 }
 
+/**
+ * Hook de mutación React Query para que un administrador suba o reemplace la foto de cualquier barbero.
+ */
 export function useSubirFotoAdmin() {
   const queryClient = useQueryClient();
   return useMutation({

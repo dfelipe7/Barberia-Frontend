@@ -5,6 +5,12 @@ import { serviciosKeys } from './servicios.keys';
 import type { Servicio, FiltroServicios } from '../types/servicios.types';
 import type { CambiarEstadoServicioDTO } from './servicios.dto';
 
+/**
+ * Hook de consulta React Query para la gestión administrativa de servicios de la barbería.
+ *
+ * @param filtro - Criterios opcionales de búsqueda o categoría.
+ * @returns Objeto `useQuery` con los servicios mapeados al modelo de dominio.
+ */
 export function useServiciosGestion(filtro?: FiltroServicios) {
   return useQuery<Servicio[], Error>({
     queryKey: serviciosKeys.gestion(filtro),
@@ -19,6 +25,9 @@ export function useServiciosGestion(filtro?: FiltroServicios) {
   });
 }
 
+/**
+ * Hook de mutación React Query para dar de alta un nuevo servicio.
+ */
 export function useCrearServicio() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -30,6 +39,9 @@ export function useCrearServicio() {
   });
 }
 
+/**
+ * Hook de mutación React Query para modificar datos comerciales de un servicio existente.
+ */
 export function useActualizarServicio() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -46,6 +58,9 @@ export function useActualizarServicio() {
   });
 }
 
+/**
+ * Hook de mutación React Query para cambiar el estado de activación de un servicio.
+ */
 export function useCambiarEstadoServicio() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -57,6 +72,9 @@ export function useCambiarEstadoServicio() {
   });
 }
 
+/**
+ * Hook de mutación React Query para subir la fotografía ilustrativa de un servicio.
+ */
 export function useSubirFotoServicio() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -68,6 +86,9 @@ export function useSubirFotoServicio() {
   });
 }
 
+/**
+ * Hook de mutación React Query para retirar la imagen de un servicio.
+ */
 export function useEliminarFotoServicio() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -78,6 +99,12 @@ export function useEliminarFotoServicio() {
   });
 }
 
+/**
+ * Hook de consulta React Query para el catálogo público de servicios.
+ *
+ * @param filtro - Filtro opcional por texto o categoría.
+ * @returns Lista de servicios disponibles al público.
+ */
 export function useServiciosCatalogo(filtro?: FiltroServicios) {
   return useQuery<Servicio[], Error>({
     queryKey: serviciosKeys.catalogo(filtro),
@@ -92,6 +119,12 @@ export function useServiciosCatalogo(filtro?: FiltroServicios) {
   });
 }
 
+/**
+ * Hook de consulta React Query para obtener los servicios asignados a un barbero en específico.
+ *
+ * @param barberoId - Identificador del barbero.
+ * @returns Lista de servicios capacitados para el barbero.
+ */
 export function useServiciosPorBarbero(barberoId: number | null | undefined) {
   return useQuery<Servicio[], Error>({
     queryKey: serviciosKeys.porBarbero(barberoId ?? 0),

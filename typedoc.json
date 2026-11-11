@@ -1,0 +1,42 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "Barbería VIP SaaS — Frontend Developer Hub",
+  "readme": "docs/DOCS_PORTAL.md",
+  "entryPointStrategy": "expand",
+  "entryPoints": ["src"],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/node_modules/**",
+    "src/test/**",
+    "src/main.tsx"
+  ],
+  "out": "docs/html",
+  "customCss": "docs/typedoc-style.css",
+  "includeVersion": true,
+  "cleanOutputDir": true,
+  "searchInComments": true,
+  "hideGenerator": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "groupOrder": [
+    "Contextos & Hooks",
+    "Servicios API",
+    "Fachadas React Query",
+    "Guards & Componentes",
+    "Tipos & DTOs",
+    "*"
+  ],
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true,
+    "includeFolders": false,
+    "compactFolders": true
+  },
+  "visibilityFilters": {
+    "protected": false,
+    "private": false,
+    "inherited": false,
+    "external": false
+  }
+}

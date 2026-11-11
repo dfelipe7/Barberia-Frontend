@@ -57,7 +57,9 @@ export function obtenerNegocioSlugActivo(): string | null {
     if (primerSegmento && !RUTAS_RESERVADAS.has(primerSegmento)) {
       try {
         sessionStorage.setItem('tab_negocio_slug', primerSegmento);
-      } catch {}
+      } catch {
+        // Fallback defensivo si sessionStorage no está disponible o bloqueado por el navegador
+      }
       return primerSegmento;
     }
 
@@ -65,7 +67,9 @@ export function obtenerNegocioSlugActivo(): string | null {
     if (!primerSegmento || primerSegmento === 'plataforma' || primerSegmento === 'explorar') {
       try {
         sessionStorage.removeItem('tab_negocio_slug');
-      } catch {}
+      } catch {
+        // Ignorar fallo de acceso a sessionStorage
+      }
       return null;
     }
 
@@ -75,7 +79,9 @@ export function obtenerNegocioSlugActivo(): string | null {
       if (tabSlug && !RUTAS_RESERVADAS.has(tabSlug)) {
         return tabSlug;
       }
-    } catch {}
+    } catch {
+      // Ignorar fallo de lectura de sessionStorage
+    }
 
     // 3. Fallback de respaldo solo si la pestaña nunca ha visitado una sede con prefijo
     const localSlug = (localStorage.getItem('negocio_sesion_slug') || localStorage.getItem('negocio_slug'))?.toLowerCase().trim();

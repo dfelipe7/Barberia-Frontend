@@ -4,14 +4,38 @@ import KyriosSpinner from '../ui/KyriosSpinner';
 
 import { esRolApp } from '../lib/autorizacion/roles';
 
-interface ProtectedRouteProps {
+/**
+ * Propiedades del componente `ProtectedRoute`.
+ */
+export interface ProtectedRouteProps {
+  /**
+   * Colección de nombres de roles del sistema autorizados para visualizar esta ruta.
+   * Ej: `['SUPERADMIN', 'ADMINISTRADOR']` o `['BARBERO']`.
+   */
   rolesPermitidos: string[];
 }
 
 /**
- * PATRÓN DECORATOR:
- * Envuelve el renderizado de la ruta (<Outlet />) decorándolo con validaciones
- * de autenticación (Google OAuth + JWT) y de autorización RBAC (rolesPermitidos).
+ * PATRÓN DECORATOR / ROUTE GUARD:
+ * Intercepta y decora el renderizado de subrutas (`<Outlet />`) aplicando una
+ * cadena de defensas en profundidad:
+ *
+ * @remarks
+ * **Cadena de Validación:**
+ * 1. **Inicialización Asíncrona:** Si la sesión aún se está verificando en almacenamiento local,
+ *    despliega el spinner `KyriosSpinner` evitando parpadeos de redirección no autorizada.
+ * 2. **Autenticación (JWT + OAuth):** Si no existe una sesión activa, redirige inmediatamente
+ *    a la pantalla de login correspondiente (`/{slug}/login` o `/login`).
+ * 3. **Aislamiento Multitenant:** Si la URL apunta a una barbería (`/{slug}/...`), valida que
+ *    el token del usuario pertenezca a la misma barbería mediante `esStaffDeSede(slug)`.
+ * 4. **Estado de Cuenta Activo:** Si el usuario tiene estado `INACTIVO` (suspendido),
+ *    lo redirige a `/sin-acceso`.
+ * 5. **Autorización RBAC:** Verifica que al menos uno de los roles del usuario se encuentre
+ *    en `rolesPermitidos`. Si tiene un rol válido pero no los permisos para esa sección
+ *    (ej. un Barbero intentando entrar a Configuración), lo redirige a `/dashboard` con un aviso informativo.
+ *
+ * @param props - Propiedades con la lista de roles autorizados.
+ * @returns El componente de salida anidado (`<Outlet />`) o una redirección (`<Navigate />`).
  */
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ rolesPermitidos }) => {
   const { roles, isAuthenticated, isInitializing, usuarioDb, esStaffDeSede } = useAuth();

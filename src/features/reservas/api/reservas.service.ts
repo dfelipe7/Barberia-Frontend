@@ -307,16 +307,32 @@ export const reservasService = {
     return response.data;
   },
 
+  /**
+   * Obtiene el detalle de una cita agendada perteneciente al cliente autenticado.
+   *
+   * @param id - Identificador único de la reserva.
+   */
   async obtenerMiReserva(id: number): Promise<ReservaClienteDTO> {
     const response = await reservasApiClient.get<ReservaClienteDTO>('/reservas/me/' + id);
     return response.data;
   },
 
+  /**
+   * Modifica la fecha, hora, barbero o servicio de una reserva del cliente autenticado.
+   *
+   * @param id - Identificador de la reserva.
+   * @param datos - Campos a reprogramar.
+   */
   async modificarMiReserva(id: number, datos: ActualizarReservaDTO): Promise<ReservaModificadaDTO> {
     const response = await reservasApiClient.patch<ReservaModificadaDTO>('/reservas/me/' + id, datos);
     return response.data;
   },
 
+  /**
+   * Cancela una reserva perteneciente al cliente autenticado liberando el cupo.
+   *
+   * @param id - Identificador de la reserva a cancelar.
+   */
   async cancelarMiReserva(id: number): Promise<{ mensaje: string }> {
     const response = await reservasApiClient.patch<{ mensaje: string }>(
       '/reservas/me/' + id + '/cancelar',
@@ -324,6 +340,13 @@ export const reservasService = {
     return response.data;
   },
 
+  /**
+   * Consulta la agenda semanal de citas del barbero autenticado en un rango de fechas.
+   *
+   * @param desde - Fecha de inicio (`YYYY-MM-DD`).
+   * @param hasta - Fecha final (`YYYY-MM-DD`).
+   * @returns Calendario de citas agendadas por día y hora.
+   */
   async obtenerAgendaSemanalBarbero(desde: string, hasta: string): Promise<AgendaSemanalBarberoDTO> {
     const response = await apiClient.get<AgendaSemanalBarberoDTO>('/reservas/barbero/me/agenda', {
       params: { desde, hasta },
@@ -331,6 +354,12 @@ export const reservasService = {
     return response.data;
   },
 
+  /**
+   * Busca clientes registrados por coincidencia de nombre o teléfono para agendamiento administrativo.
+   *
+   * @param busqueda - Término de búsqueda.
+   * @returns Lista de clientes coincidentes.
+   */
   async buscarClientesAdministrativos(busqueda: string): Promise<ClienteAdministrativoDTO[]> {
     const response = await apiClient.get<ClienteAdministrativoDTO[] | ClientesAdministrativosResponseDTO>('/reservas/admin/clientes', {
       params: { termino: busqueda },
@@ -338,6 +367,12 @@ export const reservasService = {
     return Array.isArray(response.data) ? response.data : response.data.clientes;
   },
 
+  /**
+   * Crea una cita desde el panel de administración asignándola a un cliente nuevo o existente.
+   *
+   * @param datos - DTO con datos de la reserva y cliente.
+   * @returns Reserva creada y comprobante con token.
+   */
   async crearReservaAdministrativa(
     datos: CrearReservaAdministrativaDTO,
   ): Promise<ReservaCreadaDTO> {
@@ -348,6 +383,12 @@ export const reservasService = {
     return response.data;
   },
 
+  /**
+   * Lista las reservas del establecimiento con soporte para filtros por fecha, barbero, cliente y estado.
+   *
+   * @param filtro - Parámetros de filtrado.
+   * @returns Colección de reservas administrativas.
+   */
   async listarReservasAdministrativas(
     filtro: FiltroReservasAdministrativasDTO = {},
   ): Promise<ReservaAdministrativaDTO[]> {
@@ -355,26 +396,52 @@ export const reservasService = {
     return response.data;
   },
 
+  /**
+   * Obtiene la ficha completa de una reserva en el panel administrativo.
+   *
+   * @param id - Identificador de la reserva.
+   */
   async obtenerReservaAdministrativa(id: number): Promise<ReservaAdministrativaDTO> {
     const response = await apiClient.get<ReservaAdministrativaDTO>('/reservas/admin/' + id);
     return response.data;
   },
 
+  /**
+   * Reprograma o edita los parámetros de una cita desde la vista administrativa.
+   *
+   * @param id - Identificador de la reserva.
+   * @param datos - Campos modificados.
+   */
   async modificarReservaAdministrativa(id: number, datos: ActualizarReservaDTO): Promise<ReservaModificadaDTO> {
     const response = await apiClient.patch<ReservaModificadaDTO>('/reservas/admin/' + id, datos);
     return response.data;
   },
 
+  /**
+   * Cancela una reserva desde el panel administrativo registrando el motivo.
+   *
+   * @param id - Identificador de la reserva.
+   */
   async cancelarReservaAdministrativa(id: number): Promise<ReservaAccionDTO> {
     const response = await apiClient.patch<ReservaAccionDTO>('/reservas/admin/' + id + '/cancelar');
     return response.data;
   },
 
+  /**
+   * Marca una reserva como completada al finalizar el servicio prestado.
+   *
+   * @param id - Identificador de la reserva.
+   */
   async completarReserva(id: number): Promise<ReservaAccionDTO> {
     const response = await apiClient.patch<ReservaAccionDTO>('/reservas/' + id + '/completar');
     return response.data;
   },
 
+  /**
+   * Registra una inasistencia ("No Show") del cliente a la cita programada.
+   *
+   * @param id - Identificador de la reserva.
+   */
   async marcarReservaNoAsistida(id: number): Promise<ReservaAccionDTO> {
     const response = await apiClient.patch<ReservaAccionDTO>('/reservas/' + id + '/no-show');
     return response.data;
