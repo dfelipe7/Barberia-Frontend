@@ -90,7 +90,7 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
     previewLocal || obtenerUrlFoto(productoInicial?.imagenUrl) || undefined;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="p-1">
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="px-4 pb-4 pt-1">
       {errorMensaje && (
         <div className="mb-3">
           <ErrorMessage message={errorMensaje} />
@@ -98,7 +98,7 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
       )}
 
       {/* Sección Superior: Nombre y Precio a la izquierda, Foto más grande a la derecha */}
-      <div className="row g-3 mb-3 align-items-start">
+      <div className="row g-4 mb-3 align-items-start">
         {/* Columna Izquierda: Nombre y Precio */}
         <div className="col-12 col-sm d-flex flex-column gap-3">
           {/* Nombre del Producto */}
@@ -145,7 +145,7 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
         </div>
 
         {/* Columna Derecha: Foto del Producto (más grande) */}
-        <div className="col-12 col-sm-auto d-flex flex-column align-items-center align-items-sm-end">
+        <div className="col-12 col-sm-auto d-flex flex-column align-items-center">
           <label className="form-label fw-semibold mb-1 text-surface-muted small w-100 text-center">
             Foto del Producto
           </label>
@@ -186,7 +186,7 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
       </div>
 
       {/* Botones de acción */}
-      <div className="d-flex justify-content-end gap-2 pt-2 border-top">
+      <div className="d-flex justify-content-end gap-2 pt-3 mt-3 border-top">
         <Button
           type="button"
           variant="secondary"
