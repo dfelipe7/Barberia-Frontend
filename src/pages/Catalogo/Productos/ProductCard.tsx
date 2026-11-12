@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Maximize2, MessageCircle, Package, Share2, Check } from 'lucide-react';
+import { Maximize2, MessageCircle, Package, Share2, Check, X } from 'lucide-react';
 import type { ProductoCatalogoDTO } from '../../../features/productos/api/productos.dto';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { useTenantBrand } from '../../../features/negocio/context/TenantBrandContext';
 import Modal from '../../../shared/ui/Modal';
-import Button from '../../../shared/ui/Button';
+import '../../Home/components/ServiceDetailModal.css';
 
 interface ProductCardProps {
   producto: ProductoCatalogoDTO;
@@ -69,7 +69,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
       if (navigator.clipboard) {
         await navigator.clipboard.writeText(window.location.href);
         setCopiado(true);
-        setTimeout(() => setCopiado(false), 2000);
+        setTimeout(() => setCopiado(false), 2200);
       }
     } catch {
       // noop
@@ -157,87 +157,123 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
         </div>
       </article>
 
-      {/* Modal Detalle Completo del Producto al hacer clic en ver más o miniatura */}
+      {/* Modal Detalle Completo del Producto (Estilo oficial ServiceDetailModal) */}
       {modalAbierto && (
         <Modal
           isOpen={modalAbierto}
           onClose={() => setModalAbierto(false)}
-          title={producto.nombre}
           size="md"
-          footer={
-            <div className="d-flex w-100 justify-content-between align-items-center">
-              <span className="fs-5 fw-bold text-primary">
-                {formatPrecio(producto.precio)}
-              </span>
-              <div className="d-flex gap-2">
-                <Button variant="secondary" onClick={() => setModalAbierto(false)}>
-                  Cerrar
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleConsultarWhatsApp}
-                  style={{
-                    backgroundColor: '#25D366',
-                    borderColor: '#25D366',
-                    color: '#ffffff',
-                  }}
-                >
-                  <MessageCircle size={16} className="me-1" />
-                  Pedir por WhatsApp
-                </Button>
-              </div>
-            </div>
-          }
+          className="service-detail-dialog"
+          hideHeader={true}
         >
-          <div className="d-flex flex-column gap-3">
-            {fotoCompleta && (
-              <div
-                className="text-center rounded overflow-hidden"
-                style={{ maxHeight: '280px', background: 'var(--home-surface-alt)' }}
-              >
-                <img
-                  src={fotoCompleta}
-                  alt={producto.nombre}
-                  className="img-fluid"
-                  style={{ maxHeight: '280px', objectFit: 'contain' }}
-                />
-              </div>
-            )}
-            <div>
-              <div className="d-flex justify-content-between align-items-center mb-1">
-                <span className="badge bg-secondary-subtle text-secondary fw-semibold">
-                  PRODUCTO EXCLUSIVO
-                </span>
+          <div className="service-modal-card">
+            {/* Barra superior de acciones */}
+            <div className="service-modal-topbar">
+              <div className="service-modal-topbar-left">
                 <button
                   type="button"
-                  className="btn btn-sm btn-link text-decoration-none text-surface-muted p-0"
+                  className="service-modal-btn-icon"
                   onClick={handleShare}
+                  aria-label="Compartir producto"
+                  title={copiado ? '¡Enlace copiado!' : 'Compartir producto'}
                 >
-                  {copiado ? (
-                    <span className="text-success small d-inline-flex align-items-center gap-1">
-                      <Check size={14} /> ¡Copiado!
-                    </span>
-                  ) : (
-                    <span className="small d-inline-flex align-items-center gap-1">
-                      <Share2 size={14} /> Compartir
-                    </span>
-                  )}
+                  {copiado ? <Check size={18} color="#10B981" /> : <Share2 size={19} />}
                 </button>
+
+                {copiado && (
+                  <span className="badge bg-success-subtle text-success small py-1 px-2 animate-fade">
+                    ¡Enlace copiado!
+                  </span>
+                )}
               </div>
-              <h5 className="fw-bold mb-2">{producto.nombre}</h5>
-              <p className="text-surface-muted" style={{ whiteSpace: 'pre-line' }}>
-                {producto.descripcion || 'Producto de alta calidad disponible en nuestra sede física.'}
+
+              <button
+                type="button"
+                className="service-modal-btn-icon"
+                onClick={() => setModalAbierto(false)}
+                aria-label="Cerrar ventana"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Banner visual del producto con backdrop ambiental desenfocado */}
+            <div className="service-modal-hero-wrap">
+              {fotoCompleta ? (
+                <>
+                  <img
+                    src={fotoCompleta}
+                    alt=""
+                    aria-hidden="true"
+                    className="service-modal-hero-bg"
+                  />
+                  <img
+                    src={fotoCompleta}
+                    alt={producto.nombre}
+                    className="service-modal-hero-img"
+                  />
+                </>
+              ) : (
+                <div
+                  className="kyrios-service-img-placeholder w-100 h-100 d-flex align-items-center justify-content-center"
+                  aria-hidden="true"
+                >
+                  <span style={{ fontSize: '2.8rem', fontWeight: 800 }}>
+                    {producto.nombre.charAt(0)}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Título del Producto */}
+            <h3 className="service-modal-name">{producto.nombre}</h3>
+
+            {/* Barra de Precio y Disponibilidad */}
+            <div className="service-modal-pricing-bar">
+              <span className="service-modal-price">
+                {formatPrecio(producto.precio)}
+              </span>
+              <div className="service-modal-duration-badge">
+                <Package size={15} />
+                <span>Disponible en sede</span>
+              </div>
+            </div>
+
+            {/* Detalles / Descripción */}
+            <div className="mb-4">
+              <h4 className="service-modal-section-title">Detalles del Producto</h4>
+              <p className="service-modal-about mb-0">
+                {producto.descripcion ||
+                  'Producto de cuidado capilar y estilismo profesional disponible para venta directa en nuestra barbería.'}
               </p>
             </div>
+
+            {/* Información de sede */}
             {direccion && (
               <div
-                className="p-3 rounded border small text-surface-muted"
+                className="p-3 rounded border small mb-4 text-surface-muted"
                 style={{ background: 'var(--home-surface-alt)' }}
               >
                 <strong>Disponible en:</strong> {nombreNegocio} - {direccion}
                 {ciudad ? `, ${ciudad}` : ''}
               </div>
             )}
+
+            {/* Botón CTA Principal: Pedir por WhatsApp */}
+            <button
+              type="button"
+              className="service-modal-btn-cta d-inline-flex align-items-center justify-content-center gap-2"
+              style={{
+                backgroundColor: '#25D366',
+                borderColor: '#25D366',
+                color: '#ffffff',
+                boxShadow: '0 4px 14px rgba(37, 211, 102, 0.35)',
+              }}
+              onClick={handleConsultarWhatsApp}
+            >
+              <MessageCircle size={20} />
+              <span>Pedir por WhatsApp</span>
+            </button>
           </div>
         </Modal>
       )}
