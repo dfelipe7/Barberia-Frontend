@@ -97,26 +97,10 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
         </div>
       )}
 
-      {/* Sección Superior: Foto a la izquierda, Nombre y Precio a la derecha */}
+      {/* Sección Superior: Nombre y Precio a la izquierda, Foto más grande a la derecha */}
       <div className="row g-3 mb-3 align-items-start">
-        {/* Columna Foto */}
-        <div className="col-12 col-sm-auto d-flex flex-column align-items-center align-items-sm-start">
-          <label className="form-label fw-semibold mb-1 text-surface-muted small">
-            Foto del Producto
-          </label>
-          <FileUploadField
-            previewUrl={previewActual}
-            placeholderTexto="Foto"
-            shape="square"
-            size={105}
-            onFileSelected={handleSeleccionarArchivo}
-            onRemove={previewActual ? handleRemoverArchivo : undefined}
-            error={errors.imagen?.message}
-          />
-        </div>
-
-        {/* Columna Nombre y Precio */}
-        <div className="col-12 col-sm d-flex flex-column gap-2">
+        {/* Columna Izquierda: Nombre y Precio */}
+        <div className="col-12 col-sm d-flex flex-column gap-3">
           {/* Nombre del Producto */}
           <div>
             <label htmlFor="producto-nombre" className="form-label fw-semibold small mb-1">
@@ -125,7 +109,7 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
             <input
               id="producto-nombre"
               type="text"
-              className={`form-control form-control-sm ${errors.nombre ? 'is-invalid' : ''}`}
+              className={`form-control ${errors.nombre ? 'is-invalid' : ''}`}
               placeholder="Ej. Cera Fijadora Mate"
               maxLength={100}
               disabled={isSubmitting}
@@ -141,7 +125,7 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
             <label htmlFor="producto-precio" className="form-label fw-semibold small mb-1">
               Precio de Venta ($ COP) <span className="text-danger">*</span>
             </label>
-            <div className="input-group input-group-sm">
+            <div className="input-group">
               <span className="input-group-text">$</span>
               <input
                 id="producto-precio"
@@ -158,6 +142,22 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
               )}
             </div>
           </div>
+        </div>
+
+        {/* Columna Derecha: Foto del Producto (más grande) */}
+        <div className="col-12 col-sm-auto d-flex flex-column align-items-center align-items-sm-end">
+          <label className="form-label fw-semibold mb-1 text-surface-muted small w-100 text-center">
+            Foto del Producto
+          </label>
+          <FileUploadField
+            previewUrl={previewActual}
+            placeholderTexto="Foto"
+            shape="square"
+            size={135}
+            onFileSelected={handleSeleccionarArchivo}
+            onRemove={previewActual ? handleRemoverArchivo : undefined}
+            error={errors.imagen?.message}
+          />
         </div>
       </div>
 
