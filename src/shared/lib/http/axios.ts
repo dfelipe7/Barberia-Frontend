@@ -27,6 +27,7 @@ export const RUTAS_RESERVADAS = new Set([
   'usuarios',
   'barberos',
   'servicios',
+  'productos',
   'whatsapp',
   'administradores',
   'configuracion',

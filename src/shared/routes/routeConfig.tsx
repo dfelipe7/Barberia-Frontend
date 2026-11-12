@@ -8,6 +8,7 @@ import EditarUsuarioPage from '../../features/usuarios/pages/EditarUsuarioPage';
 import BarberosPage from '../../features/barberos/pages/BarberosPage';
 import CrearBarberoPage from '../../features/barberos/pages/CrearBarberoPage';
 import ServiciosPage from '../../features/servicios/pages/ServiciosPage';
+import ProductosPage from '../../features/productos/pages/ProductosPage';
 import HorariosPage from '../../features/horarios/pages/HorariosPage';
 import ReservasPage from '../../features/reservas/pages/ReservasPage';
 import CrearReservaAdministrativaPage from '../../features/reservas/pages/CrearReservaAdministrativaPage';
@@ -32,6 +33,7 @@ export const routeConfig: RouteConfigItem[] = [
   { path: '/barberos/nuevo', element: <CrearBarberoPage />, roles: ['SUPERADMIN', 'ADMINISTRADOR'] },
   { path: '/administradores/nuevo', element: <CrearAdministradorPage />, roles: ['SUPERADMIN'] },
   { path: '/servicios', element: <ServiciosPage />, roles: ['SUPERADMIN', 'ADMINISTRADOR'] },
+  { path: '/productos', element: <ProductosPage />, roles: ['SUPERADMIN', 'ADMINISTRADOR'] },
   { path: '/whatsapp', element: <WhatsAppConfigPage />, roles: ['SUPERADMIN', 'ADMINISTRADOR'] },
   { path: '/configuracion', element: <ConfiguracionNegocioPage />, roles: ['SUPERADMIN', 'ADMINISTRADOR'] },
 ];
