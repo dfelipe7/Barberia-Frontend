@@ -19,6 +19,7 @@ export interface CrudPageProps<T> {
   modalTitle?: string;
   editModalTitle?: string;
   modalSize?: 'sm' | 'md' | 'lg' | 'xl';
+  modalClassName?: string;
   // T se usa aquí: el form recibe el registro cuando se está editando (undefined = modo creación)
   renderModalForm?: (props: {
     onClose: () => void;
@@ -51,6 +52,7 @@ export function CrudPage<T>({
   modalTitle = 'Nuevo Registro',
   editModalTitle = 'Editar Registro',
   modalSize = 'lg',
+  modalClassName,
   renderModalForm,
   onModalClose,
   children,
@@ -150,6 +152,7 @@ export function CrudPage<T>({
           onClose={handleCloseModal}
           title={editingRecord ? editModalTitle : modalTitle}
           size={modalSize}
+          className={modalClassName}
         >
           {renderModalForm({
             onClose: handleCloseModal,

@@ -90,20 +90,39 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
     previewLocal || obtenerUrlFoto(productoInicial?.imagenUrl) || undefined;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="px-4 pb-4 pt-1">
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="px-4 pb-4 pt-3">
       {errorMensaje && (
         <div className="mb-3">
           <ErrorMessage message={errorMensaje} />
         </div>
       )}
 
-      {/* Sección Superior: Nombre y Precio a la izquierda, Foto más grande a la derecha */}
+      {/* Subtítulo contextual con badge según creación o edición */}
+      <div className="d-flex align-items-center justify-content-between mb-3 pb-2 text-surface-muted">
+        <span className="small text-surface-muted" style={{ fontSize: '0.84rem' }}>
+          {productoInicial
+            ? 'Actualiza los datos comerciales y la fotografía del producto seleccionado.'
+            : 'Completa los datos requeridos para registrar el nuevo artículo en el catálogo.'}
+        </span>
+        <span
+          className={`badge ${
+            productoInicial
+              ? 'bg-primary-subtle text-primary border border-primary-subtle'
+              : 'bg-success-subtle text-success border border-success-subtle'
+          } px-2 py-1 fw-semibold text-nowrap ms-2`}
+          style={{ fontSize: '0.72rem' }}
+        >
+          {productoInicial ? 'Modo Edición' : 'Nuevo Producto'}
+        </span>
+      </div>
+
+      {/* Sección Superior: Nombre y Precio a la izquierda (anchos), Foto a la derecha */}
       <div className="row g-4 mb-3 align-items-start">
         {/* Columna Izquierda: Nombre y Precio */}
         <div className="col-12 col-sm d-flex flex-column gap-3">
           {/* Nombre del Producto */}
           <div>
-            <label htmlFor="producto-nombre" className="form-label fw-semibold small mb-1">
+            <label htmlFor="producto-nombre" className="form-label fw-semibold small mb-1 text-nowrap">
               Nombre del Producto <span className="text-danger">*</span>
             </label>
             <input
@@ -122,7 +141,7 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
 
           {/* Precio */}
           <div>
-            <label htmlFor="producto-precio" className="form-label fw-semibold small mb-1">
+            <label htmlFor="producto-precio" className="form-label fw-semibold small mb-1 text-nowrap">
               Precio de Venta ($ COP) <span className="text-danger">*</span>
             </label>
             <div className="input-group">
@@ -144,9 +163,9 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
           </div>
         </div>
 
-        {/* Columna Derecha: Foto del Producto (más grande) */}
+        {/* Columna Derecha: Foto del Producto (amplia y visible) */}
         <div className="col-12 col-sm-auto d-flex flex-column align-items-center">
-          <label className="form-label fw-semibold mb-1 text-surface-muted small w-100 text-center">
+          <label className="form-label fw-semibold mb-1 text-surface-muted small w-100 text-center text-nowrap">
             Foto del Producto
           </label>
           <FileUploadField
@@ -164,7 +183,7 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
       {/* Descripción debajo a ancho completo */}
       <div className="mb-3">
         <div className="d-flex justify-content-between align-items-center mb-1">
-          <label htmlFor="producto-descripcion" className="form-label fw-semibold small mb-0">
+          <label htmlFor="producto-descripcion" className="form-label fw-semibold small mb-0 text-nowrap">
             Descripción
           </label>
           <span className="text-surface-muted small" style={{ fontSize: '0.75rem' }}>

@@ -12,6 +12,9 @@
   .kyrios-modal-dialog {
     max-width: 500px;
   }
+  .kyrios-modal-dialog.producto-modal-dialog {
+    max-width: 630px !important;
+  }
   .kyrios-modal-dialog.modal-lg {
     max-width: 760px;
   }

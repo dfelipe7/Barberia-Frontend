@@ -161,6 +161,7 @@ export const ProductosPage: React.FC = () => {
       modalTitle="Registrar Nuevo Producto"
       editModalTitle="Editar Producto"
       modalSize="md"
+      modalClassName="producto-modal-dialog"
       onModalClose={() => setErrorForm(null)}
       renderModalForm={({ onClose, onDirectClose, record, setFormDirty }) => {
         const isGuardando = crearMutation.isPending || actualizarMutation.isPending;

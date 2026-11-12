@@ -109,7 +109,7 @@ export const Modal: React.FC<ModalProps> = ({
           }}
         >
           {!hideHeader && title && (
-            <div className="modal-header flex-shrink-0 px-4 pt-4 pb-2 border-0">
+            <div className="modal-header flex-shrink-0 px-4 pt-4 pb-3 border-bottom">
               <h5
                 id={ariaLabelledBy}
                 className="modal-title fw-bold kyrios-modal-title fs-5 text-break"
