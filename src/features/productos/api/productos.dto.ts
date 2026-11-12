@@ -11,6 +11,19 @@ export interface ProductoDTO {
   actualizadoEn?: string;
 }
 
+export interface ProductoCatalogoDTO {
+  id: number;
+  nombre: string;
+  descripcion?: string | null;
+  precio: number;
+  imagenUrl?: string | null;
+}
+
+export interface ProductosCatalogoDTO {
+  mensaje?: string;
+  productos: ProductoCatalogoDTO[];
+}
+
 export interface ProductosListadoDTO {
   mensaje?: string;
   productos: ProductoDTO[];

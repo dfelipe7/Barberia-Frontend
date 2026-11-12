@@ -2,7 +2,31 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productosService } from './productos.service';
 import { productosKeys } from './productos.keys';
 import type { Producto, FiltroProductos, EstadoProducto } from '../types/productos.types';
-import type { CrearProductoDTO, ActualizarProductoDTO } from './productos.dto';
+import type {
+  CrearProductoDTO,
+  ActualizarProductoDTO,
+  ProductoCatalogoDTO,
+} from './productos.dto';
+
+/**
+ * Hook de consulta React Query para el catálogo público de productos comerciales (clientes).
+ */
+export function useProductosCatalogo() {
+  return useQuery<ProductoCatalogoDTO[], Error>({
+    queryKey: productosKeys.catalogo(),
+    queryFn: async () => {
+      const respuesta = await productosService.obtenerCatalogo();
+      return (respuesta.productos || []).map((p) => ({
+        id: p.id,
+        nombre: p.nombre,
+        descripcion: p.descripcion,
+        precio: Number(p.precio),
+        imagenUrl: p.imagenUrl,
+      }));
+    },
+    staleTime: 60_000,
+  });
+}
 
 /**
  * Hook de consulta React Query para la gestión administrativa de productos.

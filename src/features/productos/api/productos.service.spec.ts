@@ -15,6 +15,24 @@ describe('productosService', () => {
     vi.clearAllMocks();
   });
 
+  it('obtenerCatalogo realiza GET a /productos/catalogo', async () => {
+    const mockCatalogo = {
+      productos: [
+        {
+          id: 1,
+          nombre: 'Cera Mate',
+          precio: 35000,
+          imagenUrl: '/uploads/cera.jpg',
+        },
+      ],
+    };
+    vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockCatalogo });
+
+    const res = await productosService.obtenerCatalogo();
+    expect(apiClient.get).toHaveBeenCalledWith('/productos/catalogo');
+    expect(res).toEqual(mockCatalogo);
+  });
+
   it('obtenerProductos realiza GET a /productos', async () => {
     const mockRespuesta = {
       productos: [

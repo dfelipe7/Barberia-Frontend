@@ -1,6 +1,7 @@
 import apiClient from '../../../shared/lib/http/axios';
 import type {
   ProductoDTO,
+  ProductosCatalogoDTO,
   ProductosListadoDTO,
   ProductoRespuestaDTO,
   CrearProductoDTO,
@@ -13,6 +14,14 @@ import type {
  * Realiza las llamadas REST directas al backend bajo aislamiento multitenant.
  */
 export const productosService = {
+  /**
+   * Obtiene la lista pública de productos activos para el catálogo de clientes.
+   */
+  async obtenerCatalogo(): Promise<ProductosCatalogoDTO> {
+    const response = await apiClient.get<ProductosCatalogoDTO>('/productos/catalogo');
+    return response.data;
+  },
+
   /**
    * Obtiene la lista administrativa de productos (activos e inactivos) del negocio activo.
    */
