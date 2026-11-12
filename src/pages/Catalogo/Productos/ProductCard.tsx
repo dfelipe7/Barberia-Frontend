@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Share2, Check, MessageCircle, Package } from 'lucide-react';
+import { Maximize2, MessageCircle, Package, Share2, Check } from 'lucide-react';
 import type { ProductoCatalogoDTO } from '../../../features/productos/api/productos.dto';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { useTenantBrand } from '../../../features/negocio/context/TenantBrandContext';
@@ -10,14 +10,13 @@ interface ProductCardProps {
   producto: ProductoCatalogoDTO;
 }
 
-const ProductImg: React.FC<{ src?: string | null; nombre: string }> = ({ src, nombre }) => {
+const ProductImg: React.FC<{ src: string; nombre: string }> = ({ src, nombre }) => {
   const [errorImagen, setErrorImagen] = useState(false);
-  const fotoCompleta = obtenerUrlFoto(src);
 
-  if (fotoCompleta && !errorImagen) {
+  if (!errorImagen) {
     return (
       <img
-        src={fotoCompleta}
+        src={src}
         alt={`Producto ${nombre}`}
         className="kyrios-card-thumb-img"
         loading="lazy"
@@ -27,8 +26,8 @@ const ProductImg: React.FC<{ src?: string | null; nombre: string }> = ({ src, no
   }
 
   return (
-    <div className="kyrios-card-thumb-placeholder d-flex align-items-center justify-content-center" aria-hidden="true">
-      <Package size={48} className="text-surface-muted opacity-50" />
+    <div className="kyrios-card-thumb-placeholder" aria-hidden="true">
+      <span>{nombre.charAt(0)}</span>
     </div>
   );
 };
@@ -37,18 +36,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [copiado, setCopiado] = useState(false);
   const { nombreNegocio, redesSociales, direccion, ciudad } = useTenantBrand();
+  const fotoCompleta = obtenerUrlFoto(producto.imagenUrl);
 
-  const precioFormateado = new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    maximumFractionDigits: 0,
-  }).format(producto.precio);
+  const formatPrecio = (precio: number) => {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0,
+    }).format(precio);
+  };
 
   const redWhatsApp = redesSociales?.find((r) => r.tipo === 'WHATSAPP' && r.activo);
 
-  const handleConsultarWhatsApp = () => {
+  const handleConsultarWhatsApp = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     const texto = encodeURIComponent(
-      `¡Hola ${nombreNegocio}! Me interesa comprar el producto "${producto.nombre}" (${precioFormateado}) que vi en su catálogo online.`
+      `¡Hola ${nombreNegocio}! Me interesa comprar el producto "${producto.nombre}" (${formatPrecio(producto.precio)}) que vi en su catálogo.`
     );
 
     if (redWhatsApp?.url) {
@@ -56,12 +59,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
       const separator = baseUrl.includes('?') ? '&' : '?';
       window.open(`${baseUrl}${separator}text=${texto}`, '_blank', 'noopener,noreferrer');
     } else {
-      // Fallback a enlace genérico de WhatsApp si no hay número directo configurado
       window.open(`https://wa.me/?text=${texto}`, '_blank', 'noopener,noreferrer');
     }
   };
 
-  const handleCompartir = async (e: React.MouseEvent) => {
+  const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
       if (navigator.clipboard) {
@@ -76,78 +78,86 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
 
   return (
     <>
-      <article className="kyrios-service-card d-flex flex-column h-100" aria-label={producto.nombre}>
-        {/* Contenedor de Imagen */}
-        <div
-          className="kyrios-card-thumb-wrap position-relative cursor-pointer"
+      <article className="kyrios-service-card" aria-label={producto.nombre}>
+        {/* Miniatura cuadrada a la izquierda */}
+        <button
+          type="button"
+          className="kyrios-card-thumb-btn border-0 p-0 text-start bg-transparent"
           onClick={() => setModalAbierto(true)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && setModalAbierto(true)}
           aria-label={`Ver detalles de ${producto.nombre}`}
         >
-          <ProductImg src={producto.imagenUrl} nombre={producto.nombre} />
-          <span className="kyrios-service-price-badge">{precioFormateado}</span>
-        </div>
-
-        {/* Cuerpo de la Card */}
-        <div className="p-4 d-flex flex-column flex-grow-1 justify-content-between">
-          <div>
-            <div className="d-flex align-items-start justify-content-between gap-2 mb-2">
-              <h3
-                className="kyrios-service-name mb-0 text-truncate cursor-pointer"
-                onClick={() => setModalAbierto(true)}
-                title={producto.nombre}
-              >
-                {producto.nombre}
-              </h3>
-              <button
-                type="button"
-                className="btn btn-sm btn-link p-0 text-surface-muted"
-                onClick={handleCompartir}
-                title="Copiar enlace"
-                aria-label="Compartir enlace del producto"
-              >
-                {copiado ? <Check size={16} className="text-success" /> : <Share2 size={16} />}
-              </button>
-            </div>
-
-            {producto.descripcion ? (
-              <p
-                className="kyrios-service-desc mb-3"
-                style={{
-                  display: '-webkit-box',
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical',
-                  overflow: 'hidden',
-                  minHeight: '2.6em',
-                }}
-              >
-                {producto.descripcion}
-              </p>
+          <div className="kyrios-card-thumb">
+            {fotoCompleta ? (
+              <>
+                <ProductImg key={fotoCompleta} src={fotoCompleta} nombre={producto.nombre} />
+                <span className="kyrios-img-expand-btn" aria-hidden="true">
+                  <Maximize2 size={13} />
+                </span>
+              </>
             ) : (
-              <p className="kyrios-service-desc mb-3 text-surface-muted fst-italic" style={{ minHeight: '2.6em' }}>
-                Producto exclusivo disponible en nuestra barbería.
-              </p>
+              <div className="kyrios-card-thumb-placeholder" aria-hidden="true">
+                <span>{producto.nombre.charAt(0)}</span>
+              </div>
             )}
           </div>
+        </button>
 
-          {/* Botón de acción */}
-          <div className="pt-2">
+        {/* Contenido a la derecha */}
+        <div className="kyrios-service-body">
+          {/* Fila superior: Título y Precio */}
+          <div className="kyrios-service-header">
+            <h3 className="kyrios-service-title" title={producto.nombre}>
+              {producto.nombre}
+            </h3>
+            <span className="kyrios-service-price">
+              {formatPrecio(producto.precio)}
+            </span>
+          </div>
+
+          {/* Fila central: Etiqueta y descripción con 'Ver más' */}
+          <div className="kyrios-service-content">
+            <span className="kyrios-service-category-tag">Producto</span>
+            {producto.descripcion ? (
+              <p className="kyrios-service-desc">{producto.descripcion}</p>
+            ) : (
+              <p className="kyrios-service-desc">Disponible en barbería</p>
+            )}
             <button
               type="button"
-              className="btn btn-success w-100 d-inline-flex align-items-center justify-content-center gap-2 py-2 fw-semibold shadow-sm"
-              style={{ borderRadius: '8px' }}
-              onClick={handleConsultarWhatsApp}
+              className="kyrios-service-more-btn"
+              onClick={() => setModalAbierto(true)}
+              aria-label={`Ver más información de ${producto.nombre}`}
             >
-              <MessageCircle size={18} />
-              <span>Pedir por WhatsApp</span>
+              Ver más
+            </button>
+          </div>
+
+          {/* Fila inferior: Estado y Botón Pedir */}
+          <div className="kyrios-service-footer">
+            <div className="kyrios-service-duration">
+              <Package size={13} aria-hidden="true" />
+              <span>Disponible</span>
+            </div>
+
+            <button
+              type="button"
+              className="btn-kyrios-primary kyrios-service-book-btn d-inline-flex align-items-center gap-1"
+              style={{
+                backgroundColor: '#25D366',
+                borderColor: '#25D366',
+                color: '#ffffff',
+              }}
+              onClick={handleConsultarWhatsApp}
+              aria-label={`Pedir ${producto.nombre} por WhatsApp`}
+            >
+              <MessageCircle size={13} />
+              <span>Pedir</span>
             </button>
           </div>
         </div>
       </article>
 
-      {/* Modal Detalle Completo del Producto */}
+      {/* Modal Detalle Completo del Producto al hacer clic en ver más o miniatura */}
       {modalAbierto && (
         <Modal
           isOpen={modalAbierto}
@@ -156,12 +166,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
           size="md"
           footer={
             <div className="d-flex w-100 justify-content-between align-items-center">
-              <span className="fs-5 fw-bold text-primary">{precioFormateado}</span>
+              <span className="fs-5 fw-bold text-primary">
+                {formatPrecio(producto.precio)}
+              </span>
               <div className="d-flex gap-2">
                 <Button variant="secondary" onClick={() => setModalAbierto(false)}>
                   Cerrar
                 </Button>
-                <Button variant="primary" onClick={handleConsultarWhatsApp}>
+                <Button
+                  variant="primary"
+                  onClick={handleConsultarWhatsApp}
+                  style={{
+                    backgroundColor: '#25D366',
+                    borderColor: '#25D366',
+                    color: '#ffffff',
+                  }}
+                >
                   <MessageCircle size={16} className="me-1" />
                   Pedir por WhatsApp
                 </Button>
@@ -170,10 +190,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
           }
         >
           <div className="d-flex flex-column gap-3">
-            {producto.imagenUrl && (
-              <div className="text-center rounded overflow-hidden" style={{ maxHeight: '280px', background: 'var(--home-surface-alt)' }}>
+            {fotoCompleta && (
+              <div
+                className="text-center rounded overflow-hidden"
+                style={{ maxHeight: '280px', background: 'var(--home-surface-alt)' }}
+              >
                 <img
-                  src={obtenerUrlFoto(producto.imagenUrl) || ''}
+                  src={fotoCompleta}
                   alt={producto.nombre}
                   className="img-fluid"
                   style={{ maxHeight: '280px', objectFit: 'contain' }}
@@ -181,14 +204,38 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
               </div>
             )}
             <div>
-              <h5 className="fw-bold mb-1">Descripción</h5>
+              <div className="d-flex justify-content-between align-items-center mb-1">
+                <span className="badge bg-secondary-subtle text-secondary fw-semibold">
+                  PRODUCTO EXCLUSIVO
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-link text-decoration-none text-surface-muted p-0"
+                  onClick={handleShare}
+                >
+                  {copiado ? (
+                    <span className="text-success small d-inline-flex align-items-center gap-1">
+                      <Check size={14} /> ¡Copiado!
+                    </span>
+                  ) : (
+                    <span className="small d-inline-flex align-items-center gap-1">
+                      <Share2 size={14} /> Compartir
+                    </span>
+                  )}
+                </button>
+              </div>
+              <h5 className="fw-bold mb-2">{producto.nombre}</h5>
               <p className="text-surface-muted" style={{ whiteSpace: 'pre-line' }}>
-                {producto.descripcion || 'Producto exclusivo disponible en sede física.'}
+                {producto.descripcion || 'Producto de alta calidad disponible en nuestra sede física.'}
               </p>
             </div>
             {direccion && (
-              <div className="p-3 rounded border small text-surface-muted" style={{ background: 'var(--home-surface-alt)' }}>
-                <strong>Disponible en:</strong> {nombreNegocio} - {direccion}{ciudad ? `, ${ciudad}` : ''}
+              <div
+                className="p-3 rounded border small text-surface-muted"
+                style={{ background: 'var(--home-surface-alt)' }}
+              >
+                <strong>Disponible en:</strong> {nombreNegocio} - {direccion}
+                {ciudad ? `, ${ciudad}` : ''}
               </div>
             )}
           </div>
@@ -199,4 +246,3 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
 };
 
 export default ProductCard;
-
