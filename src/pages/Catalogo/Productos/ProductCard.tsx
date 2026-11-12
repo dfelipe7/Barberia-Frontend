@@ -55,7 +55,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
     );
 
     if (redWhatsApp?.url) {
-      const baseUrl = redWhatsApp.url.trim();
+      let baseUrl = redWhatsApp.url.trim();
+      if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+        const digitos = baseUrl.replace(/\D/g, '');
+        if (digitos.length >= 7) {
+          baseUrl = `https://wa.me/${digitos.length === 10 && digitos.startsWith('3') ? `57${digitos}` : digitos}`;
+        } else {
+          baseUrl = `https://${baseUrl}`;
+        }
+      }
       const separator = baseUrl.includes('?') ? '&' : '?';
       window.open(`${baseUrl}${separator}text=${texto}`, '_blank', 'noopener,noreferrer');
     } else {

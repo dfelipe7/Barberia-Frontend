@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import apiClient from '../../../shared/lib/http/axios';
 import { redesSocialesApi } from './redesSocialesApi';
+import { normalizarEntradaRed } from '../components/RedesSocialesSection';
 import type { CrearRedSocialDto, RedSocial } from '../types/redesSociales.types';
 
 describe('redesSocialesApi', () => {
@@ -76,6 +77,28 @@ describe('redesSocialesApi', () => {
 
     expect(apiClient.patch).toHaveBeenCalledWith('/perfil-negocio/redes-sociales/4/activar');
     expect(result.activo).toBe(true);
+  });
+});
+
+describe('normalizarEntradaRed', () => {
+  it('convierte un número celular de 10 dígitos que inicia en 3 a https://wa.me/57...', () => {
+    expect(normalizarEntradaRed('WHATSAPP', '3001234567')).toBe('https://wa.me/573001234567');
+  });
+
+  it('normaliza números con espacios o símbolos para WhatsApp', () => {
+    expect(normalizarEntradaRed('WHATSAPP', '+57 300 123 4567')).toBe('https://wa.me/573001234567');
+    expect(normalizarEntradaRed('WHATSAPP', '573001234567')).toBe('https://wa.me/573001234567');
+  });
+
+  it('respeta URLs que ya tienen el protocolo y dominio de WhatsApp', () => {
+    expect(normalizarEntradaRed('WHATSAPP', 'https://wa.me/573001234567')).toBe('https://wa.me/573001234567');
+    expect(normalizarEntradaRed('WHATSAPP', 'wa.me/573001234567')).toBe('https://wa.me/573001234567');
+  });
+
+  it('convierte un usuario @usuario a la URL completa para Instagram y TikTok', () => {
+    expect(normalizarEntradaRed('INSTAGRAM', '@barberia_cool')).toBe('https://instagram.com/barberia_cool');
+    expect(normalizarEntradaRed('TIKTOK', '@barberia_cool')).toBe('https://tiktok.com/@barberia_cool');
+    expect(normalizarEntradaRed('FACEBOOK', 'barberia_cool')).toBe('https://facebook.com/barberia_cool');
   });
 });
 
