@@ -97,88 +97,91 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
         </div>
       )}
 
-      {/* Sección Foto del Producto */}
-      <div className="mb-4 d-flex flex-column align-items-center">
-        <label className="form-label fw-semibold mb-2 text-surface-muted small">
-          Foto del Producto (Opcional)
-        </label>
-        <FileUploadField
-          previewUrl={previewActual}
-          placeholderTexto="Producto"
-          shape="square"
-          size={120}
-          onFileSelected={handleSeleccionarArchivo}
-          onRemove={previewActual ? handleRemoverArchivo : undefined}
-          error={errors.imagen?.message}
-        />
-        <span className="text-surface-muted small mt-2">
-          Formatos admitidos: JPG, PNG, WEBP (máx. 5 MB)
-        </span>
-      </div>
-
-      {/* Nombre del Producto */}
-      <div className="mb-3">
-        <label htmlFor="producto-nombre" className="form-label fw-semibold">
-          Nombre del Producto <span className="text-danger">*</span>
-        </label>
-        <input
-          id="producto-nombre"
-          type="text"
-          className={`form-control ${errors.nombre ? 'is-invalid' : ''}`}
-          placeholder="Ej. Cera Fijadora Mate 100g"
-          maxLength={100}
-          disabled={isSubmitting}
-          {...register('nombre')}
-        />
-        {errors.nombre && (
-          <div className="invalid-feedback">{errors.nombre.message}</div>
-        )}
-      </div>
-
-      {/* Precio */}
-      <div className="mb-3">
-        <label htmlFor="producto-precio" className="form-label fw-semibold">
-          Precio de Venta ($ COP) <span className="text-danger">*</span>
-        </label>
-        <div className="input-group">
-          <span className="input-group-text">$</span>
-          <input
-            id="producto-precio"
-            type="number"
-            step="100"
-            min="100"
-            className={`form-control ${errors.precio ? 'is-invalid' : ''}`}
-            placeholder="Ej. 35000"
-            disabled={isSubmitting}
-            {...register('precio', { valueAsNumber: true })}
+      {/* Sección Superior: Foto a la izquierda, Nombre y Precio a la derecha */}
+      <div className="row g-3 mb-3 align-items-start">
+        {/* Columna Foto */}
+        <div className="col-12 col-sm-auto d-flex flex-column align-items-center align-items-sm-start">
+          <label className="form-label fw-semibold mb-1 text-surface-muted small">
+            Foto del Producto
+          </label>
+          <FileUploadField
+            previewUrl={previewActual}
+            placeholderTexto="Foto"
+            shape="square"
+            size={105}
+            onFileSelected={handleSeleccionarArchivo}
+            onRemove={previewActual ? handleRemoverArchivo : undefined}
+            error={errors.imagen?.message}
           />
-          {errors.precio && (
-            <div className="invalid-feedback">{errors.precio.message}</div>
-          )}
+        </div>
+
+        {/* Columna Nombre y Precio */}
+        <div className="col-12 col-sm d-flex flex-column gap-2">
+          {/* Nombre del Producto */}
+          <div>
+            <label htmlFor="producto-nombre" className="form-label fw-semibold small mb-1">
+              Nombre del Producto <span className="text-danger">*</span>
+            </label>
+            <input
+              id="producto-nombre"
+              type="text"
+              className={`form-control form-control-sm ${errors.nombre ? 'is-invalid' : ''}`}
+              placeholder="Ej. Cera Fijadora Mate"
+              maxLength={100}
+              disabled={isSubmitting}
+              {...register('nombre')}
+            />
+            {errors.nombre && (
+              <div className="invalid-feedback small">{errors.nombre.message}</div>
+            )}
+          </div>
+
+          {/* Precio */}
+          <div>
+            <label htmlFor="producto-precio" className="form-label fw-semibold small mb-1">
+              Precio de Venta ($ COP) <span className="text-danger">*</span>
+            </label>
+            <div className="input-group input-group-sm">
+              <span className="input-group-text">$</span>
+              <input
+                id="producto-precio"
+                type="number"
+                step="100"
+                min="100"
+                className={`form-control ${errors.precio ? 'is-invalid' : ''}`}
+                placeholder="Ej. 35000"
+                disabled={isSubmitting}
+                {...register('precio', { valueAsNumber: true })}
+              />
+              {errors.precio && (
+                <div className="invalid-feedback small">{errors.precio.message}</div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Descripción */}
-      <div className="mb-4">
+      {/* Descripción debajo a ancho completo */}
+      <div className="mb-3">
         <div className="d-flex justify-content-between align-items-center mb-1">
-          <label htmlFor="producto-descripcion" className="form-label fw-semibold mb-0">
+          <label htmlFor="producto-descripcion" className="form-label fw-semibold small mb-0">
             Descripción
           </label>
-          <span className="text-surface-muted small">
+          <span className="text-surface-muted small" style={{ fontSize: '0.75rem' }}>
             {descripcionActual.length}/500
           </span>
         </div>
         <textarea
           id="producto-descripcion"
           rows={3}
-          className={`form-control ${errors.descripcion ? 'is-invalid' : ''}`}
-          placeholder="Características, beneficios, modo de uso o tamaño del producto..."
+          className={`form-control form-control-sm ${errors.descripcion ? 'is-invalid' : ''}`}
+          placeholder="Características, beneficios o detalles de uso..."
           maxLength={500}
           disabled={isSubmitting}
           {...register('descripcion')}
         />
         {errors.descripcion && (
-          <div className="invalid-feedback">{errors.descripcion.message}</div>
+          <div className="invalid-feedback small">{errors.descripcion.message}</div>
         )}
       </div>
 

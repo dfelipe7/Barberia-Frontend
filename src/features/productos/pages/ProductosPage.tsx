@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { CheckCircle2, EyeOff, Lock, Unlock } from 'lucide-react';
 import CrudPage from '../../../shared/components/CrudPage';
 import CatalogCard from '../../../shared/ui/Catalogcard';
+import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import SearchInput from '../../../shared/ui/molecules/SearchInput';
 import EmptyState from '../../../shared/ui/molecules/EmptyState';
@@ -159,6 +160,7 @@ export const ProductosPage: React.FC = () => {
       onRetry={refetch}
       modalTitle="Registrar Nuevo Producto"
       editModalTitle="Editar Producto"
+      modalSize="md"
       onModalClose={() => setErrorForm(null)}
       renderModalForm={({ onClose, onDirectClose, record, setFormDirty }) => {
         const isGuardando = crearMutation.isPending || actualizarMutation.isPending;
@@ -268,13 +270,13 @@ export const ProductosPage: React.FC = () => {
                   subtitle={producto.descripcion || undefined}
                   isActive={producto.estado === 'ACTIVO'}
                   isStateChanging={idProductoAnimado === producto.id}
-                  priceLabel={`$${Number(producto.precio).toLocaleString('es-CO')}`}
+                  priceLabel={`$ ${Number(producto.precio).toLocaleString('es-CO')}`}
                   actions={
                     <div className="d-flex gap-1 w-100 catalog-action-buttons">
                       <button
                         type="button"
-                        className="btn btn-sm btn-light flex-fill px-1 py-1"
-                        style={{ borderRadius: '4px' }}
+                        className="btn btn-sm btn-light flex-fill px-1 py-1 catalog-btn-action"
+                        style={{ borderRadius: '2px' }}
                         onClick={(e) => {
                           e.stopPropagation();
                           onEdit(producto);
@@ -285,12 +287,12 @@ export const ProductosPage: React.FC = () => {
                       </button>
                       <button
                         type="button"
-                        className={`btn btn-sm flex-fill px-1 py-1 d-inline-flex align-items-center justify-content-center gap-1 ${
+                        className={`btn btn-sm flex-fill px-1 py-1 d-inline-flex align-items-center justify-content-center gap-1 catalog-btn-action ${
                           producto.estado === 'ACTIVO'
-                            ? 'btn-outline-warning text-warning-emphasis'
-                            : 'btn-outline-success text-success-emphasis'
+                            ? 'btn-outline-danger'
+                            : 'btn-success'
                         }`}
-                        style={{ borderRadius: '4px' }}
+                        style={{ borderRadius: '2px', transition: 'all 150ms ease' }}
                         disabled={idProductoCambiando === producto.id}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -302,14 +304,16 @@ export const ProductosPage: React.FC = () => {
                             : `Activar ${producto.nombre}`
                         }
                       >
-                        {producto.estado === 'ACTIVO' ? (
+                        {idProductoCambiando === producto.id ? (
+                          <KyriosSpinner size="xs" aria-hidden="true" />
+                        ) : producto.estado === 'ACTIVO' ? (
                           <>
-                            <Lock size={12} />
-                            <span>Pausar</span>
+                            <Lock size={12} className="flex-shrink-0" />
+                            <span>Desactivar</span>
                           </>
                         ) : (
                           <>
-                            <Unlock size={12} />
+                            <Unlock size={12} className="flex-shrink-0" />
                             <span>Activar</span>
                           </>
                         )}
