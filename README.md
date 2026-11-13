@@ -148,9 +148,13 @@ src/
 
 ---
 
-## 📖 Estándares Internacionales & Guías de Uso
+## 📍 Punto de Partida Centralizado — Ecosistema de Documentación, Seguridad y Gobernanza IA
 
-* **📖 Manual de Usuario (IEEE 1063):** Consulta [`docs/MANUAL_DE_USUARIO.md`](docs/MANUAL_DE_USUARIO.md) para la guía operativa paso a paso de agendamiento de citas, agenda de barberos, vinculación de WhatsApp Web y administración de sede.
-* **🛡️ Marco de Seguridad y Testing (SAST, SCA, DAST):** Consulta [`docs/SEGURIDAD_Y_TESTING.md`](docs/SEGURIDAD_Y_TESTING.md) para la matriz comparativa de técnicas de seguridad y auditoría OWASP Top 10.
-* **📘 Plan & Guía de Estilo Documental (ISO/IEC/IEEE 26514):** Consulta [`docs/PLAN_DE_DOCUMENTACION_ISO_26514.md`](docs/PLAN_DE_DOCUMENTACION_ISO_26514.md) para las directrices de diseño editorial, taxonomía y accesibilidad WCAG AA.
-* **💻 Developer Architecture Hub:** Consulta [`docs/DOCS_PORTAL.md`](docs/DOCS_PORTAL.md) para el desglose detallado de patrones de diseño (Facade, Decorator, Proxy), contratos y flujo de datos.
+> 👉 **Acceso directo al Hub Centralizado:** Consulta **[`Barberia-Backend/docs/README.md`](https://github.com/dfelipe7/Barberia-Backend/blob/feature/multitenant-core-fixes/docs/README.md)** para ver el índice maestro que conecta los **3 repositorios oficiales**: [`superPromptBarberia`](https://github.com/dfelipe7/superPromptBarberia), [`Barberia-Backend`](https://github.com/dfelipe7/Barberia-Backend) y [`Barberia-Frontend`](https://github.com/dfelipe7/Barberia-Frontend).
+
+* **🧠 Especificación Génesis (Superprompt Modular):** Consulta [`superPromptBarberia/frontend/SUPERPROMPT_FRONTEND.md`](https://github.com/dfelipe7/superPromptBarberia/blob/master/frontend/SUPERPROMPT_FRONTEND.md) para los 11 módulos de ingeniería de Frontend.
+* **📖 Manual de Usuario (ISO/IEC/IEEE 26514:2022 & IEEE 1063):** Consulta [`docs/MANUAL_DE_USUARIO.md`](docs/MANUAL_DE_USUARIO.md) y las matrices de verificación en [`Barberia-Backend/docs/usuario/`](https://github.com/dfelipe7/Barberia-Backend/tree/feature/multitenant-core-fixes/docs/usuario).
+* **🛡️ Marco de Seguridad y Testing (SAST, SCA, IAST, DAST):** Consulta [`docs/SEGURIDAD_Y_TESTING.md`](docs/SEGURIDAD_Y_TESTING.md) y los flujos en [`.github/workflows/`](.github/workflows/).
+* **📘 Plan & Guía de Estilo Documental (ISO/IEC/IEEE 26514):** Consulta [`docs/PLAN_DE_DOCUMENTACION_ISO_26514.md`](docs/PLAN_DE_DOCUMENTACION_ISO_26514.md).
+* **💻 Developer Architecture Hub (TSDoc / TypeDoc):** Consulta [`docs/DOCS_PORTAL.md`](docs/DOCS_PORTAL.md) y [`src/api/README.md`](src/api/README.md).
+* **🤖 Gobernanza IA (*Human-in-the-Loop*):** Consulta [`AGENTS.md`](AGENTS.md), [`.ai/sessions/`](.ai/sessions/) y [`scripts/setup-ai-hooks.ps1`](scripts/setup-ai-hooks.ps1).
