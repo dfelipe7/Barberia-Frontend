@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, afterEach } from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import '@testing-library/jest-dom/vitest';
@@ -74,6 +74,10 @@ const mockCitas: ReservaClienteDTO[] = [
 ];
 
 describe('HistorialCitasCliente', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   it('retorna null si no hay citas anteriores', () => {
     const { container } = render(
       <MemoryRouter>

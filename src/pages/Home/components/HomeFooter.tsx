@@ -119,14 +119,9 @@ export const HomeFooter: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <button
-                  type="button"
-                  className="kyrios-footer-link bg-transparent border-0 p-0 text-start"
-                  onClick={() => setProductosModalOpen(true)}
-                  aria-label="Productos (sección en desarrollo)"
-                >
+                <Link to={`${basePrefix}/catalogo/productos`} className="kyrios-footer-link">
                   Productos
-                </button>
+                </Link>
               </li>
               <li>
                 <a href={`${basePrefix || ''}/#ubicacion`} className="kyrios-footer-link">

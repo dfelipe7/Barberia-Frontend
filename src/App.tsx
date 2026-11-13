@@ -43,6 +43,9 @@ const CatalogoServiciosPage = lazyWithRetry(
 const CatalogoBarberosPage = lazyWithRetry(
   () => import('./pages/Catalogo/Barberos/CatalogoBarberosPage')
 );
+const CatalogoProductosPage = lazyWithRetry(
+  () => import('./pages/Catalogo/Productos/CatalogoProductosPage')
+);
 
 function App() {
   const location = useLocation();
@@ -92,6 +95,14 @@ function App() {
             </Suspense>
           }
         />
+        <Route
+          path="/:slug/catalogo/productos"
+          element={
+            <Suspense fallback={<div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}><KyriosSpinner /></div>}>
+              <CatalogoProductosPage />
+            </Suspense>
+          }
+        />
 
         {/* Landing de la Plataforma SaaS en raíz */}
         <Route path="/" element={<LandingPlataformaPage />} />
@@ -118,6 +129,14 @@ function App() {
           element={
             <Suspense fallback={<div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}><KyriosSpinner /></div>}>
               <CatalogoBarberosPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/catalogo/productos"
+          element={
+            <Suspense fallback={<div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}><KyriosSpinner /></div>}>
+              <CatalogoProductosPage />
             </Suspense>
           }
         />

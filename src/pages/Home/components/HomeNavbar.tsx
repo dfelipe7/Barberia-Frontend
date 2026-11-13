@@ -70,7 +70,7 @@ export const HomeNavbar: React.FC<HomeNavbarProps> = ({
     const base = [
       { id: 'servicios', to: `${basePrefix}/catalogo/servicios`, label: 'Servicios' },
       { id: 'barberos',  to: `${basePrefix}/catalogo/barberos`,  label: 'Barberos'  },
-      { id: 'productos', to: null,                                label: 'Productos' },
+      { id: 'productos', to: `${basePrefix}/catalogo/productos`, label: 'Productos' },
     ];
     return enHome
       ? base

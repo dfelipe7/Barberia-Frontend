@@ -1,0 +1,204 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { productosService } from './productos.service';
+import apiClient from '../../../shared/lib/http/axios';
+
+vi.mock('../../../shared/lib/http/axios', () => ({
+  default: {
+    get: vi.fn(),
+    post: vi.fn(),
+    patch: vi.fn(),
+  },
+}));
+
+describe('productosService', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('obtenerCatalogo realiza GET a /productos/catalogo', async () => {
+    const mockCatalogo = {
+      productos: [
+        {
+          id: 1,
+          nombre: 'Cera Mate',
+          precio: 35000,
+          imagenUrl: '/uploads/cera.jpg',
+        },
+      ],
+    };
+    vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockCatalogo });
+
+    const res = await productosService.obtenerCatalogo();
+    expect(apiClient.get).toHaveBeenCalledWith('/productos/catalogo');
+    expect(res).toEqual(mockCatalogo);
+  });
+
+  it('obtenerProductos realiza GET a /productos', async () => {
+    const mockRespuesta = {
+      productos: [
+        {
+          id: 1,
+          nombre: 'Cera Mate',
+          precio: 35000,
+          estado: 'ACTIVO' as const,
+        },
+      ],
+    };
+    vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockRespuesta });
+
+    const res = await productosService.obtenerProductos();
+    expect(apiClient.get).toHaveBeenCalledWith('/productos');
+    expect(res).toEqual(mockRespuesta);
+  });
+
+  it('obtenerPorId realiza GET a /productos/:id', async () => {
+    const mockProducto = {
+      id: 5,
+      nombre: 'Aceite Barba',
+      precio: 25000,
+      estado: 'ACTIVO' as const,
+    };
+    vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockProducto });
+
+    const res = await productosService.obtenerPorId(5);
+    expect(apiClient.get).toHaveBeenCalledWith('/productos/5');
+    expect(res).toEqual(mockProducto);
+  });
+
+  it('crearProducto envía FormData con multipart/form-data a POST /productos', async () => {
+    const mockRespuesta = {
+      mensaje: 'Producto registrado correctamente',
+      producto: {
+        id: 1,
+        nombre: 'Cera Fijadora',
+        precio: 35000,
+        estado: 'ACTIVO' as const,
+      },
+    };
+    vi.mocked(apiClient.post).mockResolvedValueOnce({ data: mockRespuesta });
+
+    const res = await productosService.crearProducto({
+      nombre: 'Cera Fijadora',
+      precio: 35000,
+      descripcion: 'Fijación fuerte',
+    });
+
+    expect(apiClient.post).toHaveBeenCalledTimes(1);
+    const [url, formData, config] = vi.mocked(apiClient.post).mock.calls[0];
+    expect(url).toBe('/productos');
+    expect(formData).toBeInstanceOf(FormData);
+    expect((formData as FormData).get('nombre')).toBe('Cera Fijadora');
+    expect((formData as FormData).get('precio')).toBe('35000');
+    expect((formData as FormData).get('descripcion')).toBe('Fijación fuerte');
+    expect(config?.headers?.['Content-Type']).toBe('multipart/form-data');
+    expect(res).toEqual(mockRespuesta);
+  });
+
+  it('crearProducto adjunta archivo imagen cuando se envía un File y omite descripción vacía', async () => {
+    const mockRespuesta = {
+      mensaje: 'Producto con imagen registrado',
+      producto: {
+        id: 2,
+        nombre: 'Aceite Barba',
+        precio: 28000,
+        estado: 'ACTIVO' as const,
+      },
+    };
+    vi.mocked(apiClient.post).mockResolvedValueOnce({ data: mockRespuesta });
+    const archivoMock = new File(['contenido'], 'aceite.png', { type: 'image/png' });
+
+    await productosService.crearProducto({
+      nombre: '  Aceite Barba  ',
+      precio: 28000,
+      descripcion: '   ',
+      imagen: archivoMock,
+    });
+
+    const [, formData] = vi.mocked(apiClient.post).mock.calls[0];
+    expect((formData as FormData).get('nombre')).toBe('Aceite Barba');
+    expect((formData as FormData).get('descripcion')).toBeNull();
+    expect((formData as FormData).get('imagen')).toBe(archivoMock);
+  });
+
+  it('actualizarProducto envía FormData a PATCH /productos/:id', async () => {
+    const mockRespuesta = {
+      mensaje: 'Producto actualizado correctamente',
+      producto: {
+        id: 1,
+        nombre: 'Cera Fijadora Pro',
+        precio: 40000,
+        estado: 'ACTIVO' as const,
+      },
+    };
+    vi.mocked(apiClient.patch).mockResolvedValueOnce({ data: mockRespuesta });
+
+    const res = await productosService.actualizarProducto(1, {
+      nombre: 'Cera Fijadora Pro',
+      precio: 40000,
+    });
+
+    expect(apiClient.patch).toHaveBeenCalledTimes(1);
+    const [url, formData, config] = vi.mocked(apiClient.patch).mock.calls[0];
+    expect(url).toBe('/productos/1');
+    expect(formData).toBeInstanceOf(FormData);
+    expect((formData as FormData).get('nombre')).toBe('Cera Fijadora Pro');
+    expect((formData as FormData).get('precio')).toBe('40000');
+    expect(config?.headers?.['Content-Type']).toBe('multipart/form-data');
+    expect(res).toEqual(mockRespuesta);
+  });
+
+  it('actualizarProducto soporta descripción, limpieza de descripción e imagen File en actualización parcial', async () => {
+    const mockRespuesta = {
+      mensaje: 'Producto actualizado parcialmente',
+      producto: {
+        id: 1,
+        nombre: 'Cera Fijadora Pro',
+        precio: 40000,
+        estado: 'ACTIVO' as const,
+      },
+    };
+    vi.mocked(apiClient.patch).mockResolvedValue({ data: mockRespuesta });
+    const archivoMock = new File(['img'], 'nueva.png', { type: 'image/png' });
+
+    await productosService.actualizarProducto(1, {
+      descripcion: '  Brillo medio  ',
+      imagen: archivoMock,
+    });
+
+    const [, formData1] = vi.mocked(apiClient.patch).mock.calls[0];
+    expect((formData1 as FormData).get('nombre')).toBeNull();
+    expect((formData1 as FormData).get('precio')).toBeNull();
+    expect((formData1 as FormData).get('descripcion')).toBe('Brillo medio');
+    expect((formData1 as FormData).get('imagen')).toBe(archivoMock);
+
+    await productosService.actualizarProducto(1, {
+      descripcion: '',
+    });
+
+    const [, formData2] = vi.mocked(apiClient.patch).mock.calls[1];
+    expect((formData2 as FormData).get('descripcion')).toBe('');
+  });
+
+  it('cambiarEstadoProducto realiza PATCH a /productos/:id/estado con JSON', async () => {
+    const mockRespuesta = {
+      mensaje: 'Estado del producto actualizado correctamente',
+      producto: {
+        id: 1,
+        nombre: 'Cera',
+        precio: 35000,
+        estado: 'INACTIVO' as const,
+      },
+    };
+    vi.mocked(apiClient.patch).mockResolvedValueOnce({ data: mockRespuesta });
+
+    const res = await productosService.cambiarEstadoProducto(1, {
+      estado: 'INACTIVO',
+    });
+
+    expect(apiClient.patch).toHaveBeenCalledWith('/productos/1/estado', {
+      estado: 'INACTIVO',
+    });
+    expect(res).toEqual(mockRespuesta);
+  });
+});
+

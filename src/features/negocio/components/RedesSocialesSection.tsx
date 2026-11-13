@@ -77,7 +77,7 @@ const OtherBrandIcon: React.FC<{ size?: number; color?: string }> = ({ size = 20
 const REDES_CONFIG: Record<TipoRedSocial, RedConfigItem> = {
   INSTAGRAM: {
     label: 'Instagram',
-    placeholder: 'https://instagram.com/tu_barberia',
+    placeholder: 'Ej: @tu_barberia o https://instagram.com/tu_barberia',
     baseDomain: 'instagram.com',
     color: '#E1306C',
     bg: 'rgba(225, 48, 108, 0.14)',
@@ -85,15 +85,15 @@ const REDES_CONFIG: Record<TipoRedSocial, RedConfigItem> = {
   },
   WHATSAPP: {
     label: 'WhatsApp',
-    placeholder: 'https://wa.me/573001234567',
+    placeholder: 'Ej: 300 123 4567 o https://wa.me/573001234567',
     baseDomain: 'wa.me',
     color: '#25D366',
     bg: 'rgba(37, 211, 102, 0.14)',
-    descripcion: 'Atención al cliente y agendamiento directo',
+    descripcion: 'Atención al cliente y pedidos por WhatsApp',
   },
   TIKTOK: {
     label: 'TikTok',
-    placeholder: 'https://tiktok.com/@tu_barberia',
+    placeholder: 'Ej: @tu_barberia o https://tiktok.com/@tu_barberia',
     baseDomain: 'tiktok.com',
     color: '#00f2fe',
     bg: 'rgba(0, 242, 254, 0.14)',
@@ -101,7 +101,7 @@ const REDES_CONFIG: Record<TipoRedSocial, RedConfigItem> = {
   },
   FACEBOOK: {
     label: 'Facebook',
-    placeholder: 'https://facebook.com/tu_barberia',
+    placeholder: 'Ej: tu_barberia o https://facebook.com/tu_barberia',
     baseDomain: 'facebook.com',
     color: '#1877F2',
     bg: 'rgba(24, 119, 242, 0.14)',
@@ -116,6 +116,74 @@ const REDES_CONFIG: Record<TipoRedSocial, RedConfigItem> = {
     descripcion: 'YouTube, Twitter / X, Blog o sitio web oficial',
   },
 };
+
+const SOCIAL_DOMAINS: Partial<Record<TipoRedSocial, { domain: string; userPrefix: string }>> = {
+  INSTAGRAM: { domain: 'instagram.com', userPrefix: '' },
+  TIKTOK: { domain: 'tiktok.com', userPrefix: '@' },
+  FACEBOOK: { domain: 'facebook.com', userPrefix: '' },
+};
+
+function normalizarWhatsAppInput(limpio: string): string | null {
+  if (limpio.startsWith('https://wa.me/') || limpio.startsWith('https://api.whatsapp.com/')) {
+    return limpio;
+  }
+  if (limpio.startsWith('wa.me/')) {
+    return `https://${limpio}`;
+  }
+  const digitos = limpio.replace(/\D/g, '');
+  if (digitos.length >= 7) {
+    const prefijoPais = digitos.length === 10 && digitos.startsWith('3') ? '57' : '';
+    return `https://wa.me/${prefijoPais}${digitos}`;
+  }
+  return null;
+}
+
+function normalizarRedConUsuario(
+  limpio: string,
+  domain: string,
+  userPrefix: string
+): string | null {
+  if (limpio.startsWith(`https://${domain}/`) || limpio.startsWith(`https://www.${domain}/`)) {
+    return limpio;
+  }
+  if (limpio.startsWith(`${domain}/`)) {
+    return `https://${limpio}`;
+  }
+  const user = limpio.replace(/^@/, '').replace(/\s+/g, '');
+  if (user && !user.includes('/') && !user.includes('.')) {
+    return `https://${domain}/${userPrefix}${user}`;
+  }
+  return null;
+}
+
+/**
+ * Normaliza inteligentemente la entrada del usuario según la plataforma:
+ * - Para WhatsApp: Permite número celular (ej. 3001234567 o +57 300 123 4567) y lo convierte a https://wa.me/...
+ * - Para Instagram/TikTok/Facebook: Permite escribir @usuario o el usuario solo.
+ * - Siempre devuelve una URL válida que inicia con https://.
+ */
+export function normalizarEntradaRed(tipo: TipoRedSocial, val: string): string {
+  const raw = val.trim();
+  if (!raw) return '';
+  const limpio = raw.replace(/^http:\/\//i, 'https://');
+
+  if (tipo === 'WHATSAPP') {
+    const waUrl = normalizarWhatsAppInput(limpio);
+    if (waUrl) return waUrl;
+  }
+
+  const socialCfg = SOCIAL_DOMAINS[tipo];
+  if (socialCfg) {
+    const socialUrl = normalizarRedConUsuario(limpio, socialCfg.domain, socialCfg.userPrefix);
+    if (socialUrl) return socialUrl;
+  }
+
+  if (!limpio.startsWith('https://') && limpio.includes('.')) {
+    return `https://${limpio}`;
+  }
+
+  return limpio;
+}
 
 export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slugNegocio }) => {
   const { showToast } = useToastContext();
@@ -202,22 +270,27 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
     }
   };
 
-  const validarUrl = (val: string): boolean => {
+  const validarUrl = (val: string, tipoRed: TipoRedSocial = tipo): boolean => {
     const trimmed = val.trim();
     if (!trimmed) {
-      setErrorUrl('La URL es requerida.');
+      setErrorUrl(tipoRed === 'WHATSAPP' ? 'El número o enlace de WhatsApp es requerido.' : 'La URL o usuario es requerido.');
       return false;
     }
-    if (!trimmed.startsWith('https://')) {
-      setErrorUrl('Por seguridad, la URL debe comenzar estrictamente con https://');
+    const normalizado = normalizarEntradaRed(tipoRed, trimmed);
+    if (!normalizado.startsWith('https://')) {
+      if (tipoRed === 'WHATSAPP') {
+        setErrorUrl('Ingresa un número celular válido (mínimo 7 dígitos) o el enlace https://wa.me/...');
+      } else {
+        setErrorUrl('Por seguridad, el enlace debe comenzar con https://');
+      }
       return false;
     }
     try {
-      new URL(trimmed);
+      new URL(normalizado);
       setErrorUrl('');
       return true;
     } catch {
-      setErrorUrl('Introduce una dirección URL válida.');
+      setErrorUrl('Introduce una dirección URL o número válido.');
       return false;
     }
   };
@@ -226,29 +299,35 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
     try {
       const text = await navigator.clipboard.readText();
       if (text) {
-        let clean = text.trim();
-        if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
-          clean = `https://${clean}`;
-        } else if (clean.startsWith('http://')) {
-          clean = clean.replace('http://', 'https://');
-        }
-        setUrl(clean);
-        validarUrl(clean);
+        const normalizado = normalizarEntradaRed(tipo, text);
+        setUrl(normalizado);
+        validarUrl(normalizado, tipo);
       }
     } catch {
-      showToast('info', 'Usa Ctrl+V / Cmd+V para pegar tu enlace en el campo.');
+      showToast('info', 'Usa Ctrl+V / Cmd+V para pegar en el campo.');
     }
+  };
+
+  const handleInputBlur = () => {
+    if (!url.trim()) return;
+    const normalizado = normalizarEntradaRed(tipo, url);
+    if (normalizado && normalizado !== url) {
+      setUrl(normalizado);
+    }
+    validarUrl(normalizado || url, tipo);
   };
 
   const handleGuardar = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validarUrl(url)) return;
+    const urlFinal = normalizarEntradaRed(tipo, url);
+    if (!validarUrl(urlFinal, tipo)) return;
+    setUrl(urlFinal);
 
     setGuardando(true);
     try {
       if (redEditando) {
         await redesSocialesApi.actualizar(redEditando.id, {
-          url: url.trim(),
+          url: urlFinal.trim(),
           orden: Number(orden) || 0,
           ...(redEditando.tipo === 'OTRO' ? { nombre: nombre.trim() } : {}),
         });
@@ -264,7 +343,7 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
           {
             tipo,
             nombre: tipo === 'OTRO' ? nombre.trim() : REDES_CONFIG[tipo].label,
-            url: url.trim(),
+            url: urlFinal.trim(),
             orden: Number(orden) || 0,
           },
         ];
@@ -348,7 +427,8 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
   };
 
   const configActual = REDES_CONFIG[tipo] || REDES_CONFIG.OTRO;
-  const urlValida = url.trim().startsWith('https://') && !errorUrl;
+  const urlNormalizadaPreview = normalizarEntradaRed(tipo, url);
+  const urlValida = (urlNormalizadaPreview.startsWith('https://') || url.trim().startsWith('https://')) && !errorUrl;
 
   return (
     <div className="card shadow-sm border-0 card-surface">
@@ -624,11 +704,14 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
             </div>
           )}
 
-          {/* 3. URL Oficial con Botón Pegar */}
+          {/* 3. URL Oficial o Teléfono con Botón Pegar */}
           <div className="mb-3">
             <div className="d-flex justify-content-between align-items-center mb-1">
               <label htmlFor="input-url-canal" className="form-label small fw-semibold mb-0">
-                URL Oficial del Perfil <span className="text-danger">*</span>
+                {tipo === 'WHATSAPP'
+                  ? 'Número de Celular o Enlace de WhatsApp'
+                  : 'URL o Usuario del Perfil'}{' '}
+                <span className="text-danger">*</span>
               </label>
 
               <button
@@ -638,7 +721,7 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
                 style={{ fontSize: '0.78rem' }}
                 title="Pegar desde el portapapeles"
               >
-                <Clipboard size={12} /> Pegar enlace
+                <Clipboard size={12} /> {tipo === 'WHATSAPP' ? 'Pegar número o enlace' : 'Pegar enlace'}
               </button>
             </div>
 
@@ -648,7 +731,7 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
               </span>
               <input
                 id="input-url-canal"
-                type="url"
+                type="text"
                 className={`form-control border-start-0 ${errorUrl ? 'is-invalid' : ''} ${
                   urlValida ? 'is-valid' : ''
                 }`}
@@ -656,8 +739,9 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
                 value={url}
                 onChange={(e) => {
                   setUrl(e.target.value);
-                  if (errorUrl || e.target.value) validarUrl(e.target.value);
+                  if (errorUrl) validarUrl(e.target.value, tipo);
                 }}
+                onBlur={handleInputBlur}
                 required
                 disabled={guardando}
               />
@@ -667,7 +751,9 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
             <div className="d-flex align-items-center gap-1.5 mt-1.5 text-muted small" style={{ fontSize: '0.75rem' }}>
               <ShieldCheck size={13} className={urlValida ? 'text-success' : 'text-muted'} />
               <span>
-                Debe comenzar con <strong className="text-body">https://</strong> para garantizar seguridad.
+                {tipo === 'WHATSAPP'
+                  ? 'Puedes escribir solo tu número celular (ej: 300 123 4567); crearemos el enlace https://wa.me/... automáticamente.'
+                  : 'Puedes escribir tu usuario (ej: @tu_barberia) o el enlace completo con https://.'}
               </span>
             </div>
           </div>
@@ -696,8 +782,10 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
                 {renderIcono(tipo, 18)}
                 <span>{tipo === 'OTRO' && nombre.trim() ? nombre : configActual.label}</span>
               </div>
-              <span className="text-truncate text-muted small" style={{ fontSize: '0.75rem', maxWidth: '200px' }}>
-                {url ? url.replace(/^https?:\/\//, '') : configActual.placeholder.replace(/^https?:\/\//, '')}
+              <span className="text-truncate text-muted small" style={{ fontSize: '0.75rem', maxWidth: '240px' }}>
+                {urlNormalizadaPreview
+                  ? urlNormalizadaPreview.replace(/^https?:\/\//, '')
+                  : configActual.placeholder.replace(/^https?:\/\//, '')}
               </span>
             </div>
           </div>
