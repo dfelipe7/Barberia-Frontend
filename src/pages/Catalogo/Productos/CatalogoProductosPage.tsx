@@ -14,26 +14,17 @@ import { useDebounce } from '../../../shared/lib/useDebounce';
 import { useAuth } from '../../../auth/AuthContext';
 
 const ProductSkeleton: React.FC = () => (
-  <div className="kyrios-service-card" style={{ opacity: 0.6 }}>
+  <div className="kyrios-service-card opacity-75">
     <div
       className="kyrios-service-img-wrap d-flex align-items-center justify-content-center"
-      style={{ background: 'var(--home-surface-alt)' }}
+      style={{ backgroundColor: 'var(--home-surface-alt)' }}
     >
       <KyriosSpinner size="sm" aria-hidden="true" />
     </div>
-    <div className="p-4">
-      <div
-        className="placeholder-glow mb-2"
-        style={{ height: '22px', width: '60%', background: 'var(--home-surface-border)' }}
-      />
-      <div
-        className="placeholder-glow mb-1"
-        style={{ height: '14px', width: '90%', background: 'var(--home-meta-border)' }}
-      />
-      <div
-        className="placeholder-glow"
-        style={{ height: '14px', width: '75%', background: 'var(--home-meta-border)' }}
-      />
+    <div className="p-4 placeholder-glow">
+      <div className="placeholder col-7 mb-2 d-block" style={{ height: '20px' }} />
+      <div className="placeholder col-11 mb-1 d-block" style={{ height: '13px' }} />
+      <div className="placeholder col-9 d-block" style={{ height: '13px' }} />
     </div>
   </div>
 );
@@ -183,9 +174,9 @@ export const CatalogoProductosPage: React.FC = () => {
           {!isLoading && !error && (
             <div aria-live="polite" aria-atomic="true" className="search-results-fade">
               {debouncedQuery.trim() && (
-                <p className="text-surface-muted small mb-4 text-center" role="status">
+                <output className="text-surface-muted small mb-4 text-center d-block">
                   {textoResultadosProductos(productosFiltrados.length)}
-                </p>
+                </output>
               )}
 
               {productosFiltrados.length > 0 ? (

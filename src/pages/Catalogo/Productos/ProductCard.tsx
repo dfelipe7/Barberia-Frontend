@@ -3,6 +3,7 @@ import { Maximize2, MessageCircle, Package, Share2, Check, X } from 'lucide-reac
 import type { ProductoCatalogoDTO } from '../../../features/productos/api/productos.dto';
 import { obtenerUrlFoto } from '../../../shared/lib/obtenerUrlFoto';
 import { useTenantBrand } from '../../../features/negocio/context/TenantBrandContext';
+import { normalizarEntradaRed } from '../../../features/negocio/components/RedesSocialesSection';
 import Modal from '../../../shared/ui/Modal';
 import '../../Home/components/ServiceDetailModal.css';
 
@@ -10,77 +11,75 @@ interface ProductCardProps {
   producto: ProductoCatalogoDTO;
 }
 
-const ProductImg: React.FC<{ src: string; nombre: string }> = ({ src, nombre }) => {
-  const [errorImagen, setErrorImagen] = useState(false);
+const formateaMonedaCop = new Intl.NumberFormat('es-CO', {
+  style: 'currency',
+  currency: 'COP',
+  maximumFractionDigits: 0,
+});
 
-  if (!errorImagen) {
+function construirEnlaceWhatsAppProducto(urlConfigurada: string | undefined, textoCodificado: string): string {
+  if (!urlConfigurada) {
+    return `https://wa.me/?text=${textoCodificado}`;
+  }
+  const baseUrl = normalizarEntradaRed('WHATSAPP', urlConfigurada);
+  const separador = baseUrl.includes('?') ? '&' : '?';
+  return `${baseUrl}${separador}text=${textoCodificado}`;
+}
+
+const ProductThumbImage: React.FC<{ url: string | null; titulo: string }> = ({ url, titulo }) => {
+  const [falloCarga, setFalloCarga] = useState(false);
+
+  if (url && !falloCarga) {
     return (
-      <img
-        src={src}
-        alt={`Producto ${nombre}`}
-        className="kyrios-card-thumb-img"
-        loading="lazy"
-        onError={() => setErrorImagen(true)}
-      />
+      <>
+        <img
+          src={url}
+          alt={`Artículo ${titulo}`}
+          className="kyrios-card-thumb-img"
+          loading="lazy"
+          onError={() => setFalloCarga(true)}
+        />
+        <span className="kyrios-img-expand-btn" aria-hidden="true">
+          <Maximize2 size={13} />
+        </span>
+      </>
     );
   }
 
   return (
     <div className="kyrios-card-thumb-placeholder" aria-hidden="true">
-      <span>{nombre.charAt(0)}</span>
+      <span>{titulo.slice(0, 1).toUpperCase()}</span>
     </div>
   );
 };
 
 export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
-  const [modalAbierto, setModalAbierto] = useState(false);
-  const [copiado, setCopiado] = useState(false);
+  const [detalleVisible, setDetalleVisible] = useState(false);
+  const [enlaceCopiado, setEnlaceCopiado] = useState(false);
   const { nombreNegocio, redesSociales, direccion, ciudad } = useTenantBrand();
-  const fotoCompleta = obtenerUrlFoto(producto.imagenUrl);
+  const urlImagenProducto = obtenerUrlFoto(producto.imagenUrl);
+  const precioFormateado = formateaMonedaCop.format(producto.precio);
 
-  const formatPrecio = (precio: number) => {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      maximumFractionDigits: 0,
-    }).format(precio);
-  };
-
-  const redWhatsApp = redesSociales?.find((r) => r.tipo === 'WHATSAPP' && r.activo);
+  const canalWhatsApp = redesSociales?.find((r) => r.tipo === 'WHATSAPP' && r.activo);
 
   const handleConsultarWhatsApp = (e?: React.MouseEvent) => {
     e?.stopPropagation();
-    const texto = encodeURIComponent(
-      `¡Hola ${nombreNegocio}! Me interesa comprar el producto "${producto.nombre}" (${formatPrecio(producto.precio)}) que vi en su catálogo.`
+    const mensaje = encodeURIComponent(
+      `¡Hola ${nombreNegocio}! Me interesa comprar el producto "${producto.nombre}" (${precioFormateado}) que vi en su catálogo.`
     );
-
-    if (redWhatsApp?.url) {
-      let baseUrl = redWhatsApp.url.trim();
-      if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
-        const digitos = baseUrl.replace(/\D/g, '');
-        if (digitos.length >= 7) {
-          baseUrl = `https://wa.me/${digitos.length === 10 && digitos.startsWith('3') ? `57${digitos}` : digitos}`;
-        } else {
-          baseUrl = `https://${baseUrl}`;
-        }
-      }
-      const separator = baseUrl.includes('?') ? '&' : '?';
-      window.open(`${baseUrl}${separator}text=${texto}`, '_blank', 'noopener,noreferrer');
-    } else {
-      window.open(`https://wa.me/?text=${texto}`, '_blank', 'noopener,noreferrer');
-    }
+    const destino = construirEnlaceWhatsAppProducto(canalWhatsApp?.url, mensaje);
+    window.open(destino, '_blank', 'noopener,noreferrer');
   };
 
-  const handleShare = async (e: React.MouseEvent) => {
+  const handleCopiarEnlace = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!navigator.clipboard) return;
     try {
-      if (navigator.clipboard) {
-        await navigator.clipboard.writeText(window.location.href);
-        setCopiado(true);
-        setTimeout(() => setCopiado(false), 2200);
-      }
+      await navigator.clipboard.writeText(window.location.href);
+      setEnlaceCopiado(true);
+      window.setTimeout(() => setEnlaceCopiado(false), 2000);
     } catch {
-      // noop
+      // Ignorar si el navegador bloquea el portapapeles
     }
   };
 
@@ -91,22 +90,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
         <button
           type="button"
           className="kyrios-card-thumb-btn border-0 p-0 text-start bg-transparent"
-          onClick={() => setModalAbierto(true)}
+          onClick={() => setDetalleVisible(true)}
           aria-label={`Ver detalles de ${producto.nombre}`}
         >
           <div className="kyrios-card-thumb">
-            {fotoCompleta ? (
-              <>
-                <ProductImg key={fotoCompleta} src={fotoCompleta} nombre={producto.nombre} />
-                <span className="kyrios-img-expand-btn" aria-hidden="true">
-                  <Maximize2 size={13} />
-                </span>
-              </>
-            ) : (
-              <div className="kyrios-card-thumb-placeholder" aria-hidden="true">
-                <span>{producto.nombre.charAt(0)}</span>
-              </div>
-            )}
+            <ProductThumbImage
+              key={urlImagenProducto ?? 'no-img'}
+              url={urlImagenProducto}
+              titulo={producto.nombre}
+            />
           </div>
         </button>
 
@@ -117,23 +109,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
             <h3 className="kyrios-service-title" title={producto.nombre}>
               {producto.nombre}
             </h3>
-            <span className="kyrios-service-price">
-              {formatPrecio(producto.precio)}
-            </span>
+            <span className="kyrios-service-price">{precioFormateado}</span>
           </div>
 
           {/* Fila central: Etiqueta y descripción con 'Ver más' */}
           <div className="kyrios-service-content">
             <span className="kyrios-service-category-tag">Producto</span>
-            {producto.descripcion ? (
-              <p className="kyrios-service-desc">{producto.descripcion}</p>
-            ) : (
-              <p className="kyrios-service-desc">Disponible en barbería</p>
-            )}
+            <p className="kyrios-service-desc">
+              {producto.descripcion || 'Disponible en barbería'}
+            </p>
             <button
               type="button"
               className="kyrios-service-more-btn"
-              onClick={() => setModalAbierto(true)}
+              onClick={() => setDetalleVisible(true)}
               aria-label={`Ver más información de ${producto.nombre}`}
             >
               Ver más
@@ -165,30 +153,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
         </div>
       </article>
 
-      {/* Modal Detalle Completo del Producto (Estilo oficial ServiceDetailModal) */}
-      {modalAbierto && (
+      {/* Modal Detalle Completo del Producto */}
+      {detalleVisible && (
         <Modal
-          isOpen={modalAbierto}
-          onClose={() => setModalAbierto(false)}
+          isOpen={detalleVisible}
+          onClose={() => setDetalleVisible(false)}
           size="md"
           className="service-detail-dialog"
           hideHeader={true}
         >
           <div className="service-modal-card">
-            {/* Barra superior de acciones */}
             <div className="service-modal-topbar">
               <div className="service-modal-topbar-left">
                 <button
                   type="button"
                   className="service-modal-btn-icon"
-                  onClick={handleShare}
+                  onClick={handleCopiarEnlace}
                   aria-label="Compartir producto"
-                  title={copiado ? '¡Enlace copiado!' : 'Compartir producto'}
+                  title={enlaceCopiado ? '¡Enlace copiado!' : 'Compartir producto'}
                 >
-                  {copiado ? <Check size={18} color="#10B981" /> : <Share2 size={19} />}
+                  {enlaceCopiado ? <Check size={18} color="#10B981" /> : <Share2 size={19} />}
                 </button>
-
-                {copiado && (
+                {enlaceCopiado && (
                   <span className="badge bg-success-subtle text-success small py-1 px-2 animate-fade">
                     ¡Enlace copiado!
                   </span>
@@ -198,25 +184,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
               <button
                 type="button"
                 className="service-modal-btn-icon"
-                onClick={() => setModalAbierto(false)}
+                onClick={() => setDetalleVisible(false)}
                 aria-label="Cerrar ventana"
               >
                 <X size={20} />
               </button>
             </div>
 
-            {/* Banner visual del producto con backdrop ambiental desenfocado */}
             <div className="service-modal-hero-wrap">
-              {fotoCompleta ? (
+              {urlImagenProducto ? (
                 <>
                   <img
-                    src={fotoCompleta}
+                    src={urlImagenProducto}
                     alt=""
                     aria-hidden="true"
                     className="service-modal-hero-bg"
                   />
                   <img
-                    src={fotoCompleta}
+                    src={urlImagenProducto}
                     alt={producto.nombre}
                     className="service-modal-hero-img"
                   />
@@ -226,28 +211,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                   className="kyrios-service-img-placeholder w-100 h-100 d-flex align-items-center justify-content-center"
                   aria-hidden="true"
                 >
-                  <span style={{ fontSize: '2.8rem', fontWeight: 800 }}>
-                    {producto.nombre.charAt(0)}
-                  </span>
+                  <span className="fw-bolder fs-1">{producto.nombre.slice(0, 1)}</span>
                 </div>
               )}
             </div>
 
-            {/* Título del Producto */}
             <h3 className="service-modal-name">{producto.nombre}</h3>
 
-            {/* Barra de Precio y Disponibilidad */}
             <div className="service-modal-pricing-bar">
-              <span className="service-modal-price">
-                {formatPrecio(producto.precio)}
-              </span>
+              <span className="service-modal-price">{precioFormateado}</span>
               <div className="service-modal-duration-badge">
                 <Package size={15} />
                 <span>Disponible en sede</span>
               </div>
             </div>
 
-            {/* Detalles / Descripción */}
             <div className="mb-4">
               <h4 className="service-modal-section-title">Detalles del Producto</h4>
               <p className="service-modal-about mb-0">
@@ -256,7 +234,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
               </p>
             </div>
 
-            {/* Información de sede */}
             {direccion && (
               <div
                 className="p-3 rounded border small mb-4 text-surface-muted"
@@ -267,7 +244,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
               </div>
             )}
 
-            {/* Botón CTA Principal: Pedir por WhatsApp */}
             <button
               type="button"
               className="service-modal-btn-cta d-inline-flex align-items-center justify-content-center gap-2"

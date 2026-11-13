@@ -94,6 +94,32 @@ describe('productosService', () => {
     expect(res).toEqual(mockRespuesta);
   });
 
+  it('crearProducto adjunta archivo imagen cuando se envía un File y omite descripción vacía', async () => {
+    const mockRespuesta = {
+      mensaje: 'Producto con imagen registrado',
+      producto: {
+        id: 2,
+        nombre: 'Aceite Barba',
+        precio: 28000,
+        estado: 'ACTIVO' as const,
+      },
+    };
+    vi.mocked(apiClient.post).mockResolvedValueOnce({ data: mockRespuesta });
+    const archivoMock = new File(['contenido'], 'aceite.png', { type: 'image/png' });
+
+    await productosService.crearProducto({
+      nombre: '  Aceite Barba  ',
+      precio: 28000,
+      descripcion: '   ',
+      imagen: archivoMock,
+    });
+
+    const [, formData] = vi.mocked(apiClient.post).mock.calls[0];
+    expect((formData as FormData).get('nombre')).toBe('Aceite Barba');
+    expect((formData as FormData).get('descripcion')).toBeNull();
+    expect((formData as FormData).get('imagen')).toBe(archivoMock);
+  });
+
   it('actualizarProducto envía FormData a PATCH /productos/:id', async () => {
     const mockRespuesta = {
       mensaje: 'Producto actualizado correctamente',
@@ -119,6 +145,38 @@ describe('productosService', () => {
     expect((formData as FormData).get('precio')).toBe('40000');
     expect(config?.headers?.['Content-Type']).toBe('multipart/form-data');
     expect(res).toEqual(mockRespuesta);
+  });
+
+  it('actualizarProducto soporta descripción, limpieza de descripción e imagen File en actualización parcial', async () => {
+    const mockRespuesta = {
+      mensaje: 'Producto actualizado parcialmente',
+      producto: {
+        id: 1,
+        nombre: 'Cera Fijadora Pro',
+        precio: 40000,
+        estado: 'ACTIVO' as const,
+      },
+    };
+    vi.mocked(apiClient.patch).mockResolvedValue({ data: mockRespuesta });
+    const archivoMock = new File(['img'], 'nueva.png', { type: 'image/png' });
+
+    await productosService.actualizarProducto(1, {
+      descripcion: '  Brillo medio  ',
+      imagen: archivoMock,
+    });
+
+    const [, formData1] = vi.mocked(apiClient.patch).mock.calls[0];
+    expect((formData1 as FormData).get('nombre')).toBeNull();
+    expect((formData1 as FormData).get('precio')).toBeNull();
+    expect((formData1 as FormData).get('descripcion')).toBe('Brillo medio');
+    expect((formData1 as FormData).get('imagen')).toBe(archivoMock);
+
+    await productosService.actualizarProducto(1, {
+      descripcion: '',
+    });
+
+    const [, formData2] = vi.mocked(apiClient.patch).mock.calls[1];
+    expect((formData2 as FormData).get('descripcion')).toBe('');
   });
 
   it('cambiarEstadoProducto realiza PATCH a /productos/:id/estado con JSON', async () => {

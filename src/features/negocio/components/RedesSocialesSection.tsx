@@ -117,6 +117,45 @@ const REDES_CONFIG: Record<TipoRedSocial, RedConfigItem> = {
   },
 };
 
+const SOCIAL_DOMAINS: Partial<Record<TipoRedSocial, { domain: string; userPrefix: string }>> = {
+  INSTAGRAM: { domain: 'instagram.com', userPrefix: '' },
+  TIKTOK: { domain: 'tiktok.com', userPrefix: '@' },
+  FACEBOOK: { domain: 'facebook.com', userPrefix: '' },
+};
+
+function normalizarWhatsAppInput(limpio: string): string | null {
+  if (limpio.startsWith('https://wa.me/') || limpio.startsWith('https://api.whatsapp.com/')) {
+    return limpio;
+  }
+  if (limpio.startsWith('wa.me/')) {
+    return `https://${limpio}`;
+  }
+  const digitos = limpio.replace(/\D/g, '');
+  if (digitos.length >= 7) {
+    const prefijoPais = digitos.length === 10 && digitos.startsWith('3') ? '57' : '';
+    return `https://wa.me/${prefijoPais}${digitos}`;
+  }
+  return null;
+}
+
+function normalizarRedConUsuario(
+  limpio: string,
+  domain: string,
+  userPrefix: string
+): string | null {
+  if (limpio.startsWith(`https://${domain}/`) || limpio.startsWith(`https://www.${domain}/`)) {
+    return limpio;
+  }
+  if (limpio.startsWith(`${domain}/`)) {
+    return `https://${limpio}`;
+  }
+  const user = limpio.replace(/^@/, '').replace(/\s+/g, '');
+  if (user && !user.includes('/') && !user.includes('.')) {
+    return `https://${domain}/${userPrefix}${user}`;
+  }
+  return null;
+}
+
 /**
  * Normaliza inteligentemente la entrada del usuario según la plataforma:
  * - Para WhatsApp: Permite número celular (ej. 3001234567 o +57 300 123 4567) y lo convierte a https://wa.me/...
@@ -124,71 +163,19 @@ const REDES_CONFIG: Record<TipoRedSocial, RedConfigItem> = {
  * - Siempre devuelve una URL válida que inicia con https://.
  */
 export function normalizarEntradaRed(tipo: TipoRedSocial, val: string): string {
-  let limpio = val.trim();
-  if (!limpio) return '';
+  const raw = val.trim();
+  if (!raw) return '';
+  const limpio = raw.replace(/^http:\/\//i, 'https://');
 
   if (tipo === 'WHATSAPP') {
-    if (limpio.startsWith('https://wa.me/') || limpio.startsWith('https://api.whatsapp.com/')) {
-      return limpio;
-    }
-    if (limpio.startsWith('wa.me/')) {
-      return `https://${limpio}`;
-    }
-    if (limpio.startsWith('http://wa.me/')) {
-      return limpio.replace('http://', 'https://');
-    }
-    // Si contiene dígitos (número telefónico ingresado)
-    const digitos = limpio.replace(/\D/g, '');
-    if (digitos.length >= 7) {
-      // En Colombia los móviles tienen 10 dígitos e inician con 3: agregamos prefijo país 57
-      if (digitos.length === 10 && digitos.startsWith('3')) {
-        return `https://wa.me/57${digitos}`;
-      }
-      return `https://wa.me/${digitos}`;
-    }
+    const waUrl = normalizarWhatsAppInput(limpio);
+    if (waUrl) return waUrl;
   }
 
-  if (tipo === 'INSTAGRAM') {
-    if (limpio.startsWith('https://instagram.com/') || limpio.startsWith('https://www.instagram.com/')) {
-      return limpio;
-    }
-    if (limpio.startsWith('instagram.com/')) {
-      return `https://${limpio}`;
-    }
-    const user = limpio.replace(/^@/, '').replace(/\s+/g, '');
-    if (user && !user.includes('/') && !user.includes('.')) {
-      return `https://instagram.com/${user}`;
-    }
-  }
-
-  if (tipo === 'TIKTOK') {
-    if (limpio.startsWith('https://tiktok.com/') || limpio.startsWith('https://www.tiktok.com/')) {
-      return limpio;
-    }
-    if (limpio.startsWith('tiktok.com/')) {
-      return `https://${limpio}`;
-    }
-    const user = limpio.replace(/^@/, '').replace(/\s+/g, '');
-    if (user && !user.includes('/') && !user.includes('.')) {
-      return `https://tiktok.com/@${user}`;
-    }
-  }
-
-  if (tipo === 'FACEBOOK') {
-    if (limpio.startsWith('https://facebook.com/') || limpio.startsWith('https://www.facebook.com/')) {
-      return limpio;
-    }
-    if (limpio.startsWith('facebook.com/')) {
-      return `https://${limpio}`;
-    }
-    const user = limpio.replace(/^@/, '').replace(/\s+/g, '');
-    if (user && !user.includes('/') && !user.includes('.')) {
-      return `https://facebook.com/${user}`;
-    }
-  }
-
-  if (limpio.startsWith('http://')) {
-    return limpio.replace('http://', 'https://');
+  const socialCfg = SOCIAL_DOMAINS[tipo];
+  if (socialCfg) {
+    const socialUrl = normalizarRedConUsuario(limpio, socialCfg.domain, socialCfg.userPrefix);
+    if (socialUrl) return socialUrl;
   }
 
   if (!limpio.startsWith('https://') && limpio.includes('.')) {

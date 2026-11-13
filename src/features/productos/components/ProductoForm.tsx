@@ -88,6 +88,7 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
 
   const previewActual =
     previewLocal || obtenerUrlFoto(productoInicial?.imagenUrl) || undefined;
+  const textoBotonSubmit = productoInicial ? 'Guardar Cambios' : 'Crear Producto';
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="px-4 pb-4 pt-3">
@@ -165,9 +166,9 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
 
         {/* Columna Derecha: Foto del Producto (amplia y visible) */}
         <div className="col-12 col-sm-auto d-flex flex-column align-items-center">
-          <label className="form-label fw-semibold mb-1 text-surface-muted small w-100 text-center text-nowrap">
+          <span className="form-label fw-semibold mb-1 text-surface-muted small w-100 text-center text-nowrap d-block">
             Foto del Producto
-          </label>
+          </span>
           <FileUploadField
             previewUrl={previewActual}
             placeholderTexto="Foto"
@@ -224,10 +225,8 @@ export const ProductoForm: React.FC<ProductoFormProps> = ({
               <KyriosSpinner size="xs" />
               <span>{loadingText}</span>
             </span>
-          ) : productoInicial ? (
-            'Guardar Cambios'
           ) : (
-            'Crear Producto'
+            textoBotonSubmit
           )}
         </Button>
       </div>

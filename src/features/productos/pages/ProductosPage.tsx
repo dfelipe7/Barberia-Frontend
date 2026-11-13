@@ -263,13 +263,27 @@ export const ProductosPage: React.FC = () => {
               </div>
             )}
 
-            {productos.map((producto) => (
+            {productos.map((producto) => {
+              const estaActivo = producto.estado === 'ACTIVO';
+              const iconoEstado = estaActivo ? (
+                <>
+                  <Lock size={12} className="flex-shrink-0" />
+                  <span>Desactivar</span>
+                </>
+              ) : (
+                <>
+                  <Unlock size={12} className="flex-shrink-0" />
+                  <span>Activar</span>
+                </>
+              );
+
+              return (
               <div className="col" key={producto.id}>
                 <CatalogCard
                   imageUrl={obtenerUrlFoto(producto.imagenUrl) || undefined}
                   title={producto.nombre}
                   subtitle={producto.descripcion || undefined}
-                  isActive={producto.estado === 'ACTIVO'}
+                  isActive={estaActivo}
                   isStateChanging={idProductoAnimado === producto.id}
                   priceLabel={`$ ${Number(producto.precio).toLocaleString('es-CO')}`}
                   actions={
@@ -289,7 +303,7 @@ export const ProductosPage: React.FC = () => {
                       <button
                         type="button"
                         className={`btn btn-sm flex-fill px-1 py-1 d-inline-flex align-items-center justify-content-center gap-1 catalog-btn-action ${
-                          producto.estado === 'ACTIVO'
+                          estaActivo
                             ? 'btn-outline-danger'
                             : 'btn-success'
                         }`}
@@ -300,30 +314,23 @@ export const ProductosPage: React.FC = () => {
                           void handleToggleEstado(producto);
                         }}
                         aria-label={
-                          producto.estado === 'ACTIVO'
+                          estaActivo
                             ? `Desactivar ${producto.nombre}`
                             : `Activar ${producto.nombre}`
                         }
                       >
                         {idProductoCambiando === producto.id ? (
                           <KyriosSpinner size="xs" aria-hidden="true" />
-                        ) : producto.estado === 'ACTIVO' ? (
-                          <>
-                            <Lock size={12} className="flex-shrink-0" />
-                            <span>Desactivar</span>
-                          </>
                         ) : (
-                          <>
-                            <Unlock size={12} className="flex-shrink-0" />
-                            <span>Activar</span>
-                          </>
+                          iconoEstado
                         )}
                       </button>
                     </div>
                   }
                 />
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
