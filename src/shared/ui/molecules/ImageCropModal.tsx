@@ -280,7 +280,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
 
         {/* Visor interactivo de recorte */}
         <div
-          role="button"
+          role="region"
           aria-label="Visor interactivo de recorte. Arrastra con el ratón o usa las flechas del teclado para ajustar el encuadre."
           tabIndex={0}
           className="kyrios-crop-viewport"

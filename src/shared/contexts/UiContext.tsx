@@ -18,8 +18,8 @@ interface UiContextType {
 
 const UiContext = createContext<UiContextType | undefined>(undefined);
 
-export function UiProvider({ children }: { children: React.ReactNode }) {
-  const [isSidebarOpen, setOpen] = useState(false);
+export function UiProvider({ children }: Readonly<{ children: React.ReactNode }>) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
     try {
       return localStorage.getItem('sidebar-collapsed') === 'true';
@@ -28,9 +28,9 @@ export function UiProvider({ children }: { children: React.ReactNode }) {
     }
   });
 
-  const openSidebar = useCallback(() => setOpen(true), []);
-  const closeSidebar = useCallback(() => setOpen(false), []);
-  const toggleSidebar = useCallback(() => setOpen((v) => !v), []);
+  const openSidebar = useCallback(() => setIsSidebarOpen(true), []);
+  const closeSidebar = useCallback(() => setIsSidebarOpen(false), []);
+  const toggleSidebar = useCallback(() => setIsSidebarOpen((v) => !v), []);
 
   const toggleCollapse = useCallback(() => {
     setIsCollapsed((prev) => {

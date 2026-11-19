@@ -150,6 +150,119 @@ const HorariosDisponiblesSelector: React.FC<HorariosDisponiblesSelectorProps> = 
   );
 };
 
+const ReservaCreadaAlert: React.FC<{
+  creada: Awaited<ReturnType<typeof reservasService.crearReservaAdministrativa>>;
+  onReset: () => void;
+}> = ({ creada, onReset }) => (
+  <output className="alert alert-success d-block">
+    <h2 className="h5 fw-bold">Reserva creada</h2>
+    <p>{creada.mensaje} · Reserva #{creada.id}</p>
+    <p className="mb-3">{creada.servicio.nombre} · {creada.fecha} · {creada.hora}–{creada.horaFin} · {formatearPrecio(creada.servicio.precio)}</p>
+    <div className="d-flex flex-wrap gap-2">
+      <Button type="button" onClick={onReset}>Crear otra reserva</Button>
+      <BackLink to="/reservas">Volver a reservas</BackLink>
+    </div>
+  </output>
+);
+
+interface ClienteInvitadoFormProps {
+  nombreInvitado: string;
+  setNombreInvitado: (v: string) => void;
+  apellidoInvitado: string;
+  setApellidoInvitado: (v: string) => void;
+  telefonoInvitado: string;
+  setTelefonoInvitado: (v: string) => void;
+  emailInvitado: string;
+  setEmailInvitado: (v: string) => void;
+  emailInvitadoInvalido: boolean;
+  setErrorAccion: (v: string | null) => void;
+}
+
+const ClienteInvitadoForm: React.FC<ClienteInvitadoFormProps> = ({
+  nombreInvitado,
+  setNombreInvitado,
+  apellidoInvitado,
+  setApellidoInvitado,
+  telefonoInvitado,
+  setTelefonoInvitado,
+  emailInvitado,
+  setEmailInvitado,
+  emailInvitadoInvalido,
+  setErrorAccion,
+}) => (
+  <div className="row g-3">
+    <div className="col-12">
+      <label htmlFor="invitado-nombre-admin" className="form-label">Nombre <span className="text-surface-muted fw-normal">(máx. 100)</span></label>
+      <input id="invitado-nombre-admin" className="form-control" autoComplete="given-name" value={nombreInvitado} maxLength={100} onChange={(event) => setNombreInvitado(event.target.value)} />
+      <div className="form-text text-end">{nombreInvitado.length}/100</div>
+    </div>
+    <div className="col-12">
+      <label htmlFor="invitado-apellido-admin" className="form-label">Apellido <span className="text-surface-muted fw-normal">(máx. 100)</span></label>
+      <input id="invitado-apellido-admin" className="form-control" autoComplete="family-name" value={apellidoInvitado} maxLength={100} onChange={(event) => setApellidoInvitado(event.target.value)} />
+      <div className="form-text text-end">{apellidoInvitado.length}/100</div>
+    </div>
+    <div className="col-12">
+      <label htmlFor="invitado-telefono-admin" className="form-label">Teléfono <span className="text-surface-muted fw-normal">(máx. 20)</span></label>
+      <input id="invitado-telefono-admin" type="tel" className="form-control" autoComplete="tel" value={telefonoInvitado} maxLength={20} onChange={(event) => setTelefonoInvitado(event.target.value)} />
+      <div className="form-text text-end">{telefonoInvitado.length}/20</div>
+    </div>
+    <div className="col-12">
+      <label htmlFor="invitado-email-admin" className="form-label">Correo electrónico <span className="text-surface-muted fw-normal">(opcional · máx. 150)</span></label>
+      <input id="invitado-email-admin" type="email" className={'form-control' + (emailInvitadoInvalido ? ' is-invalid' : '')} autoComplete="email" value={emailInvitado} maxLength={150} aria-invalid={emailInvitadoInvalido} onChange={(event) => { setEmailInvitado(event.target.value); setErrorAccion(null); }} />
+      {emailInvitadoInvalido ? (
+        <div className="invalid-feedback d-block">Escribe un correo válido o deja el campo vacío.</div>
+      ) : (
+        <div className="form-text text-end">{emailInvitado.length}/150</div>
+      )}
+    </div>
+  </div>
+);
+
+interface ClienteRegistradoFormProps {
+  busquedaCliente: string;
+  setBusquedaCliente: (v: string) => void;
+  setConsultarClientes: (v: boolean) => void;
+  cliente: ClienteAdministrativoDTO | null;
+  setCliente: (c: ClienteAdministrativoDTO | null) => void;
+  clientes: {
+    isFetching: boolean;
+    isError: boolean;
+    error: unknown;
+    data?: ClienteAdministrativoDTO[];
+  };
+}
+
+const ClienteRegistradoForm: React.FC<ClienteRegistradoFormProps> = ({
+  busquedaCliente,
+  setBusquedaCliente,
+  setConsultarClientes,
+  cliente,
+  setCliente,
+  clientes,
+}) => (
+  <>
+    <label htmlFor="buscar-cliente-reserva" className="form-label">Busca por nombre, teléfono o correo</label>
+    <div className="input-group mb-3">
+      <input id="buscar-cliente-reserva" className="form-control" maxLength={150} value={busquedaCliente} onChange={(event) => { setBusquedaCliente(event.target.value); setConsultarClientes(false); setCliente(null); }} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); setConsultarClientes(true); } }} />
+      <Button type="button" variant="outline-primary" disabled={busquedaCliente.trim().length < 3} onClick={() => setConsultarClientes(true)}>Buscar</Button>
+    </div>
+    {clientes.isFetching && <output className="small text-surface-muted d-block">Buscando clientes...</output>}
+    {clientes.isError && <ErrorMessage message={mapApiError(clientes.error)} />}
+    {clientes.data?.length === 0 && <p className="small text-surface-muted">No se encontraron clientes para esa búsqueda.</p>}
+    {Boolean(clientes.data?.length) && (
+      <div className="list-group mb-3" aria-label="Resultados de clientes">
+        {clientes.data?.map((opcion) => (
+          <button key={opcion.id} type="button" className={`list-group-item list-group-item-action ${cliente?.id === opcion.id ? 'active' : ''}`} aria-pressed={cliente?.id === opcion.id} onClick={() => setCliente(opcion)}>
+            <span className="fw-semibold d-block">{opcion.nombre} {opcion.apellido ?? ''}</span>
+            <span className="small">{[opcion.email, opcion.telefono].filter(Boolean).join(' · ')}</span>
+          </button>
+        ))}
+      </div>
+    )}
+    {cliente && <p className="small text-success">Seleccionado: {cliente.nombre} {cliente.apellido ?? ''}</p>}
+  </>
+);
+
 export default function CrearReservaAdministrativaPage() {
   const { data: servicios = [], isLoading: cargandoServicios, error: errorServicios } = useServiciosCatalogo();
   const [servicioId, setServicioId] = useState<number | null>(null);
@@ -260,19 +373,14 @@ export default function CrearReservaAdministrativaPage() {
       </header>
 
       {creada ? (
-        <div className="alert alert-success" role="status">
-          <h2 className="h5 fw-bold">Reserva creada</h2>
-          <p>{creada.mensaje} · Reserva #{creada.id}</p>
-          <p className="mb-3">{creada.servicio.nombre} · {creada.fecha} · {creada.hora}–{creada.horaFin} · {formatearPrecio(creada.servicio.precio)}</p>
-          <div className="d-flex flex-wrap gap-2">
-            <Button type="button" onClick={() => {
-              setCreada(null);
-              setHora(null);
-              setCliente(null);
-            }}>Crear otra reserva</Button>
-            <BackLink to="/reservas">Volver a reservas</BackLink>
-          </div>
-        </div>
+        <ReservaCreadaAlert
+          creada={creada}
+          onReset={() => {
+            setCreada(null);
+            setHora(null);
+            setCliente(null);
+          }}
+        />
       ) : (
         <div className="row g-4">
           <div className="col-12 col-lg-7">
@@ -280,7 +388,9 @@ export default function CrearReservaAdministrativaPage() {
               <div className="card-body p-3 p-md-4">
                 <h2 className="h5 fw-bold mb-3">1. Servicio y barbero</h2>
                 <label className="form-label fw-semibold" htmlFor="reserva-servicio">Servicio</label>
-                {cargandoServicios ? <p role="status" className="text-surface-muted">Cargando servicios...</p> : (
+                {cargandoServicios ? (
+                  <output className="text-surface-muted d-block">Cargando servicios...</output>
+                ) : (
                   <select id="reserva-servicio" className="form-select mb-3" value={servicioId ?? ''} onChange={(event) => seleccionarServicio(Number(event.target.value))}>
                     <option value="">Selecciona un servicio</option>
                     {servicios.filter((servicio) => servicio.estado === 'ACTIVO').map((servicio) => (
@@ -348,60 +458,33 @@ export default function CrearReservaAdministrativaPage() {
             <section className="card card-surface border-0 shadow-sm">
               <div className="card-body p-3 p-md-4">
                 <h2 className="h5 fw-bold mb-3">3. Cliente</h2>
-                <div className="btn-group w-100 mb-3" role="group" aria-label="Tipo de cliente">
+                <fieldset className="btn-group w-100 mb-3 border-0 p-0 m-0" aria-label="Tipo de cliente">
                   <button type="button" className={`btn ${tipoCliente === 'registrado' ? 'btn-primary' : 'btn-outline-primary'}`} aria-pressed={tipoCliente === 'registrado'} onClick={() => { setTipoCliente('registrado'); setCliente(null); setErrorAccion(null); }}>Cliente registrado</button>
                   <button type="button" className={`btn ${tipoCliente === 'invitado' ? 'btn-primary' : 'btn-outline-primary'}`} aria-pressed={tipoCliente === 'invitado'} onClick={() => { setTipoCliente('invitado'); setCliente(null); setErrorAccion(null); }}>Invitado</button>
-                </div>
+                </fieldset>
 
                 {tipoCliente === 'registrado' ? (
-                  <>
-                    <label htmlFor="buscar-cliente-reserva" className="form-label">Busca por nombre, teléfono o correo</label>
-                    <div className="input-group mb-3">
-                      <input id="buscar-cliente-reserva" className="form-control" maxLength={150} value={busquedaCliente} onChange={(event) => { setBusquedaCliente(event.target.value); setConsultarClientes(false); setCliente(null); }} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); setConsultarClientes(true); } }} />
-                      <Button type="button" variant="outline-primary" disabled={busquedaCliente.trim().length < 3} onClick={() => setConsultarClientes(true)}>Buscar</Button>
-                    </div>
-                    {clientes.isFetching && <p className="small text-surface-muted" role="status">Buscando clientes...</p>}
-                    {clientes.isError && <ErrorMessage message={mapApiError(clientes.error)} />}
-                    {clientes.data && clientes.data.length === 0 && <p className="small text-surface-muted">No se encontraron clientes para esa búsqueda.</p>}
-                    {!!clientes.data?.length && (
-                      <div className="list-group mb-3" aria-label="Resultados de clientes">
-                        {clientes.data.map((opcion) => (
-                          <button key={opcion.id} type="button" className={`list-group-item list-group-item-action ${cliente?.id === opcion.id ? 'active' : ''}`} aria-pressed={cliente?.id === opcion.id} onClick={() => setCliente(opcion)}>
-                            <span className="fw-semibold d-block">{opcion.nombre} {opcion.apellido ?? ''}</span>
-                            <span className="small">{[opcion.email, opcion.telefono].filter(Boolean).join(' · ')}</span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                    {cliente && <p className="small text-success">Seleccionado: {cliente.nombre} {cliente.apellido ?? ''}</p>}
-                  </>
+                  <ClienteRegistradoForm
+                    busquedaCliente={busquedaCliente}
+                    setBusquedaCliente={setBusquedaCliente}
+                    setConsultarClientes={setConsultarClientes}
+                    cliente={cliente}
+                    setCliente={setCliente}
+                    clientes={clientes}
+                  />
                 ) : (
-                  <div className="row g-3">
-                    <div className="col-12">
-                      <label htmlFor="invitado-nombre-admin" className="form-label">Nombre <span className="text-surface-muted fw-normal">(máx. 100)</span></label>
-                      <input id="invitado-nombre-admin" className="form-control" autoComplete="given-name" value={nombreInvitado} maxLength={100} onChange={(event) => setNombreInvitado(event.target.value)} />
-                      <div className="form-text text-end">{nombreInvitado.length}/100</div>
-                    </div>
-                    <div className="col-12">
-                      <label htmlFor="invitado-apellido-admin" className="form-label">Apellido <span className="text-surface-muted fw-normal">(máx. 100)</span></label>
-                      <input id="invitado-apellido-admin" className="form-control" autoComplete="family-name" value={apellidoInvitado} maxLength={100} onChange={(event) => setApellidoInvitado(event.target.value)} />
-                      <div className="form-text text-end">{apellidoInvitado.length}/100</div>
-                    </div>
-                    <div className="col-12">
-                      <label htmlFor="invitado-telefono-admin" className="form-label">Teléfono <span className="text-surface-muted fw-normal">(máx. 20)</span></label>
-                      <input id="invitado-telefono-admin" type="tel" className="form-control" autoComplete="tel" value={telefonoInvitado} maxLength={20} onChange={(event) => setTelefonoInvitado(event.target.value)} />
-                      <div className="form-text text-end">{telefonoInvitado.length}/20</div>
-                    </div>
-                    <div className="col-12">
-                      <label htmlFor="invitado-email-admin" className="form-label">Correo electrónico <span className="text-surface-muted fw-normal">(opcional · máx. 150)</span></label>
-                      <input id="invitado-email-admin" type="email" className={'form-control' + (emailInvitadoInvalido ? ' is-invalid' : '')} autoComplete="email" value={emailInvitado} maxLength={150} aria-invalid={emailInvitadoInvalido} onChange={(event) => { setEmailInvitado(event.target.value); setErrorAccion(null); }} />
-                      {emailInvitadoInvalido ? (
-                        <div className="invalid-feedback d-block">Escribe un correo válido o deja el campo vacío.</div>
-                      ) : (
-                        <div className="form-text text-end">{emailInvitado.length}/150</div>
-                      )}
-                    </div>
-                  </div>
+                  <ClienteInvitadoForm
+                    nombreInvitado={nombreInvitado}
+                    setNombreInvitado={setNombreInvitado}
+                    apellidoInvitado={apellidoInvitado}
+                    setApellidoInvitado={setApellidoInvitado}
+                    telefonoInvitado={telefonoInvitado}
+                    setTelefonoInvitado={setTelefonoInvitado}
+                    emailInvitado={emailInvitado}
+                    setEmailInvitado={setEmailInvitado}
+                    emailInvitadoInvalido={emailInvitadoInvalido}
+                    setErrorAccion={setErrorAccion}
+                  />
                 )}
 
                 <hr />

@@ -317,7 +317,7 @@ export const RedesSocialesSection: React.FC<RedesSocialesSectionProps> = ({ slug
     validarUrl(normalizado || url, tipo);
   };
 
-  const handleGuardar = async (e: React.FormEvent) => {
+  const handleGuardar = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     const urlFinal = normalizarEntradaRed(tipo, url);
     if (!validarUrl(urlFinal, tipo)) return;

@@ -128,18 +128,16 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
         if (focusables.length === 0) return;
 
         const firstEl = focusables[0];
-        const lastEl = focusables[focusables.length - 1];
+        const lastEl = focusables.at(-1)!;
 
         if (e.shiftKey) {
           if (document.activeElement === firstEl) {
             e.preventDefault();
             lastEl.focus();
           }
-        } else {
-          if (document.activeElement === lastEl) {
-            e.preventDefault();
-            firstEl.focus();
-          }
+        } else if (document.activeElement === lastEl) {
+          e.preventDefault();
+          firstEl.focus();
         }
       }
     };

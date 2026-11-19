@@ -170,9 +170,9 @@ const CatalogoBarberosPage: React.FC = () => {
             >
               {/* Contador visible solo cuando hay búsqueda activa */}
               {debouncedQuery.trim() && (
-                <p className="text-surface-muted small mb-4 text-center" role="status">
+                <output className="text-surface-muted small mb-4 text-center d-block">
                   {textoResultadosBarberos(barberosFiltrados.length)}
-                </p>
+                </output>
               )}
 
               {/* Grid */}

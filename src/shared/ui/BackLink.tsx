@@ -10,7 +10,7 @@ interface BackLinkProps {
 }
 
 /** Enlace de regreso consistente para las páginas del panel y del flujo público. */
-export default function BackLink({ to, children, className = '', onClick }: BackLinkProps) {
+export default function BackLink({ to, children, className = '', onClick }: Readonly<BackLinkProps>) {
   return (
     <Link
       to={to}

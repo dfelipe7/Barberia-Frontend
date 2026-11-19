@@ -160,9 +160,9 @@ const CatalogoServiciosPage: React.FC = () => {
             >
               {/* Contador de resultados (solo con búsqueda activa) */}
               {debouncedQuery.trim() && (
-                <p className="text-surface-muted small mb-4 text-center" role="status">
+                <output className="text-surface-muted small mb-4 text-center d-block">
                   {textoResultadosServicios(serviciosFiltrados.length)}
-                </p>
+                </output>
               )}
 
               {/* Grid */}

@@ -55,6 +55,86 @@ const CardImage: React.FC<{ src: string; alt: string; title: string }> = ({
   );
 };
 
+const CardStatusBadge: React.FC<{ isActive: boolean; isStateChanging: boolean }> = ({
+  isActive,
+  isStateChanging,
+}) => {
+  const pulseClass = isStateChanging ? 'animate-state-pulse' : '';
+  if (isActive) {
+    return (
+      <span
+        className={`badge bg-success d-inline-flex align-items-center gap-1 shadow-sm px-2 py-1 ${pulseClass}`}
+        style={{ fontSize: '0.72rem', borderRadius: '3px' }}
+      >
+        <CheckCircle2 size={12} strokeWidth={2.5} />
+        <span>Activo</span>
+      </span>
+    );
+  }
+  return (
+    <span
+      className={`badge bg-secondary d-inline-flex align-items-center gap-1 shadow-sm px-2 py-1 ${pulseClass}`}
+      style={{ fontSize: '0.72rem', borderRadius: '3px' }}
+    >
+      <EyeOff size={12} strokeWidth={2.5} />
+      <span>Inactivo</span>
+    </span>
+  );
+};
+
+const CardBadgesList: React.FC<{
+  badges: { label: string; tone?: 'default' | 'dark' }[];
+  isActive: boolean;
+  isStateChanging: boolean;
+}> = ({ badges, isActive, isStateChanging }) => {
+  const complementarios = badges.filter(
+    (b) => b.label.toLowerCase() !== 'activo' && b.label.toLowerCase() !== 'inactivo'
+  );
+  return (
+    <div className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1" style={{ zIndex: 3 }}>
+      <CardStatusBadge isActive={isActive} isStateChanging={isStateChanging} />
+      {complementarios.map((b) => (
+        <span
+          key={b.label}
+          className="badge-outline"
+          style={
+            b.tone === 'dark'
+              ? { background: 'rgba(0,0,0,.7)', color: '#fff', borderColor: 'transparent' }
+              : undefined
+          }
+        >
+          {b.label}
+        </span>
+      ))}
+    </div>
+  );
+};
+
+function getCardKeyHandler(onClick?: () => void, isActive = true) {
+  if (!onClick || !isActive) return undefined;
+  return (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick();
+    }
+  };
+}
+
+function getInteractiveProps(onClick?: () => void, isActive = true) {
+  if (!onClick) {
+    return {
+      tabIndex: undefined,
+      ariaDisabled: undefined,
+      cursor: undefined,
+    };
+  }
+  return {
+    tabIndex: isActive ? 0 : -1,
+    ariaDisabled: !isActive ? true : undefined,
+    cursor: isActive ? 'pointer' : 'not-allowed',
+  };
+}
+
 export function CatalogCard({
   imageUrl,
   title,
@@ -65,18 +145,18 @@ export function CatalogCard({
   onClick,
   actions,
   isStateChanging = false,
-}: CatalogCardProps) {
+}: Readonly<CatalogCardProps>) {
+  const interactive = getInteractiveProps(onClick, isActive);
+  const handleKeyDown = getCardKeyHandler(onClick, isActive);
+
   return (
     <div
       className={`catalog-card position-relative ${isActive ? 'is-active' : 'is-inactive'}`}
       onClick={isActive ? onClick : undefined}
-      onKeyDown={onClick && isActive ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } } : undefined}
-      role={onClick ? 'button' : undefined}
-      aria-disabled={onClick && !isActive ? true : undefined}
-      tabIndex={onClick ? (isActive ? 0 : -1) : undefined}
-      style={{
-        cursor: onClick ? (isActive ? 'pointer' : 'not-allowed') : undefined,
-      }}
+      onKeyDown={handleKeyDown}
+      aria-disabled={interactive.ariaDisabled}
+      tabIndex={interactive.tabIndex}
+      style={{ cursor: interactive.cursor }}
     >
       <div className="position-relative overflow-hidden">
         {imageUrl ? (
@@ -99,47 +179,7 @@ export function CatalogCard({
         )}
 
         {/* Badges de estado e información adicional */}
-        <div className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1" style={{ zIndex: 3 }}>
-          {/* Badge principal con icono y texto de estado */}
-          {isActive ? (
-            <span
-              className={`badge bg-success d-inline-flex align-items-center gap-1 shadow-sm px-2 py-1 ${
-                isStateChanging ? 'animate-state-pulse' : ''
-              }`}
-              style={{ fontSize: '0.72rem', borderRadius: '3px' }}
-            >
-              <CheckCircle2 size={12} strokeWidth={2.5} />
-              <span>Activo</span>
-            </span>
-          ) : (
-            <span
-              className={`badge bg-secondary d-inline-flex align-items-center gap-1 shadow-sm px-2 py-1 ${
-                isStateChanging ? 'animate-state-pulse' : ''
-              }`}
-              style={{ fontSize: '0.72rem', borderRadius: '3px' }}
-            >
-              <EyeOff size={12} strokeWidth={2.5} />
-              <span>Inactivo</span>
-            </span>
-          )}
-
-          {/* Badges complementarios */}
-          {badges
-            .filter((b) => b.label.toLowerCase() !== 'activo' && b.label.toLowerCase() !== 'inactivo')
-            .map((b) => (
-              <span
-                key={b.label}
-                className="badge-outline"
-                style={
-                  b.tone === 'dark'
-                    ? { background: 'rgba(0,0,0,.7)', color: '#fff', borderColor: 'transparent' }
-                    : undefined
-                }
-              >
-                {b.label}
-              </span>
-            ))}
-        </div>
+        <CardBadgesList badges={badges} isActive={isActive} isStateChanging={isStateChanging} />
 
         {/* Acciones flotantes */}
         {actions && (

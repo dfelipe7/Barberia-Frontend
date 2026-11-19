@@ -91,7 +91,7 @@ export default function Sidebar() {
   }, [isSidebarOpen, closeSidebar]);
 
   // 5. Gestión de foco y Focus Trap para accesibilidad completa (Emil Kowalski)
-  const drawerRef = useRef<HTMLElement>(null);
+  const drawerRef = useRef<HTMLDialogElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const prevFocusedElementRef = useRef<HTMLElement | null>(null);
 
@@ -124,11 +124,9 @@ export default function Sidebar() {
           e.preventDefault();
           last.focus();
         }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
+      } else if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
       }
     };
     window.addEventListener('keydown', trapFocus);
@@ -246,9 +244,9 @@ export default function Sidebar() {
     return (
       <nav className="d-flex flex-column gap-3" aria-label="Navegación principal">
         {gruposVisibles.map((grupo, idx) => (
-          <div
+          <fieldset
             key={grupo.id}
-            role="group"
+            className="border-0 p-0 m-0"
             aria-labelledby={`group-title-${grupo.id}-${forceExpanded ? 'mob' : 'desk'}`}
           >
             {/* Encabezado o separador editorial */}
@@ -277,7 +275,7 @@ export default function Sidebar() {
                 </NavLink>
               ))}
             </div>
-          </div>
+          </fieldset>
         ))}
       </nav>
     );
@@ -323,15 +321,15 @@ export default function Sidebar() {
         <div className="sidebar-overlay d-lg-none" onClick={closeSidebar} aria-hidden="true" />
       )}
 
-      <aside
+      <dialog
         id="main-sidebar"
         ref={drawerRef}
-        role="dialog"
+        open={isSidebarOpen}
         aria-modal="true"
         aria-label="Menú principal"
         className={`sidebar sidebar--mobile ${
           isSidebarOpen ? 'is-open' : ''
-        } d-lg-none ${isDark ? 'sidebar--dark' : 'sidebar--light'}`}
+        } d-lg-none ${isDark ? 'sidebar--dark' : 'sidebar--light'} p-0 m-0 border-0`}
       >
         {/* Cabecera del Drawer */}
         <div className="p-3 d-flex align-items-center justify-content-between border-bottom">
@@ -351,7 +349,7 @@ export default function Sidebar() {
         <div className="p-3 flex-grow-1 overflow-y-auto">
           {renderNavContent(closeSidebar, true)}
         </div>
-      </aside>
+      </dialog>
     </>
   );
 }

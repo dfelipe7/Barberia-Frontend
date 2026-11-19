@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type SyntheticEvent } from 'react';
 import { Calendar, CalendarDays, Clock } from 'lucide-react';
 import { mapApiError } from '../../../shared/lib/mapApiError';
 import Button from '../../../shared/ui/Button';
@@ -158,7 +158,7 @@ export const DisponibilidadFechaSection = () => {
   const [fechaConsultada, setFechaConsultada] = useState(hoy);
   const consulta = useDisponibilidadFecha(fechaConsultada);
 
-  const consultar = (event: FormEvent<HTMLFormElement>) => {
+  const consultar = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (fecha) setFechaConsultada(fecha);
   };

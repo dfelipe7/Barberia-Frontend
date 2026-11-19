@@ -87,12 +87,13 @@ export default function PlataformaHubPage() {
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+      .replace(/^-+/, '')
+      .replace(/-+$/, '');
     setNuevoSlug(slugAutogenerado);
   };
 
   // Crear nueva barbería (requiere credenciales de plataforma admin)
-  const handleCrearBarberia = async (e: React.FormEvent) => {
+  const handleCrearBarberia = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setCreando(true);
     setErrorCreacion(null);
@@ -166,7 +167,7 @@ export default function PlataformaHubPage() {
     (n) =>
       n.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
       n.slug.toLowerCase().includes(busqueda.toLowerCase()) ||
-      (n.ciudad && n.ciudad.toLowerCase().includes(busqueda.toLowerCase()))
+      Boolean(n.ciudad?.toLowerCase().includes(busqueda.toLowerCase()))
   );
 
   return (

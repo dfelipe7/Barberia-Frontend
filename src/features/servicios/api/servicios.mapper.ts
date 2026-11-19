@@ -38,7 +38,7 @@ export const serviciosMapper = {
       precio: Number(datos.precio),
       duracionMinutos: Number(datos.duracionMinutos),
       ...(datos.barberoIds !== undefined && {
-        barberoIds: datos.barberoIds.map((id) => Number(id)),
+        barberoIds: datos.barberoIds.map(Number),
       }),
     };
   },
@@ -56,7 +56,7 @@ export const serviciosMapper = {
       ...(datos.precio !== undefined && { precio: Number(datos.precio) }),
       ...(datos.duracionMinutos !== undefined && { duracionMinutos: Number(datos.duracionMinutos) }),
       ...(datos.barberoIds !== undefined && {
-        barberoIds: datos.barberoIds.map((id) => Number(id)),
+        barberoIds: datos.barberoIds.map(Number),
       }),
     };
   },

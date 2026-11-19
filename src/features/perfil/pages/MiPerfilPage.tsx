@@ -23,7 +23,7 @@ import {
 export const MiPerfilPage: React.FC = () => {
   const { usuarioDb, refrescarPerfil, roles } = useAuth();
   const esPersonalAdministrativo = roles.includes('SUPERADMIN') || roles.includes('ADMINISTRADOR');
-  const esBarberoActivo = Boolean(usuarioDb?.barbero && usuarioDb.barbero.estado === 'ACTIVO');
+  const esBarberoActivo = Boolean(usuarioDb?.barbero?.estado === 'ACTIVO');
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [editando, setEditando] = useState(false);

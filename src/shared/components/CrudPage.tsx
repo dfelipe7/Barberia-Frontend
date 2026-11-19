@@ -58,7 +58,7 @@ export function CrudPage<T>({
   children,
   actions,
   filters,
-}: CrudPageProps<T>) {
+}: Readonly<CrudPageProps<T>>) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<T | undefined>(undefined);
   const isDirtyRef = useRef(false);

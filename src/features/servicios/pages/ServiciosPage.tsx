@@ -24,6 +24,30 @@ import { FotoServicioModal } from '../components/FotoServicioModal';
 import type { Servicio } from '../types/servicios.types';
 import type { ServicioFormValues } from '../schemas/servicio.schema';
 
+const BotonEstadoServicioContenido: React.FC<{ isPending: boolean; estado: string }> = ({
+  isPending,
+  estado,
+}) => {
+  if (isPending) {
+    return <KyriosSpinner size="xs" aria-hidden="true" />;
+  }
+  if (estado === 'ACTIVO') {
+    return (
+      <>
+        <Lock size={12} className="flex-shrink-0" />
+        <span className="d-none d-sm-inline">Desactivar</span>
+        <span className="d-inline d-sm-none">Desact.</span>
+      </>
+    );
+  }
+  return (
+    <>
+      <Unlock size={12} className="flex-shrink-0" />
+      <span>Activar</span>
+    </>
+  );
+};
+
 export const ServiciosPage: React.FC = () => {
   // Estado local e inmediato para el campo de búsqueda (evita lag en input)
   const [filtroNombre, setFiltroNombre] = useState('');
@@ -360,20 +384,10 @@ export const ServiciosPage: React.FC = () => {
                         disabled={cambiarEstadoMutation.isPending && idServicioCambiando === s.id}
                         aria-label={s.estado === 'ACTIVO' ? `Desactivar ${s.nombre}` : `Activar ${s.nombre}`}
                       >
-                        {cambiarEstadoMutation.isPending && idServicioCambiando === s.id ? (
-                          <KyriosSpinner size="xs" aria-hidden="true" />
-                        ) : s.estado === 'ACTIVO' ? (
-                          <>
-                            <Lock size={12} className="flex-shrink-0" />
-                            <span className="d-none d-sm-inline">Desactivar</span>
-                            <span className="d-inline d-sm-none">Desact.</span>
-                          </>
-                        ) : (
-                          <>
-                            <Unlock size={12} className="flex-shrink-0" />
-                            <span>Activar</span>
-                          </>
-                        )}
+                        <BotonEstadoServicioContenido
+                          isPending={cambiarEstadoMutation.isPending && idServicioCambiando === s.id}
+                          estado={s.estado}
+                        />
                       </button>
                     </div>
                   }

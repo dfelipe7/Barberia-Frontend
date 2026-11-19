@@ -14,7 +14,7 @@ interface FileUploadFieldProps {
   size?: number;
 }
 
-const TIPOS_VALIDOS = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+const TIPOS_VALIDOS = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/jpg']);
 const TAMANO_MAXIMO_BYTES = 5 * 1024 * 1024;
 
 /**
@@ -100,7 +100,7 @@ export const FileUploadField: React.FC<FileUploadFieldProps> = ({
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
-    if (!TIPOS_VALIDOS.includes(file.type)) {
+    if (!TIPOS_VALIDOS.has(file.type)) {
       setErrorLocal('Formato no válido. Solo se admiten imágenes JPG, PNG o WEBP.');
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;

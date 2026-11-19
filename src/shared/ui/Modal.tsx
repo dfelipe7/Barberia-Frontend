@@ -20,6 +20,13 @@ export interface ModalProps {
   className?: string;
 }
 
+function getModalSizeClass(size?: 'sm' | 'md' | 'lg' | 'xl'): string {
+  if (size === 'sm') return 'modal-sm';
+  if (size === 'lg') return 'modal-lg';
+  if (size === 'xl') return 'modal-xl';
+  return '';
+}
+
 export const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
@@ -52,11 +59,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null;
 
-  const sizeClass =
-    size === 'sm' ? 'modal-sm'
-    : size === 'lg' ? 'modal-lg'
-    : size === 'xl' ? 'modal-xl'
-    : '';
+  const sizeClass = getModalSizeClass(size);
 
   // fullscreen solo si el consumidor lo pide explícitamente
   const fullscreenClass = fullscreenOnMobile ? 'modal-fullscreen-sm-down' : '';
@@ -91,7 +94,6 @@ export const Modal: React.FC<ModalProps> = ({
     >
       <div
         className={`modal-dialog modal-dialog-centered modal-dialog-scrollable kyrios-modal-dialog ${sizeClass} ${fullscreenClass} ${className}`.trim()}
-        role="document"
         style={{
           maxWidth: size === 'sm' ? '420px' : undefined,
           margin: 'auto',

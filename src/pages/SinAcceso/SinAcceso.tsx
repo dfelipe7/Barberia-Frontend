@@ -12,6 +12,55 @@ export default function SinAcceso() {
     const sinRolesAsignados = roles.every((r) => !esRolApp(r));
     const tieneRolApp = roles.some((r) => esRolApp(r));
 
+    let icono = '🛡️';
+    let titulo = 'Acceso restringido';
+    if (cuentaBloqueada) {
+        icono = '🔒';
+        titulo = 'Cuenta bloqueada';
+    } else if (sinRolesAsignados) {
+        icono = '⚠️';
+        titulo = 'Sin roles asignados';
+    }
+
+    const renderMensaje = () => {
+        if (cuentaBloqueada) {
+            return (
+                <>
+                    <p className="text-surface-muted mb-1">
+                        Tu cuenta <strong>{email}</strong> ha sido bloqueada globalmente por un administrador.
+                    </p>
+                    <p className="text-surface-muted mb-4">
+                        No tienes acceso al sistema mientras tu cuenta permanezca inactiva. Comunícate con la administración para más información.
+                    </p>
+                </>
+            );
+        }
+        if (sinRolesAsignados) {
+            return (
+                <>
+                    <p className="text-surface-muted mb-1">
+                        Tu cuenta <strong>{email}</strong> está activa pero no tiene ningún rol
+                        habilitado en el sistema.
+                    </p>
+                    <p className="text-surface-muted mb-4">
+                        Contacta al administrador para que te asigne o reactive tu rol de{' '}
+                        <strong>Administrador</strong> o <strong>Barbero</strong>.
+                    </p>
+                </>
+            );
+        }
+        return (
+            <>
+                <p className="text-surface-muted mb-1">
+                    Tu cuenta <strong>{email}</strong> tiene rol activo (<strong>{roles.filter(esRolApp).join(', ')}</strong>), pero la sección solicitada requiere permisos administrativos adicionales.
+                </p>
+                <p className="text-surface-muted mb-4">
+                    Puedes volver a tu panel principal para continuar accediendo a tus funciones permitidas.
+                </p>
+            </>
+        );
+    };
+
     return (
         <div
             className="d-flex flex-column align-items-center justify-content-center text-center p-3 bg-surface-app"
@@ -23,47 +72,14 @@ export default function SinAcceso() {
                 </div>
 
                 <div className="mb-3" style={{ fontSize: '2.5rem' }}>
-                    {cuentaBloqueada ? '🔒' : sinRolesAsignados ? '⚠️' : '🛡️'}
+                    {icono}
                 </div>
 
                 <h1 className="h3 fw-bold mb-2">
-                    {cuentaBloqueada
-                        ? 'Cuenta bloqueada'
-                        : sinRolesAsignados
-                        ? 'Sin roles asignados'
-                        : 'Acceso restringido'}
+                    {titulo}
                 </h1>
 
-                {cuentaBloqueada ? (
-                    <>
-                        <p className="text-surface-muted mb-1">
-                            Tu cuenta{' '}<strong>{email}</strong> ha sido bloqueada globalmente por un administrador.
-                        </p>
-                        <p className="text-surface-muted mb-4">
-                            No tienes acceso al sistema mientras tu cuenta permanezca inactiva. Comunícate con la administración para más información.
-                        </p>
-                    </>
-                ) : sinRolesAsignados ? (
-                    <>
-                        <p className="text-surface-muted mb-1">
-                            Tu cuenta{' '}<strong>{email}</strong> está activa pero no tiene ningún rol
-                            habilitado en el sistema.
-                        </p>
-                        <p className="text-surface-muted mb-4">
-                            Contacta al administrador para que te asigne o reactive tu rol de{' '}
-                            <strong>Administrador</strong> o <strong>Barbero</strong>.
-                        </p>
-                    </>
-                ) : (
-                    <>
-                        <p className="text-surface-muted mb-1">
-                            Tu cuenta <strong>{email}</strong> tiene rol activo (<strong>{roles.filter(esRolApp).join(', ')}</strong>), pero la sección solicitada requiere permisos administrativos adicionales.
-                        </p>
-                        <p className="text-surface-muted mb-4">
-                            Puedes volver a tu panel principal para continuar accediendo a tus funciones permitidas.
-                        </p>
-                    </>
-                )}
+                {renderMensaje()}
 
                 <div className="d-flex flex-wrap gap-2 justify-content-center">
                     {tieneRolApp && !cuentaBloqueada && (

@@ -96,11 +96,11 @@ function TarjetaCita({
   reserva,
   seleccionada,
   onSeleccionar,
-}: {
+}: Readonly<{
   reserva: CitaAgendaBarberoDTO;
   seleccionada: boolean;
   onSeleccionar: () => void;
-}) {
+}>) {
   return (
     <button
       type="button"
@@ -127,7 +127,7 @@ function TarjetaCita({
   );
 }
 
-function DetalleReserva({ reserva }: { reserva: CitaAgendaBarberoDTO }) {
+function DetalleReserva({ reserva }: Readonly<{ reserva: CitaAgendaBarberoDTO }>) {
   return (
     <div className="barber-agenda__detail card card-surface border-0 shadow-sm">
       <div className="barber-agenda__detail-top">
@@ -182,14 +182,14 @@ function PanelContenidoDetalle({
   completarReservaPending,
   marcarNoAsistidaPending,
   onEjecutarAccion,
-}: {
+}: Readonly<{
   reserva: CitaAgendaBarberoDTO;
   errorAccion: string | null;
   mensajeAccion: string | null;
   completarReservaPending: boolean;
   marcarNoAsistidaPending: boolean;
   onEjecutarAccion: (accion: 'completar' | 'no-asistio') => void;
-}) {
+}>) {
   return (
     <>
       <DetalleReserva reserva={reserva} />

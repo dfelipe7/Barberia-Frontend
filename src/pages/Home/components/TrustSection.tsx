@@ -27,8 +27,8 @@ export const TrustSection: React.FC = () => {
     <section className="kyrios-trust-section" aria-label="Valores y atributos de la marca">
       <div className="container">
         <div className="row g-4 justify-content-center">
-          {hallmarks.map((item, index) => (
-            <div key={index} className="col-12 col-md-4">
+          {hallmarks.map((item) => (
+            <div key={item.title} className="col-12 col-md-4">
               <div className="kyrios-trust-item">
                 <div className="kyrios-trust-icon-box" aria-hidden="true">
                   {item.icon}

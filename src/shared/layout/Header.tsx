@@ -14,6 +14,18 @@ import UserAvatar from '../ui/atoms/UserAvatar';
 import RoleBadge from '../ui/atoms/RoleBadge';
 import WhatsAppStatusIndicator from './WhatsAppStatusIndicator';
 
+function getHeaderThemeIcon(theme: string) {
+  if (theme === 'dark') return Moon;
+  if (theme === 'light') return Sun;
+  return Monitor;
+}
+
+function getHeaderThemeLabel(theme: string): string {
+  if (theme === 'dark') return 'Modo oscuro (clic para cambiar)';
+  if (theme === 'light') return 'Modo claro (clic para cambiar)';
+  return 'Seguir sistema (clic para cambiar)';
+}
+
 export default function Header() {
   const { cerrarSesion, nombre, apellido, email, roles, usuarioDb, fotoUrl: fotoGoogle } = useAuth();
   const confirm = useConfirm();
@@ -41,13 +53,8 @@ export default function Header() {
     else setTheme('system');
   };
 
-  const ThemeIcon = theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor;
-  const themeLabel =
-    theme === 'dark'
-      ? 'Modo oscuro (clic para cambiar)'
-      : theme === 'light'
-        ? 'Modo claro (clic para cambiar)'
-        : 'Seguir sistema (clic para cambiar)';
+  const ThemeIcon = getHeaderThemeIcon(theme);
+  const themeLabel = getHeaderThemeLabel(theme);
 
   const rolesApp = roles.filter((r) => (ROLES_APP as readonly string[]).includes(r));
   const rolPrincipal =

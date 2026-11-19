@@ -6,6 +6,19 @@ export interface StatusBadgeProps {
   className?: string;
 }
 
+function getStatusBadgeBgClass(isActivo: boolean, isGlobal: boolean): string {
+  if (isActivo) return 'bg-success text-white';
+  if (isGlobal) return 'bg-danger text-white';
+  return 'bg-secondary text-white';
+}
+
+function getStatusBadgeLabel(isActivo: boolean, isGlobal: boolean): string {
+  if (isGlobal) {
+    return isActivo ? 'Habilitada' : 'Bloqueada';
+  }
+  return isActivo ? 'Activo' : 'Inactivo';
+}
+
 export const StatusBadge: React.FC<StatusBadgeProps> = ({
   estado,
   tone = 'role',
@@ -14,19 +27,8 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   const isActivo = estado === 'ACTIVO';
   const isGlobal = tone === 'global';
 
-  const bgClass = isActivo
-    ? 'bg-success text-white'
-    : isGlobal
-    ? 'bg-danger text-white'
-    : 'bg-secondary text-white';
-
-  const label = isGlobal
-    ? isActivo
-      ? 'Habilitada'
-      : 'Bloqueada'
-    : isActivo
-    ? 'Activo'
-    : 'Inactivo';
+  const bgClass = getStatusBadgeBgClass(isActivo, isGlobal);
+  const label = getStatusBadgeLabel(isActivo, isGlobal);
 
   return (
     <span className={`badge ${bgClass} fw-semibold ${className}`.trim()}>

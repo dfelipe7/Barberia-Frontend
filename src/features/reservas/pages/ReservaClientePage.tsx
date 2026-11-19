@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type SyntheticEvent } from 'react';
 import { isAxiosError } from 'axios';
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { useQueries, useQueryClient } from '@tanstack/react-query';
@@ -281,6 +281,66 @@ function validarConfirmacion(params: ValidarConfirmacionParams): { error?: strin
 
   return { datos };
 }
+
+function resolverErrorConfirmacion(
+  reservaId: number | undefined,
+  clienteSesion: unknown,
+  errorModificarReserva: unknown,
+  errorModificarInvitado: unknown,
+  errorCrearReserva: unknown
+) {
+  if (!reservaId) return errorCrearReserva;
+  return clienteSesion ? errorModificarReserva : errorModificarInvitado;
+}
+
+function resolverNombreBarbero(
+  barberoSeleccionado?: { nombre: string; apellido: string } | null,
+  reservaBarbero?: { nombre: string; apellido: string } | null
+): string {
+  if (barberoSeleccionado) {
+    return `${barberoSeleccionado.nombre} ${barberoSeleccionado.apellido}`;
+  }
+  if (reservaBarbero) {
+    return `${reservaBarbero.nombre} ${reservaBarbero.apellido}`;
+  }
+  return 'Barbero asignado';
+}
+
+const AlertaReservaCancelada: React.FC<{ onCerrar: () => void }> = ({ onCerrar }) => (
+  <output className="alert alert-success d-flex align-items-center justify-content-between p-3 rounded-3 mb-4 shadow-sm d-block w-100">
+    <div>
+      <strong className="d-block">✓ Tu cita fue cancelada exitosamente</strong>
+      <span className="small">La franja horaria fue liberada. Si deseas, puedes agendar un nuevo turno a continuación.</span>
+    </div>
+    <button type="button" className="btn-close" onClick={onCerrar} aria-label="Cerrar" />
+  </output>
+);
+
+const HeaderReservaCliente: React.FC<{
+  slugActivo: string;
+  onLimpiarBorrador: () => void;
+  paso: number;
+  onVolverPaso: () => void;
+  reservaId?: number;
+  reservaCreada: unknown;
+}> = ({ slugActivo, onLimpiarBorrador, paso, onVolverPaso, reservaId, reservaCreada }) => {
+  const esModificar = Boolean(reservaId && !reservaCreada);
+  return (
+    <header className="mb-4">
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <BackLink to={`/${slugActivo}`} onClick={onLimpiarBorrador}>Volver al sitio público</BackLink>
+        {paso > 1 && (
+          <Button type="button" variant="outline-secondary" onClick={onVolverPaso} icon={<ArrowLeft size={16} />}>
+            Paso anterior
+          </Button>
+        )}
+      </div>
+      <span className="text-eyebrow d-block mb-2">RESERVAS / {esModificar ? 'CAMBIAR CITA' : 'NUEVA CITA'}</span>
+      <h1 className="h2 fw-bold mb-1">{esModificar ? 'Modifica tu reserva' : 'Reserva tu cita'}</h1>
+      <p className="text-surface-muted mb-0">Elige un servicio, un barbero y una fecha con horario disponible.</p>
+    </header>
+  );
+};
 
 export const ReservaClientePage = () => {
   const confirm = useConfirm();
@@ -817,14 +877,18 @@ export const ReservaClientePage = () => {
     irAPaso(3, false, { hora: '' });
   };
 
-  const enviarReserva = (event: FormEvent<HTMLFormElement>) => {
+  const enviarReserva = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     void confirmarReserva();
   };
 
-  const errorConfirmacion = reservaId
-    ? (clienteSesion ? modificarReserva.error : modificarInvitado.error)
-    : crearReserva.error;
+  const errorConfirmacion = resolverErrorConfirmacion(
+    reservaId,
+    clienteSesion,
+    modificarReserva.error,
+    modificarInvitado.error,
+    crearReserva.error,
+  );
   const conflictoReserva = isAxiosError(errorConfirmacion) && errorConfirmacion.response?.status === 409;
   const rutaActual = location.pathname + location.search;
 
@@ -916,11 +980,7 @@ export const ReservaClientePage = () => {
 
     const nombreServicio =
       servicioSeleccionado?.nombre ?? reservaCreada?.servicio?.nombre ?? 'Cita agendada';
-    const nombreBarbero = barberoSeleccionado
-      ? `${barberoSeleccionado.nombre} ${barberoSeleccionado.apellido}`
-      : reservaCreada?.barbero
-        ? `${reservaCreada.barbero.nombre} ${reservaCreada.barbero.apellido}`
-        : 'Barbero asignado';
+    const nombreBarbero = resolverNombreBarbero(barberoSeleccionado, reservaCreada?.barbero);
     const fechaTexto = fechaSeleccionada ?? reservaCreada?.fecha ?? '';
     const horaTexto = horaSeleccionada ?? reservaCreada?.hora ?? '';
 
@@ -1054,28 +1114,17 @@ export const ReservaClientePage = () => {
 
   return (
     <main className="booking-flow container py-4 py-lg-5" style={{ maxWidth: '1080px' }}>
-      <header className="mb-4">
-        <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-          <BackLink to={`/${slugActivo}`} onClick={limpiarBorradorStorage}>Volver al sitio público</BackLink>
-          {paso > 1 && (
-            <Button type="button" variant="outline-secondary" onClick={volverPaso} icon={<ArrowLeft size={16} />}>
-              Paso anterior
-            </Button>
-          )}
-        </div>
-        <span className="text-eyebrow d-block mb-2">RESERVAS / {reservaId && !reservaCreada ? 'CAMBIAR CITA' : 'NUEVA CITA'}</span>
-        <h1 className="h2 fw-bold mb-1">{reservaId && !reservaCreada ? 'Modifica tu reserva' : 'Reserva tu cita'}</h1>
-        <p className="text-surface-muted mb-0">Elige un servicio, un barbero y una fecha con horario disponible.</p>
-      </header>
+      <HeaderReservaCliente
+        slugActivo={slugActivo}
+        onLimpiarBorrador={limpiarBorradorStorage}
+        paso={paso}
+        onVolverPaso={volverPaso}
+        reservaId={reservaId}
+        reservaCreada={reservaCreada}
+      />
 
       {reservaCancelada && (
-        <div className="alert alert-success d-flex align-items-center justify-content-between p-3 rounded-3 mb-4 shadow-sm" role="status">
-          <div>
-            <strong className="d-block">✓ Tu cita fue cancelada exitosamente</strong>
-            <span className="small">La franja horaria fue liberada. Si deseas, puedes agendar un nuevo turno a continuación.</span>
-          </div>
-          <button type="button" className="btn-close" onClick={() => setReservaCancelada(false)} aria-label="Cerrar" />
-        </div>
+        <AlertaReservaCancelada onCerrar={() => setReservaCancelada(false)} />
       )}
 
       <section className="card card-surface border-0 shadow-sm mb-4">

@@ -145,7 +145,7 @@ apiClient.interceptors.response.use(
       }
     }
 
-    if (error.response && error.response.status === 401) {
+    if (error.response?.status === 401) {
       console.warn('Sesión no autorizada o expirada (401).');
       const slug = obtenerNegocioSlugActivo();
       if (slug) {

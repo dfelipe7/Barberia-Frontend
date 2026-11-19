@@ -93,6 +93,24 @@ function separarCitas(
   return { proximas, historial };
 }
 
+function resolverIconoTemaCliente(theme: string) {
+  if (theme === 'dark') return Moon;
+  if (theme === 'light') return Sun;
+  return Monitor;
+}
+
+function resolverEtiquetaTemaCliente(theme: string): string {
+  if (theme === 'dark') return 'Modo oscuro';
+  if (theme === 'light') return 'Modo claro';
+  return 'Tema del sistema';
+}
+
+function calcularRutaLoginCliente(slugActivo: string): string {
+  return slugActivo
+    ? `/${slugActivo}/cliente/iniciar-sesion?returnTo=/${slugActivo}/cliente/mi-cuenta`
+    : `/cliente/iniciar-sesion?returnTo=/cliente/mi-cuenta`;
+}
+
 export default function ClientePortalPage() {
   const navigate = useNavigate();
   const { slug: paramSlug } = useParams<{ slug?: string }>();
@@ -110,10 +128,7 @@ export default function ClientePortalPage() {
   // Si no hay sesión de cliente activa, redirigir a inicio de sesión
   useEffect(() => {
     if (!sesion) {
-      const rutaDestino = slugActivo
-        ? `/${slugActivo}/cliente/iniciar-sesion?returnTo=/${slugActivo}/cliente/mi-cuenta`
-        : `/cliente/iniciar-sesion?returnTo=/cliente/mi-cuenta`;
-      void navigate(rutaDestino, { replace: true });
+      void navigate(calcularRutaLoginCliente(slugActivo), { replace: true });
     }
   }, [sesion, slugActivo, navigate]);
 
@@ -124,9 +139,8 @@ export default function ClientePortalPage() {
     setTheme(siguienteTema(theme));
   };
 
-  const ThemeIcon = theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor;
-  const themeLabel =
-    theme === 'dark' ? 'Modo oscuro' : theme === 'light' ? 'Modo claro' : 'Tema del sistema';
+  const ThemeIcon = resolverIconoTemaCliente(theme);
+  const themeLabel = resolverEtiquetaTemaCliente(theme);
 
   // Consultas React Query
   const {
@@ -162,7 +176,7 @@ export default function ClientePortalPage() {
     void navigate(slugActivo ? `/${slugActivo}` : '/', { replace: true });
   };
 
-  const handleGuardarTelefono = async (e: React.FormEvent) => {
+  const handleGuardarTelefono = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setErrorGuardado(null);
     setGuardadoExitoso(false);
@@ -526,18 +540,17 @@ export default function ClientePortalPage() {
               </div>
 
               {guardadoExitoso && (
-                <div
-                  className="alert d-flex align-items-center gap-2 mb-4 rounded-3 small"
+                <output
+                  className="alert d-flex align-items-center gap-2 mb-4 rounded-3 small d-block w-100"
                   style={{
                     backgroundColor: 'rgba(34, 197, 94, 0.12)',
                     border: '1px solid rgba(34, 197, 94, 0.35)',
                     color: '#16a34a',
                   }}
-                  role="status"
                 >
                   <CheckCircle2 size={18} className="flex-shrink-0" />
                   <span>Tu número de WhatsApp se guardó exitosamente. Tus próximas citas se notificarán a este número.</span>
-                </div>
+                </output>
               )}
 
               {errorGuardado && (
