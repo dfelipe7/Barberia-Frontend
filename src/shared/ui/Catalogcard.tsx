@@ -120,21 +120,6 @@ function getCardKeyHandler(onClick?: () => void, isActive = true) {
   };
 }
 
-function getInteractiveProps(onClick?: () => void, isActive = true) {
-  if (!onClick) {
-    return {
-      tabIndex: undefined,
-      ariaDisabled: undefined,
-      cursor: undefined,
-    };
-  }
-  return {
-    tabIndex: isActive ? 0 : -1,
-    ariaDisabled: !isActive ? true : undefined,
-    cursor: isActive ? 'pointer' : 'not-allowed',
-  };
-}
-
 export function CatalogCard({
   imageUrl,
   title,
@@ -146,18 +131,9 @@ export function CatalogCard({
   actions,
   isStateChanging = false,
 }: Readonly<CatalogCardProps>) {
-  const interactive = getInteractiveProps(onClick, isActive);
-  const handleKeyDown = getCardKeyHandler(onClick, isActive);
-
-  return (
-    <div
-      className={`catalog-card position-relative ${isActive ? 'is-active' : 'is-inactive'}`}
-      onClick={isActive ? onClick : undefined}
-      onKeyDown={handleKeyDown}
-      aria-disabled={interactive.ariaDisabled}
-      tabIndex={interactive.tabIndex}
-      style={{ cursor: interactive.cursor }}
-    >
+  const cardClassName = `catalog-card position-relative ${isActive ? 'is-active' : 'is-inactive'}`;
+  const cardContent = (
+    <>
       <div className="position-relative overflow-hidden">
         {imageUrl ? (
           /* key={imageUrl}: remonta CardImage cuando cambia la URL, reseteando el error */
@@ -197,7 +173,29 @@ export function CatalogCard({
         {subtitle && <p className="text-surface-muted small mb-1 mb-sm-2 catalog-card-subtitle">{subtitle}</p>}
         <p className="catalog-card-price mb-0 fs-6 fs-sm-5 text-surface-card">{priceLabel}</p>
       </div>
-    </div>
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <article
+        className={cardClassName}
+        onClick={isActive ? onClick : undefined}
+        onKeyDown={getCardKeyHandler(onClick, isActive)}
+        tabIndex={isActive ? 0 : -1}
+        role="button"
+        aria-disabled={!isActive ? true : undefined}
+        style={{ cursor: isActive ? 'pointer' : 'not-allowed' }}
+      >
+        {cardContent}
+      </article>
+    );
+  }
+
+  return (
+    <article className={cardClassName}>
+      {cardContent}
+    </article>
   );
 }
 

@@ -154,7 +154,10 @@ export const TabDisenoYMarca: React.FC<TabDisenoYMarcaProps> = ({
                       accept="image/png"
                       className="d-none"
                       onChange={(e) => {
-                        if (e.target.files?.[0]) void onSubirArchivo('banner', e.target.files[0]);
+                        const archivo = e.target.files?.[0];
+                        if (archivo) {
+                          onSubirArchivo('banner', archivo);
+                        }
                       }}
                     />
                     <div className="d-flex gap-2">
@@ -227,7 +230,10 @@ export const TabDisenoYMarca: React.FC<TabDisenoYMarcaProps> = ({
                       accept=".svg,image/svg+xml"
                       className="d-none"
                       onChange={(e) => {
-                        if (e.target.files?.[0]) void onSubirArchivo('logo-blanco', e.target.files[0]);
+                        const archivo = e.target.files?.[0];
+                        if (archivo) {
+                          onSubirArchivo('logo-blanco', archivo);
+                        }
                       }}
                     />
                     <div className="d-flex gap-2">
@@ -300,7 +306,10 @@ export const TabDisenoYMarca: React.FC<TabDisenoYMarcaProps> = ({
                       accept=".svg,image/svg+xml"
                       className="d-none"
                       onChange={(e) => {
-                        if (e.target.files?.[0]) void onSubirArchivo('logo-negro', e.target.files[0]);
+                        const archivo = e.target.files?.[0];
+                        if (archivo) {
+                          onSubirArchivo('logo-negro', archivo);
+                        }
                       }}
                     />
                     <div className="d-flex gap-2">
@@ -373,7 +382,10 @@ export const TabDisenoYMarca: React.FC<TabDisenoYMarcaProps> = ({
                       accept=".svg,image/svg+xml"
                       className="d-none"
                       onChange={(e) => {
-                        if (e.target.files?.[0]) void onSubirArchivo('favicon', e.target.files[0]);
+                        const archivo = e.target.files?.[0];
+                        if (archivo) {
+                          onSubirArchivo('favicon', archivo);
+                        }
                       }}
                     />
                     <div className="d-flex gap-2">

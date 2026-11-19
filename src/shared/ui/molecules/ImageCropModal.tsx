@@ -279,11 +279,10 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
         </p>
 
         {/* Visor interactivo de recorte */}
-        <div
-          role="region"
+        <button
+          type="button"
           aria-label="Visor interactivo de recorte. Arrastra con el ratón o usa las flechas del teclado para ajustar el encuadre."
-          tabIndex={0}
-          className="kyrios-crop-viewport"
+          className="kyrios-crop-viewport border-0 p-0 text-start d-block"
           style={{ width: `${cropSize}px`, height: `${cropSize}px` }}
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
@@ -327,7 +326,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
           <div className="kyrios-crop-mask" />
           <div className="kyrios-crop-grid-h" />
           <div className="kyrios-crop-grid-v" />
-        </div>
+        </button>
 
         {/* Controles de Zoom */}
         <div className="kyrios-crop-controls">

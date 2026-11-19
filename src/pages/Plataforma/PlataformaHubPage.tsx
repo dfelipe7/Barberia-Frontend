@@ -81,14 +81,20 @@ export default function PlataformaHubPage() {
   // Generar slug automático al tipear nombre
   const handleNombreChange = (val: string) => {
     setNuevoNombre(val);
-    const slugAutogenerado = val
+    let slugAutogenerado = val
       .toLowerCase()
       .trim()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+/, '')
-      .replace(/-+$/, '');
+      .replace(/[^a-z0-9]+/g, '-');
+
+    while (slugAutogenerado.startsWith('-')) {
+      slugAutogenerado = slugAutogenerado.slice(1);
+    }
+    while (slugAutogenerado.endsWith('-')) {
+      slugAutogenerado = slugAutogenerado.slice(0, -1);
+    }
+
     setNuevoSlug(slugAutogenerado);
   };
 

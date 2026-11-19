@@ -54,31 +54,12 @@ function extraerCoordenadas(texto: string): { lat: number; lng: number } | null 
   if (!texto) return null;
   const limpio = texto.trim();
 
-  // 1. Patrón en URLs de Google Maps con @lat,lng
-  const matchAt = /@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/.exec(limpio);
-  if (matchAt) {
-    const coord = parsearCoordenada(matchAt[1], matchAt[2]);
-    if (coord) return coord;
-  }
+  // Buscar todos los números decimales o enteros con posible signo negativo
+  const numeros = limpio.match(/-?\d+(?:\.\d+)?/g);
+  if (!numeros || numeros.length < 2) return null;
 
-  // 2. Patrón en parámetros de consulta (?q=lat,lng o ?query=lat,lng o ?ll=lat,lng)
-  const matchQuery = /[?&](?:q|query|ll)=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/.exec(limpio);
-  if (matchQuery) {
-    const coord = parsearCoordenada(matchQuery[1], matchQuery[2]);
-    if (coord) return coord;
-  }
-
-  // 3. Patrón simple: dos números decimales separados por coma, espacio o punto y coma
-  const matchSimple = /^(-?\d+(?:\.\d+)?)[,\s;]+(-?\d+(?:\.\d+)?)$/.exec(limpio);
-  if (matchSimple) {
-    const coord = parsearCoordenada(matchSimple[1], matchSimple[2]);
-    if (coord) return coord;
-  }
-
-  // 4. Buscar dos números decimales consecutivos en cualquier parte del texto
-  const decimals = limpio.match(/-?\d+\.\d+/g);
-  if (decimals && decimals.length >= 2) {
-    const coord = parsearCoordenada(decimals[0], decimals[1]);
+  for (let i = 0; i < numeros.length - 1; i++) {
+    const coord = parsearCoordenada(numeros[i], numeros[i + 1]);
     if (coord) return coord;
   }
 
