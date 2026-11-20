@@ -6,6 +6,6 @@ export const porcentajeComisionSchema = z
   .max(100, 'La comisión máxima es 100%')
   .int('La comisión debe ser un número entero.');
 
-export const emailSchema = z.string().trim().email({ message: 'Ingrese un correo electrónico válido.' });
+export const emailSchema = z.string().trim().email('Ingrese un correo electrónico válido.');
 
 export const telefonoSchema = z.string().trim().min(7, 'El teléfono debe tener al menos 7 dígitos.');
