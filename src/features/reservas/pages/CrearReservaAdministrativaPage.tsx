@@ -263,6 +263,216 @@ const ClienteRegistradoForm: React.FC<ClienteRegistradoFormProps> = ({
   </>
 );
 
+function isBotonCrearDeshabilitado(params: {
+  servicioSeleccionado?: { id: number; nombre: string; precio: number };
+  barberoSeleccionado?: { id: number; nombre: string; apellido: string };
+  hora: string | null;
+  tipoCliente: TipoCliente;
+  cliente: ClienteAdministrativoDTO | null;
+  nombreInvitado: string;
+  telefonoInvitado: string;
+}): boolean {
+  const { servicioSeleccionado, barberoSeleccionado, hora, tipoCliente, cliente, nombreInvitado, telefonoInvitado } = params;
+  if (!servicioSeleccionado || !barberoSeleccionado || !hora) return true;
+  if (tipoCliente === 'registrado') return !cliente;
+  return !nombreInvitado.trim() || !telefonoInvitado.trim();
+}
+
+interface ServicioYBarberoCardProps {
+  cargandoServicios: boolean;
+  servicios: { id: number; nombre: string; precio: number; estado: string; duracionMinutos: number }[];
+  servicioId: number | null;
+  onSeleccionarServicio: (id: number) => void;
+  errorServicios: unknown;
+  barberoId: number | null;
+  onSeleccionarBarbero: (id: number) => void;
+  consultaBarberos: {
+    isLoading: boolean;
+    isError: boolean;
+    error: unknown;
+    data?: { id: number; nombre: string; apellido: string }[];
+  };
+  servicioSeleccionado?: { id: number; nombre: string; duracionMinutos: number };
+}
+
+const ServicioYBarberoCard: React.FC<ServicioYBarberoCardProps> = ({
+  cargandoServicios,
+  servicios,
+  servicioId,
+  onSeleccionarServicio,
+  errorServicios,
+  barberoId,
+  onSeleccionarBarbero,
+  consultaBarberos,
+  servicioSeleccionado,
+}) => {
+  const isBarberoDisabled = !servicioId || consultaBarberos.isLoading || consultaBarberos.isError;
+  const barberoPlaceholder = consultaBarberos.isLoading ? 'Cargando barberos...' : 'Selecciona un barbero';
+
+  return (
+    <section className="card card-surface border-0 shadow-sm">
+      <div className="card-body p-3 p-md-4">
+        <h2 className="h5 fw-bold mb-3">1. Servicio y barbero</h2>
+        <label className="form-label fw-semibold" htmlFor="reserva-servicio">Servicio</label>
+        {cargandoServicios ? (
+          <output className="text-surface-muted d-block">Cargando servicios...</output>
+        ) : (
+          <select id="reserva-servicio" className="form-select mb-3" value={servicioId ?? ''} onChange={(event) => onSeleccionarServicio(Number(event.target.value))}>
+            <option value="">Selecciona un servicio</option>
+            {servicios.filter((servicio) => servicio.estado === 'ACTIVO').map((servicio) => (
+              <option key={servicio.id} value={servicio.id}>{servicio.nombre} · {formatearPrecio(servicio.precio)}</option>
+            ))}
+          </select>
+        )}
+        {Boolean(errorServicios) && <ErrorMessage message={mapApiError(errorServicios)} />}
+
+        <label className="form-label fw-semibold" htmlFor="reserva-barbero">Barbero</label>
+        <select id="reserva-barbero" className="form-select" value={barberoId ?? ''} disabled={isBarberoDisabled} onChange={(event) => onSeleccionarBarbero(Number(event.target.value))}>
+          <option value="">{barberoPlaceholder}</option>
+          {(consultaBarberos.data ?? []).map((barbero) => (
+            <option key={barbero.id} value={barbero.id}>{barbero.nombre} {barbero.apellido}</option>
+          ))}
+        </select>
+        {consultaBarberos.isError && <div className="mt-2"><ErrorMessage message={mapApiError(consultaBarberos.error)} /></div>}
+        {servicioSeleccionado && <p className="small text-surface-muted mt-2 mb-0">Duración: {servicioSeleccionado.duracionMinutos} minutos.</p>}
+      </div>
+    </section>
+  );
+};
+
+interface FechaYHoraCardProps {
+  fecha: string;
+  minimo: string;
+  maximo: string;
+  onCambiarFecha: (fecha: string) => void;
+  barberoSeleccionado?: unknown;
+  disponibilidad: {
+    isLoading: boolean;
+    isError: boolean;
+    error: unknown;
+    isFetching: boolean;
+    refetch: () => void;
+  };
+  horasDisponibles: { startTime: string; endTime: string; available: boolean }[];
+  horaSeleccionada: string | null;
+  onSeleccionarHora: (hora: string) => void;
+}
+
+const FechaYHoraCard: React.FC<FechaYHoraCardProps> = ({
+  fecha,
+  minimo,
+  maximo,
+  onCambiarFecha,
+  barberoSeleccionado,
+  disponibilidad,
+  horasDisponibles,
+  horaSeleccionada,
+  onSeleccionarHora,
+}) => (
+  <section className="card card-surface border-0 shadow-sm mt-3">
+    <div className="card-body p-3 p-md-4">
+      <h2 className="h5 fw-bold mb-3">2. Fecha y hora</h2>
+      <label htmlFor="reserva-fecha-admin" className="form-label fw-semibold">Fecha (próximos 30 días)</label>
+      <input
+        id="reserva-fecha-admin"
+        type="date"
+        className="form-control mb-3"
+        min={minimo}
+        max={maximo}
+        value={fecha}
+        style={{ cursor: 'pointer' }}
+        onClick={(e) => {
+          try {
+            e.currentTarget.showPicker?.();
+          } catch {
+            // Fallback
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key !== 'Tab' && e.key !== 'Enter' && e.key !== 'Escape') {
+            e.preventDefault();
+          }
+        }}
+        onChange={(event) => onCambiarFecha(event.target.value)}
+      />
+
+      <HorariosDisponiblesSelector
+        barberoSeleccionado={barberoSeleccionado}
+        isLoading={disponibilidad.isLoading}
+        isError={disponibilidad.isError}
+        error={disponibilidad.error}
+        isFetching={disponibilidad.isFetching}
+        onRefetch={() => void disponibilidad.refetch()}
+        horasDisponibles={horasDisponibles}
+        horaSeleccionada={horaSeleccionada}
+        onSeleccionarHora={onSeleccionarHora}
+      />
+    </div>
+  </section>
+);
+
+interface ResumenReservaCardProps {
+  servicioSeleccionado?: { id: number; nombre: string; precio: number };
+  barberoSeleccionado?: { id: number; nombre: string; apellido: string };
+  fecha: string;
+  hora: string | null;
+  errorAccion: string | null;
+  isPending: boolean;
+  onCrear: () => void;
+  tipoCliente: TipoCliente;
+  cliente: ClienteAdministrativoDTO | null;
+  nombreInvitado: string;
+  telefonoInvitado: string;
+}
+
+const ResumenReservaCard: React.FC<ResumenReservaCardProps> = ({
+  servicioSeleccionado,
+  barberoSeleccionado,
+  fecha,
+  hora,
+  errorAccion,
+  isPending,
+  onCrear,
+  tipoCliente,
+  cliente,
+  nombreInvitado,
+  telefonoInvitado,
+}) => {
+  const deshabilitado = isBotonCrearDeshabilitado({
+    servicioSeleccionado,
+    barberoSeleccionado,
+    hora,
+    tipoCliente,
+    cliente,
+    nombreInvitado,
+    telefonoInvitado,
+  });
+
+  const nombreServicio = servicioSeleccionado?.nombre ?? 'Sin servicio';
+  const nombreBarbero = barberoSeleccionado ? `${barberoSeleccionado.nombre} ${barberoSeleccionado.apellido}` : 'Sin barbero';
+
+  return (
+    <>
+      <hr />
+      <h3 className="h6 fw-bold">Resumen</h3>
+      <p className="small text-surface-muted mb-1">{nombreServicio} · {nombreBarbero}</p>
+      <p className="small text-surface-muted">{fecha}{hora ? ` · ${hora}` : ''}</p>
+      {servicioSeleccionado && <p className="fw-semibold">{formatearPrecio(servicioSeleccionado.precio)}</p>}
+      {errorAccion && <div className="mb-3"><ErrorMessage message={errorAccion} /></div>}
+      <Button
+        type="button"
+        className="w-100"
+        isLoading={isPending}
+        loadingText="Creando reserva..."
+        disabled={deshabilitado}
+        onClick={onCrear}
+      >
+        Crear reserva
+      </Button>
+    </>
+  );
+};
+
 export default function CrearReservaAdministrativaPage() {
   const { data: servicios = [], isLoading: cargandoServicios, error: errorServicios } = useServiciosCatalogo();
   const [servicioId, setServicioId] = useState<number | null>(null);
@@ -384,74 +594,29 @@ export default function CrearReservaAdministrativaPage() {
       ) : (
         <div className="row g-4">
           <div className="col-12 col-lg-7">
-            <section className="card card-surface border-0 shadow-sm">
-              <div className="card-body p-3 p-md-4">
-                <h2 className="h5 fw-bold mb-3">1. Servicio y barbero</h2>
-                <label className="form-label fw-semibold" htmlFor="reserva-servicio">Servicio</label>
-                {cargandoServicios ? (
-                  <output className="text-surface-muted d-block">Cargando servicios...</output>
-                ) : (
-                  <select id="reserva-servicio" className="form-select mb-3" value={servicioId ?? ''} onChange={(event) => seleccionarServicio(Number(event.target.value))}>
-                    <option value="">Selecciona un servicio</option>
-                    {servicios.filter((servicio) => servicio.estado === 'ACTIVO').map((servicio) => (
-                      <option key={servicio.id} value={servicio.id}>{servicio.nombre} · {formatearPrecio(servicio.precio)}</option>
-                    ))}
-                  </select>
-                )}
-                {errorServicios && <ErrorMessage message={mapApiError(errorServicios)} />}
+            <ServicioYBarberoCard
+              cargandoServicios={cargandoServicios}
+              servicios={servicios}
+              servicioId={servicioId}
+              onSeleccionarServicio={seleccionarServicio}
+              errorServicios={errorServicios}
+              barberoId={barberoId}
+              onSeleccionarBarbero={seleccionarBarbero}
+              consultaBarberos={consultaBarberos}
+              servicioSeleccionado={servicioSeleccionado}
+            />
 
-                <label className="form-label fw-semibold" htmlFor="reserva-barbero">Barbero</label>
-                <select id="reserva-barbero" className="form-select" value={barberoId ?? ''} disabled={!servicioId || consultaBarberos.isLoading || consultaBarberos.isError} onChange={(event) => seleccionarBarbero(Number(event.target.value))}>
-                  <option value="">{consultaBarberos.isLoading ? 'Cargando barberos...' : 'Selecciona un barbero'}</option>
-                  {(consultaBarberos.data ?? []).map((barbero) => (
-                    <option key={barbero.id} value={barbero.id}>{barbero.nombre} {barbero.apellido}</option>
-                  ))}
-                </select>
-                {consultaBarberos.isError && <div className="mt-2"><ErrorMessage message={mapApiError(consultaBarberos.error)} /></div>}
-                {servicioSeleccionado && <p className="small text-surface-muted mt-2 mb-0">Duración: {servicioSeleccionado.duracionMinutos} minutos.</p>}
-              </div>
-            </section>
-
-            <section className="card card-surface border-0 shadow-sm mt-3">
-              <div className="card-body p-3 p-md-4">
-                <h2 className="h5 fw-bold mb-3">2. Fecha y hora</h2>
-                <label htmlFor="reserva-fecha-admin" className="form-label fw-semibold">Fecha (próximos 30 días)</label>
-                <input
-                  id="reserva-fecha-admin"
-                  type="date"
-                  className="form-control mb-3"
-                  min={minimo}
-                  max={maximo}
-                  value={fecha}
-                  style={{ cursor: 'pointer' }}
-                  onClick={(e) => {
-                    try {
-                      e.currentTarget.showPicker?.();
-                    } catch {
-                      // Fallback
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key !== 'Tab' && e.key !== 'Enter' && e.key !== 'Escape') {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(event) => cambiarFecha(event.target.value)}
-                />
-
-                <HorariosDisponiblesSelector
-                  barberoSeleccionado={barberoSeleccionado}
-                  isLoading={disponibilidad.isLoading}
-                  isError={disponibilidad.isError}
-                  error={disponibilidad.error}
-                  isFetching={disponibilidad.isFetching}
-                  onRefetch={() => void disponibilidad.refetch()}
-                  horasDisponibles={horasDisponibles}
-                  horaSeleccionada={hora}
-                  onSeleccionarHora={setHora}
-                />
-              </div>
-            </section>
+            <FechaYHoraCard
+              fecha={fecha}
+              minimo={minimo}
+              maximo={maximo}
+              onCambiarFecha={cambiarFecha}
+              barberoSeleccionado={barberoSeleccionado}
+              disponibilidad={disponibilidad}
+              horasDisponibles={horasDisponibles}
+              horaSeleccionada={hora}
+              onSeleccionarHora={setHora}
+            />
           </div>
 
           <div className="col-12 col-lg-5">
@@ -487,15 +652,19 @@ export default function CrearReservaAdministrativaPage() {
                   />
                 )}
 
-                <hr />
-                <h3 className="h6 fw-bold">Resumen</h3>
-                <p className="small text-surface-muted mb-1">{servicioSeleccionado?.nombre ?? 'Sin servicio'} · {barberoSeleccionado ? `${barberoSeleccionado.nombre} ${barberoSeleccionado.apellido}` : 'Sin barbero'}</p>
-                <p className="small text-surface-muted">{fecha}{hora ? ` · ${hora}` : ''}</p>
-                {servicioSeleccionado && <p className="fw-semibold">{formatearPrecio(servicioSeleccionado.precio)}</p>}
-                {errorAccion && <div className="mb-3"><ErrorMessage message={errorAccion} /></div>}
-                <Button type="button" className="w-100" isLoading={crearReserva.isPending} loadingText="Creando reserva..." disabled={!servicioSeleccionado || !barberoSeleccionado || !hora || (tipoCliente === 'registrado' && !cliente) || (tipoCliente === 'invitado' && (!nombreInvitado.trim() || !telefonoInvitado.trim()))} onClick={() => void crear()}>
-                  Crear reserva
-                </Button>
+                <ResumenReservaCard
+                  servicioSeleccionado={servicioSeleccionado}
+                  barberoSeleccionado={barberoSeleccionado}
+                  fecha={fecha}
+                  hora={hora}
+                  errorAccion={errorAccion}
+                  isPending={crearReserva.isPending}
+                  onCrear={() => void crear()}
+                  tipoCliente={tipoCliente}
+                  cliente={cliente}
+                  nombreInvitado={nombreInvitado}
+                  telefonoInvitado={telefonoInvitado}
+                />
               </div>
             </section>
           </div>
