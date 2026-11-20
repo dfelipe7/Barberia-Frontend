@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, type Control } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, CheckCircle2, EyeOff } from 'lucide-react';
 import Button from '../../../shared/ui/Button';
@@ -24,6 +24,161 @@ interface ServicioFormProps {
   errorMensaje?: string | null;
   onDirtyChange?: (isDirty: boolean) => void;
 }
+
+interface BarberosAsignadosSectionProps {
+  cargandoBarberos: boolean;
+  barberos: Array<{ id: number; barberoId?: number; nombre: string; apellido: string; fotoUrl?: string | null }>;
+  barberosFiltrados: Array<{ id: number; barberoId?: number; nombre: string; apellido: string; fotoUrl?: string | null }>;
+  control: Control<ServicioFormInput>;
+  busquedaBarbero: string;
+  setBusquedaBarbero: (val: string) => void;
+}
+
+const BarberosAsignadosSection: React.FC<BarberosAsignadosSectionProps> = ({
+  cargandoBarberos,
+  barberos,
+  barberosFiltrados,
+  control,
+  busquedaBarbero,
+  setBusquedaBarbero,
+}) => {
+  if (cargandoBarberos) {
+    return <KyriosSpinner size="xs" variant="inline" mensaje="Cargando barberos..." className="my-2" />;
+  }
+  if (barberos.length === 0) {
+    return (
+      <EmptyState
+        title="Sin barberos activos"
+        description="No hay barberos con estado ACTIVO disponibles en el sistema."
+      />
+    );
+  }
+  return (
+    <Controller
+      control={control}
+      name="barberoIds"
+      render={({ field }) => {
+        const seleccionados = field.value ?? [];
+        const total = barberos.length;
+        const count = seleccionados.length;
+
+        return (
+          <div className="barbero-selection-panel">
+            {/* Header: contador + acciones masivas */}
+            <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+              <div className="d-flex align-items-center">
+                <span className="barbero-selection-counter-badge" aria-hidden="true">
+                  {count}
+                </span>
+                <span className="text-surface-muted small fw-semibold" aria-live="polite" aria-atomic="true">
+                  de {total} barberos seleccionados
+                </span>
+              </div>
+
+              <div className="d-flex gap-2">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-primary barbero-action-btn py-1 px-2.5"
+                  onClick={() => field.onChange(barberos.map((b) => Number(b.barberoId ?? b.id)))}
+                  disabled={total === 0 || count === total}
+                  aria-label="Seleccionar todos los barberos"
+                >
+                  Seleccionar todos
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-secondary barbero-action-btn py-1 px-2.5"
+                  onClick={() => field.onChange([])}
+                  disabled={count === 0}
+                  aria-label="Quitar todos los barberos seleccionados"
+                >
+                  Limpiar
+                </button>
+              </div>
+            </div>
+
+            {/* Búsqueda */}
+            <SearchInput
+              placeholder="Buscar barbero por nombre..."
+              value={busquedaBarbero}
+              onChange={setBusquedaBarbero}
+              ariaLabel="Buscar barbero por nombre"
+              className="mb-3"
+            />
+
+            {/* Grid de tarjetas o EmptyState */}
+            {barberosFiltrados.length === 0 ? (
+              <EmptyState
+                title="Sin coincidencias"
+                description={`No se encontraron barberos que coincidan con "${busquedaBarbero}".`}
+                actionLabel="Limpiar búsqueda"
+                onAction={() => setBusquedaBarbero('')}
+              />
+            ) : (
+              <>
+                <p id="barberos-help" className="visually-hidden">
+                  Pulsa sobre cada tarjeta para añadir o quitar un barbero. Se puede buscar por nombre en el campo superior.
+                </p>
+                <fieldset
+                  className="barbero-grid border-0 p-0 m-0"
+                  aria-label="Selección de barberos"
+                  aria-describedby="barberos-help"
+                >
+                  {barberosFiltrados.map((b) => {
+                    const barberoId = Number(b.barberoId ?? b.id);
+                    const seleccionado = seleccionados.includes(barberoId);
+
+                    return (
+                      <button
+                        key={barberoId}
+                        type="button"
+                        onClick={() => {
+                          field.onChange(
+                            seleccionado
+                              ? seleccionados.filter((x) => x !== barberoId)
+                              : [...seleccionados, barberoId],
+                          );
+                        }}
+                        aria-pressed={seleccionado}
+                        aria-label={`${seleccionado ? 'Quitar' : 'Añadir'} ${b.nombre} ${b.apellido}`}
+                        title={`${seleccionado ? 'Quitar' : 'Añadir'} ${b.nombre} ${b.apellido}`}
+                        className={`barbero-card ${seleccionado ? 'barbero-card--selected' : ''}`}
+                      >
+                        <div className="barbero-card-main">
+                          <UserAvatar
+                            nombre={b.nombre}
+                            apellido={b.apellido}
+                            fotoUrl={b.fotoUrl}
+                            size={34}
+                          />
+                          <div className="barbero-card-info">
+                            <span className="barbero-card-name text-truncate">
+                              {b.nombre} {b.apellido}
+                            </span>
+                            <span className="barbero-card-role text-truncate">
+                              {seleccionado ? 'Asignado' : 'Barbero'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div
+                          className={`barbero-card-checkbox ${seleccionado ? 'barbero-card-checkbox--checked' : ''}`}
+                          aria-hidden="true"
+                        >
+                          {seleccionado && <Check size={13} strokeWidth={3} />}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </fieldset>
+              </>
+            )}
+          </div>
+        );
+      }}
+    />
+  );
+};
 
 export const ServicioForm: React.FC<ServicioFormProps> = ({
   servicioInicial,
@@ -185,11 +340,10 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
     <form onSubmit={handleSubmit(onSubmit)} className="servicio-form-wrapper px-4 pb-4 pt-1">
       {/* Banner de visibilidad de servicio */}
       {servicioInicial && (
-        <div
+        <output
           className={`servicio-form-status-banner alert ${
             servicioInicial.estado === 'ACTIVO' ? 'alert-success' : 'alert-warning'
-          } py-2 px-3 small d-flex align-items-center gap-2 mb-3 rounded-3 shadow-sm border`}
-          role="status"
+          } py-2 px-3 small d-flex align-items-center gap-2 mb-3 rounded-3 shadow-sm border d-block w-100`}
         >
           {servicioInicial.estado === 'ACTIVO' ? (
             <>
@@ -202,14 +356,13 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
               <span>Este servicio <strong>NO</strong> está visible para los clientes.</span>
             </>
           )}
-        </div>
+        </output>
       )}
 
       {/* Banner de progreso al subir imagen */}
       {isSubmitting && loadingText === 'Subiendo imagen...' && (
-        <div
-          className="upload-banner alert py-2 px-3 small d-flex align-items-center gap-2 upload-banner-anim mb-3 rounded-3"
-          role="status"
+        <output
+          className="upload-banner alert py-2 px-3 small d-flex align-items-center gap-2 upload-banner-anim mb-3 rounded-3 d-block w-100"
           style={{
             background: 'rgba(0, 113, 188, 0.12)',
             border: '1px solid rgba(0, 113, 188, 0.3)',
@@ -218,7 +371,7 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
         >
           <KyriosSpinner size="xs" aria-hidden="true" />
           <span>Subiendo imagen del servicio...</span>
-        </div>
+        </output>
       )}
 
       {errorMensaje && <div className="alert alert-danger py-2 small rounded-3 mb-3">{errorMensaje}</div>}
@@ -397,152 +550,14 @@ export const ServicioForm: React.FC<ServicioFormProps> = ({
             </span>
           </div>
 
-          {cargandoBarberos ? (
-            <KyriosSpinner size="xs" variant="inline" mensaje="Cargando barberos..." className="my-2" />
-          ) : barberos.length === 0 ? (
-            <EmptyState
-              title="Sin barberos activos"
-              description="No hay barberos con estado ACTIVO disponibles en el sistema."
-            />
-          ) : (
-            <Controller
-              control={control}
-              name="barberoIds"
-              render={({ field }) => {
-                const seleccionados = field.value ?? [];
-                const total = barberos.length;
-                const count = seleccionados.length;
-
-                return (
-                  <div className="barbero-selection-panel">
-                    {/* Header: contador + acciones masivas */}
-                    <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-                      <div className="d-flex align-items-center">
-                        <span
-                          className="barbero-selection-counter-badge"
-                          aria-hidden="true"
-                        >
-                          {count}
-                        </span>
-                        <span
-                          className="text-surface-muted small fw-semibold"
-                          aria-live="polite"
-                          aria-atomic="true"
-                        >
-                          de {total} barberos seleccionados
-                        </span>
-                      </div>
-
-                      <div className="d-flex gap-2">
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-primary barbero-action-btn py-1 px-2.5"
-                          onClick={() =>
-                            field.onChange(barberos.map((b) => Number(b.barberoId ?? b.id)))
-                          }
-                          disabled={total === 0 || count === total}
-                          aria-label="Seleccionar todos los barberos"
-                        >
-                          Seleccionar todos
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-secondary barbero-action-btn py-1 px-2.5"
-                          onClick={() => field.onChange([])}
-                          disabled={count === 0}
-                          aria-label="Quitar todos los barberos seleccionados"
-                        >
-                          Limpiar
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Búsqueda */}
-                    <SearchInput
-                      placeholder="Buscar barbero por nombre..."
-                      value={busquedaBarbero}
-                      onChange={setBusquedaBarbero}
-                      ariaLabel="Buscar barbero por nombre"
-                      className="mb-3"
-                    />
-
-                    {/* Grid de tarjetas o EmptyState */}
-                    {barberosFiltrados.length === 0 ? (
-                      <EmptyState
-                        title="Sin coincidencias"
-                        description={`No se encontraron barberos que coincidan con "${busquedaBarbero}".`}
-                        actionLabel="Limpiar búsqueda"
-                        onAction={() => setBusquedaBarbero('')}
-                      />
-                    ) : (
-                      <>
-                        <p id="barberos-help" className="visually-hidden">
-                          Pulsa sobre cada tarjeta para añadir o quitar un barbero. Se puede buscar por nombre en el campo superior.
-                        </p>
-                        <div
-                          className="barbero-grid"
-                          role="group"
-                          aria-label="Selección de barberos"
-                          aria-describedby="barberos-help"
-                        >
-                          {barberosFiltrados.map((b) => {
-                            const barberoId = Number(b.barberoId ?? b.id);
-                            const seleccionado = seleccionados.includes(barberoId);
-
-                            return (
-                              <button
-                                key={barberoId}
-                                type="button"
-                                onClick={() => {
-                                  field.onChange(
-                                    seleccionado
-                                      ? seleccionados.filter((x) => x !== barberoId)
-                                      : [...seleccionados, barberoId],
-                                  );
-                                }}
-                                aria-pressed={seleccionado}
-                                aria-label={`${seleccionado ? 'Quitar' : 'Añadir'} ${b.nombre} ${b.apellido}`}
-                                title={`${seleccionado ? 'Quitar' : 'Añadir'} ${b.nombre} ${b.apellido}`}
-                                className={`barbero-card ${
-                                  seleccionado ? 'barbero-card--selected' : ''
-                                }`}
-                              >
-                                <div className="barbero-card-main">
-                                  <UserAvatar
-                                    nombre={b.nombre}
-                                    apellido={b.apellido}
-                                    fotoUrl={b.fotoUrl}
-                                    size={34}
-                                  />
-                                  <div className="barbero-card-info">
-                                    <span className="barbero-card-name text-truncate">
-                                      {b.nombre} {b.apellido}
-                                    </span>
-                                    <span className="barbero-card-role text-truncate">
-                                      {seleccionado ? 'Asignado' : 'Barbero'}
-                                    </span>
-                                  </div>
-                                </div>
-
-                                <div
-                                  className={`barbero-card-checkbox ${
-                                    seleccionado ? 'barbero-card-checkbox--checked' : ''
-                                  }`}
-                                  aria-hidden="true"
-                                >
-                                  {seleccionado && <Check size={13} strokeWidth={3} />}
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                );
-              }}
-            />
-          )}
+          <BarberosAsignadosSection
+            cargandoBarberos={cargandoBarberos}
+            barberos={barberos}
+            barberosFiltrados={barberosFiltrados}
+            control={control}
+            busquedaBarbero={busquedaBarbero}
+            setBusquedaBarbero={setBusquedaBarbero}
+          />
         </div>
 
         {/* Footer de Acciones */}

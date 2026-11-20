@@ -64,6 +64,13 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
     const nuevo = data.porcentajeComision;
     const diferencia = nuevo - anterior;
 
+    let claseDiferencia = 'text-muted';
+    if (diferencia > 0) {
+      claseDiferencia = 'text-success';
+    } else if (diferencia < 0) {
+      claseDiferencia = 'text-danger';
+    }
+
     const resumen = (
       <div className="d-flex flex-column gap-2 small">
         <div>
@@ -74,7 +81,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
         </div>
         <div>
           <strong>Nueva comisión:</strong> {nuevo}%{' '}
-          <span className={diferencia > 0 ? 'text-success' : diferencia < 0 ? 'text-danger' : 'text-muted'}>
+          <span className={claseDiferencia}>
             ({diferencia > 0 ? '+' : ''}{diferencia}%)
           </span>
         </div>

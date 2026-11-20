@@ -134,6 +134,146 @@ const TabServiciosBarbero: React.FC<TabServiciosBarberoProps> = ({
   );
 };
 
+const TabPerfilBarbero: React.FC<{ onVerServicios: () => void }> = ({ onVerServicios }) => (
+  <div className="barber-modal-perfil-content">
+    {/* Grid de 3 Métricas Destacadas */}
+    <div className="barber-modal-stats-grid">
+      <div className="barber-modal-stat-card">
+        <div className="barber-modal-stat-icon-wrap">
+          <CalendarCheck size={18} />
+        </div>
+        <div className="barber-modal-stat-data">
+          <span className="barber-modal-stat-number">1,974</span>
+          <span className="barber-modal-stat-title">Citas Realizadas</span>
+        </div>
+      </div>
+
+      <div className="barber-modal-stat-card">
+        <div className="barber-modal-stat-icon-wrap">
+          <Users size={18} />
+        </div>
+        <div className="barber-modal-stat-data">
+          <span className="barber-modal-stat-number">1,361</span>
+          <span className="barber-modal-stat-title">Clientes Satisfechos</span>
+        </div>
+      </div>
+
+      <div className="barber-modal-stat-card">
+        <div className="barber-modal-stat-icon-wrap">
+          <ShieldCheck size={18} />
+        </div>
+        <div className="barber-modal-stat-data">
+          <span className="barber-modal-stat-number">100%</span>
+          <span className="barber-modal-stat-title">Garantía Kyrios</span>
+        </div>
+      </div>
+    </div>
+
+    {/* Franja de Información de Ubicación y Disponibilidad */}
+    <div className="barber-modal-info-strip">
+      <div className="barber-modal-info-item">
+        <div className="barber-modal-info-icon-box">
+          <MapPin size={16} />
+        </div>
+        <div className="barber-modal-info-texts">
+          <span className="barber-modal-info-label">Ubicación de Atención</span>
+          <span className="barber-modal-info-value">Atención presencial en Sede Principal</span>
+        </div>
+      </div>
+      <div className="barber-modal-info-item">
+        <div className="barber-modal-info-icon-box">
+          <Clock size={16} />
+        </div>
+        <div className="barber-modal-info-texts">
+          <span className="barber-modal-info-label">Horario Habitual</span>
+          <span className="barber-modal-info-value">Martes a Sábado · 8:00 AM - 7:00 PM</span>
+        </div>
+      </div>
+    </div>
+
+    {/* Tarjeta de Biografía y Especialidad */}
+    <div className="barber-modal-bio-card">
+      <div className="barber-modal-bio-header">
+        <div className="barber-modal-bio-title-wrap">
+          <Award size={18} className="barber-modal-bio-gold-icon" />
+          <h4 className="barber-modal-section-title">Trayectoria & Especialidad</h4>
+        </div>
+        <span className="barber-modal-bio-exp-badge">+7 años exp.</span>
+      </div>
+
+      <p className="barber-modal-about">
+        Maestro barbero especializado en cortes clásicos, degradados modernos de máxima
+        precisión (fade), escultura y alineado de barba a navaja tradicional con ritual de
+        toalla caliente y pigmentación capilar avanzada.
+      </p>
+    </div>
+
+    {/* Botón de Acción Principal para ir a Servicios y Reservar */}
+    <div className="barber-modal-perfil-action">
+      <button
+        type="button"
+        className="barber-modal-cta-primary-btn"
+        onClick={onVerServicios}
+      >
+        <Scissors size={18} />
+        <span>Ver Servicios y Reservar Cita</span>
+      </button>
+    </div>
+  </div>
+);
+
+const TabPortfolioBarbero: React.FC<{ fotoUrl?: string | null }> = ({ fotoUrl }) => (
+  <div className="barber-modal-portfolio-grid">
+    <div className="barber-modal-portfolio-item">
+      {fotoUrl ? (
+        <img src={fotoUrl} alt="Corte Fade" className="barber-modal-portfolio-img" />
+      ) : (
+        <Scissors size={24} className="text-secondary" />
+      )}
+    </div>
+    <div className="barber-modal-portfolio-item">
+      <div className="d-flex flex-column align-items-center justify-content-center text-center p-2">
+        <Scissors size={20} className="text-warning mb-1" />
+        <span style={{ fontSize: '0.72rem' }}>Skin Fade</span>
+      </div>
+    </div>
+    <div className="barber-modal-portfolio-item">
+      <div className="d-flex flex-column align-items-center justify-content-center text-center p-2">
+        <Sparkles size={20} className="text-warning mb-1" />
+        <span style={{ fontSize: '0.72rem' }}>Barba Spa</span>
+      </div>
+    </div>
+  </div>
+);
+
+const TabResenasBarbero: React.FC = () => (
+  <div className="mb-4">
+    <div className="barber-modal-review-item">
+      <div className="d-flex align-items-center justify-content-between mb-1">
+        <span className="fw-semibold">Carlos Mendoza</span>
+        <span className="d-flex gap-1 barber-modal-stars">
+          {'★'.repeat(5)}
+        </span>
+      </div>
+      <p className="mb-0 opacity-85 small">
+        “Excelente atención, muy detallista con el degradado y el perfilado. 100% recomendado.”
+      </p>
+    </div>
+
+    <div className="barber-modal-review-item">
+      <div className="d-flex align-items-center justify-content-between mb-1">
+        <span className="fw-semibold">Andrés Restrepo</span>
+        <span className="d-flex gap-1 barber-modal-stars">
+          {'★'.repeat(5)}
+        </span>
+      </div>
+      <p className="mb-0 opacity-85 small">
+        “Puntualidad y técnica de primera. La toalla caliente en la barba es otro nivel.”
+      </p>
+    </div>
+  </div>
+);
+
 export const BarberProfileModal: React.FC<BarberProfileModalProps> = ({
   isOpen,
   onClose,
@@ -298,91 +438,7 @@ export const BarberProfileModal: React.FC<BarberProfileModalProps> = ({
 
         {/* Tab 1: Perfil */}
         {activeTab === 'perfil' && (
-          <div className="barber-modal-perfil-content">
-            {/* Grid de 3 Métricas Destacadas */}
-            <div className="barber-modal-stats-grid">
-              <div className="barber-modal-stat-card">
-                <div className="barber-modal-stat-icon-wrap">
-                  <CalendarCheck size={18} />
-                </div>
-                <div className="barber-modal-stat-data">
-                  <span className="barber-modal-stat-number">1,974</span>
-                  <span className="barber-modal-stat-title">Citas Realizadas</span>
-                </div>
-              </div>
-
-              <div className="barber-modal-stat-card">
-                <div className="barber-modal-stat-icon-wrap">
-                  <Users size={18} />
-                </div>
-                <div className="barber-modal-stat-data">
-                  <span className="barber-modal-stat-number">1,361</span>
-                  <span className="barber-modal-stat-title">Clientes Satisfechos</span>
-                </div>
-              </div>
-
-              <div className="barber-modal-stat-card">
-                <div className="barber-modal-stat-icon-wrap">
-                  <ShieldCheck size={18} />
-                </div>
-                <div className="barber-modal-stat-data">
-                  <span className="barber-modal-stat-number">100%</span>
-                  <span className="barber-modal-stat-title">Garantía Kyrios</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Franja de Información de Ubicación y Disponibilidad */}
-            <div className="barber-modal-info-strip">
-              <div className="barber-modal-info-item">
-                <div className="barber-modal-info-icon-box">
-                  <MapPin size={16} />
-                </div>
-                <div className="barber-modal-info-texts">
-                  <span className="barber-modal-info-label">Ubicación de Atención</span>
-                  <span className="barber-modal-info-value">Atención presencial en Sede Principal</span>
-                </div>
-              </div>
-              <div className="barber-modal-info-item">
-                <div className="barber-modal-info-icon-box">
-                  <Clock size={16} />
-                </div>
-                <div className="barber-modal-info-texts">
-                  <span className="barber-modal-info-label">Horario Habitual</span>
-                  <span className="barber-modal-info-value">Martes a Sábado · 8:00 AM - 7:00 PM</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Tarjeta de Biografía y Especialidad */}
-            <div className="barber-modal-bio-card">
-              <div className="barber-modal-bio-header">
-                <div className="barber-modal-bio-title-wrap">
-                  <Award size={18} className="barber-modal-bio-gold-icon" />
-                  <h4 className="barber-modal-section-title">Trayectoria & Especialidad</h4>
-                </div>
-                <span className="barber-modal-bio-exp-badge">+7 años exp.</span>
-              </div>
-
-              <p className="barber-modal-about">
-                Maestro barbero especializado en cortes clásicos, degradados modernos de máxima
-                precisión (fade), escultura y alineado de barba a navaja tradicional con ritual de
-                toalla caliente y pigmentación capilar avanzada.
-              </p>
-            </div>
-
-            {/* Botón de Acción Principal para ir a Servicios y Reservar */}
-            <div className="barber-modal-perfil-action">
-              <button
-                type="button"
-                className="barber-modal-cta-primary-btn"
-                onClick={() => setActiveTab('servicios')}
-              >
-                <Scissors size={18} />
-                <span>Ver Servicios y Reservar Cita</span>
-              </button>
-            </div>
-          </div>
+          <TabPerfilBarbero onVerServicios={() => setActiveTab('servicios')} />
         )}
 
         {/* Tab 2: Servicios */}
@@ -399,56 +455,12 @@ export const BarberProfileModal: React.FC<BarberProfileModalProps> = ({
 
         {/* Tab 3: Portfolio */}
         {activeTab === 'portfolio' && (
-          <div className="barber-modal-portfolio-grid">
-            <div className="barber-modal-portfolio-item">
-              {fotoUrl ? (
-                <img src={fotoUrl} alt="Corte Fade" className="barber-modal-portfolio-img" />
-              ) : (
-                <Scissors size={24} className="text-secondary" />
-              )}
-            </div>
-            <div className="barber-modal-portfolio-item">
-              <div className="d-flex flex-column align-items-center justify-content-center text-center p-2">
-                <Scissors size={20} className="text-warning mb-1" />
-                <span style={{ fontSize: '0.72rem' }}>Skin Fade</span>
-              </div>
-            </div>
-            <div className="barber-modal-portfolio-item">
-              <div className="d-flex flex-column align-items-center justify-content-center text-center p-2">
-                <Sparkles size={20} className="text-warning mb-1" />
-                <span style={{ fontSize: '0.72rem' }}>Barba Spa</span>
-              </div>
-            </div>
-          </div>
+          <TabPortfolioBarbero fotoUrl={fotoUrl} />
         )}
 
         {/* Tab 4: Reseñas */}
         {activeTab === 'resenas' && (
-          <div className="mb-4">
-            <div className="barber-modal-review-item">
-              <div className="d-flex align-items-center justify-content-between mb-1">
-                <span className="fw-semibold">Carlos Mendoza</span>
-                <span className="d-flex gap-1 barber-modal-stars">
-                  {'★'.repeat(5)}
-                </span>
-              </div>
-              <p className="mb-0 opacity-85 small">
-                “Excelente atención, muy detallista con el degradado y el perfilado. 100% recomendado.”
-              </p>
-            </div>
-
-            <div className="barber-modal-review-item">
-              <div className="d-flex align-items-center justify-content-between mb-1">
-                <span className="fw-semibold">Andrés Restrepo</span>
-                <span className="d-flex gap-1 barber-modal-stars">
-                  {'★'.repeat(5)}
-                </span>
-              </div>
-              <p className="mb-0 opacity-85 small">
-                “Puntualidad y técnica de primera. La toalla caliente en la barba es otro nivel.”
-              </p>
-            </div>
-          </div>
+          <TabResenasBarbero />
         )}
       </div>
     </Modal>

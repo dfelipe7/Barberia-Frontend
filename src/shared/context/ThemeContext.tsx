@@ -33,31 +33,31 @@ function getSavedPreference(): ThemePreference {
   return (saved === 'light' || saved === 'dark' || saved === 'system') ? saved : 'system';
 }
 
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<ThemePreference>(getSavedPreference);
+export const ThemeProvider: React.FC<Readonly<{ children: React.ReactNode }>> = ({ children }) => {
+  const [themeState, setThemeState] = useState<ThemePreference>(getSavedPreference);
   const [resolvedTheme, setResolvedTheme] = useState<Theme>(() => resolvePreference(getSavedPreference()));
 
   const applyResolved = useCallback((resolved: Theme) => {
-    document.documentElement.setAttribute('data-theme', resolved);
-    document.documentElement.setAttribute('data-bs-theme', resolved);
+    document.documentElement.dataset.theme = resolved;
+    document.documentElement.dataset.bsTheme = resolved;
     setResolvedTheme(resolved);
   }, []);
 
   useEffect(() => {
-    applyResolved(resolvePreference(theme));
-  }, [theme, applyResolved]);
+    applyResolved(resolvePreference(themeState));
+  }, [themeState, applyResolved]);
 
   // Escuchar cambios del sistema cuando el usuario eligió 'system'
   useEffect(() => {
     const mq = window.matchMedia(DARK_QUERY);
     const handleChange = (e: MediaQueryListEvent) => {
-      if (theme === 'system') {
+      if (themeState === 'system') {
         applyResolved(e.matches ? 'dark' : 'light');
       }
     };
     mq.addEventListener('change', handleChange);
     return () => mq.removeEventListener('change', handleChange);
-  }, [theme, applyResolved]);
+  }, [themeState, applyResolved]);
 
   const setTheme = useCallback((newTheme: ThemePreference) => {
     try {
@@ -78,13 +78,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const value = useMemo(
     () => ({
-      theme,
+      theme: themeState,
       setTheme,
       toggleTheme,
       resolvedTheme,
       isDark: resolvedTheme === 'dark',
     }),
-    [theme, setTheme, toggleTheme, resolvedTheme]
+    [themeState, setTheme, toggleTheme, resolvedTheme]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

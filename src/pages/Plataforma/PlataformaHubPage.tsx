@@ -81,18 +81,25 @@ export default function PlataformaHubPage() {
   // Generar slug automático al tipear nombre
   const handleNombreChange = (val: string) => {
     setNuevoNombre(val);
-    const slugAutogenerado = val
+    let slugAutogenerado = val
       .toLowerCase()
       .trim()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+      .replace(/[^a-z0-9]+/g, '-');
+
+    while (slugAutogenerado.startsWith('-')) {
+      slugAutogenerado = slugAutogenerado.slice(1);
+    }
+    while (slugAutogenerado.endsWith('-')) {
+      slugAutogenerado = slugAutogenerado.slice(0, -1);
+    }
+
     setNuevoSlug(slugAutogenerado);
   };
 
   // Crear nueva barbería (requiere credenciales de plataforma admin)
-  const handleCrearBarberia = async (e: React.FormEvent) => {
+  const handleCrearBarberia = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setCreando(true);
     setErrorCreacion(null);
@@ -166,7 +173,7 @@ export default function PlataformaHubPage() {
     (n) =>
       n.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
       n.slug.toLowerCase().includes(busqueda.toLowerCase()) ||
-      (n.ciudad && n.ciudad.toLowerCase().includes(busqueda.toLowerCase()))
+      Boolean(n.ciudad?.toLowerCase().includes(busqueda.toLowerCase()))
   );
 
   return (

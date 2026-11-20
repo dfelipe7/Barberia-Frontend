@@ -15,12 +15,17 @@ interface TenantThemeSelectorProps {
   isDark?: boolean;
 }
 
-export const TenantThemeSelector: React.FC<TenantThemeSelectorProps> = ({ isDark: isDarkProp }) => {
+function getTemaButtonBg(isSelected: boolean, isDark: boolean): string {
+  if (!isSelected) return 'transparent';
+  return isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)';
+}
+
+export const TenantThemeSelector: React.FC<Readonly<TenantThemeSelectorProps>> = ({ isDark: isDarkProp }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const toastCtx = useContext(ToastContext);
   const { isDark: isDarkContext } = useTheme();
-  const isDark = isDarkProp !== undefined ? isDarkProp : isDarkContext;
+  const isDark = isDarkProp ?? isDarkContext;
 
   const slug = obtenerNegocioSlugActivo() || localStorage.getItem('negocio_slug') || 'barberia-demo-2';
   const [temaActual, setTemaActual] = useState<TenantThemeId>(() => {
@@ -176,11 +181,7 @@ export const TenantThemeSelector: React.FC<TenantThemeSelectorProps> = ({ isDark
                     isSelected ? 'fw-bold' : ''
                   }`}
                   style={{
-                    backgroundColor: isSelected
-                      ? isDark
-                        ? 'rgba(255, 255, 255, 0.1)'
-                        : 'rgba(0, 0, 0, 0.06)'
-                      : 'transparent',
+                    backgroundColor: getTemaButtonBg(isSelected, isDark),
                     color: isDark ? '#f3f4f6' : '#1e293b',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',

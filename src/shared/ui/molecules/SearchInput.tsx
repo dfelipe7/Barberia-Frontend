@@ -14,7 +14,35 @@ export interface SearchInputProps {
   ariaLabel?: string;
 }
 
-export const SearchInput: React.FC<SearchInputProps> = ({
+function renderEndAdornment(searching: boolean, hasValue: boolean, onClear: () => void) {
+  if (searching) {
+    return (
+      <div
+        className="position-absolute end-0 top-50 translate-middle-y me-3 d-flex align-items-center"
+        style={{ pointerEvents: 'none' }}
+        title="Buscando..."
+      >
+        <KyriosSpinner size="xs" aria-hidden="true" />
+      </div>
+    );
+  }
+  if (hasValue) {
+    return (
+      <button
+        type="button"
+        onClick={onClear}
+        className="btn btn-link p-0 position-absolute end-0 top-50 translate-middle-y me-3 d-flex align-items-center text-surface-muted text-decoration-none"
+        aria-label="Limpiar búsqueda"
+        style={{ border: 'none', background: 'none' }}
+      >
+        <X size={16} aria-hidden="true" />
+      </button>
+    );
+  }
+  return null;
+}
+
+export const SearchInput: React.FC<Readonly<SearchInputProps>> = ({
   value,
   onChange,
   placeholder,
@@ -33,9 +61,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   }, [debouncedValue, onDebouncedChange]);
 
   const searching =
-    isSearching !== undefined
-      ? isSearching
-      : Boolean(onDebouncedChange) && value !== debouncedValue;
+    isSearching ?? (Boolean(onDebouncedChange) && value !== debouncedValue);
 
   return (
     <div className={`search-input-wrapper ${className}`.trim()}>
@@ -52,25 +78,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           aria-label={ariaLabel}
         />
 
-        {searching ? (
-          <div
-            className="position-absolute end-0 top-50 translate-middle-y me-3 d-flex align-items-center"
-            style={{ pointerEvents: 'none' }}
-            title="Buscando..."
-          >
-            <KyriosSpinner size="xs" aria-hidden="true" />
-          </div>
-        ) : value.length > 0 ? (
-          <button
-            type="button"
-            onClick={() => onChange('')}
-            className="btn btn-link p-0 position-absolute end-0 top-50 translate-middle-y me-3 d-flex align-items-center text-surface-muted text-decoration-none"
-            aria-label="Limpiar búsqueda"
-            style={{ border: 'none', background: 'none' }}
-          >
-            <X size={16} aria-hidden="true" />
-          </button>
-        ) : null}
+        {renderEndAdornment(searching, value.length > 0, () => onChange(''))}
       </div>
 
       {searching && (

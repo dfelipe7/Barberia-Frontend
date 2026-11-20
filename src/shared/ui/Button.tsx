@@ -28,6 +28,12 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   ref?: React.Ref<HTMLButtonElement>;
 }
 
+function getButtonSizeClass(size?: 'sm' | 'md' | 'lg'): string {
+  if (size === 'sm') return 'btn-sm';
+  if (size === 'lg') return 'btn-lg';
+  return '';
+}
+
 export const Button: React.FC<ButtonProps> = ({
   children,
   variant = 'primary',
@@ -40,7 +46,7 @@ export const Button: React.FC<ButtonProps> = ({
   ref,
   ...props
 }) => {
-  const sizeClass = size === 'sm' ? 'btn-sm' : size === 'lg' ? 'btn-lg' : '';
+  const sizeClass = getButtonSizeClass(size);
 
   return (
     <button

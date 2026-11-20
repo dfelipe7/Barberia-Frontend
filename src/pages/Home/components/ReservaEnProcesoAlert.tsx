@@ -26,10 +26,10 @@ export const ReservaEnProcesoAlert: React.FC<ReservaEnProcesoAlertProps> = ({
   };
 
   // Construcción del mensaje predefinido para WhatsApp
+  const detalleServicio = servicioNombre ? ` Servicio: ${servicioNombre}.` : '';
+  const detalleBarbero = barberoNombre ? ` Barbero: ${barberoNombre}.` : '';
   const mensajeWhatsapp = encodeURIComponent(
-    `¡Hola Kyrios Studio! Quiero agendar una cita.${
-      servicioNombre ? ` Servicio: ${servicioNombre}.` : ''
-    }${barberoNombre ? ` Barbero: ${barberoNombre}.` : ''} ¿Qué disponibilidad tienen?`
+    `¡Hola Kyrios Studio! Quiero agendar una cita.${detalleServicio}${detalleBarbero} ¿Qué disponibilidad tienen?`
   );
 
   const whatsappUrl = `https://wa.me/573100000000?text=${mensajeWhatsapp}`;

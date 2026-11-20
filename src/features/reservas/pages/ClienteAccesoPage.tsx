@@ -27,7 +27,7 @@ function esRutaLocalSegura(valor: unknown): valor is string {
   return typeof valor === 'string' && valor.startsWith('/') && !valor.startsWith('//') && !valor.includes('\\');
 }
 
-export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente }) {
+export default function ClienteAccesoPage({ modo }: Readonly<{ modo: ModoAccesoCliente }>) {
   const { slug: paramSlug } = useParams<{ slug?: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,11 +40,12 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
 
   const returnToState = (location.state as { returnTo?: unknown } | null)?.returnTo;
   const returnToQuery = searchParams.get('returnTo');
-  const returnToCandidato = esRutaLocalSegura(returnToState)
-    ? returnToState
-    : esRutaLocalSegura(returnToQuery)
-      ? returnToQuery
-      : '';
+  let returnToCandidato = '';
+  if (esRutaLocalSegura(returnToState)) {
+    returnToCandidato = returnToState;
+  } else if (esRutaLocalSegura(returnToQuery)) {
+    returnToCandidato = returnToQuery;
+  }
 
   const slugFromReturnTo = (() => {
     if (!returnToCandidato) return null;
@@ -70,8 +71,8 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
       const sesion = await clientesService.iniciarSesionGoogle(respuesta.credential, slug);
       clientesService.guardarSesion(sesion, slug);
       void navigate(returnTo, { replace: true, state: { desdeLogin: true } });
-    } catch (errorDesconocido: unknown) {
-      setError(mapApiError(errorDesconocido));
+    } catch (error_: unknown) {
+      setError(mapApiError(error_));
     } finally {
       setCargando(false);
     }
@@ -128,8 +129,8 @@ export default function ClienteAccesoPage({ modo }: { modo: ModoAccesoCliente })
             </p>
 
             <div className="auth-split__perks">
-              {perksCliente.map((perk, i) => (
-                <div key={i} className="auth-split__perk-item">
+              {perksCliente.map((perk) => (
+                <div key={perk.title} className="auth-split__perk-item">
                   <div className="auth-split__perk-icon">{perk.icon}</div>
                   <div className="auth-split__perk-text">
                     <strong>{perk.title}</strong>

@@ -304,6 +304,78 @@ export const UsuariosPage: React.FC = () => {
     }
   };
 
+  const renderContenidoAdmins = () => {
+    if (cargandoAdmins) {
+      return <Spinner mensaje="Cargando administradores..." />;
+    }
+    if (administradoresFiltrados.length === 0 && debouncedBusqueda) {
+      return (
+        <EmptyState
+          title={`No se encontraron administradores que coincidan con "${debouncedBusqueda}".`}
+          actionLabel="Limpiar búsqueda"
+          onAction={() => setFiltroBusqueda('')}
+        />
+      );
+    }
+    return (
+      <UserTable
+        administradores={administradoresFiltrados}
+        onSelectUsuario={handleVerDetalles}
+        onCambiarEstado={handleCambiarEstadoAdmin}
+        onCambiarEstadoGlobal={handleCambiarEstadoGlobalAdmin}
+        esSuperAdmin={esSuperAdmin}
+        currentUserId={usuarioDb?.id}
+        isUpdatingId={
+          cambiarEstadoAdminMutation.isPending
+            ? cambiarEstadoAdminMutation.variables?.id
+            : null
+        }
+        isUpdatingGlobalId={
+          cambiarEstadoGlobalAdminMutation.isPending
+            ? cambiarEstadoGlobalAdminMutation.variables?.id
+            : null
+        }
+      />
+    );
+  };
+
+  const renderContenidoBarberos = () => {
+    if (cargandoBarberos) {
+      return <Spinner mensaje="Cargando barberos de gestión..." />;
+    }
+    if (barberosFiltrados.length === 0 && debouncedBusqueda) {
+      return (
+        <EmptyState
+          title={`No se encontraron barberos que coincidan con "${debouncedBusqueda}".`}
+          actionLabel="Limpiar búsqueda"
+          onAction={() => setFiltroBusqueda('')}
+        />
+      );
+    }
+    return (
+      <BarberoTable
+        barberos={barberosFiltrados}
+        onSelectBarbero={handleVerDetalles}
+        onEditarComision={(barbero) => setBarberoAEditarComision(barbero)}
+        onEditarFoto={(barbero) => setBarberoAEditarFoto(barbero)}
+        onCambiarEstado={handleCambiarEstadoBarbero}
+        onCambiarEstadoGlobal={handleCambiarEstadoGlobalBarbero}
+        rolActorPrincipal={rolActorPrincipal}
+        currentUserId={usuarioDb?.id}
+        isUpdatingId={
+          cambiarEstadoBarberoMutation.isPending
+            ? cambiarEstadoBarberoMutation.variables?.id
+            : null
+        }
+        isUpdatingGlobalId={
+          cambiarEstadoGlobalBarberoMutation.isPending
+            ? cambiarEstadoGlobalBarberoMutation.variables?.id
+            : null
+        }
+      />
+    );
+  };
+
   return (
     <div className="usuarios-page-container">
       {/* Header con contexto claro */}
@@ -410,34 +482,7 @@ export const UsuariosPage: React.FC = () => {
               />
             )}
 
-            {cargandoAdmins ? (
-              <Spinner mensaje="Cargando administradores..." />
-            ) : administradoresFiltrados.length === 0 && debouncedBusqueda ? (
-              <EmptyState
-                title={`No se encontraron administradores que coincidan con "${debouncedBusqueda}".`}
-                actionLabel="Limpiar búsqueda"
-                onAction={() => setFiltroBusqueda('')}
-              />
-            ) : (
-              <UserTable
-                administradores={administradoresFiltrados}
-                onSelectUsuario={handleVerDetalles}
-                onCambiarEstado={handleCambiarEstadoAdmin}
-                onCambiarEstadoGlobal={handleCambiarEstadoGlobalAdmin}
-                esSuperAdmin={esSuperAdmin}
-                currentUserId={usuarioDb?.id}
-                isUpdatingId={
-                  cambiarEstadoAdminMutation.isPending
-                    ? cambiarEstadoAdminMutation.variables?.id
-                    : null
-                }
-                isUpdatingGlobalId={
-                  cambiarEstadoGlobalAdminMutation.isPending
-                    ? cambiarEstadoGlobalAdminMutation.variables?.id
-                    : null
-                }
-              />
-            )}
+            {renderContenidoAdmins()}
           </>
         )}
 
@@ -457,36 +502,7 @@ export const UsuariosPage: React.FC = () => {
               />
             )}
 
-            {cargandoBarberos ? (
-              <Spinner mensaje="Cargando barberos de gestión..." />
-            ) : barberosFiltrados.length === 0 && debouncedBusqueda ? (
-              <EmptyState
-                title={`No se encontraron barberos que coincidan con "${debouncedBusqueda}".`}
-                actionLabel="Limpiar búsqueda"
-                onAction={() => setFiltroBusqueda('')}
-              />
-            ) : (
-              <BarberoTable
-                barberos={barberosFiltrados}
-                onSelectBarbero={handleVerDetalles}
-                onEditarComision={(barbero) => setBarberoAEditarComision(barbero)}
-                onEditarFoto={(barbero) => setBarberoAEditarFoto(barbero)}
-                onCambiarEstado={handleCambiarEstadoBarbero}
-                onCambiarEstadoGlobal={handleCambiarEstadoGlobalBarbero}
-                rolActorPrincipal={rolActorPrincipal}
-                currentUserId={usuarioDb?.id}
-                isUpdatingId={
-                  cambiarEstadoBarberoMutation.isPending
-                    ? cambiarEstadoBarberoMutation.variables?.id
-                    : null
-                }
-                isUpdatingGlobalId={
-                  cambiarEstadoGlobalBarberoMutation.isPending
-                    ? cambiarEstadoGlobalBarberoMutation.variables?.id
-                    : null
-                }
-              />
-            )}
+            {renderContenidoBarberos()}
           </>
         )}
       </div>

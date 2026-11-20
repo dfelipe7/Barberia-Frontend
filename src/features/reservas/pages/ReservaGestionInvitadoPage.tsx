@@ -38,6 +38,31 @@ const formatearPrecio = (valor: number) =>
     maximumFractionDigits: 0,
   }).format(valor);
 
+const BadgeEstadoReservaInvitado: React.FC<{ esCancelada: boolean; esCompletada: boolean }> = ({
+  esCancelada,
+  esCompletada,
+}) => {
+  if (esCancelada) {
+    return (
+      <span className="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1.5 rounded-pill">
+        ● Cita Cancelada
+      </span>
+    );
+  }
+  if (esCompletada) {
+    return (
+      <span className="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-1.5 rounded-pill">
+        ✓ Completada
+      </span>
+    );
+  }
+  return (
+    <span className="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill">
+      ● Cita Programada
+    </span>
+  );
+};
+
 export default function ReservaGestionInvitadoPage() {
   const { slug, id: idParamFromRoute, token: tokenParamFromRoute } = useParams<{
     slug?: string;
@@ -272,19 +297,7 @@ export default function ReservaGestionInvitadoPage() {
           </div>
 
           <div>
-            {esCancelada ? (
-              <span className="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1.5 rounded-pill">
-                ● Cita Cancelada
-              </span>
-            ) : esCompletada ? (
-              <span className="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-1.5 rounded-pill">
-                ✓ Completada
-              </span>
-            ) : (
-              <span className="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill">
-                ● Cita Programada
-              </span>
-            )}
+            <BadgeEstadoReservaInvitado esCancelada={esCancelada} esCompletada={esCompletada} />
           </div>
         </div>
 

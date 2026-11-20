@@ -23,7 +23,7 @@ export interface AuthProviderProps {
  * @param props - Propiedades conteniendo los elementos hijos.
  * @returns El árbol de componentes protegido con el `AuthContextProvider`.
  */
-export default function AuthProvider({ children }: AuthProviderProps) {
+export default function AuthProvider({ children }: Readonly<AuthProviderProps>) {
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {

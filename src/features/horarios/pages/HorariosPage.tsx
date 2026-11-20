@@ -59,7 +59,7 @@ const convertirADatosFormulario = (
       diaSemana: codigo,
       franjas: [...new Set(franjasPorDia[codigo])]
         .filter((hora): hora is (typeof HORAS_INICIO_FRANJA)[number] =>
-          HORAS_INICIO_FRANJA.some((opcion) => opcion === hora),
+          (HORAS_INICIO_FRANJA as readonly string[]).includes(hora),
         )
         .sort((a, b) => a.localeCompare(b)),
     })),
@@ -108,8 +108,7 @@ const agruparFranjasEnIntervalos = (franjasOrdenadas: string[]) => {
   let inicioActual: string | null = null;
   let finActual: string | null = null;
 
-  for (let i = 0; i < franjasOrdenadas.length; i++) {
-    const hora = franjasOrdenadas[i];
+  for (const hora of franjasOrdenadas) {
     const siguienteFin = sumarUnaHora(hora);
 
     if (inicioActual === null) {

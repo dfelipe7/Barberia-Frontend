@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, type UseFormSetValue } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Spinner from '../../../shared/ui/Spinner';
 import Button from '../../../shared/ui/Button';
@@ -73,7 +73,7 @@ async function confirmarRevocacionesRol(
     usuario?.rol === 'ADMINISTRADOR' ||
     usuario?.rol === 'SUPERADMIN'
   );
-  const teniaBarbero = Boolean(usuario?.barbero && usuario.barbero.estado === 'ACTIVO');
+  const teniaBarbero = Boolean(usuario?.barbero?.estado === 'ACTIVO');
 
   if (!noPuedeRevocarAdmin && teniaAdmin && !data.esAdministrador) {
     const ok = await confirm({
@@ -96,6 +96,47 @@ async function confirmarRevocacionesRol(
   }
 
   return true;
+}
+
+function sincronizarFormularioUsuario(
+  usuario: Usuario,
+  setValue: UseFormSetValue<EditarUsuarioFormValues>
+) {
+  setValue('nombre', usuario.nombre);
+  setValue('apellido', usuario.apellido);
+  setValue('email', usuario.email);
+
+  const barberoActivo = Boolean(usuario.barbero?.estado === 'ACTIVO');
+  setValue('esBarbero', barberoActivo);
+
+  if (usuario.barbero) {
+    setValue('telefono', usuario.barbero.telefono || '');
+    setValue('porcentajeComision', usuario.barbero.porcentajeComision ?? 50);
+  }
+
+  const adminActivo = Boolean(
+    usuario.administrador?.estado === 'ACTIVO' ||
+    usuario.rol === 'ADMINISTRADOR' ||
+    usuario.rol === 'SUPERADMIN'
+  );
+  setValue('esAdministrador', adminActivo);
+}
+
+function validarPermisoEdicion(
+  esSuperadminObjetivo: boolean,
+  editandoPropioPerfil: boolean,
+  rolActorPrincipal: Rol,
+  rolObjetivo: Rol,
+  usuarioDbId?: number,
+  usuarioId?: number
+): 'SUPERADMIN_READONLY' | 'NO_PERMISOS' | 'OK' {
+  if (esSuperadminObjetivo && !editandoPropioPerfil) {
+    return 'SUPERADMIN_READONLY';
+  }
+  if (!puedeGestionarEstado(rolActorPrincipal, rolObjetivo) && usuarioDbId !== usuarioId) {
+    return 'NO_PERMISOS';
+  }
+  return 'OK';
 }
 
 export const EditarUsuarioPage: React.FC = () => {
@@ -151,24 +192,7 @@ export const EditarUsuarioPage: React.FC = () => {
 
   useEffect(() => {
     if (usuario) {
-      setValue('nombre', usuario.nombre);
-      setValue('apellido', usuario.apellido);
-      setValue('email', usuario.email);
-
-      const barberoActivo = Boolean(usuario.barbero && usuario.barbero.estado === 'ACTIVO');
-      setValue('esBarbero', barberoActivo);
-
-      if (usuario.barbero) {
-        setValue('telefono', usuario.barbero.telefono || '');
-        setValue('porcentajeComision', usuario.barbero.porcentajeComision ?? 50);
-      }
-
-      const adminActivo = Boolean(
-        usuario.administrador?.estado === 'ACTIVO' ||
-        usuario.rol === 'ADMINISTRADOR' ||
-        usuario.rol === 'SUPERADMIN'
-      );
-      setValue('esAdministrador', adminActivo);
+      sincronizarFormularioUsuario(usuario, setValue);
     }
   }, [usuario, setValue]);
 
@@ -193,8 +217,18 @@ export const EditarUsuarioPage: React.FC = () => {
     );
   }
 
+  const rolObjetivo = resolverRolObjetivo(usuario);
+  const estadoPermiso = validarPermisoEdicion(
+    Boolean(esSuperadminObjetivo),
+    Boolean(editandoPropioPerfil),
+    rolActorPrincipal,
+    rolObjetivo,
+    usuarioDb?.id,
+    usuarioId
+  );
+
   // Inmunidad entre pares: el perfil de un Superadmin solo lo edita él mismo.
-  if (esSuperadminObjetivo && !editandoPropioPerfil) {
+  if (estadoPermiso === 'SUPERADMIN_READONLY') {
     return (
       <div className="container py-4">
         <div className="alert alert-info">
@@ -216,8 +250,7 @@ export const EditarUsuarioPage: React.FC = () => {
   }
 
   // Protección si un usuario intenta editar a otro de jerarquía igual o superior sin ser superadmin
-  const rolObjetivo = resolverRolObjetivo(usuario);
-  if (!puedeGestionarEstado(rolActorPrincipal, rolObjetivo) && usuarioDb?.id !== usuarioId) {
+  if (estadoPermiso === 'NO_PERMISOS') {
     return (
       <div className="container py-4">
         <div className="alert alert-warning">

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
+  ActualizarPerfilClienteDTO,
   ActualizarReservaDTO,
   CrearReservaDTO,
   FiltroDisponibilidadReservaDTO,
@@ -7,7 +8,6 @@ import type {
 } from './reservas.dto';
 import { reservasKeys } from './reservas.keys';
 import { clientesService, reservasService } from './reservas.service';
-import type { ActualizarPerfilClienteDTO } from './reservas.dto';
 
 export function useDisponibilidadReserva(filtro?: FiltroDisponibilidadReservaDTO) {
   return useQuery({

@@ -63,6 +63,36 @@ export const BarberosPage: React.FC = () => {
     return barberos.filter((b) => `${b.nombre} ${b.apellido}`.toLowerCase().includes(q));
   }, [barberos, debouncedNombre]);
 
+  const renderContenido = () => {
+    if (isLoading && barberos.length === 0) {
+      return <Spinner mensaje="Cargando el equipo de barberos..." />;
+    }
+    if (barberosFiltrados.length === 0) {
+      const tituloVacio = debouncedNombre
+        ? `No se encontraron barberos que coincidan con "${debouncedNombre}".`
+        : 'No hay barberos registrados en el catálogo en este momento.';
+      return (
+        <EmptyState
+          title={tituloVacio}
+          actionLabel={debouncedNombre ? 'Limpiar búsqueda' : undefined}
+          onAction={debouncedNombre ? () => setFiltroNombre('') : undefined}
+        />
+      );
+    }
+    return (
+      <div
+        className={`row g-2 g-sm-3 g-md-4 catalog-grid-2col search-results-fade ${
+          isFetching && barberos.length > 0 ? 'opacity-75' : ''
+        }`}
+        style={{ transition: 'opacity 150ms ease' }}
+      >
+        {barberosFiltrados.map((barbero) => (
+          <BarberoCard key={barbero.id} barbero={barbero} />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="container-fluid py-2">
       <PageHeader
@@ -95,30 +125,7 @@ export const BarberosPage: React.FC = () => {
         />
       )}
 
-      {isLoading && barberos.length === 0 ? (
-        <Spinner mensaje="Cargando el equipo de barberos..." />
-      ) : barberosFiltrados.length === 0 ? (
-        <EmptyState
-          title={
-            debouncedNombre
-              ? `No se encontraron barberos que coincidan con "${debouncedNombre}".`
-              : 'No hay barberos registrados en el catálogo en este momento.'
-          }
-          actionLabel={debouncedNombre ? 'Limpiar búsqueda' : undefined}
-          onAction={debouncedNombre ? () => setFiltroNombre('') : undefined}
-        />
-      ) : (
-        <div
-          className={`row g-2 g-sm-3 g-md-4 catalog-grid-2col search-results-fade ${
-            isFetching && barberos.length > 0 ? 'opacity-75' : ''
-          }`}
-          style={{ transition: 'opacity 150ms ease' }}
-        >
-          {barberosFiltrados.map((barbero) => (
-            <BarberoCard key={barbero.id} barbero={barbero} />
-          ))}
-        </div>
-      )}
+      {renderContenido()}
     </div>
   );
 };

@@ -36,7 +36,7 @@ export const HomeFooter: React.FC = () => {
               enfocado en la precisión, la técnica y una experiencia de alto nivel para el cliente actual.
             </p>
             <div className="d-flex align-items-center flex-wrap gap-2">
-              {redesSociales && redesSociales.filter((r) => r.activo).length > 0 ? (
+              {redesSociales?.some((r) => r.activo) ? (
                 redesSociales
                   .filter((r) => r.activo)
                   .map((red) => {

@@ -449,18 +449,11 @@ export default function ReservasAdministrativasPage() {
                 <div className="d-flex flex-column gap-3">
                   {diasAgrupados.map((dia) => (
                     <section key={dia.fecha} className="reservations-admin__day-group" aria-label={dia.tituloCompleto}>
-                      <header
-                        className="reservations-admin__day-header"
+                      <button
+                        type="button"
+                        className="reservations-admin__day-header w-100 text-start border-0"
                         onClick={() => toggleDia(dia.fecha)}
-                        role="button"
                         aria-expanded={!diasColapsados.has(dia.fecha)}
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            toggleDia(dia.fecha);
-                          }
-                        }}
                       >
                         <div className="d-flex align-items-center gap-2 flex-grow-1 min-w-0 overflow-hidden">
                           <div className="reservations-admin__day-date-badge flex-shrink-0" aria-hidden="true">
@@ -484,7 +477,7 @@ export default function ReservasAdministrativasPage() {
                             aria-hidden="true"
                           />
                         </div>
-                      </header>
+                      </button>
 
                       {!diasColapsados.has(dia.fecha) && (
                         <div className="d-flex flex-column gap-2">

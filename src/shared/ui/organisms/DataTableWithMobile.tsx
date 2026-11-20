@@ -12,7 +12,7 @@ export function DataTableWithMobile<_T = unknown>({
   desktop,
   mobile,
   className = '',
-}: DataTableWithMobileProps<_T>): React.ReactElement {
+}: Readonly<DataTableWithMobileProps<_T>>): React.ReactElement {
   return (
     <div
       key={isMobile ? 'mobile' : 'desktop'}

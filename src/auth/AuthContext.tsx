@@ -247,10 +247,10 @@ function guardarSesionEnStorage(
 export function AuthContextProvider({
   children,
   isInitializing,
-}: {
+}: Readonly<{
   children: React.ReactNode;
   isInitializing: boolean;
-}) {
+}>) {
   const [token, setToken] = useState<string | null>(obtenerTokenInicial);
   const [usuarioSesion, setUsuarioSesion] = useState<UsuarioSesion | null>(obtenerUsuarioSesionInicial);
   const [usuarioDb, setUsuarioDb] = useState<Usuario | null>(null);
@@ -464,26 +464,45 @@ export function AuthContextProvider({
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
+  const contextValue = useMemo(
+    () => ({
+      cerrarSesion,
+      isAuthenticated,
+      isInitializing,
+      token,
+      nombre,
+      apellido,
+      email,
+      fotoUrl,
+      roles,
+      usuarioDb,
+      negocioSesionSlug,
+      negocioSesionNombre,
+      esStaffDeSede,
+      loginConGoogle,
+      refrescarPerfil,
+    }),
+    [
+      cerrarSesion,
+      isAuthenticated,
+      isInitializing,
+      token,
+      nombre,
+      apellido,
+      email,
+      fotoUrl,
+      roles,
+      usuarioDb,
+      negocioSesionSlug,
+      negocioSesionNombre,
+      esStaffDeSede,
+      loginConGoogle,
+      refrescarPerfil,
+    ]
+  );
+
   return (
-    <AuthContext.Provider
-      value={{
-        cerrarSesion,
-        isAuthenticated,
-        isInitializing,
-        token,
-        nombre,
-        apellido,
-        email,
-        fotoUrl,
-        roles,
-        usuarioDb,
-        negocioSesionSlug,
-        negocioSesionNombre,
-        esStaffDeSede,
-        loginConGoogle,
-        refrescarPerfil,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

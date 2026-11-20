@@ -25,7 +25,7 @@ export function Table<T>({
   emptyContent,
   hoverable = true,
   striped = true,
-}: TableProps<T>) {
+}: Readonly<TableProps<T>>) {
   if (data.length === 0) {
     if (emptyContent) {
       return <>{emptyContent}</>;
