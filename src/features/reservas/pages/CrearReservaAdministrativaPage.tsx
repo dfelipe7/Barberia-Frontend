@@ -402,7 +402,9 @@ const FechaYHoraCard: React.FC<FechaYHoraCardProps> = ({
         isError={disponibilidad.isError}
         error={disponibilidad.error}
         isFetching={disponibilidad.isFetching}
-        onRefetch={() => void disponibilidad.refetch()}
+        onRefetch={() => {
+          disponibilidad.refetch();
+        }}
         horasDisponibles={horasDisponibles}
         horaSeleccionada={horaSeleccionada}
         onSeleccionarHora={onSeleccionarHora}
@@ -659,7 +661,9 @@ export default function CrearReservaAdministrativaPage() {
                   hora={hora}
                   errorAccion={errorAccion}
                   isPending={crearReserva.isPending}
-                  onCrear={() => void crear()}
+                  onCrear={() => {
+                    crear();
+                  }}
                   tipoCliente={tipoCliente}
                   cliente={cliente}
                   nombreInvitado={nombreInvitado}
