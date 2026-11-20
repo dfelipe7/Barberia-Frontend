@@ -8,7 +8,6 @@ export interface CatalogCardProps {
   badges?: { label: string; tone?: 'default' | 'dark' }[];
   priceLabel: string;
   isActive?: boolean;
-  onClick?: () => void;
   actions?: React.ReactNode; // botones de administración que aparecen al hover o foco
   isStateChanging?: boolean; // activa microanimación de pulso
 }
@@ -110,16 +109,6 @@ const CardBadgesList: React.FC<{
   );
 };
 
-function getCardKeyHandler(onClick?: () => void, isActive = true) {
-  if (!onClick || !isActive) return undefined;
-  return (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onClick();
-    }
-  };
-}
-
 export function CatalogCard({
   imageUrl,
   title,
@@ -127,13 +116,13 @@ export function CatalogCard({
   badges = [],
   priceLabel,
   isActive = true,
-  onClick,
   actions,
   isStateChanging = false,
 }: Readonly<CatalogCardProps>) {
   const cardClassName = `catalog-card position-relative ${isActive ? 'is-active' : 'is-inactive'}`;
-  const cardContent = (
-    <>
+
+  return (
+    <article className={cardClassName}>
       <div className="position-relative overflow-hidden">
         {imageUrl ? (
           /* key={imageUrl}: remonta CardImage cuando cambia la URL, reseteando el error */
@@ -173,28 +162,6 @@ export function CatalogCard({
         {subtitle && <p className="text-surface-muted small mb-1 mb-sm-2 catalog-card-subtitle">{subtitle}</p>}
         <p className="catalog-card-price mb-0 fs-6 fs-sm-5 text-surface-card">{priceLabel}</p>
       </div>
-    </>
-  );
-
-  if (onClick) {
-    return (
-      <article
-        className={cardClassName}
-        onClick={isActive ? onClick : undefined}
-        onKeyDown={getCardKeyHandler(onClick, isActive)}
-        tabIndex={isActive ? 0 : -1}
-        role="button"
-        aria-disabled={!isActive ? true : undefined}
-        style={{ cursor: isActive ? 'pointer' : 'not-allowed' }}
-      >
-        {cardContent}
-      </article>
-    );
-  }
-
-  return (
-    <article className={cardClassName}>
-      {cardContent}
     </article>
   );
 }
