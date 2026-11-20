@@ -662,7 +662,7 @@ export default function CrearReservaAdministrativaPage() {
                   errorAccion={errorAccion}
                   isPending={crearReserva.isPending}
                   onCrear={() => {
-                    crear();
+                    crear().catch(() => {});
                   }}
                   tipoCliente={tipoCliente}
                   cliente={cliente}
