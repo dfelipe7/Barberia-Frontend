@@ -428,6 +428,13 @@ function FormularioRevisionReserva({
     }
 
     if (!reservaId) {
+      const tieneTelefono = telefonoInvitado.trim().length > 0;
+      const resValTel = tieneTelefono ? validarTelefono(telefonoInvitado) : null;
+      let claseValidacion = '';
+      if (resValTel) {
+        claseValidacion = resValTel.valido ? 'is-valid' : 'is-invalid';
+      }
+
       return (
         <div className="mb-4">
           <h3 className="h6 fw-bold mb-1">Datos de contacto</h3>
@@ -477,13 +484,7 @@ function FormularioRevisionReserva({
                 <input
                   id="invitado-telefono"
                   type="tel"
-                  className={`form-control ${
-                    telefonoInvitado.trim()
-                      ? validarTelefono(telefonoInvitado).valido
-                        ? 'is-valid'
-                        : 'is-invalid'
-                      : ''
-                  }`}
+                  className={`form-control ${claseValidacion}`}
                   autoComplete="tel"
                   value={telefonoInvitado}
                   maxLength={30}
@@ -495,21 +496,21 @@ function FormularioRevisionReserva({
                   required
                 />
               </div>
-              {telefonoInvitado.trim() ? (
+              {resValTel ? (
                 <div
                   className={`form-text d-flex align-items-center gap-1 mt-1 ${
-                    validarTelefono(telefonoInvitado).valido ? 'text-success' : 'text-danger'
+                    resValTel.valido ? 'text-success' : 'text-danger'
                   }`}
                 >
-                  {validarTelefono(telefonoInvitado).valido ? (
+                  {resValTel.valido ? (
                     <>
                       <Check size={14} className="flex-shrink-0" />
-                      <span>{validarTelefono(telefonoInvitado).mensaje}</span>
+                      <span>{resValTel.mensaje}</span>
                     </>
                   ) : (
                     <>
                       <AlertCircle size={14} className="flex-shrink-0" />
-                      <span>{validarTelefono(telefonoInvitado).mensaje}</span>
+                      <span>{resValTel.mensaje}</span>
                     </>
                   )}
                 </div>

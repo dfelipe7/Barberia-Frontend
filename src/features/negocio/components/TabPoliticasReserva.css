@@ -1,0 +1,11 @@
+/* Estilos para campos numéricos en la configuración de políticas */
+.politicas-number-input::-webkit-outer-spin-button,
+.politicas-number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.politicas-number-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}

@@ -12,6 +12,7 @@ import {
 import { politicasReservaApi } from '../services/politicasReservaApi';
 import type { PoliticasReserva } from '../types/politicasReserva.types';
 import { ToastContext } from '../../../shared/ui/ToastContext';
+import './TabPoliticasReserva.css';
 
 const OPCIONES_CITAS_DIARIAS = [
   { valor: 1, label: '1 cita' },
@@ -111,7 +112,9 @@ export const TabPoliticasReserva: React.FC = () => {
       }
     }
 
-    cargarPoliticas().catch(() => {});
+    cargarPoliticas().catch((err: unknown) => {
+      console.warn('Error cargando políticas iniciales:', err);
+    });
 
     return () => {
       montado = false;
@@ -162,19 +165,6 @@ export const TabPoliticasReserva: React.FC = () => {
 
   return (
     <form onSubmit={handleGuardar} className="d-flex flex-column gap-3">
-      {/* Estilos para eliminar las flechas nativas apretadas de type=number */}
-      <style>{`
-        .politicas-number-input::-webkit-outer-spin-button,
-        .politicas-number-input::-webkit-inner-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
-        }
-        .politicas-number-input {
-          -moz-appearance: textfield;
-          appearance: textfield;
-        }
-      `}</style>
-
       {/* Alertas en la parte superior */}
       {error && (
         <div className="alert alert-danger d-flex align-items-center gap-2 mb-0 shadow-sm rounded-3 py-2 px-3" role="alert">
