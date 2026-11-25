@@ -399,7 +399,12 @@ function FormularioInvitadoContacto({
 }: FormularioInvitadoContactoProps) {
   const tieneTelefono = telefonoInvitado.trim().length > 0;
   const resValTel = tieneTelefono ? validarTelefono(telefonoInvitado) : null;
-  const claseValidacion = resValTel?.valido ? 'is-valid' : resValTel ? 'is-invalid' : '';
+  let claseValidacion = '';
+  if (resValTel?.valido) {
+    claseValidacion = 'is-valid';
+  } else if (resValTel) {
+    claseValidacion = 'is-invalid';
+  }
 
   return (
     <div className="mb-4">
