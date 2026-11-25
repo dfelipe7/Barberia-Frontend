@@ -121,7 +121,7 @@ export const TabPoliticasReserva: React.FC = () => {
     };
   }, []);
 
-  const handleGuardar = async (e: React.FormEvent) => {
+  const handleGuardar = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     try {
       setGuardando(true);
