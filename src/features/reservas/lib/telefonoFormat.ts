@@ -2,6 +2,31 @@
  * Utilidades para formateo y validación de números telefónicos en el flujo de reserva.
  */
 
+function formatearInternacional(digitos: string): string {
+  if (digitos.startsWith('57') && digitos.length > 2) {
+    const resto = digitos.slice(2);
+    if (resto.length <= 3) return `+57 ${resto}`;
+    if (resto.length <= 6) return `+57 ${resto.slice(0, 3)} ${resto.slice(3)}`;
+    return `+57 ${resto.slice(0, 3)} ${resto.slice(3, 6)} ${resto.slice(6, 10)}`;
+  }
+
+  if (digitos.length <= 3) return `+${digitos}`;
+  if (digitos.length <= 6) return `+${digitos.slice(0, 2)} ${digitos.slice(2)}`;
+  if (digitos.length <= 10) {
+    return `+${digitos.slice(0, 2)} ${digitos.slice(2, 5)} ${digitos.slice(5)}`;
+  }
+  return `+${digitos.slice(0, 2)} ${digitos.slice(2, 5)} ${digitos.slice(5, 9)} ${digitos.slice(9, 13)}`;
+}
+
+function formatearLocal(digitos: string): string {
+  if (digitos.length <= 3) return digitos;
+  if (digitos.length <= 6) return `${digitos.slice(0, 3)} ${digitos.slice(3)}`;
+  if (digitos.length <= 10) {
+    return `${digitos.slice(0, 3)} ${digitos.slice(3, 6)} ${digitos.slice(6)}`;
+  }
+  return `${digitos.slice(0, 3)} ${digitos.slice(3, 6)} ${digitos.slice(6, 10)} ${digitos.slice(10, 15)}`;
+}
+
 /**
  * Limpia y formatea un número telefónico en tiempo real para visualización legible.
  * Ejemplo: "3001234567" -> "300 123 4567"
@@ -11,41 +36,13 @@ export function formatearTelefonoInput(valor: string): string {
   if (!valor) return '';
 
   const tieneMas = valor.trim().startsWith('+');
-  // Extraer solo dígitos
   const soloDigitos = valor.replace(/\D/g, '');
 
   if (!soloDigitos) {
     return tieneMas ? '+' : '';
   }
 
-  // Si tiene prefijo internacional con "+"
-  if (tieneMas) {
-    // Si empieza por 57 (Colombia) u otros prefijos de 2 dígitos
-    if (soloDigitos.startsWith('57') && soloDigitos.length > 2) {
-      const resto = soloDigitos.slice(2);
-      if (resto.length <= 3) return `+57 ${resto}`;
-      if (resto.length <= 6) return `+57 ${resto.slice(0, 3)} ${resto.slice(3)}`;
-      return `+57 ${resto.slice(0, 3)} ${resto.slice(3, 6)} ${resto.slice(6, 10)}`;
-    }
-
-    // Prefijo internacional genérico
-    if (soloDigitos.length <= 3) return `+${soloDigitos}`;
-    if (soloDigitos.length <= 6) return `+${soloDigitos.slice(0, 2)} ${soloDigitos.slice(2)}`;
-    if (soloDigitos.length <= 10) {
-      return `+${soloDigitos.slice(0, 2)} ${soloDigitos.slice(2, 5)} ${soloDigitos.slice(5)}`;
-    }
-    return `+${soloDigitos.slice(0, 2)} ${soloDigitos.slice(2, 5)} ${soloDigitos.slice(5, 9)} ${soloDigitos.slice(9, 13)}`;
-  }
-
-  // Formato local estándar (ej. 300 123 4567)
-  if (soloDigitos.length <= 3) return soloDigitos;
-  if (soloDigitos.length <= 6) return `${soloDigitos.slice(0, 3)} ${soloDigitos.slice(3)}`;
-  if (soloDigitos.length <= 10) {
-    return `${soloDigitos.slice(0, 3)} ${soloDigitos.slice(3, 6)} ${soloDigitos.slice(6)}`;
-  }
-
-  // Si excede 10 dígitos (ej. fijos con extensión o internacionales sin +)
-  return `${soloDigitos.slice(0, 3)} ${soloDigitos.slice(3, 6)} ${soloDigitos.slice(6, 10)} ${soloDigitos.slice(10, 15)}`;
+  return tieneMas ? formatearInternacional(soloDigitos) : formatearLocal(soloDigitos);
 }
 
 /**

@@ -380,6 +380,116 @@ function VoucherConfirmado({
   );
 }
 
+interface FormularioInvitadoContactoProps {
+  readonly nombreInvitado: string;
+  readonly setNombreInvitado: (val: string) => void;
+  readonly apellidoInvitado: string;
+  readonly setApellidoInvitado: (val: string) => void;
+  readonly telefonoInvitado: string;
+  readonly setTelefonoInvitado: (val: string) => void;
+}
+
+function FormularioInvitadoContacto({
+  nombreInvitado,
+  setNombreInvitado,
+  apellidoInvitado,
+  setApellidoInvitado,
+  telefonoInvitado,
+  setTelefonoInvitado,
+}: FormularioInvitadoContactoProps) {
+  const tieneTelefono = telefonoInvitado.trim().length > 0;
+  const resValTel = tieneTelefono ? validarTelefono(telefonoInvitado) : null;
+  let claseValidacion = '';
+  if (resValTel?.valido) {
+    claseValidacion = 'is-valid';
+  } else if (resValTel) {
+    claseValidacion = 'is-invalid';
+  }
+
+  return (
+    <div className="mb-4">
+      <h3 className="h6 fw-bold mb-1">Datos de contacto</h3>
+      <p className="small text-surface-muted mb-3">
+        Para notificarte y enviarte el comprobante de tu cita.
+      </p>
+      <div className="d-flex flex-column gap-3">
+        <div>
+          <label htmlFor="invitado-nombre" className="form-label small fw-semibold">
+            Nombre <span className="text-danger">*</span>
+          </label>
+          <input
+            id="invitado-nombre"
+            className="form-control"
+            autoComplete="given-name"
+            value={nombreInvitado}
+            maxLength={100}
+            onChange={(event) => setNombreInvitado(event.target.value)}
+            placeholder="Ej. Juan"
+            required
+          />
+          <div className="form-text text-end">{nombreInvitado.length}/100</div>
+        </div>
+        <div>
+          <label htmlFor="invitado-apellido" className="form-label small fw-semibold">
+            Apellido <span className="text-surface-muted fw-normal">(máx. 100)</span>
+          </label>
+          <input
+            id="invitado-apellido"
+            className="form-control"
+            autoComplete="family-name"
+            value={apellidoInvitado}
+            maxLength={100}
+            onChange={(event) => setApellidoInvitado(event.target.value)}
+            placeholder="Ej. Pérez"
+          />
+          <div className="form-text text-end">{apellidoInvitado.length}/100</div>
+        </div>
+        <div>
+          <label htmlFor="invitado-telefono" className="form-label small fw-semibold">
+            Teléfono / WhatsApp <span className="text-danger">*</span>
+          </label>
+          <div className="input-group">
+            <span className="input-group-text bg-body-tertiary">📱</span>
+            <input
+              id="invitado-telefono"
+              type="tel"
+              className={`form-control ${claseValidacion}`}
+              autoComplete="tel"
+              value={telefonoInvitado}
+              maxLength={30}
+              onChange={(event) => {
+                const formateado = formatearTelefonoInput(event.target.value);
+                setTelefonoInvitado(formateado);
+              }}
+              placeholder="Ej. 300 123 4567"
+              required
+            />
+          </div>
+          {resValTel && (
+            <div
+              className={`form-text d-flex align-items-center gap-1 mt-1 ${
+                resValTel.valido ? 'text-success' : 'text-danger'
+              }`}
+            >
+              {resValTel.valido ? (
+                <Check size={14} className="flex-shrink-0" />
+              ) : (
+                <AlertCircle size={14} className="flex-shrink-0" />
+              )}
+              <span>{resValTel.mensaje}</span>
+            </div>
+          )}
+          {!resValTel && (
+            <div className="form-text text-muted mt-1">
+              Te enviaremos los detalles y el enlace de tu cita por WhatsApp a este número.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Subcomponente de Formulario de Revisión y Envío de Cita
  */
@@ -428,100 +538,15 @@ function FormularioRevisionReserva({
     }
 
     if (!reservaId) {
-      const tieneTelefono = telefonoInvitado.trim().length > 0;
-      const resValTel = tieneTelefono ? validarTelefono(telefonoInvitado) : null;
-      let claseValidacion = '';
-      if (resValTel) {
-        claseValidacion = resValTel.valido ? 'is-valid' : 'is-invalid';
-      }
-
       return (
-        <div className="mb-4">
-          <h3 className="h6 fw-bold mb-1">Datos de contacto</h3>
-          <p className="small text-surface-muted mb-3">
-            Para notificarte y enviarte el comprobante de tu cita.
-          </p>
-          <div className="d-flex flex-column gap-3">
-            <div>
-              <label htmlFor="invitado-nombre" className="form-label small fw-semibold">
-                Nombre <span className="text-danger">*</span>
-              </label>
-              <input
-                id="invitado-nombre"
-                className="form-control"
-                autoComplete="given-name"
-                value={nombreInvitado}
-                maxLength={100}
-                onChange={(event) => setNombreInvitado(event.target.value)}
-                placeholder="Ej. Juan"
-                required
-              />
-              <div className="form-text text-end">{nombreInvitado.length}/100</div>
-            </div>
-            <div>
-              <label htmlFor="invitado-apellido" className="form-label small fw-semibold">
-                Apellido <span className="text-surface-muted fw-normal">(máx. 100)</span>
-              </label>
-              <input
-                id="invitado-apellido"
-                className="form-control"
-                autoComplete="family-name"
-                value={apellidoInvitado}
-                maxLength={100}
-                onChange={(event) => setApellidoInvitado(event.target.value)}
-                placeholder="Ej. Pérez"
-              />
-              <div className="form-text text-end">{apellidoInvitado.length}/100</div>
-            </div>
-            <div>
-              <label htmlFor="invitado-telefono" className="form-label small fw-semibold">
-                Teléfono / WhatsApp <span className="text-danger">*</span>
-              </label>
-              <div className="input-group">
-                <span className="input-group-text bg-body-tertiary">
-                  📱
-                </span>
-                <input
-                  id="invitado-telefono"
-                  type="tel"
-                  className={`form-control ${claseValidacion}`}
-                  autoComplete="tel"
-                  value={telefonoInvitado}
-                  maxLength={30}
-                  onChange={(event) => {
-                    const formateado = formatearTelefonoInput(event.target.value);
-                    setTelefonoInvitado(formateado);
-                  }}
-                  placeholder="Ej. 300 123 4567"
-                  required
-                />
-              </div>
-              {resValTel ? (
-                <div
-                  className={`form-text d-flex align-items-center gap-1 mt-1 ${
-                    resValTel.valido ? 'text-success' : 'text-danger'
-                  }`}
-                >
-                  {resValTel.valido ? (
-                    <>
-                      <Check size={14} className="flex-shrink-0" />
-                      <span>{resValTel.mensaje}</span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertCircle size={14} className="flex-shrink-0" />
-                      <span>{resValTel.mensaje}</span>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <div className="form-text text-muted mt-1">
-                  Te enviaremos los detalles y el enlace de tu cita por WhatsApp a este número.
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        <FormularioInvitadoContacto
+          nombreInvitado={nombreInvitado}
+          setNombreInvitado={setNombreInvitado}
+          apellidoInvitado={apellidoInvitado}
+          setApellidoInvitado={setApellidoInvitado}
+          telefonoInvitado={telefonoInvitado}
+          setTelefonoInvitado={setTelefonoInvitado}
+        />
       );
     }
 
