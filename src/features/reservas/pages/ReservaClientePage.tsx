@@ -35,6 +35,7 @@ import StepServicios from '../components/StepServicios';
 import StepBarberos from '../components/StepBarberos';
 import StepAgenda, { type JornadaHorario } from '../components/StepAgenda';
 import StepConfirmacion from '../components/StepConfirmacion';
+import { normalizarTelefono, validarTelefono } from '../lib/telefonoFormat';
 import './ReservaClientePage.css';
 
 interface ReservaLocationState {
@@ -89,7 +90,7 @@ const sanitizarBorradorParaStorage = (datos: ReservaBorradorStorage): ReservaBor
   paso: sanitizarPaso(datos.paso),
   nombreInvitado: sanitizarTextoSeguro(datos.nombreInvitado, 100, /[^\p{L}\s'-]/gu),
   apellidoInvitado: sanitizarTextoSeguro(datos.apellidoInvitado, 100, /[^\p{L}\s'-]/gu),
-  telefonoInvitado: sanitizarTextoSeguro(datos.telefonoInvitado, 30, /[^\d+]/g),
+  telefonoInvitado: sanitizarTextoSeguro(datos.telefonoInvitado, 30, /[^\d+\s]/g),
   reservaId: sanitizarEnteroSeguro(datos.reservaId) ?? undefined,
 });
 
@@ -260,10 +261,18 @@ function validarConfirmacion(params: ValidarConfirmacionParams): { error?: strin
     };
   }
 
-  if (!reservaId && !clienteSesion && (!nombreInvitado.trim() || !telefonoInvitado.trim())) {
-    return {
-      error: 'El nombre y el teléfono son obligatorios para reservar como invitado.',
-    };
+  if (!reservaId && !clienteSesion) {
+    if (!nombreInvitado.trim() || !telefonoInvitado.trim()) {
+      return {
+        error: 'El nombre y el teléfono son obligatorios para reservar como invitado.',
+      };
+    }
+    const valTel = validarTelefono(telefonoInvitado);
+    if (!valTel.valido) {
+      return {
+        error: valTel.mensaje || 'Ingresa un número de celular válido para recibir tu confirmación.',
+      };
+    }
   }
 
   const datos: CrearReservaDTO = {
@@ -276,7 +285,7 @@ function validarConfirmacion(params: ValidarConfirmacionParams): { error?: strin
   if (!clienteSesion && !reservaId) {
     datos.nombre = nombreInvitado.trim();
     datos.apellido = apellidoInvitado.trim() || undefined;
-    datos.telefono = telefonoInvitado.trim();
+    datos.telefono = normalizarTelefono(telefonoInvitado);
   }
 
   return { datos };

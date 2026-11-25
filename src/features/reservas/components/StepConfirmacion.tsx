@@ -7,6 +7,7 @@ import {
   Copy,
   Scissors,
   UserRound,
+  AlertCircle,
 } from 'lucide-react';
 import type { Servicio } from '../../servicios/types/servicios.types';
 import type {
@@ -16,6 +17,7 @@ import type {
 } from '../api/reservas.dto';
 import type { PasoReserva } from './BookingStepper';
 import { reservasService } from '../api/reservas.service';
+import { formatearTelefonoInput, validarTelefono } from '../lib/telefonoFormat';
 import Button from '../../../shared/ui/Button';
 import ErrorMessage from '../../../shared/ui/ErrorMessage';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
@@ -426,6 +428,13 @@ function FormularioRevisionReserva({
     }
 
     if (!reservaId) {
+      const tieneTelefono = telefonoInvitado.trim().length > 0;
+      const resValTel = tieneTelefono ? validarTelefono(telefonoInvitado) : null;
+      let claseValidacion = '';
+      if (resValTel) {
+        claseValidacion = resValTel.valido ? 'is-valid' : 'is-invalid';
+      }
+
       return (
         <div className="mb-4">
           <h3 className="h6 fw-bold mb-1">Datos de contacto</h3>
@@ -468,18 +477,48 @@ function FormularioRevisionReserva({
               <label htmlFor="invitado-telefono" className="form-label small fw-semibold">
                 Teléfono / WhatsApp <span className="text-danger">*</span>
               </label>
-              <input
-                id="invitado-telefono"
-                type="tel"
-                className="form-control"
-                autoComplete="tel"
-                value={telefonoInvitado}
-                maxLength={30}
-                onChange={(event) => setTelefonoInvitado(event.target.value)}
-                placeholder="Ej. 300 123 4567"
-                required
-              />
-              <div className="form-text text-end">{telefonoInvitado.length}/30</div>
+              <div className="input-group">
+                <span className="input-group-text bg-body-tertiary">
+                  📱
+                </span>
+                <input
+                  id="invitado-telefono"
+                  type="tel"
+                  className={`form-control ${claseValidacion}`}
+                  autoComplete="tel"
+                  value={telefonoInvitado}
+                  maxLength={30}
+                  onChange={(event) => {
+                    const formateado = formatearTelefonoInput(event.target.value);
+                    setTelefonoInvitado(formateado);
+                  }}
+                  placeholder="Ej. 300 123 4567"
+                  required
+                />
+              </div>
+              {resValTel ? (
+                <div
+                  className={`form-text d-flex align-items-center gap-1 mt-1 ${
+                    resValTel.valido ? 'text-success' : 'text-danger'
+                  }`}
+                >
+                  {resValTel.valido ? (
+                    <>
+                      <Check size={14} className="flex-shrink-0" />
+                      <span>{resValTel.mensaje}</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle size={14} className="flex-shrink-0" />
+                      <span>{resValTel.mensaje}</span>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div className="form-text text-muted mt-1">
+                  Te enviaremos los detalles y el enlace de tu cita por WhatsApp a este número.
+                </div>
+              )}
             </div>
           </div>
         </div>
