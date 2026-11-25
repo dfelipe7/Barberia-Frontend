@@ -14,6 +14,7 @@ import {
   Navigation,
   CheckCircle2,
   Share2,
+  ShieldCheck,
 } from 'lucide-react';
 import { perfilNegocioApi } from '../services/perfilNegocioApi';
 import type {
@@ -33,6 +34,7 @@ import { useConfirm } from '../../../shared/contexts/ConfirmContext';
 import KyriosSpinner from '../../../shared/ui/KyriosSpinner';
 import { RedesSocialesSection } from '../components/RedesSocialesSection';
 import { TabDisenoYMarca } from '../components/TabDisenoYMarca';
+import { TabPoliticasReserva } from '../components/TabPoliticasReserva';
 
 function resolverUrlRecurso(url: string | null | undefined): string | null {
   if (!url) return null;
@@ -145,7 +147,7 @@ export default function ConfiguracionNegocioPage() {
 
   // Estado del tema visual
   const [temaActual, setTemaActual] = useState<TenantThemeId>(() => resolverTemaTenant(slugActivo));
-  type TabConfiguracion = 'general' | 'marca' | 'redes';
+  type TabConfiguracion = 'general' | 'marca' | 'redes' | 'politicas';
   const [tabActiva, setTabActiva] = useState<TabConfiguracion>('general');
 
   // Refs de inputs de tipo file
@@ -450,6 +452,18 @@ export default function ConfiguracionNegocioPage() {
         >
           <Share2 size={16} /> Redes Sociales Oficiales
         </button>
+
+        <button
+          type="button"
+          onClick={() => setTabActiva('politicas')}
+          className={`btn btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill fw-semibold transition-all ${
+            tabActiva === 'politicas'
+              ? 'btn-dark text-white shadow-sm'
+              : 'btn-light border text-body-secondary bg-body-tertiary'
+          }`}
+        >
+          <ShieldCheck size={16} /> Políticas y Reglas de Reserva
+        </button>
       </div>
 
       {/* Pestaña 1: Información Comercial y Ubicación */}
@@ -735,6 +749,15 @@ export default function ConfiguracionNegocioPage() {
         <div className="row justify-content-center">
           <div className="col-12 col-xl-10">
             <RedesSocialesSection slugNegocio={slugActivo} />
+          </div>
+        </div>
+      )}
+
+      {/* Pestaña 4: Políticas y Reglas de Reserva */}
+      {tabActiva === 'politicas' && (
+        <div className="row justify-content-center">
+          <div className="col-12 col-xl-10">
+            <TabPoliticasReserva />
           </div>
         </div>
       )}
